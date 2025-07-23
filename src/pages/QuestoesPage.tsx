@@ -428,8 +428,10 @@ export default function QuestoesPage() {
                       </Badge>
                       <div className="text-xs text-muted-foreground space-y-1">
                         <div className="text-xs text-muted-foreground">
-                          {questao.banca && questao.cargo && (
-                            <p className="text-xs text-muted-foreground">{questao.banca} - {questao.cargo}</p>
+                          {(questao.banca || questao.cargo) && (
+                            <p className="text-xs text-muted-foreground">
+                              {questao.banca}{questao.banca && questao.cargo && " - "}{questao.cargo}
+                            </p>
                           )}
                           {questao.ano && (
                             <p className="text-xs text-muted-foreground">{questao.ano}</p>
