@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { useSupabaseFlashcards } from '@/hooks/useSupabaseFlashcards';
+import { DataMigrationDialog } from '@/components/DataMigrationDialog';
 import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff, Blocks } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
@@ -341,6 +342,9 @@ const Index = () => {
 
   return (
     <div className="bg-background">
+      {/* Diálogo de Migração de Dados */}
+      <DataMigrationDialog />
+      
       {/* Header */}
       <div className="border-b border-border/50 bg-card/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4">
