@@ -8,6 +8,11 @@ export function useSupabaseFlashcards() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreatingDeck, setIsCreatingDeck] = useState(false);
+  const [isCreatingCard, setIsCreatingCard] = useState(false);
+  const [isUpdatingCard, setIsUpdatingCard] = useState(false);
+  const [isDeletingCard, setIsDeletingCard] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const { toast } = useToast();
 
   // Load data from Supabase on mount
@@ -82,6 +87,9 @@ export function useSupabaseFlashcards() {
 
   const createDeck = async (name: string, description?: string): Promise<Deck | null> => {
     try {
+      setIsCreatingDeck(true);
+      setSyncStatus('syncing');
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
@@ -89,6 +97,7 @@ export function useSupabaseFlashcards() {
           description: "Você precisa estar logado para criar um deck.",
           variant: "destructive",
         });
+        setSyncStatus('error');
         return null;
       }
 
@@ -115,15 +124,26 @@ export function useSupabaseFlashcards() {
       };
 
       setDecks(prev => [newDeck, ...prev]);
+      setSyncStatus('success');
+      
+      toast({
+        title: "Deck criado com sucesso!",
+        description: `O deck "${name}" foi criado e salvo no banco de dados.`,
+      });
+      
       return newDeck;
     } catch (error) {
       console.error('Error creating deck:', error);
+      setSyncStatus('error');
       toast({
         title: "Erro ao criar deck",
         description: "Não foi possível criar o deck.",
         variant: "destructive",
       });
       return null;
+    } finally {
+      setIsCreatingDeck(false);
+      setTimeout(() => setSyncStatus('idle'), 2000);
     }
   };
 
@@ -367,6 +387,11 @@ export function useSupabaseFlashcards() {
     decks,
     cards,
     loading,
+    isCreatingDeck,
+    isCreatingCard,
+    isUpdatingCard,
+    isDeletingCard,
+    syncStatus,
     createDeck,
     createCard,
     updateCard,

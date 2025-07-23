@@ -24,7 +24,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { decks, cards, loading, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
+  const { decks, cards, loading, isCreatingDeck, isCreatingCard, syncStatus, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
   
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDescription, setNewDeckDescription] = useState('');
@@ -67,11 +67,6 @@ const Index = () => {
       setNewDeckName('');
       setNewDeckDescription('');
       setIsCreateDeckOpen(false);
-      
-      toast({
-        title: "Deck criado!",
-        description: `O deck "${deck.name}" foi criado com sucesso.`,
-      });
     }
   };
 
@@ -361,6 +356,30 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-4">
+              {/* Indicador de Status de Sincronização */}
+              {syncStatus !== 'idle' && (
+                <div className="flex items-center gap-2 text-sm">
+                  {syncStatus === 'syncing' && (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                      <span className="text-muted-foreground">Sincronizando...</span>
+                    </>
+                  )}
+                  {syncStatus === 'success' && (
+                    <>
+                      <CheckCircle className="h-3 w-3 text-green-500" />
+                      <span className="text-green-600">Sincronizado</span>
+                    </>
+                  )}
+                  {syncStatus === 'error' && (
+                    <>
+                      <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                      <span className="text-red-600">Erro na sincronização</span>
+                    </>
+                  )}
+                </div>
+              )}
+              
               <Dialog open={isCreateDeckOpen} onOpenChange={setIsCreateDeckOpen}>
                 <DialogTrigger asChild>
                   <Button variant="study" className="gap-2">
@@ -393,10 +412,17 @@ const Index = () => {
                     </div>
                     <Button 
                       onClick={handleCreateDeck}
-                      disabled={!newDeckName.trim()}
+                      disabled={!newDeckName.trim() || isCreatingDeck}
                       className="w-full"
                     >
-                      Criar Deck
+                      {isCreatingDeck ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Criando...
+                        </>
+                      ) : (
+                        'Criar Deck'
+                      )}
                     </Button>
                   </div>
                 </DialogContent>
