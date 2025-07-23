@@ -70,7 +70,12 @@ export const ListaQuestoes: React.FC = () => {
                   {questao.nivel}
                 </Badge>
                 <div className="text-xs text-muted-foreground space-y-1">
-                  {/* Campos adicionais como prova, cargo, ano não estão no modelo de QuestaoCompleta */}
+                  {questao.banca && questao.cargo && (
+                    <p>{questao.banca} - {questao.cargo}</p>
+                  )}
+                  {questao.ano && (
+                    <p>{questao.ano}</p>
+                  )}
                 </div>
               </div>
             </div>
