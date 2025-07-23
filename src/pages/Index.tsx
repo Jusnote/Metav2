@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { useLocalFlashcards } from '@/hooks/useLocalFlashcards';
+import { useSupabaseFlashcards } from '@/hooks/useSupabaseFlashcards';
 import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff, Blocks } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
@@ -24,7 +24,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { decks, cards, loading, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useLocalFlashcards();
+  const { decks, cards, loading, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
   
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDescription, setNewDeckDescription] = useState('');
