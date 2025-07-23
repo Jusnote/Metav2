@@ -77,9 +77,9 @@ export default function QuestoesPage() {
       disciplina: q.disciplina || "Sem disciplina",
       assunto: q.assunto || "Sem assunto",
       nivel: q.nivel || "Médio",
-      prova: "Questão Criada",
-      cargo: "Usuário",
-      ano: new Date(q.created_at).getFullYear(),
+      prova: q.banca || "Questão Criada",
+      cargo: q.cargo || "Usuário",
+      ano: q.ano || new Date(q.created_at).getFullYear(),
       pergunta: q.enunciado,
       alternativas: q.alternativas?.map(alt => ({
         letra: alt.letra,
@@ -427,8 +427,14 @@ export default function QuestoesPage() {
                         {questao.nivel}
                       </Badge>
                       <div className="text-xs text-muted-foreground space-y-1">
-                        <div className="font-medium">{questao.prova}</div>
-                        <div>{questao.cargo} • {questao.ano}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {questao.banca && questao.cargo && (
+                            <p>{questao.banca} - {questao.cargo}</p>
+                          )}
+                          {questao.ano && (
+                            <p>{questao.ano}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
