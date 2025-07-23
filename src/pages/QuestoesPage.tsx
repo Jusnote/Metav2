@@ -77,8 +77,8 @@ export default function QuestoesPage() {
       disciplina: q.disciplina || "Sem disciplina",
       assunto: q.assunto || "Sem assunto",
       nivel: q.nivel || "Médio",
-      prova: q.banca || "Questão Criada",
-      cargo: q.cargo || "Usuário",
+      banca: q.banca || "",
+      cargo: q.cargo || "",
       ano: q.ano || new Date(q.created_at).getFullYear(),
       pergunta: q.enunciado,
       alternativas: q.alternativas?.map(alt => ({
@@ -429,10 +429,10 @@ export default function QuestoesPage() {
                       <div className="text-xs text-muted-foreground space-y-1">
                         <div className="text-xs text-muted-foreground">
                           {questao.banca && questao.cargo && (
-                            <p>{questao.banca} - {questao.cargo}</p>
+                            <p className="text-xs text-muted-foreground">{questao.banca} - {questao.cargo}</p>
                           )}
                           {questao.ano && (
-                            <p>{questao.ano}</p>
+                            <p className="text-xs text-muted-foreground">{questao.ano}</p>
                           )}
                         </div>
                       </div>
