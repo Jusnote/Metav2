@@ -136,6 +136,18 @@ export const useQuestaoForm = () => {
       questaoErrors.disciplina = 'A disciplina é obrigatória';
     }
 
+    if (!questao.banca.trim()) {
+      questaoErrors.banca = 'A banca é obrigatória';
+    }
+
+    if (!questao.cargo.trim()) {
+      questaoErrors.cargo = 'O cargo é obrigatório';
+    }
+
+    if (!questao.ano) {
+      questaoErrors.ano = 'O ano é obrigatório';
+    }
+
     // Validar alternativas
     if (questao.tipo === 'multipla_escolha') {
       // Verificar se todas as alternativas têm texto
