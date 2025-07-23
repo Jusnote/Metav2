@@ -14,7 +14,95 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alternativas: {
+        Row: {
+          correta: boolean | null
+          created_at: string | null
+          id: string
+          letra: string
+          questao_id: string | null
+          texto: string
+        }
+        Insert: {
+          correta?: boolean | null
+          created_at?: string | null
+          id?: string
+          letra: string
+          questao_id?: string | null
+          texto: string
+        }
+        Update: {
+          correta?: boolean | null
+          created_at?: string | null
+          id?: string
+          letra?: string
+          questao_id?: string | null
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alternativas_questao_id_fkey"
+            columns: ["questao_id"]
+            isOneToOne: false
+            referencedRelation: "questoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      questoes: {
+        Row: {
+          ano: number | null
+          assunto: string | null
+          banca: string | null
+          cargo: string | null
+          created_at: string | null
+          dificuldade: string | null
+          disciplina: string | null
+          enunciado: string
+          id: string
+          modalidade: string | null
+          nivel: string | null
+          tipo: string | null
+          titulo: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ano?: number | null
+          assunto?: string | null
+          banca?: string | null
+          cargo?: string | null
+          created_at?: string | null
+          dificuldade?: string | null
+          disciplina?: string | null
+          enunciado: string
+          id?: string
+          modalidade?: string | null
+          nivel?: string | null
+          tipo?: string | null
+          titulo: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ano?: number | null
+          assunto?: string | null
+          banca?: string | null
+          cargo?: string | null
+          created_at?: string | null
+          dificuldade?: string | null
+          disciplina?: string | null
+          enunciado?: string
+          id?: string
+          modalidade?: string | null
+          nivel?: string | null
+          tipo?: string | null
+          titulo?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

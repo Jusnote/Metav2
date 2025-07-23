@@ -37,6 +37,16 @@ export const VisualizarQuestao: React.FC<VisualizarQuestaoProps> = ({
                 {questao.assunto}
               </Badge>
             )}
+            {questao.banca && (
+              <Badge variant="outline">
+                {questao.banca}
+              </Badge>
+            )}
+            {questao.cargo && (
+              <Badge variant="outline">
+                {questao.cargo}
+              </Badge>
+            )}
             <Badge variant={questao.nivel === 'Fácil' ? 'outline' : questao.nivel === 'Médio' ? 'secondary' : 'destructive'}>
               {questao.nivel}
             </Badge>
@@ -82,7 +92,7 @@ export const VisualizarQuestao: React.FC<VisualizarQuestaoProps> = ({
           )}
 
           <div className="text-sm text-muted-foreground">
-            <p>Criada em: {new Date(questao.created_at).toLocaleString()}</p>
+            <p>Criada em: {new Date(questao.created_at).getFullYear()}</p>
             <p>Última atualização: {new Date(questao.updated_at).toLocaleString()}</p>
           </div>
         </div>

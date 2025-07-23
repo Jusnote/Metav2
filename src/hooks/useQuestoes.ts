@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 export interface QuestaoCompleta extends Questao {
   alternativas: Alternativa[];
+  banca?: string;
+  cargo?: string;
 }
 
 export const useQuestoes = () => {
