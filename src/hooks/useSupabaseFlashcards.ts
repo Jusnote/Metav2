@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Flashcard, Deck, StudyDifficulty } from '@/types/flashcard';
-import { SpacedRepetition } from '@/lib/spaced-repetition';
+import { Flashcard, Deck, StudyDifficulty, studyDifficultyToRating } from '@/types/flashcard';
+import { FSRSSpacedRepetition } from '@/lib/fsrs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { State } from 'ts-fsrs';
 
 export function useSupabaseFlashcards() {
   const [decks, setDecks] = useState<Deck[]>([]);
@@ -58,10 +59,12 @@ export function useSupabaseFlashcards() {
         created: new Date(card.created_at),
         lastReviewed: card.last_reviewed ? new Date(card.last_reviewed) : undefined,
         nextReview: new Date(card.next_review),
-        interval: card.interval_days,
-        easeFactor: Number(card.ease_factor),
-        repetitions: card.repetitions,
-        difficulty: card.difficulty as StudyDifficulty,
+        difficulty: card.difficulty_fsrs || 0,
+        stability: card.stability || 0,
+        state: card.state || State.New,
+        due: new Date(card.due || card.next_review),
+        last_review: card.last_review_fsrs ? new Date(card.last_review_fsrs) : undefined,
+        review_count: card.review_count || 0,
         type: (card as any).type || 'traditional',
         hiddenWordIndices: (card as any).hidden_word_indices,
         hiddenWords: (card as any).hidden_words,
@@ -187,6 +190,12 @@ export function useSupabaseFlashcards() {
           type,
           hidden_word_indices: hiddenWordIndices,
           hidden_words: hiddenWords,
+          difficulty_fsrs: 0, // Default for FSRS
+          stability: 0, // Default for FSRS
+          state: State.New, // State.New for FSRS
+          due: new Date().toISOString(), // Default for FSRS
+          last_review_fsrs: null, // Default for FSRS
+          review_count: 0, // Default for FSRS
         })
         .select()
         .single();
@@ -201,10 +210,12 @@ export function useSupabaseFlashcards() {
         created: new Date(data.created_at),
         lastReviewed: data.last_reviewed ? new Date(data.last_reviewed) : undefined,
         nextReview: new Date(data.next_review),
-        interval: data.interval_days,
-        easeFactor: Number(data.ease_factor),
-        repetitions: data.repetitions,
-        difficulty: data.difficulty as StudyDifficulty,
+        difficulty: data.difficulty_fsrs || 0,
+        stability: data.stability || 0,
+        state: data.state || State.New,
+        due: new Date(data.due || data.next_review),
+        last_review: data.last_review_fsrs ? new Date(data.last_review_fsrs) : undefined,
+        review_count: data.review_count || 0,
         type: (data as any).type || 'traditional',
         hiddenWordIndices: (data as any).hidden_word_indices,
         hiddenWords: (data as any).hidden_words,
@@ -253,20 +264,22 @@ export function useSupabaseFlashcards() {
       const card = cards.find(c => c.id === cardId);
       if (!card) return;
 
-      const { interval, easeFactor, repetitions } = SpacedRepetition.calculateNextReview(card, difficulty);
-      const nextReview = SpacedRepetition.getNextReviewDate(interval);
+      const rating = studyDifficultyToRating(difficulty);
+      const { difficulty: newDifficulty, stability, state, due, last_review, review_count } = FSRSSpacedRepetition.calculateNextReview(card, rating);
 
       const { error } = await supabase
-        .from('flashcards')
+        .from("flashcards")
         .update({
           last_reviewed: new Date().toISOString(),
-          next_review: nextReview.toISOString(),
-          interval_days: interval,
-          ease_factor: easeFactor,
-          repetitions,
-          difficulty,
+          next_review: due.toISOString(), // next_review will be the due date from FSRS
+          difficulty_fsrs: newDifficulty,
+          stability,
+          state,
+          due: due.toISOString(),
+          last_review_fsrs: last_review.toISOString(),
+          review_count,
         })
-        .eq('id', cardId);
+        .eq("id", cardId);
 
       if (error) throw error;
 
@@ -276,11 +289,13 @@ export function useSupabaseFlashcards() {
         return {
           ...c,
           lastReviewed: new Date(),
-          nextReview,
-          interval,
-          easeFactor,
-          repetitions,
-          difficulty,
+          nextReview: due,
+          difficulty: newDifficulty,
+          stability,
+          state,
+          due,
+          last_review,
+          review_count,
         };
       }));
     } catch (error) {
@@ -343,7 +358,7 @@ export function useSupabaseFlashcards() {
 
   const getDueCards = (deckId?: string): Flashcard[] => {
     const relevantCards = deckId ? getCardsByDeck(deckId) : cards;
-    return SpacedRepetition.getDueCards(relevantCards);
+    return FSRSSpacedRepetition.getDueCards(relevantCards);
   };
 
   const getDeckStats = (deckId: string) => {
