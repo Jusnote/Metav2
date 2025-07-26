@@ -5,7 +5,7 @@ import { WordHidingDisplay } from '@/components/WordHidingDisplay';
 import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
 import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FlashcardDisplayProps {
@@ -31,6 +31,7 @@ export function FlashcardDisplay({
   const [mainCardAnswered, setMainCardAnswered] = useState(false);
   const [userGotItRight, setUserGotItRight] = useState<boolean | null>(null);
   const [subCardResults, setSubCardResults] = useState<Record<string, boolean | null>>({});
+  const [isLoadingAnimationActive, setIsLoadingAnimationActive] = useState(true);
   
   // States for true-false cards
   const [trueFalseAnswer, setTrueFalseAnswer] = useState<'true' | 'false' | null>(null);
@@ -93,6 +94,10 @@ export function FlashcardDisplay({
 
   const toggleAnswer = () => {
     setShowAnswer(!showAnswer);
+    if (!showAnswer) {
+      // Quando "Ver Resposta" é clicado, parar a animação
+      setIsLoadingAnimationActive(false);
+    }
   };
 
   const hasParents = parentCards.length > 0;
@@ -165,30 +170,77 @@ export function FlashcardDisplay({
       {/* Main Flashcard - Tamanho Reduzido e Proporcional */}
       <div className="flex justify-center">
         <Card className={cn(
-          "relative overflow-hidden transition-all duration-500 transform",
+          "relative transition-all duration-500 transform",
           "p-6 shadow-lg hover:shadow-xl",
-          // Efeito especial para pergunta principal - tamanho reduzido
+          // Efeito especial para pergunta principal - com cor roxa equivalente ao azul original e melhorias visuais
           !hasParents && [
-            "bg-gradient-to-br from-background via-background to-primary/5",
-            "border-2 border-primary/20 shadow-primary/10",
-            "before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/5 before:via-transparent before:to-primary/5 before:animate-pulse before:duration-3000",
-            "after:absolute after:top-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-r after:from-primary/40 after:via-primary after:to-primary/40",
-            "max-w-2xl"
+            "bg-gradient-to-br from-background via-background to-purple-500/5",
+            "border-2 border-purple-500/20 shadow-lg shadow-purple-500/10",
+            "before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-500/5 before:via-transparent before:to-purple-500/5 before:animate-pulse before:duration-3000",
+            "after:absolute after:top-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-r after:from-purple-400/40 after:via-purple-600 after:to-purple-400/40",
+            "max-w-3xl w-full" // Largura fixa
           ],
           // Estilo para sub-perguntas
           hasParents && [
             "bg-gradient-card border-l-4 border-l-primary/50 ml-8",
             "max-w-xl"
           ],
-          showAnswer && "border-primary/30"
         )}>
+          {/* Círculo sobresalente com ícone de cérebro - para todos os cards */}
+          <>
+            {/* Animação de carregamento - 1 bolinha subindo */}
+            {isLoadingAnimationActive && !showAnswer && !hasParents && (
+              <>
+                {/* Ícone de carregamento - agora com coloração gradual */}
+                <div 
+                  className="absolute -top-[93px] -left-[19px] w-[80px] h-[80px] flex items-center justify-center z-40 animate-iconColorFade"
+                  style={{
+                    animationDelay: '0.6s'
+                  }}
+                >
+                  <div className="bg-purple-500 rounded-full w-6 h-6 flex items-center justify-center">
+                    <Zap className="w-3 h-3 text-white" />
+                  </div>
+                </div>               
+                {/* Container da 1 bolinha - posicionada entre o círculo e o ícone */}
+                <div className="absolute -top-[105px] -left-[19px] w-[80px] h-[80px] flex flex-col items-center justify-end space-y-1 z-30">
+                  {/* Bolinha única - Mais próxima do ícone */}
+                  <div 
+                    className="bg-purple-500 rounded-full animate-colorFade"
+                    style={{
+                      width: '0.64rem',
+                      height: '0.64rem'
+                    }}
+                  ></div>
+                </div>
+              </>
+            )}
+
+            {/* Círculo de fundo que sobresai do card com efeito hover */}
+            <div className="absolute -top-[20px] -left-[20px] w-[80px] h-[80px] bg-background border-4 border-purple-500/40 rounded-full shadow-lg z-10 brain-circle transition-all duration-300 hover:shadow-purple-500/30 hover:shadow-xl hover:scale-105 cursor-pointer group"></div>
+            
+            {/* Ícone de cérebro centralizado no círculo com efeito hover */}
+            <div className="absolute -top-[20px] -left-[20px] w-[80px] h-[80px] flex items-center justify-center z-20 transition-all duration-300 group-hover:scale-110">
+            <img 
+              src="/brain-icon.png" 
+              alt="Brain icon" 
+              className="w-[48px] h-[48px] object-contain transition-all duration-300 hover:drop-shadow-lg hover:brightness-110" 
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+            </div>
+          </>
           <div className="relative z-10 space-y-4">
             <div className="text-center">
               {/* Badge identificador */}
               {!hasParents && (
                 <div className="mb-4">
-                  <div className="inline-flex items-center gap-2 bg-primary/10 text-primary font-medium px-4 py-2 rounded-full border border-primary/20">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  <div className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-500 font-medium px-4 py-2 rounded-full border border-purple-500/20">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm">Pergunta Principal</span>
                   </div>
                 </div>

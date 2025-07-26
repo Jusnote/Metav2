@@ -8,8 +8,9 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "0.0.0.0",
     port: 8080,
+    allowedHosts: ["8080-ijiz6o5puod83drimvcel-11659719.manus.computer"],
     hmr: {
-      host: "8080-i7mhlc9cpgikg3xa815k0-759e4750.manusvm.computer",
+      host: "8080-ijiz6o5puod83drimvcel-11659719.manus.computer",
     },
   },
   plugins: [

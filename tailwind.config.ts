@@ -24,11 +24,20 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))',
-					hover: 'hsl(var(--primary-hover))'
-				},
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+          hover: 'hsl(var(--primary-hover))'
+        },
+        purple: {
+          500: '#8B5CF6',
+        },
+        green: {
+          500: '#22C55E',
+        },
+        red: {
+          500: '#EF4444',
+        },
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
@@ -177,6 +186,16 @@ export default {
 						transform: 'translateY(0) scale(1)', 
 						opacity: '1'
 					}
+				},
+				'colorFade': {
+					'0%': { opacity: '0.2' },
+					'50%': { opacity: '1' },
+					'100%': { opacity: '0.2' }
+				},
+				'iconColorFade': {
+					'0%': { opacity: '0.2' },
+					'50%': { opacity: '1' },
+					'100%': { opacity: '0.2' }
 				}
 			},
 			animation: {
@@ -193,7 +212,9 @@ export default {
 				'slide-up-in': 'slide-up-in 0.25s ease-out',
 				'slide-down-in': 'slide-down-in 0.25s ease-out',
 				'enter': 'fade-in 0.3s ease-out, scale-in 0.2s ease-out',
-				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out'
+				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
+				'colorFade': 'colorFade 2s infinite ease-in-out',
+				'iconColorFade': 'iconColorFade 2s infinite ease-in-out'
 			},
 			scale: {
 				'102': '1.02'
