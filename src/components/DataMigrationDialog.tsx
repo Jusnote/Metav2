@@ -23,9 +23,11 @@ export function DataMigrationDialog() {
   } = useDataMigration();
 
   const handleMigrate = async () => {
-    await migrateData();
-    // Recarregar a página para atualizar os dados
-    window.location.reload();
+    const success = await migrateData();
+    if (success) {
+      // Recarregar a página para atualizar os dados
+      window.location.reload();
+    }
   };
 
   if (!showMigrationDialog) return null;

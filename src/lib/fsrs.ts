@@ -1,7 +1,7 @@
 import { FSRS, Rating, State, Card } from 'ts-fsrs';
 import { Flashcard } from '@/types/flashcard';
 
-const fsrs = new FSRS({});
+const fsrs = new FSRS();
 
 export class FSRSSpacedRepetition {
   static calculateNextReview(
@@ -27,8 +27,7 @@ export class FSRSSpacedRepetition {
       reps: card.review_count || 0,
       lapses: 0,
       state: card.state || State.New,
-      last_review: card.last_review || now,
-      learning_steps: []
+      last_review: card.last_review || now
     };
 
     let scheduling_cards;
