@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { useSupabaseFlashcards } from '@/hooks/useSupabaseFlashcards';
+import { useLocalFlashcards } from '@/hooks/useLocalFlashcards';
 import { DataMigrationDialog } from '@/components/DataMigrationDialog';
 import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff, Blocks } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -25,7 +25,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { decks, cards, loading, isCreatingDeck, isCreatingCard, syncStatus, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
+  const { decks, cards, loading, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useLocalFlashcards();
   
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDescription, setNewDeckDescription] = useState('');
@@ -277,7 +277,7 @@ const Index = () => {
         </div>
 
         {/* Study Area - Centralizada */}
-        <div className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="flex-1 flex items-start justify-center px-6 pt-16 pb-8">
           <div className="w-full max-w-4xl">
             {isCreatingSubCard && parentCardForSub ? (
               <SubFlashcardEditor
@@ -362,29 +362,7 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Indicador de Status de Sincronização */}
-              {syncStatus !== 'idle' && (
-                <div className="flex items-center gap-2 text-sm">
-                  {syncStatus === 'syncing' && (
-                    <>
-                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
-                      <span className="text-muted-foreground">Sincronizando...</span>
-                    </>
-                  )}
-                  {syncStatus === 'success' && (
-                    <>
-                      <CheckCircle className="h-3 w-3 text-green-500" />
-                      <span className="text-green-600">Sincronizado</span>
-                    </>
-                  )}
-                  {syncStatus === 'error' && (
-                    <>
-                      <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                      <span className="text-red-600">Erro na sincronização</span>
-                    </>
-                  )}
-                </div>
-              )}
+              {/* Status de Sincronização removido temporariamente */}
               
               <Dialog open={isCreateDeckOpen} onOpenChange={setIsCreateDeckOpen}>
                 <DialogTrigger asChild>
@@ -418,17 +396,10 @@ const Index = () => {
                     </div>
                     <Button 
                       onClick={handleCreateDeck}
-                      disabled={!newDeckName.trim() || isCreatingDeck}
+                      disabled={!newDeckName.trim()}
                       className="w-full"
                     >
-                      {isCreatingDeck ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Criando...
-                        </>
-                      ) : (
-                        'Criar Deck'
-                      )}
+                      Criar Deck
                     </Button>
                   </div>
                 </DialogContent>
