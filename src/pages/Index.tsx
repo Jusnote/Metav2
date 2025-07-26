@@ -240,7 +240,7 @@ const Index = () => {
     }
 
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         {/* Header */}
         <div className="border-b border-border/50 bg-card/50 backdrop-blur">
           <div className="max-w-4xl mx-auto px-6 py-4">
@@ -276,23 +276,25 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Study Area */}
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          {isCreatingSubCard && parentCardForSub ? (
-            <SubFlashcardEditor
-              parentCard={parentCardForSub}
-              onSave={handleSaveSubCard}
-              onCancel={handleCancelSubCard}
-            />
-          ) : currentStudyCard && (
-            <FlashcardDisplay
-              card={currentStudyCard}
-              onAnswer={handleStudyAnswer}
-              onCreateSubCard={handleCreateSubCard}
-              getChildCards={getChildCards}
-              showAnswer={false}
-            />
-          )}
+        {/* Study Area - Centralizada */}
+        <div className="flex-1 flex items-center justify-center px-6 py-8">
+          <div className="w-full max-w-4xl">
+            {isCreatingSubCard && parentCardForSub ? (
+              <SubFlashcardEditor
+                parentCard={parentCardForSub}
+                onSave={handleSaveSubCard}
+                onCancel={handleCancelSubCard}
+              />
+            ) : currentStudyCard && (
+              <FlashcardDisplay
+                card={currentStudyCard}
+                onAnswer={handleStudyAnswer}
+                onCreateSubCard={handleCreateSubCard}
+                getChildCards={getChildCards}
+                showAnswer={false}
+              />
+            )}
+          </div>
         </div>
       </div>
     );
