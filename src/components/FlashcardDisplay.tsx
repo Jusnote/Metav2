@@ -7,6 +7,7 @@ import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SubFlashcardDisplay } from './SubFlashcardDisplay';
 
 interface FlashcardDisplayProps {
   card: Flashcard;
@@ -32,6 +33,7 @@ export function FlashcardDisplay({
   const [userGotItRight, setUserGotItRight] = useState<boolean | null>(null);
   const [subCardResults, setSubCardResults] = useState<Record<string, boolean | null>>({});
   const [isLoadingAnimationActive, setIsLoadingAnimationActive] = useState(true);
+  const [showSubFlashcard, setShowSubFlashcard] = useState(false);
   
   // States for true-false cards
   const [trueFalseAnswer, setTrueFalseAnswer] = useState<'true' | 'false' | null>(null);
@@ -292,10 +294,17 @@ export function FlashcardDisplay({
                       {/* Resposta em destaque */}
                       <div className={cn(
                         "animate-fade-in",
-                        !hasParents ? "text-lg" : "text-base"
+                        showSubFlashcard ? "text-sm text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20" : (!hasParents ? "text-lg" : "text-base")
                       )}>
-                        <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-l-primary/40 shadow-sm">
-                          <strong className="text-primary">Resposta:</strong> {card.back}
+                        <div className={cn(
+                          "bg-primary/5 p-4 rounded-lg border-l-4 border-l-primary/40 shadow-sm",
+                          showSubFlashcard && "bg-transparent p-0 border-none shadow-none"
+                        )}>
+                          <strong className={cn(
+                            "text-primary",
+                            showSubFlashcard && "text-muted-foreground"
+                          )}>
+                            Resposta:</strong> {card.back}
                         </div>
                       </div>
                     </div>
@@ -336,17 +345,25 @@ export function FlashcardDisplay({
                   )}
                 </Button>
 
-                {showAnswer && onCreateSubCard && (
+                {showAnswer && (
                   <Button
-                    onClick={() => onCreateSubCard(card)}
+                    onClick={() => setShowSubFlashcard(!showSubFlashcard)}
                     variant="outline"
                     size="default"
                     className="gap-2 border-primary/30 text-primary hover:bg-primary/10 font-medium transition-all duration-300"
                   >
-                    <Plus className="h-4 w-4" />
-                    Sub-Pergunta
+                    {showSubFlashcard ? "Esconder Sub-Flashcard" : "Mostrar Sub-Flashcard"}
                   </Button>
                 )}
+              </div>
+            )}
+
+            {showSubFlashcard && (
+              <div className="mt-4">
+                <SubFlashcardDisplay
+                  question="Esta é a pergunta do sub-flashcard."
+                  answer="Esta é a resposta do sub-flashcard."
+                />
               </div>
             )}
 
