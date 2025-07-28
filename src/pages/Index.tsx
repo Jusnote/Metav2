@@ -71,7 +71,7 @@ const Index = () => {
     }
   };
 
-  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string) => {
+  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string) => {
     if (!selectedDeckId) {
       toast({
         title: "Selecione um deck",
@@ -81,7 +81,7 @@ const Index = () => {
       return;
     }
 
-    const card = await createCard(selectedDeckId, front, back, undefined, type, hiddenWordIndices, hiddenWords, explanation);
+    const card = await createCard(selectedDeckId, front, back, parentId, type, hiddenWordIndices, hiddenWords, explanation);
     
     if (card) {
       toast({
