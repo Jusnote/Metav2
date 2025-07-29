@@ -15,6 +15,7 @@ interface Block {
   order: number;
   flashcardType?: FlashcardType;
   flashcardData?: {
+    id?: string; // Adicionado para armazenar o ID do Supabase
     front: string;
     back: string;
     hiddenWords?: string[];
@@ -27,7 +28,7 @@ interface Block {
 }
 
 interface BlockBasedFlashcardEditorProps {
-  onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string) => void;
+  onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string) => Promise<string | null>;
   placeholder?: string;
   deckId?: string;
 }
@@ -379,9 +380,45 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
   }, []);
 
   // Função para criar sub-flashcard
-  const createSubFlashcard = useCallback((parentBlockId: string) => {
+  const createSubFlashcard = useCallback(async (parentBlockId: string) => {
     const parentBlock = blocks.find(b => b.id === parentBlockId);
     if (!parentBlock) return;
+
+    let actualParentId: string | undefined = undefined;
+
+    // Tentar salvar o flashcard pai se ele ainda não foi salvo como um flashcard completo
+    if (!parentBlock.flashcardData && parentBlock.content.includes(" → ")) {
+      const parts = parentBlock.content.split(" → ");
+      if (parts.length === 2) {
+        const front = parts[0].trim();
+        const back = parts[1].trim();
+        if (front && back) {
+          const savedParentId = await onSave(front, back, "traditional");
+          if (savedParentId) {
+            actualParentId = savedParentId;
+            // Atualizar o bloco pai no estado local para refletir que ele foi salvo
+            setBlocks(prev => prev.map(block => 
+              block.id === parentBlockId 
+                ? { 
+                    ...block, 
+                    type: 'flashcard' as BlockType, 
+                    flashcardType: 'traditional',
+                    flashcardData: { id: savedParentId, front, back } 
+                  }
+                : block
+            ));
+          }
+        }
+      }
+    } else if (parentBlock.flashcardData && parentBlock.flashcardData.id) {
+      // Se o flashcard pai já foi salvo e tem um ID, use-o
+      actualParentId = parentBlock.flashcardData.id;
+    }
+
+    if (!actualParentId) {
+      console.error("Não foi possível determinar o ID do flashcard pai para o sub-flashcard.");
+      return;
+    }
 
     // Criar novo bloco sub-flashcard
     const newSubBlock: Block = {
@@ -390,8 +427,8 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       content: '',
       order: parentBlock.order + 0.1, // Ordem ligeiramente maior que o pai
       isSubCard: true,
-      parentBlockId: parentBlockId,
-      indentLevel: 1
+      parentBlockId: actualParentId, // Usar o ID salvo do pai
+      indentLevel: (parentBlock.indentLevel || 0) + 1
     };
 
     // Adicionar o novo bloco e reorganizar as ordens
@@ -413,9 +450,9 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     setActiveBlockId(newSubBlock.id);
     
     // Marcar o pai como tendo sub-flashcard ativo
-    setActiveParentForSub(parentBlockId);
+    setActiveParentForSub(actualParentId);
     
-  }, [blocks, generateBlockId]);
+  }, [blocks, generateBlockId, onSave]);
 
   // Nova função para finalizar flashcard tradicional quando pressionar Enter
   const finalizeTraditionalFlashcard = useCallback((blockId: string, content: string) => {

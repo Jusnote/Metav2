@@ -168,7 +168,7 @@ export function useSupabaseFlashcards() {
     type: 'traditional' | 'word-hiding' = 'traditional',
     hiddenWordIndices?: number[],
     hiddenWords?: string[]
-  ): Promise<Flashcard | null> => {
+  ): Promise<string | null> => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -262,7 +262,7 @@ export function useSupabaseFlashcards() {
         }
       }
 
-      return newCard;
+      return newCard.id;
     } catch (error) {
       console.error('Error creating card:', error);
       toast({

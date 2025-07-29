@@ -71,7 +71,7 @@ const Index = () => {
     }
   };
 
-  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string) => {
+  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string): Promise<string | null> => {
     if (!selectedDeckId) {
       toast({
         title: "Selecione um deck",
@@ -88,7 +88,9 @@ const Index = () => {
         title: "Card criado!",
         description: "Seu flashcard foi adicionado ao deck.",
       });
+      return card.id;
     }
+    return null;
   };
 
   const handleStudyDeck = (deckId: string) => {
