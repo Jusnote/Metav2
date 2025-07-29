@@ -35,9 +35,12 @@ export function useSupabaseFlashcards() {
 
       // Load cards
       const { data: cardsData, error: cardsError } = await supabase
-        .from('flashcards')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("flashcards")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      console.log("Supabase cardsData:", cardsData);
+      console.log("Supabase cardsError:", cardsError);
 
       if (cardsError) throw cardsError;
 
@@ -51,31 +54,38 @@ export function useSupabaseFlashcards() {
         color: deck.color,
       }));
 
-      const transformedCards: Flashcard[] = (cardsData || []).map(card => ({
-        id: card.id,
-        front: card.front,
-        back: card.back,
-        deckId: card.deck_id,
-        created: new Date(card.created_at),
-        lastReviewed: card.last_reviewed ? new Date(card.last_reviewed) : undefined,
-        nextReview: new Date(card.next_review),
-        difficulty: card.difficulty_fsrs || 0,
-        stability: card.stability || 0,
-        state: card.state || State.New,
-        due: new Date(card.due || card.next_review),
-        last_review: card.last_review_fsrs ? new Date(card.last_review_fsrs) : undefined,
-        review_count: card.review_count || 0,
-        type: (card as any).type || 'traditional',
-        hiddenWordIndices: (card as any).hidden_word_indices,
-        hiddenWords: (card as any).hidden_words,
-        parentId: card.parent_id,
-        childIds: card.child_ids || [],
-        level: card.level,
-        order: card.card_order,
-      }));
+      const transformedCards: Flashcard[] = (cardsData || []).map(card => {
+        console.log("Original Supabase card:", card);
+        const transformedCard: Flashcard = {
+          id: card.id,
+          front: card.front,
+          back: card.back,
+          deckId: card.deck_id,
+          created: new Date(card.created_at),
+          lastReviewed: card.last_reviewed ? new Date(card.last_reviewed) : undefined,
+          nextReview: new Date(card.next_review),
+          difficulty: card.difficulty_fsrs || 0,
+          stability: card.stability || 0,
+          state: card.state || State.New,
+          due: new Date(card.due || card.next_review),
+          last_review: card.last_review_fsrs ? new Date(card.last_review_fsrs) : undefined,
+          review_count: card.review_count || 0,
+          type: (card as any).type || 'traditional',
+          hiddenWordIndices: (card as any).hidden_word_indices,
+          hiddenWords: (card as any).hidden_words,
+          parentId: card.parent_id,
+          childIds: card.child_ids || [],
+          level: card.level,
+          order: card.card_order,
+        };
+        console.log("Transformed card:", transformedCard);
+        return transformedCard;
+      });
 
       setDecks(transformedDecks);
       setCards(transformedCards);
+      console.log("Dados carregados com sucesso. Cards:", transformedCards);
+      console.log("Estado atual dos cards após loadData:", cards);
     } catch (error) {
       console.error('Error loading data:', error);
       toast({
@@ -177,8 +187,12 @@ export function useSupabaseFlashcards() {
       const siblings = cards.filter(c => c.parentId === parentId && c.deckId === deckId);
       const order = siblings.length;
 
+      console.log("Creating card with parentId:", parentId);
+      console.log("Calculated level:", level);
+      console.log("Calculated order:", order);
+
       const { data, error } = await supabase
-        .from('flashcards')
+        .from("flashcards")
         .insert({
           user_id: user.id,
           deck_id: deckId,
@@ -229,10 +243,14 @@ export function useSupabaseFlashcards() {
 
       // Update parent's childIds if this is a sub-card
       if (parentId) {
+        const currentChildIds = parentCard?.childIds || [];
+        const updatedChildIds = [...currentChildIds, newCard.id];
+        console.log("Updating parent with child_ids:", updatedChildIds);
+
         const { error: updateError } = await supabase
           .from("flashcards")
           .update({
-            child_ids: [...(parentCard?.childIds || []), newCard.id]
+            child_ids: updatedChildIds
           })
           .eq("id", parentId);
 
