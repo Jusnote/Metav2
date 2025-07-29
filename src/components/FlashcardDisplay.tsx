@@ -345,7 +345,7 @@ export function FlashcardDisplay({
                   )}
                 </Button>
 
-                {showAnswer && (
+                {showAnswer && hasChildren && (
                   <Button
                     onClick={() => setShowSubFlashcard(!showSubFlashcard)}
                     variant="outline"
@@ -358,12 +358,19 @@ export function FlashcardDisplay({
               </div>
             )}
 
-            {showSubFlashcard && (
-              <div className="mt-4">
-                <SubFlashcardDisplay
-                  question="Esta é a pergunta do sub-flashcard."
-                  answer="Esta é a resposta do sub-flashcard."
-                />
+            {showSubFlashcard && hasChildren && (
+              <div className="mt-4 space-y-3">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-primary mb-4">Sub-Flashcards</h3>
+                </div>
+                {childCards.map((childCard, index) => (
+                  <div key={childCard.id} className="border-l-4 border-l-primary/30 pl-4">
+                    <SubFlashcardDisplay
+                      question={childCard.front}
+                      answer={childCard.back}
+                    />
+                  </div>
+                ))}
               </div>
             )}
 
