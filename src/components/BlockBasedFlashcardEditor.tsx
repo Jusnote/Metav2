@@ -28,7 +28,7 @@ interface Block {
 }
 
 interface BlockBasedFlashcardEditorProps {
-  onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string) => Promise<string | null>;
+  onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
   placeholder?: string;
   deckId?: string;
 }
@@ -46,13 +46,13 @@ interface BlockComponentProps {
   flashcardsWithSubOption: string[];
 }
 
-function BlockComponent({ 
-  block, 
-  isActive, 
+function BlockComponent({
+  block,
+  isActive,
   isPendingFlashcard,
-  onUpdate, 
-  onFocus, 
-  onKeyDown, 
+  onUpdate,
+  onFocus,
+  onKeyDown,
   onConvertToFlashcard,
   onCreateSubFlashcard,
   flashcardsWithSubOption
@@ -382,7 +382,12 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
   // Função para criar sub-flashcard
   const createSubFlashcard = useCallback(async (parentBlockId: string) => {
     const parentBlock = blocks.find(b => b.id === parentBlockId);
-    if (!parentBlock) return;
+    if (!parentBlock) {
+      console.error("Bloco pai não encontrado para o ID:", parentBlockId);
+      return;
+    }
+
+    console.log("Parent Block para sub-flashcard:", parentBlock);
 
     let actualParentId: string | undefined = undefined;
 
@@ -393,7 +398,8 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
         const front = parts[0].trim();
         const back = parts[1].trim();
         if (front && back) {
-          const savedParentId = await onSave(front, back, "traditional");
+          const savedParentId = await onSave(front, back, "traditional", [], [], undefined, undefined, deckId);
+          console.log("savedParentId from onSave:", savedParentId);
           if (savedParentId) {
             actualParentId = savedParentId;
             // Atualizar o bloco pai no estado local para refletir que ele foi salvo
@@ -407,16 +413,41 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
                   }
                 : block
             ));
+          } else {
+            console.error("Erro ao salvar o flashcard pai. ID não retornado.");
           }
+        } else {
+          console.error("Conteúdo do flashcard pai incompleto para salvar.");
         }
       }
     } else if (parentBlock.flashcardData && parentBlock.flashcardData.id) {
       // Se o flashcard pai já foi salvo e tem um ID, use-o
       actualParentId = parentBlock.flashcardData.id;
+    } else if (parentBlock.flashcardData && !parentBlock.flashcardData.id) {
+      // Se o flashcard pai tem flashcardData mas não tem ID (erro de estado), tentar salvar novamente
+      const front = parentBlock.flashcardData.front;
+      const back = parentBlock.flashcardData.back;
+      if (front && back) {
+        const savedParentId = await onSave(front, back, "traditional", [], [], undefined, undefined, deckId);
+        console.log("savedParentId from onSave (re-save):", savedParentId);
+        if (savedParentId) {
+          actualParentId = savedParentId;
+          setBlocks(prev => prev.map(block => 
+            block.id === parentBlockId 
+              ? { 
+                  ...block, 
+                  flashcardData: { ...block.flashcardData, id: savedParentId } 
+                }
+              : block
+          ));
+        } else {
+          console.error("Erro ao salvar o flashcard pai novamente. ID não retornado.");
+        }
+      }
     }
 
     if (!actualParentId) {
-      console.error("Não foi possível determinar o ID do flashcard pai para o sub-flashcard.");
+      console.error("Não foi possível determinar o ID do flashcard pai para o sub-flashcard. actualParentId:", actualParentId);
       return;
     }
 
@@ -452,10 +483,10 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     // Marcar o pai como tendo sub-flashcard ativo
     setActiveParentForSub(actualParentId);
     
-  }, [blocks, generateBlockId, onSave]);
+  }, [blocks, generateBlockId, onSave, deckId]);
 
   // Nova função para finalizar flashcard tradicional quando pressionar Enter
-  const finalizeTraditionalFlashcard = useCallback((blockId: string, content: string) => {
+  const finalizeTraditionalFlashcard = useCallback(async (blockId: string, content: string) => {
     if (!content.includes(' → ')) return false;
     
     const parts = content.split(' → ');
@@ -469,227 +500,68 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     // Verificar se é um sub-flashcard
     const currentBlock = blocks.find(b => b.id === blockId);
     const parentId = currentBlock?.isSubCard ? currentBlock.parentBlockId : undefined;
-    const parentFlashcard = parentId ? blocks.find(b => b.id === parentId && b.flashcardData) : undefined;
-    const actualParentId = parentFlashcard?.id; // Use o ID do bloco que tem flashcardData
     
-    // Salvar com actualParentId se for sub-flashcard
-    onSave(front, back, 'traditional', undefined, undefined, undefined, actualParentId);
+    // Salvar o flashcard
+    const savedId = await onSave(front, back, 'traditional', [], [], undefined, parentId, deckId);
     
-    // Se foi salvo um sub-flashcard, limpar o estado do parent ativo
-    if (actualParentId) {
-      setActiveParentForSub(null);
+    if (savedId) {
+      // Atualizar o bloco para mostrar como flashcard salvo
+      updateFlashcardBlock(blockId, 'traditional', { id: savedId, front, back });
+      
+      // Limpar o tipo pendente
+      setPendingFlashcardType(null);
+      
+      // Adicionar novo bloco após este
+      addNewBlock(blockId);
     }
     
     return true;
-  }, [onSave, blocks]);
+  }, [blocks, onSave, deckId, updateFlashcardBlock, addNewBlock]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent, blockId: string) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      
-      // Verificar se é um flashcard tradicional para finalizar
-      const block = blocks.find(b => b.id === blockId);
-      if (block && block.content.includes(' → ')) {
-        const finalized = finalizeTraditionalFlashcard(blockId, block.content);
-        if (finalized) {
-          // Se finalizou o flashcard, criar novo bloco
-          addNewBlock(blockId);
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return;
+
+    if (e.key === 'Enter') {
+      // Se o bloco contém " → " e tem frente e verso, finalizar o flashcard
+      if (block.content.includes(' → ')) {
+        e.preventDefault();
+        if (finalizeTraditionalFlashcard(blockId, block.content)) {
           return;
         }
       }
       
-      // Caso contrário, apenas criar novo bloco
+      // Comportamento padrão: criar novo bloco
+      e.preventDefault();
       addNewBlock(blockId);
     }
-  }, [addNewBlock, blocks, finalizeTraditionalFlashcard]);
+  }, [blocks, finalizeTraditionalFlashcard, addNewBlock]);
 
   const handleFocus = useCallback((blockId: string) => {
     setActiveBlockId(blockId);
   }, []);
 
-  // Confirmar ocultação de palavras
-  const confirmWordHiding = (words: string[]) => {
-    if (!pendingWordHiding) return;
-
-    const block = blocks.find(b => b.id === pendingWordHiding.blockId);
-    if (!block) return;
-
-    // Verificar se é um sub-flashcard
-    const parentId = block.isSubCard ? block.parentBlockId : undefined;
-
-    const flashcardData = {
-      front: "Texto com palavras ocultas",
-      back: block.content,
-      hiddenWords: words
-    };
-
-    updateFlashcardBlock(pendingWordHiding.blockId, 'word-hiding', flashcardData);
-    
-    // Salvar o flashcard com parentId se for sub-flashcard
-    onSave(flashcardData.front, flashcardData.back, 'word-hiding', undefined, words, undefined, parentId);
-    
-    setPendingWordHiding(null);
-    // NÃO limpar pendingFlashcardType para manter a barrinha
-  };
-
-  // Confirmar verdadeiro/falso
-  const confirmTrueFalse = (isTrue: boolean) => {
-    if (!pendingTrueFalse) return;
-
-    const block = blocks.find(b => b.id === pendingTrueFalse.blockId);
-    // Verificar se é um sub-flashcard
-    const parentId = block?.isSubCard ? block.parentBlockId : undefined;
-
-    const flashcardData = {
-      front: pendingTrueFalse.statement,
-      back: isTrue ? "Verdadeiro" : "Falso",
-      explanation: `A afirmação é ${isTrue ? 'verdadeira' : 'falsa'}.`
-    };
-
-    updateFlashcardBlock(pendingTrueFalse.blockId, 'true-false', flashcardData);
-    
-    // Salvar o flashcard com parentId se for sub-flashcard
-    onSave(flashcardData.front, flashcardData.back, 'true-false', undefined, undefined, flashcardData.explanation, parentId);
-    
-    setPendingTrueFalse(null);
-    // NÃO limpar pendingFlashcardType para manter a barrinha
-  };
-
-  // Função para limpar estado salvo (útil para testes)
-  const clearSavedState = useCallback(() => {
-    localStorage.removeItem(getStorageKey());
-    const newBlocks = [{ 
-      id: generateBlockId(), 
-      type: 'paragraph' as BlockType, 
-      content: '', 
-      order: 0 
-    }];
-    setBlocks(newBlocks);
-    setActiveBlockId(newBlocks[0].id);
-  }, [deckId]);
+  const getPendingFlashcardType = useCallback((blockId: string): FlashcardType | null => {
+    return pendingFlashcardType?.blockId === blockId ? pendingFlashcardType.type : null;
+  }, [pendingFlashcardType]);
 
   return (
-    <div className="min-h-screen w-full max-w-4xl mx-auto p-6">
-      <Card className="p-8">
-        <div>
-          {blocks.map((block) => (
-            <div key={block.id} className="mb-1">
-                <BlockComponent
-                  block={block}
-                  isActive={activeBlockId === block.id}
-                  isPendingFlashcard={pendingFlashcardType?.blockId === block.id ? pendingFlashcardType.type : null}
-                  onUpdate={updateBlock}
-                  onFocus={handleFocus}
-                  onKeyDown={handleKeyDown}
-                  onConvertToFlashcard={convertToFlashcard}
-                  onCreateSubFlashcard={createSubFlashcard}
-                  flashcardsWithSubOption={flashcardsWithSubOption}
-                />
-            </div>
-          ))}
-        </div>
-
-        {/* Modal para ocultação de palavras */}
-        {pendingWordHiding && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <Card className="p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold mb-4">Selecionar Palavras para Ocultar</h3>
-              <div className="text-sm text-muted-foreground mb-4">
-                Clique nas palavras que deseja ocultar no flashcard:
-              </div>
-              <div className="mb-4 p-3 bg-muted/30 rounded-lg text-sm leading-relaxed">
-                {blocks.find(b => b.id === pendingWordHiding.blockId)?.content.split(' ').map((word, index) => (
-                  <span
-                    key={index}
-                    className={cn(
-                      "cursor-pointer hover:bg-primary/20 px-1 rounded",
-                      pendingWordHiding.words.includes(word) && "bg-primary/30 text-primary font-medium"
-                    )}
-                    onClick={() => {
-                      setPendingWordHiding(prev => {
-                        if (!prev) return null;
-                        const words = prev.words.includes(word)
-                          ? prev.words.filter(w => w !== word)
-                          : [...prev.words, word];
-                        return { ...prev, words };
-                      });
-                    }}
-                  >
-                    {word}
-                  </span>
-                )) || []}
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => confirmWordHiding(pendingWordHiding.words)}
-                  disabled={pendingWordHiding.words.length === 0}
-                  className="flex-1"
-                >
-                  Confirmar ({pendingWordHiding.words.length} palavras)
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setPendingWordHiding(null)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Modal para verdadeiro/falso */}
-        {pendingTrueFalse && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <Card className="p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold mb-4">Definir Resposta</h3>
-              <div className="text-sm text-muted-foreground mb-4">
-                A afirmação abaixo é verdadeira ou falsa?
-              </div>
-              <div className="mb-4 p-3 bg-muted/30 rounded-lg text-sm">
-                "{pendingTrueFalse.statement}"
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => confirmTrueFalse(true)}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Verdadeiro
-                </Button>
-                <Button 
-                  onClick={() => confirmTrueFalse(false)}
-                  className="flex-1 bg-red-600 hover:bg-red-700"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Falso
-                </Button>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => setPendingTrueFalse(null)}
-                className="w-full mt-2"
-              >
-                Cancelar
-              </Button>
-            </Card>
-          </div>
-        )}
-      </Card>
-
-      {/* Legenda dos tipos de flashcard */}
-      <div className="mt-4 p-4 bg-muted/20 rounded-lg">
-        <div className="text-xs text-muted-foreground space-y-2">
-          <p><strong>Como usar:</strong></p>
-          <p>• Digite seu texto em qualquer bloco</p>
-          <p>• Quando parar de escrever, aparecerão botões na lateral direita</p>
-          <p>• <span className="inline-flex items-center gap-1"><FileText className="h-3 w-3" />Tradicional</span>: Insere o símbolo " → " para continuar escrevendo o verso</p>
-          <p>• <span className="inline-flex items-center gap-1"><EyeOff className="h-3 w-3" />Ocultação</span>: Permite selecionar palavras para ocultar</p>
-          <p>• <span className="inline-flex items-center gap-1"><Check className="h-3 w-3" />V/F</span>: Cria um flashcard de verdadeiro ou falso</p>
-          <p>• Pressione <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> para criar um novo bloco</p>
-          <p>• <strong>Seu progresso é salvo automaticamente</strong></p>
-        </div>
-      </div>
+    <div className="w-full max-w-4xl mx-auto p-4 space-y-2">
+      {blocks.map((block) => (
+        <BlockComponent
+          key={block.id}
+          block={block}
+          isActive={activeBlockId === block.id}
+          isPendingFlashcard={getPendingFlashcardType(block.id)}
+          onUpdate={updateBlock}
+          onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
+          onConvertToFlashcard={convertToFlashcard}
+          onCreateSubFlashcard={createSubFlashcard}
+          flashcardsWithSubOption={flashcardsWithSubOption}
+        />
+      ))}
     </div>
   );
 }
+

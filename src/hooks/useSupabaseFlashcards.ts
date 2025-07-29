@@ -191,30 +191,34 @@ export function useSupabaseFlashcards() {
       console.log("Calculated level:", level);
       console.log("Calculated order:", order);
 
+      const insertData = {
+        user_id: user.id,
+        deck_id: deckId,
+        front,
+        back,
+        parent_id: parentId === undefined ? null : parentId,
+        level,
+        card_order: order,
+        type,
+        hidden_word_indices: hiddenWordIndices,
+        hidden_words: hiddenWords,
+        difficulty_fsrs: 0, // Default for FSRS
+        stability: 0, // Default for FSRS
+        state: State.New, // State.New for FSRS
+        due: new Date().toISOString(), // Default for FSRS
+        last_review_fsrs: null, // Default for FSRS
+        review_count: 0, // Default for FSRS
+      };
+      console.log("Supabase insert payload:", insertData);
       const { data, error } = await supabase
         .from("flashcards")
-        .insert({
-          user_id: user.id,
-          deck_id: deckId,
-          front,
-          back,
-          parent_id: parentId,
-          level,
-          card_order: order,
-          type,
-          hidden_word_indices: hiddenWordIndices,
-          hidden_words: hiddenWords,
-          difficulty_fsrs: 0, // Default for FSRS
-          stability: 0, // Default for FSRS
-          state: State.New, // State.New for FSRS
-          due: new Date().toISOString(), // Default for FSRS
-          last_review_fsrs: null, // Default for FSRS
-          review_count: 0, // Default for FSRS
-        })
+        .insert(insertData)
         .select()
         .single();
 
       if (error) throw error;
+
+      console.log("Supabase insert data:", data);
 
       const newCard: Flashcard = {
         id: data.id,
@@ -239,6 +243,7 @@ export function useSupabaseFlashcards() {
         order: data.card_order,
       };
 
+      console.log("New card created with ID:", newCard.id);
       setCards(prev => [...prev, newCard]);
 
       // Update parent's childIds if this is a sub-card
