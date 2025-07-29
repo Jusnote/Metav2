@@ -230,20 +230,17 @@ export function useSupabaseFlashcards() {
       // Update parent's childIds if this is a sub-card
       if (parentId) {
         const { error: updateError } = await supabase
-          .from('flashcards')
+          .from("flashcards")
           .update({
             child_ids: [...(parentCard?.childIds || []), newCard.id]
           })
-          .eq('id', parentId);
+          .eq("id", parentId);
 
         if (updateError) {
-          console.error('Error updating parent card:', updateError);
+          console.error("Error updating parent card:", updateError);
         } else {
-          setCards(prev => prev.map(card => 
-            card.id === parentId 
-              ? { ...card, childIds: [...card.childIds, newCard.id] }
-              : card
-          ));
+          // Recarregar todos os dados para garantir que os childIds do pai sejam atualizados
+          await loadData();
         }
       }
 
