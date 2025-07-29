@@ -162,7 +162,7 @@ const Index = () => {
   const handleSaveSubCard = async (front: string, back: string, parentId: string) => {
     if (!studyDeckId) return;
     
-    const subCard = await createCard(studyDeckId, front, back, parentCardForSub.id);
+    const subCard = await createCard(studyDeckId, front, back, parentId);
     
     if (subCard) {
       toast({
