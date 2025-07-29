@@ -106,6 +106,15 @@ export function FlashcardDisplay({
   const childCards = getChildCards ? getChildCards(card.id) : [];
   const hasChildren = childCards.length > 0;
 
+  // Debug: log para verificar se há sub-flashcards
+  console.log('FlashcardDisplay Debug:', {
+    cardId: card.id,
+    cardFront: card.front,
+    childCards: childCards,
+    hasChildren: hasChildren,
+    showAnswer: showAnswer
+  });
+
   const toggleSubCardAnswer = (cardId: string, cardIndex: number) => {
     setSubCardAnswers(prev => ({
       ...prev,
