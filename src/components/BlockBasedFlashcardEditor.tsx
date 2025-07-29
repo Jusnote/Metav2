@@ -432,12 +432,14 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     // Verificar se é um sub-flashcard
     const currentBlock = blocks.find(b => b.id === blockId);
     const parentId = currentBlock?.isSubCard ? currentBlock.parentBlockId : undefined;
+    const parentFlashcard = parentId ? blocks.find(b => b.id === parentId && b.flashcardData?.id) : undefined;
+    const actualParentId = parentFlashcard?.flashcardData?.id; // Use o ID do flashcard salvo, não o ID do bloco
     
-    // Salvar com parentId se for sub-flashcard
-    onSave(front, back, 'traditional', undefined, undefined, undefined, parentId);
+    // Salvar com actualParentId se for sub-flashcard
+    onSave(front, back, 'traditional', undefined, undefined, undefined, actualParentId);
     
     // Se foi salvo um sub-flashcard, limpar o estado do parent ativo
-    if (parentId) {
+    if (actualParentId) {
       setActiveParentForSub(null);
     }
     
