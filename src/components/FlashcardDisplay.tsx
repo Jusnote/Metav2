@@ -79,10 +79,8 @@ export function FlashcardDisplay({
 
   const handleSubCardResponse = (cardId: string, cardIndex: number, gotItRight: boolean) => {
     setSubCardResults(prev => ({ ...prev, [cardId]: gotItRight }));
-
-    // Registrar a resposta no FSRS
-    const difficulty = gotItRight ? 'easy' : 'again';
-    onAnswer(difficulty);
+    setMainCardAnswered(true);
+    setUserGotItRight(gotItRight);
 
     if (gotItRight && cardIndex + 1 < childCards.length) {
       setTimeout(() => {
