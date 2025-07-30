@@ -327,7 +327,7 @@ export function FlashcardDisplay({
                     <h3 className="text-lg font-semibold text-primary mb-4">Sub-Flashcards</h3>
                   </div>
                   {childCards.map((childCard, index) => (
-                    <div key={childCard.id} className="border-l-4 border-l-primary/30 pl-4">
+                    <div key={childCard.id} className="pl-4">
                       <div className="p-3 bg-muted/30 rounded border">
                         <div className="text-center">
                           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
