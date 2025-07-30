@@ -263,8 +263,12 @@ export function useSupabaseFlashcards() {
         if (updateError) {
           console.error("Error updating parent card:", updateError);
         } else {
-          // Recarregar todos os dados para garantir que os childIds do pai sejam atualizados
-          await loadData();
+          // Atualizar o estado local em vez de recarregar todos os dados
+          setCards(prev => prev.map(card => 
+            card.id === parentId 
+              ? { ...card, childIds: [...(card.childIds || []), newCard.id] }
+              : card
+          ));
         }
       }
 
