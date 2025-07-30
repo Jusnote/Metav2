@@ -508,6 +508,14 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       return true;
     }
     
+    console.log("BlockBasedFlashcardEditor - currentBlock details:", {
+      id: currentBlock?.id,
+      isSubCard: currentBlock?.isSubCard,
+      parentBlockId: currentBlock?.parentBlockId,
+      content: currentBlock?.content,
+      flashcardData: currentBlock?.flashcardData
+    });
+    
 
     
     console.log("BlockBasedFlashcardEditor - finalizeTraditionalFlashcard - saving new flashcard:", { front, back, parentId });
@@ -549,6 +557,12 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
         } else {
           // Verificar se este bloco tem sub-flashcards ativos
           const hasActiveSubCards = blocks.some(b => b.isSubCard && b.parentBlockId === blockId);
+          console.log("BlockBasedFlashcardEditor - checking for active sub-cards:", {
+            blockId,
+            hasActiveSubCards,
+            subCards: blocks.filter(b => b.isSubCard && b.parentBlockId === blockId)
+          });
+          
           if (hasActiveSubCards) {
             console.log("BlockBasedFlashcardEditor - parent has active sub-cards, skipping parent save");
             // Adicionar novo bloco após este
