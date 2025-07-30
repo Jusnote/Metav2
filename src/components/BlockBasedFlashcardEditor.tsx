@@ -566,6 +566,8 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     if (!block) return;
 
     if (e.key === 'Enter') {
+      console.log("BlockBasedFlashcardEditor - Enter pressed for block:", block);
+      
       // Se o bloco contém " → " e tem frente e verso, finalizar o flashcard
       if (block.content.includes(' → ')) {
         e.preventDefault();
