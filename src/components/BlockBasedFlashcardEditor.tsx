@@ -516,11 +516,19 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     let parentId: string | undefined = undefined;
     
     if (currentBlock?.isSubCard && currentBlock?.parentBlockId) {
+      console.log("BlockBasedFlashcardEditor - currentBlock:", currentBlock);
+      console.log("BlockBasedFlashcardEditor - parentBlockId:", currentBlock.parentBlockId);
+      console.log("BlockBasedFlashcardEditor - all blocks:", blocks);
+      
       // Encontrar o bloco pai e pegar o ID do flashcard salvo
       const parentBlock = blocks.find(b => b.id === currentBlock.parentBlockId);
+      console.log("BlockBasedFlashcardEditor - parentBlock found:", parentBlock);
+      
       if (parentBlock?.flashcardData?.id) {
         parentId = parentBlock.flashcardData.id;
         console.log("BlockBasedFlashcardEditor - sub-flashcard with parent ID:", parentId);
+      } else {
+        console.log("BlockBasedFlashcardEditor - parentBlock has no flashcardData or ID");
       }
     }
     
