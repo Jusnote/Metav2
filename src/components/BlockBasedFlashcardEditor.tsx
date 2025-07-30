@@ -86,31 +86,25 @@ function BlockComponent({
           block.flashcardType === 'true-false' && "bg-green-500"
         )} />
         
-        <Card className="ml-4 p-3 bg-gradient-to-r from-primary/5 to-secondary/5 border-l-4 border-l-primary">
-          <div className="space-y-1">
-            <div className="text-sm font-medium text-primary">
-              {block.flashcardType === 'traditional' && 'Flashcard Tradicional'}
-              {block.flashcardType === 'word-hiding' && 'Ocultação de Palavras'}
-              {block.flashcardType === 'true-false' && 'Verdadeiro/Falso'}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              <span className="font-medium">Frente:</span> {block.flashcardData.front}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              <span className="font-medium">Verso:</span> {block.flashcardData.back}
-            </div>
-            {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
-              <div className="text-sm text-muted-foreground">
-                <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(', ')}
-              </div>
-            )}
-            {block.flashcardData.explanation && (
-              <div className="text-sm text-muted-foreground">
-                <span className="font-medium">Explicação:</span> {block.flashcardData.explanation}
-              </div>
-            )}
+        {/* Manter apenas a barrinha e o texto, não o Card completo */}
+        <div className="ml-4 p-0">
+          <div className="text-sm text-muted-foreground">
+            <span className="font-medium">Frente:</span> {block.flashcardData.front}
           </div>
-        </Card>
+          <div className="text-sm text-muted-foreground">
+            <span className="font-medium">Verso:</span> {block.flashcardData.back}
+          </div>
+          {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(', ')}
+            </div>
+          )}
+          {block.flashcardData.explanation && (
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium">Explicação:</span> {block.flashcardData.explanation}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -304,6 +298,8 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     const currentBlock = blocks.find(b => b.id === afterBlockId);
     if (!currentBlock) return;
 
+    console.log("BlockBasedFlashcardEditor - addNewBlock called for:", afterBlockId);
+
     const newBlock: Block = {
       id: generateBlockId(),
       type: 'paragraph',
@@ -321,7 +317,11 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       return newBlocks;
     });
 
-    setActiveBlockId(newBlock.id);
+    // Focar no novo bloco após um pequeno delay para garantir que foi renderizado
+    setTimeout(() => {
+      setActiveBlockId(newBlock.id);
+      console.log("BlockBasedFlashcardEditor - setActiveBlockId to:", newBlock.id);
+    }, 0);
   }, [blocks]);
 
   const convertToFlashcard = useCallback((blockId: string, flashcardType: FlashcardType) => {
@@ -521,6 +521,17 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       // Adicionar novo bloco após este
       addNewBlock(blockId);
       return true;
+    }
+    
+    // Verificar se é um sub-flashcard e se o pai já foi salvo
+    if (currentBlock?.isSubCard && currentBlock?.parentBlockId) {
+      const parentBlock = blocks.find(b => b.flashcardData?.id === currentBlock.parentBlockId);
+      if (parentBlock) {
+        console.log("BlockBasedFlashcardEditor - sub-flashcard with saved parent, skipping parent save");
+        // Adicionar novo bloco após este
+        addNewBlock(blockId);
+        return true;
+      }
     }
     
     console.log("BlockBasedFlashcardEditor - finalizeTraditionalFlashcard - saving new flashcard:", { front, back, parentId });
