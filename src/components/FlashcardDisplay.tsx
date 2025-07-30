@@ -332,9 +332,45 @@ export function FlashcardDisplay({
                         <div className="text-sm text-muted-foreground mb-2">
                           <strong>Pergunta:</strong> {childCard.front}
                         </div>
-                        <div className="text-sm">
-                          <strong className="text-primary">Resposta:</strong> {childCard.back}
-                        </div>
+                        
+                        {subCardAnswers[childCard.id] ? (
+                          <div className="space-y-3">
+                            <div className="text-sm">
+                              <strong className="text-primary">Resposta:</strong> {childCard.back}
+                            </div>
+                            
+                            <div className="flex justify-center gap-2 pt-2 border-t border-border/50">
+                              <Button
+                                onClick={() => handleSubCardResponse(childCard.id, index, true)}
+                                variant="outline"
+                                size="sm"
+                                className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                              >
+                                ✓ Acertei
+                              </Button>
+                              <Button
+                                onClick={() => handleSubCardResponse(childCard.id, index, false)}
+                                variant="outline"
+                                size="sm"
+                                className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                              >
+                                ✗ Errei
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <Button
+                              onClick={() => toggleSubCardAnswer(childCard.id, index)}
+                              variant="outline"
+                              size="sm"
+                              className="gap-1 text-xs"
+                            >
+                              <Eye className="h-3 w-3" />
+                              Ver Resposta
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
