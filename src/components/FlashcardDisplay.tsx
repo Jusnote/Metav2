@@ -361,30 +361,47 @@ export function FlashcardDisplay({
                                 Ver Resposta
                               </Button>
                             </div>
-                          ) : (
-                            <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
-                              <Button
-                                onClick={() => handleSubCardResponse(childCard.id, index, true)}
-                                variant="outline"
-                                size="sm"
-                                className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                              >
-                                ✓ Acertei
-                              </Button>
-                              <Button
-                                onClick={() => handleSubCardResponse(childCard.id, index, false)}
-                                variant="outline"
-                                size="sm"
-                                className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                              >
-                                ✗ Errei
-                              </Button>
-                            </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Botão único de resposta para sub-flashcards */}
+                  {Object.values(subCardAnswers).some(answer => answer) && (
+                    <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
+                      <Button
+                        onClick={() => {
+                          // Encontrar o primeiro sub-flashcard com resposta mostrada
+                          const firstAnsweredCard = childCards.find(card => subCardAnswers[card.id]);
+                          if (firstAnsweredCard) {
+                            const cardIndex = childCards.findIndex(card => card.id === firstAnsweredCard.id);
+                            handleSubCardResponse(firstAnsweredCard.id, cardIndex, true);
+                          }
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                      >
+                        ✓ Acertei
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          // Encontrar o primeiro sub-flashcard com resposta mostrada
+                          const firstAnsweredCard = childCards.find(card => subCardAnswers[card.id]);
+                          if (firstAnsweredCard) {
+                            const cardIndex = childCards.findIndex(card => card.id === firstAnsweredCard.id);
+                            handleSubCardResponse(firstAnsweredCard.id, cardIndex, false);
+                          }
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                      >
+                        ✗ Errei
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 
