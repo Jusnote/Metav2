@@ -391,90 +391,22 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
 
     let actualParentId: string | undefined = undefined;
 
-    // Tentar salvar o flashcard pai se ele ainda não foi salvo como um flashcard completo
-    console.log("BlockBasedFlashcardEditor - parentBlock.flashcardData:", parentBlock.flashcardData);
-    console.log("BlockBasedFlashcardEditor - parentBlock.content:", parentBlock.content);
-    if (!parentBlock.flashcardData && parentBlock.content.includes(" → ")) {
-      const parts = parentBlock.content.split(" → ");
-      if (parts.length === 2) {
-        const front = parts[0].trim();
-        const back = parts[1].trim();
-        if (front && back) {
-          // Salvar o flashcard pai primeiro (sem parentId)
-          console.log("BlockBasedFlashcardEditor - calling onSave with:", { front, back, type: "traditional", hiddenWordIndices: [], hiddenWords: [], explanation: undefined, parentId: undefined, deckId });
-          try {
-            const savedParentId = await onSave(front, back, "traditional", [], [], undefined, undefined, deckId);
-            console.log("BlockBasedFlashcardEditor - received savedParentId:", savedParentId);
-            if (savedParentId) {
-              actualParentId = savedParentId;
-              // Atualizar o bloco pai no estado local para refletir que ele foi salvo
-              setBlocks(prev => prev.map(block => 
-                block.id === parentBlockId 
-                  ? { 
-                      ...block, 
-                      type: 'flashcard' as BlockType, 
-                      flashcardType: 'traditional',
-                      flashcardData: { id: savedParentId, front, back } 
-                    }
-                  : block
-              ));
-            } else {
-              console.error("Erro ao salvar o flashcard pai. ID não retornado.");
-            }
-          } catch (error) {
-            console.error("BlockBasedFlashcardEditor - error calling onSave:", error);
-          }
-        } else {
-          console.error("Conteúdo do flashcard pai incompleto para salvar.");
-        }
-      }
-    } else if (parentBlock.flashcardData && parentBlock.flashcardData.id) {
-      // Se o flashcard pai já foi salvo e tem um ID, use-o
-      actualParentId = parentBlock.flashcardData.id;
-    } else if (parentBlock.flashcardData && !parentBlock.flashcardData.id) {
-      // Se o flashcard pai tem flashcardData mas não tem ID (erro de estado), tentar salvar novamente
-      const front = parentBlock.flashcardData.front;
-      const back = parentBlock.flashcardData.back;
-      if (front && back) {
-        // Salvar o flashcard pai novamente (sem parentId)
-        console.log("BlockBasedFlashcardEditor - calling onSave (re-save) with:", { front, back, type: "traditional", hiddenWordIndices: [], hiddenWords: [], explanation: undefined, parentId: undefined, deckId });
-        try {
-          const savedParentId = await onSave(front, back, "traditional", [], [], undefined, undefined, deckId);
-          console.log("BlockBasedFlashcardEditor - received savedParentId (re-save):", savedParentId);
-          if (savedParentId) {
-            actualParentId = savedParentId;
-            setBlocks(prev => prev.map(block => 
-              block.id === parentBlockId 
-                ? { 
-                    ...block, 
-                    flashcardData: { ...block.flashcardData, id: savedParentId } 
-                  }
-                : block
-            ));
-          } else {
-            console.error("Erro ao salvar o flashcard pai novamente. ID não retornado.");
-          }
-        } catch (error) {
-          console.error("BlockBasedFlashcardEditor - error calling onSave (re-save):", error);
-        }
-      }
-    }
-
-    if (!actualParentId) {
-      console.error("Não foi possível determinar o ID do flashcard pai para o sub-flashcard. actualParentId:", actualParentId);
-      return;
-    }
-
-    // Criar novo bloco sub-flashcard
+    // NÃO salvar o flashcard pai aqui - apenas criar o sub-bloco
+    // O flashcard pai será salvo quando o usuário pressionar Enter no bloco pai
+    console.log("BlockBasedFlashcardEditor - creating sub-flashcard without saving parent yet");
+    
+    // Criar novo bloco sub-flashcard sem salvar o pai
     const newSubBlock: Block = {
       id: generateBlockId(),
       type: 'paragraph', // Inicia como parágrafo, será convertido depois
       content: '',
       order: parentBlock.order + 0.1, // Ordem ligeiramente maior que o pai
       isSubCard: true,
-      parentBlockId: parentBlockId, // Usar o ID do bloco pai, não do flashcard salvo
+      parentBlockId: parentBlockId, // Usar o ID do bloco pai
       indentLevel: (parentBlock.indentLevel || 0) + 1
     };
+
+
 
     // Adicionar o novo bloco e reorganizar as ordens
     setBlocks(prev => {
