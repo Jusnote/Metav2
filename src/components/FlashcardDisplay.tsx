@@ -80,6 +80,10 @@ export function FlashcardDisplay({
   const handleSubCardResponse = (cardId: string, cardIndex: number, gotItRight: boolean) => {
     setSubCardResults(prev => ({ ...prev, [cardId]: gotItRight }));
 
+    // Registrar a resposta no FSRS
+    const difficulty = gotItRight ? 'easy' : 'again';
+    onAnswer(difficulty);
+
     if (gotItRight && cardIndex + 1 < childCards.length) {
       setTimeout(() => {
         setCurrentHighlightedSub(cardIndex + 1);
