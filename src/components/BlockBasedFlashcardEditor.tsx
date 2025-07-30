@@ -564,17 +564,11 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
           });
           
           if (hasActiveSubCards) {
-            console.log("BlockBasedFlashcardEditor - parent has active sub-cards, saving parent first");
-            // Salvar o pai primeiro se ele não foi salvo ainda
-            if (!block.flashcardData?.id) {
-              if (finalizeTraditionalFlashcard(blockId, block.content)) {
-                return;
-              }
-            } else {
-              // Adicionar novo bloco após este
-              addNewBlock(blockId);
-              return;
-            }
+            console.log("BlockBasedFlashcardEditor - parent has active sub-cards, skipping parent save");
+            // Não salvar o pai aqui - ele será salvo quando o sub-flashcard for salvo
+            // Adicionar novo bloco após este
+            addNewBlock(blockId);
+            return;
           }
           
           if (finalizeTraditionalFlashcard(blockId, block.content)) {
