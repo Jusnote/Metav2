@@ -329,37 +329,40 @@ export function FlashcardDisplay({
                   {childCards.map((childCard, index) => (
                     <div key={childCard.id} className="border-l-4 border-l-primary/30 pl-4">
                       <div className="p-3 bg-muted/30 rounded border">
-                        {!subCardAnswers[childCard.id] ? (
-                          // Mostrar apenas a pergunta
-                          <div className="text-center">
-                            <div className="text-lg font-medium text-foreground mb-4">
-                              {childCard.front}
-                            </div>
-                            <Button
-                              onClick={() => toggleSubCardAnswer(childCard.id, index)}
-                              variant="outline"
-                              size="sm"
-                              className="gap-2"
-                            >
-                              <Eye className="h-4 w-4" />
-                              Ver Resposta
-                            </Button>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
+                            <GitBranch className="h-4 w-4" />
+                            <span className="font-medium">Sub-flashcard</span>
                           </div>
-                        ) : (
-                          // Mostrar pergunta e resposta
-                          <div className="space-y-4">
-                            <div className="text-center">
-                              <div className="text-lg font-medium text-foreground mb-4">
-                                {childCard.front}
-                              </div>
-                              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                                <div className="text-lg font-medium text-primary">
-                                  {childCard.back}
+
+                          <div className="space-y-3">
+                            <div className="text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20 text-sm">
+                              <strong>Pergunta:</strong> {childCard.front}
+                            </div>
+
+                            {subCardAnswers[childCard.id] && (
+                              <div className="animate-fade-in">
+                                <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-l-primary/40 shadow-sm">
+                                  <strong className="text-primary">Resposta:</strong> {childCard.back}
                                 </div>
                               </div>
+                            )}
+                          </div>
+
+                          {!subCardAnswers[childCard.id] ? (
+                            <div className="flex justify-center gap-3 mt-4">
+                              <Button
+                                onClick={() => toggleSubCardAnswer(childCard.id, index)}
+                                variant="outline"
+                                size="default"
+                                className="gap-2 font-medium transition-all duration-300"
+                              >
+                                <Eye className="h-4 w-4" />
+                                Ver Resposta
+                              </Button>
                             </div>
-                            
-                            <div className="flex justify-center gap-2 pt-4 border-t border-border/50">
+                          ) : (
+                            <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
                               <Button
                                 onClick={() => handleSubCardResponse(childCard.id, index, true)}
                                 variant="outline"
@@ -377,8 +380,8 @@ export function FlashcardDisplay({
                                 ✗ Errei
                               </Button>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
