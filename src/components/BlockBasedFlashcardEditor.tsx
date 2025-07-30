@@ -392,6 +392,8 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     let actualParentId: string | undefined = undefined;
 
     // Tentar salvar o flashcard pai se ele ainda não foi salvo como um flashcard completo
+    console.log("BlockBasedFlashcardEditor - parentBlock.flashcardData:", parentBlock.flashcardData);
+    console.log("BlockBasedFlashcardEditor - parentBlock.content:", parentBlock.content);
     if (!parentBlock.flashcardData && parentBlock.content.includes(" → ")) {
       const parts = parentBlock.content.split(" → ");
       if (parts.length === 2) {
