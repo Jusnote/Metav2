@@ -375,7 +375,7 @@ export function useSupabaseFlashcards() {
   };
 
   const getCardsByDeck = (deckId: string): Flashcard[] => {
-    return cards.filter(card => card.deckId === deckId).sort((a, b) => {
+    return cards.filter(card => card.deckId === deckId && !card.parentId).sort((a, b) => {
       // Sort by creation date to maintain chronological order
       return new Date(a.created).getTime() - new Date(b.created).getTime();
     });
