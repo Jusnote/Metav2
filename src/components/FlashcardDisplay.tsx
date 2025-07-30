@@ -130,7 +130,7 @@ export function FlashcardDisplay({
           <div className="bg-primary/90 text-primary-foreground px-4 py-2 rounded-full shadow-lg animate-fade-in flex items-center gap-2">
             <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">
-              ↓ Responda a {currentHighlightedSub === 0 ? 'primeira' : `${currentHighlightedSub + 1}ª`} sub-pergunta
+              ↓ Responda a {currentHighlightedSub === 0 ? 'primeira' : `${currentHighlightedSub + 1}ª`} sub-flashcard
             </span>
           </div>
         </div>
@@ -231,7 +231,7 @@ export function FlashcardDisplay({
                 {hasParents && (
                   <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
                     <Link2 className="h-4 w-4" />
-                    <span className="font-medium">Sub-pergunta • Nível {card.level + 1}</span>
+                    <span className="font-medium">Sub-flashcard • Nível {card.level + 1}</span>
                   </div>
                 )}
 
@@ -348,7 +348,7 @@ export function FlashcardDisplay({
                     className="gap-2 border-primary/30 text-primary hover:bg-primary/10 font-medium transition-all duration-300"
                   >
                     <Plus className="h-4 w-4" />
-                    Sub-Pergunta
+                    Sub-Flashcard
                   </Button>
                 </div>
               )}
@@ -391,7 +391,7 @@ export function FlashcardDisplay({
             <div className="text-center mb-4">
               <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1 rounded-full border">
                 <ArrowDown className="h-3 w-3" />
-                <span>Sub-perguntas derivadas desta resposta</span>
+                <span>Sub-flashcards derivados desta resposta</span>
               </div>
             </div>
 
@@ -434,7 +434,7 @@ export function FlashcardDisplay({
                       <div className="space-y-3 relative">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Link2 className="h-3 w-3" />
-                          <span>Sub-pergunta {index + 1}</span>
+                          <span>Sub-flashcard {index + 1}</span>
                         </div>
 
                         <div className="space-y-3">
@@ -504,7 +504,7 @@ export function FlashcardDisplay({
                         {!canAnswerThisSub && (
                           <div className="absolute inset-0 bg-background/50 flex items-center justify-center rounded">
                             <p className="text-xs text-muted-foreground bg-background px-2 py-1 rounded border">
-                              {!isEnabled ? "Acerte a pergunta principal primeiro" : "Acerte a sub-pergunta anterior primeiro"}
+                              {!isEnabled ? "Acerte a pergunta principal primeiro" : "Acerte a sub-flashcard anterior primeiro"}
                             </p>
                           </div>
                         )}

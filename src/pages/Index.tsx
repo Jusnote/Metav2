@@ -179,7 +179,7 @@ const Index = () => {
     if (subCard) {
       toast({
         title: "Sub-flashcard criado!",
-        description: "A sub-pergunta foi adicionada com sucesso.",
+        description: "A sub-flashcard foi adicionada com sucesso.",
       });
       
       setIsCreatingSubCard(false);
