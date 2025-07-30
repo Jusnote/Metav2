@@ -472,7 +472,7 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       content: '',
       order: parentBlock.order + 0.1, // Ordem ligeiramente maior que o pai
       isSubCard: true,
-      parentBlockId: actualParentId, // Usar o ID salvo do pai
+      parentBlockId: parentBlockId, // Usar o ID do bloco pai, não do flashcard salvo
       indentLevel: (parentBlock.indentLevel || 0) + 1
     };
 
