@@ -332,11 +332,6 @@ export function FlashcardDisplay({
                     <div key={childCard.id} className="pl-4">
                       <div className="p-5 bg-background rounded-lg border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 bg-gradient-to-br from-background via-background to-purple-500/5">
                         <div className="text-center">
-                          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
-                            <GitBranch className="h-4 w-4" />
-                            <span className="font-medium">Sub-flashcard</span>
-                          </div>
-
                           <div className="space-y-3">
                             <div className="text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20 text-sm">
                               <strong>Pergunta:</strong> {childCard.front}
