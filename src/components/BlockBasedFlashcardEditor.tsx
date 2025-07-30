@@ -532,16 +532,7 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       return true;
     }
     
-    // Verificar se é um sub-flashcard e se o pai já foi salvo
-    if (currentBlock?.isSubCard && currentBlock?.parentBlockId) {
-      const parentBlock = blocks.find(b => b.flashcardData?.id === currentBlock.parentBlockId);
-      if (parentBlock) {
-        console.log("BlockBasedFlashcardEditor - sub-flashcard with saved parent, skipping parent save");
-        // Adicionar novo bloco após este
-        addNewBlock(blockId);
-        return true;
-      }
-    }
+
     
     console.log("BlockBasedFlashcardEditor - finalizeTraditionalFlashcard - saving new flashcard:", { front, back, parentId });
     
