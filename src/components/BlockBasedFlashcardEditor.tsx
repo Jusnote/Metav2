@@ -569,8 +569,26 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       // Se o bloco contém " → " e tem frente e verso, finalizar o flashcard
       if (block.content.includes(' → ')) {
         e.preventDefault();
-        if (finalizeTraditionalFlashcard(blockId, block.content)) {
-          return;
+        
+        // Verificar se é um sub-flashcard - se sim, não processar o pai
+        if (block.isSubCard) {
+          console.log("BlockBasedFlashcardEditor - processing sub-flashcard, skipping parent");
+          if (finalizeTraditionalFlashcard(blockId, block.content)) {
+            return;
+          }
+        } else {
+          // Verificar se este bloco tem sub-flashcards ativos
+          const hasActiveSubCards = blocks.some(b => b.isSubCard && b.parentBlockId === blockId);
+          if (hasActiveSubCards) {
+            console.log("BlockBasedFlashcardEditor - parent has active sub-cards, skipping parent save");
+            // Adicionar novo bloco após este
+            addNewBlock(blockId);
+            return;
+          }
+          
+          if (finalizeTraditionalFlashcard(blockId, block.content)) {
+            return;
+          }
         }
       }
       
