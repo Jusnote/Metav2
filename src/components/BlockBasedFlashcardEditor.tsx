@@ -452,13 +452,49 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
       console.log("BlockBasedFlashcardEditor - parentBlockId:", currentBlock.parentBlockId);
       console.log("BlockBasedFlashcardEditor - all blocks:", blocks);
       
-      // Encontrar o bloco pai e pegar o ID do flashcard salvo
+      // Encontrar o bloco pai
       const parentBlock = blocks.find(b => b.id === currentBlock.parentBlockId);
       console.log("BlockBasedFlashcardEditor - parentBlock found:", parentBlock);
       
       if (parentBlock?.flashcardData?.id) {
+        // Se o pai já foi salvo, usar o ID dele
         parentId = parentBlock.flashcardData.id;
         console.log("BlockBasedFlashcardEditor - sub-flashcard with parent ID:", parentId);
+      } else if (parentBlock?.content.includes(" → ")) {
+        // Se o pai não foi salvo mas tem conteúdo, salvar o pai primeiro
+        console.log("BlockBasedFlashcardEditor - saving parent first, then sub-flashcard");
+        const parts = parentBlock.content.split(" → ");
+        if (parts.length === 2) {
+          const parentFront = parts[0].trim();
+          const parentBack = parts[1].trim();
+          if (parentFront && parentBack) {
+            try {
+              // Salvar o pai primeiro
+              const savedParentId = await onSave(parentFront, parentBack, "traditional", [], [], undefined, undefined, deckId);
+              console.log("BlockBasedFlashcardEditor - parent saved with ID:", savedParentId);
+              
+              if (savedParentId) {
+                // Atualizar o bloco pai no estado local
+                setBlocks(prev => prev.map(block => 
+                  block.id === currentBlock.parentBlockId 
+                    ? { 
+                        ...block, 
+                        type: 'flashcard' as BlockType, 
+                        flashcardType: 'traditional',
+                        flashcardData: { id: savedParentId, front: parentFront, back: parentBack } 
+                      }
+                    : block
+                ));
+                
+                // Usar o ID do pai salvo para o sub-flashcard
+                parentId = savedParentId;
+                console.log("BlockBasedFlashcardEditor - sub-flashcard will use parent ID:", parentId);
+              }
+            } catch (error) {
+              console.error("BlockBasedFlashcardEditor - error saving parent:", error);
+            }
+          }
+        }
       } else {
         console.log("BlockBasedFlashcardEditor - parentBlock has no flashcardData or ID");
       }
