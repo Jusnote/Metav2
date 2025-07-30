@@ -266,7 +266,6 @@ const Index = () => {
               <FlashcardDisplay
                 card={currentStudyCard}
                 onAnswer={handleStudyAnswer}
-                onCreateSubCard={handleCreateSubCard}
                 getChildCards={getChildCards}
                 showAnswer={false}
               />

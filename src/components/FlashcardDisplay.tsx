@@ -13,7 +13,6 @@ interface FlashcardDisplayProps {
   card: Flashcard;
   parentCards?: Flashcard[]; // Hierarchy context from root to current card
   onAnswer: (difficulty: StudyDifficulty) => void;
-  onCreateSubCard?: (parentCard: Flashcard) => void;
   showAnswer?: boolean;
   getChildCards?: (parentId: string) => Flashcard[];
 }
@@ -22,7 +21,6 @@ export function FlashcardDisplay({
   card,
   parentCards = [],
   onAnswer,
-  onCreateSubCard,
   showAnswer: initialShowAnswer = false,
   getChildCards
 }: FlashcardDisplayProps) {
@@ -343,19 +341,7 @@ export function FlashcardDisplay({
                 </div>
               )}
 
-              {card.type === 'true-false' && trueFalseAnswer !== null && onCreateSubCard && (
-                <div className="flex justify-center">
-                  <Button
-                    onClick={() => onCreateSubCard(card)}
-                    variant="outline"
-                    size="default"
-                    className="gap-2 border-primary/30 text-primary hover:bg-primary/10 font-medium transition-all duration-300"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Sub-Flashcard
-                  </Button>
-                </div>
-              )}
+
 
               {showAnswer && !hasParents && !mainCardAnswered && (
                 <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
