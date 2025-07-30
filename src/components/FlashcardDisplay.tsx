@@ -407,7 +407,7 @@ export function FlashcardDisplay({
 
 
 
-              {showAnswer && !hasParents && !mainCardAnswered && (
+              {showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection && (
                 <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
                   <Button
                     onClick={() => handleMainCardResponse(true)}
