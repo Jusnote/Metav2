@@ -7,7 +7,7 @@ import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SubFlashcardDisplay } from './SubFlashcardDisplay';
+
 
 interface FlashcardDisplayProps {
   card: Flashcard;
@@ -330,10 +330,14 @@ export function FlashcardDisplay({
                   </div>
                   {childCards.map((childCard, index) => (
                     <div key={childCard.id} className="border-l-4 border-l-primary/30 pl-4">
-                      <SubFlashcardDisplay
-                        question={childCard.front}
-                        answer={childCard.back}
-                      />
+                      <div className="p-3 bg-muted/30 rounded border">
+                        <div className="text-sm text-muted-foreground mb-2">
+                          <strong>Pergunta:</strong> {childCard.front}
+                        </div>
+                        <div className="text-sm">
+                          <strong className="text-primary">Resposta:</strong> {childCard.back}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

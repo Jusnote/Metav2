@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { FlashcardEditor } from '@/components/FlashcardEditor';
 import { FlashcardDisplay } from '@/components/FlashcardDisplay';
-import { SubFlashcardEditor } from '@/components/SubFlashcardEditor';
+
 import { DeckCard } from '@/components/DeckCard';
 import { DeckCardsList } from '@/components/DeckCardsList';
 import { Button } from '@/components/ui/button';
@@ -43,9 +43,7 @@ const Index = () => {
   const [completedCards, setCompletedCards] = useState<string[]>([]);
   const [isStudyComplete, setIsStudyComplete] = useState(false);
   
-  // Estados para sub-flashcards
-  const [isCreatingSubCard, setIsCreatingSubCard] = useState(false);
-  const [parentCardForSub, setParentCardForSub] = useState<Flashcard | null>(null);
+
   
 
 
@@ -164,34 +162,7 @@ const Index = () => {
     setIsStudyComplete(false);
   };
 
-  // Função para criar sub-flashcard
-  const handleCreateSubCard = (parentCard: Flashcard) => {
-    setParentCardForSub(parentCard);
-    setIsCreatingSubCard(true);
-  };
 
-  // Função para salvar sub-flashcard
-  const handleSaveSubCard = async (front: string, back: string, parentId: string) => {
-    if (!studyDeckId) return;
-    
-    const subCard = await createCard(studyDeckId, front, back, parentId);
-    
-    if (subCard) {
-      toast({
-        title: "Sub-flashcard criado!",
-        description: "A sub-flashcard foi adicionada com sucesso.",
-      });
-      
-      setIsCreatingSubCard(false);
-      setParentCardForSub(null);
-    }
-  };
-
-  // Função para cancelar criação de sub-flashcard
-  const handleCancelSubCard = () => {
-    setIsCreatingSubCard(false);
-    setParentCardForSub(null);
-  };
 
   // Função para obter cards filhos
   const getChildCards = (parentId: string): Flashcard[] => {
@@ -291,13 +262,7 @@ const Index = () => {
         {/* Study Area - Centralizada */}
         <div className="flex-1 flex items-center justify-center px-6 py-8">
           <div className="w-full max-w-4xl">
-            {isCreatingSubCard && parentCardForSub ? (
-              <SubFlashcardEditor
-                parentCard={parentCardForSub}
-                onSave={handleSaveSubCard}
-                onCancel={handleCancelSubCard}
-              />
-            ) : currentStudyCard && (
+            {currentStudyCard && (
               <FlashcardDisplay
                 card={currentStudyCard}
                 onAnswer={handleStudyAnswer}
