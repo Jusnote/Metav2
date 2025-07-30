@@ -382,7 +382,7 @@ export function useSupabaseFlashcards() {
   };
 
   const getDueCards = (deckId?: string): Flashcard[] => {
-    const relevantCards = deckId ? getCardsByDeck(deckId) : cards;
+    const relevantCards = deckId ? getCardsByDeck(deckId) : cards.filter(card => !card.parentId);
     return FSRSSpacedRepetition.getDueCards(relevantCards);
   };
 
@@ -404,8 +404,8 @@ export function useSupabaseFlashcards() {
   };
 
   const getRootCards = (deckId?: string): Flashcard[] => {
-    const relevantCards = deckId ? getCardsByDeck(deckId) : cards;
-    return relevantCards.filter(card => !card.parentId).sort((a, b) => a.order - b.order);
+    const relevantCards = deckId ? getCardsByDeck(deckId) : cards.filter(card => !card.parentId);
+    return relevantCards.sort((a, b) => a.order - b.order);
   };
 
   const getCardHierarchy = (rootCard: Flashcard): Flashcard[] => {
