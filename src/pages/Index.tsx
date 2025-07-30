@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ModernFlashcardEditor } from '@/components/ModernFlashcardEditor';
+
 import { FlashcardEditor } from '@/components/FlashcardEditor';
 import { FlashcardDisplay } from '@/components/FlashcardDisplay';
 import { SubFlashcardEditor } from '@/components/SubFlashcardEditor';
@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { useSupabaseFlashcards } from '@/hooks/useSupabaseFlashcards';
 import { DataMigrationDialog } from '@/components/DataMigrationDialog';
-import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff, Blocks } from 'lucide-react';
+import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { Badge } from '@/components/ui/badge';
@@ -47,8 +47,7 @@ const Index = () => {
   const [isCreatingSubCard, setIsCreatingSubCard] = useState(false);
   const [parentCardForSub, setParentCardForSub] = useState<Flashcard | null>(null);
   
-  // Estado para controlar tipo de editor
-  const [useBlockEditor, setUseBlockEditor] = useState(false);
+
 
   const totalCards = cards.length;
   const totalDueCards = getDueCards().length;
@@ -71,26 +70,37 @@ const Index = () => {
     }
   };
 
-  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string): Promise<string | null> => {
-    if (!selectedDeckId) {
+  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string): Promise<string | null> => {
+    console.log("handleCreateCard - FUNCTION CALLED with params:", { front, back, type, hiddenWordIndices, hiddenWords, explanation, parentId, deckId });
+    const targetDeckId = deckId || selectedDeckId;
+    
+    if (!targetDeckId) {
       toast({
         title: "Selecione um deck",
         description: "Primeiro você precisa selecionar ou criar um deck.",
         variant: "destructive",
       });
-      return;
+      return null;
     }
 
-    const card = await createCard(selectedDeckId, front, back, parentId, type, hiddenWordIndices, hiddenWords, explanation);
+    console.log("handleCreateCard - calling createCard with:", { targetDeckId, front, back, parentId, type, hiddenWordIndices, hiddenWords, explanation });
+    const cardId = await createCard(targetDeckId, front, back, parentId, type, hiddenWordIndices, hiddenWords, explanation);
+    console.log("handleCreateCard - received cardId:", cardId);
     
-    if (card) {
+    if (cardId) {
+      console.log("handleCreateCard - returning cardId:", cardId);
+    } else {
+      console.log("handleCreateCard - cardId is null/undefined");
+    }
+    
+    if (cardId) {
       toast({
         title: "Card criado!",
         description: "Seu flashcard foi adicionado ao deck.",
       });
-      return card.id;
     }
-    return null;
+    
+    return cardId;
   };
 
   const handleStudyDeck = (deckId: string) => {
@@ -480,36 +490,12 @@ const Index = () => {
               </Card>
             )}
 
-            {/* Controles do Editor */}
-            {selectedDeck && (
-              <Card className="p-4 bg-gradient-card border-border/50 mb-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-foreground">Modo de Criação</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {useBlockEditor ? 'Editor baseado em blocos' : 'Editor tradicional'}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setUseBlockEditor(!useBlockEditor)}
-                    className="gap-2"
-                  >
-                    <Blocks className="h-4 w-4" />
-                    {useBlockEditor ? 'Usar Editor Tradicional' : 'Usar Editor de Blocos'}
-                  </Button>
-                </div>
-              </Card>
-            )}
-
             {/* Editor de criação integrado com cards existentes */}
             {selectedDeck && (
                <div className="animate-slide-down-in">
                  <FlashcardEditor
                    onSave={handleCreateCard}
                    placeholder={`Criando cards para "${selectedDeck?.name}"\n\nPergunta == Resposta`}
-                   useBlockEditor={useBlockEditor}
                    deckId={selectedDeckId}
                  />
                </div>

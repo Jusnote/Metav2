@@ -165,9 +165,10 @@ export function useSupabaseFlashcards() {
     front: string, 
     back: string, 
     parentId?: string, 
-    type: 'traditional' | 'word-hiding' = 'traditional',
+    type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional',
     hiddenWordIndices?: number[],
-    hiddenWords?: string[]
+    hiddenWords?: string[],
+    explanation?: string
   ): Promise<string | null> => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
