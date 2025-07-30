@@ -515,6 +515,16 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
     const currentBlock = blocks.find(b => b.id === blockId);
     const parentId = currentBlock?.isSubCard ? currentBlock.parentBlockId : undefined;
     
+    // Verificar se o bloco já foi salvo
+    if (currentBlock?.flashcardData?.id) {
+      console.log("BlockBasedFlashcardEditor - block already saved, skipping save:", currentBlock.flashcardData.id);
+      // Adicionar novo bloco após este
+      addNewBlock(blockId);
+      return true;
+    }
+    
+    console.log("BlockBasedFlashcardEditor - finalizeTraditionalFlashcard - saving new flashcard:", { front, back, parentId });
+    
     // Salvar o flashcard
     const savedId = await onSave(front, back, 'traditional', [], [], undefined, parentId, deckId);
     
