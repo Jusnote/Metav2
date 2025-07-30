@@ -77,7 +77,7 @@ function BlockComponent({
 
   if (block.type === 'flashcard' && block.flashcardData) {
     return (
-      <div className="group relative">
+      <div className={cn("group relative", block.isSubCard && "ml-8")}>
         {/* Barra lateral indicadora de flashcard */}
         <div className={cn(
           "absolute left-0 top-0 w-1 h-full rounded-full z-10",
