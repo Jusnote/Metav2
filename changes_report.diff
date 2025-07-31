@@ -1,0 +1,357 @@
+diff --git a/src/components/BlockBasedFlashcardEditor.tsx b/src/components/BlockBasedFlashcardEditor.tsx
+index de0389b..62ce381 100644
+--- a/src/components/BlockBasedFlashcardEditor.tsx
++++ b/src/components/BlockBasedFlashcardEditor.tsx
+@@ -29,6 +29,7 @@ interface Block {
+ 
+ interface BlockBasedFlashcardEditorProps {
+   onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
++  onUpdateCard?: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => Promise<void>;
+   placeholder?: string;
+   deckId?: string;
+ }
+@@ -44,6 +45,11 @@ interface BlockComponentProps {
+   onConvertToFlashcard: (blockId: string, type: FlashcardType) => void;
+   onCreateSubFlashcard: (blockId: string) => void;
+   flashcardsWithSubOption: string[];
++  // Novos props para edição inline
++  isEditing: boolean;
++  onStartEdit: (blockId: string) => void;
++  onSaveEdit: (blockId: string, front: string, back: string, hiddenWords?: string[], explanation?: string) => void;
++  onCancelEdit: (blockId: string) => void;
+ }
+ 
+ function BlockComponent({
+@@ -55,7 +61,11 @@ function BlockComponent({
+   onKeyDown,
+   onConvertToFlashcard,
+   onCreateSubFlashcard,
+-  flashcardsWithSubOption
++  flashcardsWithSubOption,
++  isEditing,
++  onStartEdit,
++  onSaveEdit,
++  onCancelEdit
+ }: BlockComponentProps) {
+   const textareaRef = useRef<HTMLTextAreaElement>(null);
+ 
+@@ -75,6 +85,35 @@ function BlockComponent({
+     }
+   }, [isActive]);
+ 
++  // Estados locais para edição
++  const [editingFront, setEditingFront] = useState('');
++  const [editingBack, setEditingBack] = useState('');
++  const [editingHiddenWords, setEditingHiddenWords] = useState<string[]>([]);
++  const [editingExplanation, setEditingExplanation] = useState('');
++  const [originalData, setOriginalData] = useState<any>(null);
++
++  // Inicializar dados de edição quando entrar em modo de edição
++  useEffect(() => {
++    if (isEditing && block.flashcardData) {
++      setEditingFront(block.flashcardData.front || '');
++      setEditingBack(block.flashcardData.back || '');
++      setEditingHiddenWords(block.flashcardData.hiddenWords || []);
++      setEditingExplanation(block.flashcardData.explanation || '');
++      setOriginalData(block.flashcardData);
++    }
++  }, [isEditing, block.flashcardData]);
++
++  // Função para lidar com teclas durante a edição
++  const handleEditKeyDown = (e: React.KeyboardEvent) => {
++    if (e.key === 'Enter') {
++      e.preventDefault();
++      onSaveEdit(block.id, editingFront, editingBack, editingHiddenWords, editingExplanation);
++    } else if (e.key === 'Escape') {
++      e.preventDefault();
++      onCancelEdit(block.id);
++    }
++  };
++
+   if (block.type === 'flashcard' && block.flashcardData) {
+     return (
+       <div className={cn("group relative", block.isSubCard && "ml-8")}>
+@@ -86,22 +125,65 @@ function BlockComponent({
+           block.flashcardType === 'true-false' && "bg-green-500"
+         )} />
+         
+-        {/* Manter apenas a barrinha e o texto, não o Card completo */}
+         <div className="ml-4 p-0">
+-          <div className="text-sm text-muted-foreground">
+-            <span className="font-medium">Frente:</span> {block.flashcardData.front}
+-          </div>
+-          <div className="text-sm text-muted-foreground">
+-            <span className="font-medium">Verso:</span> {block.flashcardData.back}
+-          </div>
+-          {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
+-            <div className="text-sm text-muted-foreground">
+-              <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(', ')}
++          {isEditing ? (
++            // Modo de edição
++            <div className="space-y-2 p-2 border border-primary/20 rounded-md bg-background">
++              <div>
++                <label className="text-xs font-medium text-muted-foreground">Frente:</label>
++                <textarea
++                  value={editingFront}
++                  onChange={(e) => setEditingFront(e.target.value)}
++                  onKeyDown={handleEditKeyDown}
++                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
++                  rows={2}
++                  autoFocus
++                />
++              </div>
++              <div>
++                <label className="text-xs font-medium text-muted-foreground">Verso:</label>
++                <textarea
++                  value={editingBack}
++                  onChange={(e) => setEditingBack(e.target.value)}
++                  onKeyDown={handleEditKeyDown}
++                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
++                  rows={2}
++                />
++              </div>
++              {block.flashcardType === 'word-hiding' && (
++                <div>
++                  <label className="text-xs font-medium text-muted-foreground">Palavras ocultas (separadas por vírgula):</label>
++                  <input
++                    type="text"
++                    value={editingHiddenWords.join(', ')}
++                    onChange={(e) => setEditingHiddenWords(e.target.value.split(',').map(w => w.trim()).filter(w => w))}
++                    onKeyDown={handleEditKeyDown}
++                    className="w-full mt-1 p-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary/20"
++                  />
++                </div>
++              )}
++              <div className="text-xs text-muted-foreground">
++                Pressione Enter para salvar, Esc para cancelar
++              </div>
+             </div>
+-          )}
+-          {block.flashcardData.explanation && (
+-            <div className="text-sm text-muted-foreground">
+-              <span className="font-medium">Explicação:</span> {block.flashcardData.explanation}
++          ) : (
++            // Modo de visualização (clicável para editar)
++            <div 
++              className="cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
++              onClick={() => onStartEdit(block.id)}
++              title="Clique para editar"
++            >
++              <div className="text-sm text-muted-foreground">
++                <span className="font-medium">Frente:</span> {block.flashcardData.front}
++              </div>
++              <div className="text-sm text-muted-foreground">
++                <span className="font-medium">Verso:</span> {block.flashcardData.back}
++              </div>
++              {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
++                <div className="text-sm text-muted-foreground">
++                  <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(", ")}
++                </div>
++              )}
+             </div>
+           )}
+         </div>
+@@ -223,7 +305,7 @@ function BlockComponent({
+   );
+ }
+ 
+-export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: BlockBasedFlashcardEditorProps) {
++export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, deckId }: BlockBasedFlashcardEditorProps) {
+   const generateBlockId = () => `block-${Date.now()}-${Math.random()}`;
+   const getStorageKey = () => `flashcard-editor-blocks-${deckId || 'default'}`;
+   
+@@ -263,6 +345,9 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
+   const [flashcardsWithSubOption, setFlashcardsWithSubOption] = useState<string[]>([]);
+   const [activeParentForSub, setActiveParentForSub] = useState<string | null>(null);
+ 
++  // Estados para edição inline
++  const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
++
+   // Função para salvar estado automaticamente
+   const saveState = useCallback((blocksToSave: Block[]) => {
+     try {
+@@ -587,6 +672,60 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
+     setActiveBlockId(blockId);
+   }, []);
+ 
++  // Funções para edição inline
++  const handleStartEdit = useCallback((blockId: string) => {
++    setEditingBlockId(blockId);
++  }, []);
++
++  const handleSaveEdit = useCallback(async (blockId: string, front: string, back: string, hiddenWords?: string[]) => {
++    const block = blocks.find(b => b.id === blockId);
++    if (!block || !block.flashcardData) return;
++
++    try {
++      // Salvar no backend se houver um ID (flashcard já existe) e a função onUpdateCard estiver disponível
++      if (block.flashcardData.id && onUpdateCard) {
++        console.log("Salvando alterações no backend para flashcard:", block.flashcardData.id);
++        
++        await onUpdateCard(block.flashcardData.id, front, back, undefined, hiddenWords);
++        
++        console.log("Flashcard atualizado no backend com sucesso");
++      }
++
++      // Atualizar o bloco localmente após salvar no backend
++      setBlocks(prev => prev.map(b => 
++        b.id === blockId 
++          ? { 
++              ...b, 
++              flashcardData: { 
++                ...b.flashcardData!, 
++                front, 
++                back, 
++                hiddenWords: hiddenWords || [], 
++              } 
++            }
++          : b
++      ));
++
++      setEditingBlockId(null);
++      console.log("Flashcard editado e salvo com sucesso");
++    } catch (error) {
++      console.error("Erro ao salvar edição:", error);
++      // Em caso de erro, recarregar os dados ou reverter as alterações
++      // toast({
++      //   title: "Erro ao salvar alterações",
++      //   description: "Não foi possível salvar as alterações do flashcard.",
++      //   variant: "destructive",
++      // });
++    }
++  }, [blocks, onUpdateCard]);
++
++  const handleCancelEdit = useCallback((blockId: string) => {
++    // Simplesmente sair do modo de edição sem salvar
++    // Os dados originais serão restaurados automaticamente pelo estado local
++    setEditingBlockId(null);
++    console.log('Edição cancelada para bloco:', blockId);
++  }, []);
++
+   const getPendingFlashcardType = useCallback((blockId: string): FlashcardType | null => {
+     return pendingFlashcardType?.blockId === blockId ? pendingFlashcardType.type : null;
+   }, [pendingFlashcardType]);
+@@ -605,6 +744,10 @@ export function BlockBasedFlashcardEditor({ onSave, placeholder, deckId }: Block
+           onConvertToFlashcard={convertToFlashcard}
+           onCreateSubFlashcard={createSubFlashcard}
+           flashcardsWithSubOption={flashcardsWithSubOption}
++          isEditing={editingBlockId === block.id}
++          onStartEdit={handleStartEdit}
++          onSaveEdit={handleSaveEdit}
++          onCancelEdit={handleCancelEdit}
+         />
+       ))}
+     </div>
+diff --git a/src/components/FlashcardEditor.tsx b/src/components/FlashcardEditor.tsx
+index 4bd99f5..12e0b8d 100644
+--- a/src/components/FlashcardEditor.tsx
++++ b/src/components/FlashcardEditor.tsx
+@@ -3,13 +3,15 @@ import { BlockBasedFlashcardEditor } from '@/components/BlockBasedFlashcardEdito
+ 
+ interface FlashcardEditorProps {
+   onSave: (front: string, back: string, type?: 'traditional' | 'word-hiding' | 'true-false', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
++  onUpdateCard?: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => Promise<void>;
+   placeholder?: string;
+   deckId?: string;
+ }
+ 
+-export function FlashcardEditor({ onSave, placeholder, deckId }: FlashcardEditorProps) {
++export function FlashcardEditor({ onSave, onUpdateCard, placeholder, deckId }: FlashcardEditorProps) {
+   console.log("FlashcardEditor - onSave function:", typeof onSave);
++  console.log("FlashcardEditor - onUpdateCard function:", typeof onUpdateCard);
+   console.log("FlashcardEditor - rendering BlockBasedFlashcardEditor");
+   
+-  return <BlockBasedFlashcardEditor onSave={onSave} placeholder={placeholder} deckId={deckId} />;
++  return <BlockBasedFlashcardEditor onSave={onSave} onUpdateCard={onUpdateCard} placeholder={placeholder} deckId={deckId} />;
+ }
+diff --git a/src/hooks/useSupabaseFlashcards.ts b/src/hooks/useSupabaseFlashcards.ts
+index 2b9334f..eeb93b1 100644
+--- a/src/hooks/useSupabaseFlashcards.ts
++++ b/src/hooks/useSupabaseFlashcards.ts
+@@ -284,6 +284,52 @@ export function useSupabaseFlashcards() {
+     }
+   };
+ 
++  const updateCardContent = async (cardId: string, front: string, back: string, hiddenWords?: string[]): Promise<void> => {
++    try {
++      setIsUpdatingCard(true);
++      
++      const updateData: any = {
++        front,
++        back,
++      };
++
++      if (hiddenWords !== undefined) {
++        updateData.hidden_words = hiddenWords;
++      }
++
++      const { error } = await supabase
++        .from("flashcards")
++        .update(updateData)
++        .eq("id", cardId);
++
++      if (error) throw error;
++
++      // Atualizar o estado local
++      setCards(prev => prev.map(card => 
++        card.id === cardId 
++          ? { 
++              ...card, 
++              front, 
++              back, 
++              hiddenWords: hiddenWords || card.hiddenWords 
++            }
++          : card
++      ));
++
++      console.log('Flashcard atualizado no Supabase:', cardId);
++    } catch (error) {
++      console.error('Error updating card content:', error);
++      toast({
++        title: "Erro ao atualizar cartão",
++        description: "Não foi possível atualizar o conteúdo do cartão.",
++        variant: "destructive",
++      });
++      throw error;
++    } finally {
++      setIsUpdatingCard(false);
++    }
++  };
++
+   const updateCard = async (cardId: string, difficulty: StudyDifficulty): Promise<void> => {
+     try {
+       const card = cards.find(c => c.id === cardId);
+@@ -435,6 +481,7 @@ export function useSupabaseFlashcards() {
+     createDeck,
+     createCard,
+     updateCard,
++    updateCardContent,
+     deleteDeck,
+     deleteCard,
+     getCardsByDeck,
+diff --git a/src/pages/Index.tsx b/src/pages/Index.tsx
+index a91d075..92cf530 100644
+--- a/src/pages/Index.tsx
++++ b/src/pages/Index.tsx
+@@ -459,6 +459,7 @@ const Index = () => {
+                <div className="animate-slide-down-in">
+                  <FlashcardEditor
+                    onSave={handleCreateCard}
++                   onUpdateCard={updateCardContent}
+                    placeholder={`Criando cards para "${selectedDeck?.name}"\n\nPergunta == Resposta`}
+                    deckId={selectedDeckId}
+                  />
+diff --git a/vite.config.ts b/vite.config.ts
+index 07e9160..2b71de0 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -13,7 +13,8 @@ export default defineConfig({
+   server: {
+     host: true,
+     port: 5173,
+-    origin: 'https://5173-iotlmttwlv1uryrbk902y-c40c44b8.manusvm.computer'
++    origin: 'https://5173-ig2sggj6lv0cmo03nxz9w-0785015f.manusvm.computer',
++    allowedHosts: ['.manusvm.computer']
+   }
+ })
+ 

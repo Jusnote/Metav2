@@ -284,6 +284,52 @@ export function useSupabaseFlashcards() {
     }
   };
 
+  const updateCardContent = async (cardId: string, front: string, back: string, hiddenWords?: string[]): Promise<void> => {
+    try {
+      setIsUpdatingCard(true);
+      
+      const updateData: any = {
+        front,
+        back,
+      };
+
+      if (hiddenWords !== undefined) {
+        updateData.hidden_words = hiddenWords;
+      }
+
+      const { error } = await supabase
+        .from("flashcards")
+        .update(updateData)
+        .eq("id", cardId);
+
+      if (error) throw error;
+
+      // Atualizar o estado local
+      setCards(prev => prev.map(card => 
+        card.id === cardId 
+          ? { 
+              ...card, 
+              front, 
+              back, 
+              hiddenWords: hiddenWords || card.hiddenWords 
+            }
+          : card
+      ));
+
+      console.log('Flashcard atualizado no Supabase:', cardId);
+    } catch (error) {
+      console.error('Error updating card content:', error);
+      toast({
+        title: "Erro ao atualizar cartão",
+        description: "Não foi possível atualizar o conteúdo do cartão.",
+        variant: "destructive",
+      });
+      throw error;
+    } finally {
+      setIsUpdatingCard(false);
+    }
+  };
+
   const updateCard = async (cardId: string, difficulty: StudyDifficulty): Promise<void> => {
     try {
       const card = cards.find(c => c.id === cardId);
@@ -435,6 +481,7 @@ export function useSupabaseFlashcards() {
     createDeck,
     createCard,
     updateCard,
+    updateCardContent,
     deleteDeck,
     deleteCard,
     getCardsByDeck,

@@ -459,6 +459,7 @@ const Index = () => {
                <div className="animate-slide-down-in">
                  <FlashcardEditor
                    onSave={handleCreateCard}
+                   onUpdateCard={updateCardContent}
                    placeholder={`Criando cards para "${selectedDeck?.name}"\n\nPergunta == Resposta`}
                    deckId={selectedDeckId}
                  />

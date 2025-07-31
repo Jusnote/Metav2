@@ -13,7 +13,8 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    origin: 'https://5173-iotlmttwlv1uryrbk902y-c40c44b8.manusvm.computer'
+    origin: 'https://5173-ig2sggj6lv0cmo03nxz9w-0785015f.manusvm.computer',
+    allowedHosts: ['.manusvm.computer']
   }
 })
 
