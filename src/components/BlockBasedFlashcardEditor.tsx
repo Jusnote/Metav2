@@ -442,6 +442,16 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
       }, 0);
       
     } else if (flashcardType === 'word-hiding') {
+      const currentContent = block.content;
+      const newContent = currentContent + ' {{palavra}}';
+      updateBlock(blockId, newContent);
+      setTimeout(() => {
+        const textarea = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLTextAreaElement;
+        if (textarea) {
+          textarea.focus();
+          textarea.setSelectionRange(newContent.length, newContent.length);
+        }
+      }, 0);
       setPendingWordHiding({ blockId, words: [] });
     } else if (flashcardType === 'true-false') {
       setPendingTrueFalse({ blockId, statement: block.content });
@@ -622,12 +632,71 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
     return true;
   }, [blocks, onSave, deckId, updateFlashcardBlock, addNewBlock]);
 
+  // Adicionar função para finalizar flashcard de word-hiding
+  const finalizeWordHidingFlashcard = useCallback(async (blockId: string, content: string) => {
+    // Verificar se o texto contém sintaxe {{palavra}}
+    if (!/\{\{[^}]+\}\}/.test(content)) return false;
+    
+    // Parse das palavras ocultas
+    const hiddenWords: string[] = [];
+    const cleanText = content.replace(/\{\{([^}]+)\}\}/g, (match, word) => {
+      hiddenWords.push(word.trim());
+      return word.trim();
+    });
+    
+    // Criar pergunta com ____
+    const questionText = content.replace(/\{\{([^}]+)\}\}/g, '____');
+    
+    // Verificar se é um sub-flashcard
+    const currentBlock = blocks.find(b => b.id === blockId);
+    let parentId: string | undefined = undefined;
+    
+    if (currentBlock?.isSubCard && currentBlock.parentBlockId) {
+      const parentBlock = blocks.find(b => b.id === currentBlock.parentBlockId);
+      if (parentBlock?.flashcardData?.id) {
+        parentId = parentBlock.flashcardData.id;
+      }
+    }
+    
+    console.log("Salvando flashcard word-hiding:", { questionText, cleanText, hiddenWords, parentId });
+    
+    // Salvar o flashcard
+    const savedId = await onSave(questionText, cleanText, 'word-hiding', [], hiddenWords, undefined, parentId, deckId);
+    
+    if (savedId) {
+      // Atualizar o bloco para mostrar como flashcard salvo
+      updateFlashcardBlock(blockId, 'word-hiding', { 
+        id: savedId, 
+        front: questionText, 
+        back: cleanText, 
+        hiddenWords 
+      });
+      
+      // Limpar o tipo pendente
+      setPendingWordHiding(null);
+      setPendingFlashcardType(null);
+      
+      // Adicionar novo bloco após este
+      addNewBlock(blockId);
+    }
+    
+    return true;
+  }, [blocks, onSave, deckId, updateFlashcardBlock, addNewBlock]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent, blockId: string) => {
     const block = blocks.find(b => b.id === blockId);
     if (!block) return;
 
     if (e.key === 'Enter') {
       console.log("BlockBasedFlashcardEditor - Enter pressed for block:", block);
+      
+      // Verificar se é um flashcard de word-hiding pendente
+      if (pendingWordHiding?.blockId === blockId && /\{\{[^}]+\}\}/.test(block.content)) {
+        e.preventDefault();
+        if (finalizeWordHidingFlashcard(blockId, block.content)) {
+          return;
+        }
+      }
       
       // Se o bloco contém " → " e tem frente e verso, finalizar o flashcard
       if (block.content.includes(' → ')) {
