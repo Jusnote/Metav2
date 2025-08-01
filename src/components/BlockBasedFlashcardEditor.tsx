@@ -474,57 +474,105 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
     });
   }, []);
 
-  // Função para criar sub-flashcard
-  const createSubFlashcard = useCallback(async (parentBlockId: string) => {
-    const parentBlock = blocks.find(b => b.id === parentBlockId);
-    if (!parentBlock) {
-      console.error("Bloco pai não encontrado para o ID:", parentBlockId);
-      return;
-    }
-
-    console.log("Parent Block para sub-flashcard:", parentBlock);
-
-    let actualParentId: string | undefined = undefined;
-
-    // NÃO salvar o flashcard pai aqui - apenas criar o sub-bloco
-    // O flashcard pai será salvo quando o usuário pressionar Enter no bloco pai
-    console.log("BlockBasedFlashcardEditor - creating sub-flashcard without saving parent yet");
+  // Adicionar estas funções ANTES da função createSubFlashcard (por volta da linha 460-470)
+  
+  // Função para validar se o bloco pai existe e é válido
+  const validateParentBlock = useCallback((parentBlockId: string): Block | null => {
+    const parentBlock = blocks.find(block => block.id === parentBlockId);
     
-    // Criar novo bloco sub-flashcard sem salvar o pai
+    if (!parentBlock) {
+      console.error('Bloco pai não encontrado:', parentBlockId);
+      return null;
+    }
+    
+    if (parentBlock.isSubCard) {
+      console.error('Não é possível criar sub-flashcard de outro sub-flashcard');
+      return null;
+    }
+    
+    return parentBlock;
+  }, [blocks]);
+  
+  // Função para criar um novo sub-bloco
+  const createSubBlock = useCallback((parentBlock: Block): Block => {
     const newSubBlock: Block = {
       id: generateBlockId(),
-      type: 'paragraph', // Inicia como parágrafo, será convertido depois
+      type: 'paragraph',
       content: '',
-      order: parentBlock.order + 0.1, // Ordem ligeiramente maior que o pai
+      order: parentBlock.order + 0.1, // Posicionar logo após o pai
       isSubCard: true,
-      parentBlockId: parentBlockId, // Usar o ID do bloco pai
+      parentBlockId: parentBlock.id,
       indentLevel: (parentBlock.indentLevel || 0) + 1
     };
-
-
-
-    // Adicionar o novo bloco e reorganizar as ordens
+    
+    return newSubBlock;
+  }, []);
+  
+  // Função para adicionar um bloco à lista
+  const addBlock = useCallback((newBlock: Block) => {
     setBlocks(prev => {
-      // Ajustar as ordens dos blocos subsequentes
-      const adjustedBlocks = prev.map(block => {
-        if (block.order > parentBlock.order) {
-          return { ...block, order: block.order + 1 };
-        }
-        return block;
-      });
+      // Ajustar a ordem dos blocos subsequentes
+      const updatedBlocks = prev.map(block => 
+        block.order > newBlock.order 
+          ? { ...block, order: block.order + 0.1 }
+          : block
+      );
       
-      // Adicionar o novo sub-bloco
-      const newBlocks = [...adjustedBlocks, newSubBlock];
-      return newBlocks.sort((a, b) => a.order - b.order);
+      // Adicionar o novo bloco e ordenar
+      const newBlocks = [...updatedBlocks, newBlock].sort((a, b) => a.order - b.order);
+      return newBlocks;
     });
-
-    // Focar no novo sub-bloco
-    setActiveBlockId(newSubBlock.id);
+  }, []);
+  
+  // Função para criar sub-flashcard
+  // Sempre salvar o pai antes de criar sub-flashcards
+  const ensureParentIsSaved = async (parentBlock: Block): Promise<string | null> => {
+    if (parentBlock.flashcardData?.id) {
+      return parentBlock.flashcardData.id; // Já salvo
+    }
     
-    // Marcar o pai como tendo sub-flashcard ativo
-    setActiveParentForSub(actualParentId);
+    if (parentBlock.content.includes(' → ')) {
+      const [front, back] = parentBlock.content.split(' → ').map(s => s.trim());
+      if (front && back) {
+        const savedId = await onSave(front, back, 'traditional', [], [], undefined, undefined, deckId);
+        
+        if (savedId) {
+          // IMPORTANTE: Atualizar o estado local do bloco pai para evitar duplicação
+          setBlocks(prev => prev.map(block => 
+            block.id === parentBlock.id 
+              ? { 
+                  ...block, 
+                  type: 'flashcard' as BlockType, 
+                  flashcardType: 'traditional',
+                  flashcardData: { id: savedId, front, back } 
+                }
+              : block
+          ));
+        }
+        
+        return savedId;
+      }
+    }
     
-  }, [blocks, generateBlockId, onSave, deckId]);
+    return null;
+  };
+  
+  const createSubFlashcard = useCallback(async (parentBlockId: string) => {
+    const parentBlock = validateParentBlock(parentBlockId);
+    if (!parentBlock) return;
+    
+    // Sempre garantir que o pai está salvo primeiro
+    const parentId = await ensureParentIsSaved(parentBlock);
+    if (!parentId) {
+      console.error('Não foi possível salvar o flashcard pai');
+      return;
+    }
+    
+    // Criar sub-flashcard com pai já salvo
+    const subBlock = createSubBlock(parentBlock);
+    addBlock(subBlock);
+    setActiveBlockId(subBlock.id);
+  }, [blocks, onSave, deckId, validateParentBlock, createSubBlock, addBlock]);
 
   // Nova função para finalizar flashcard tradicional quando pressionar Enter
   const finalizeTraditionalFlashcard = useCallback(async (blockId: string, content: string) => {
@@ -822,4 +870,42 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
     </div>
   );
 }
+
+// Usar inteiros sequenciais em vez de decimais
+const reorderBlocks = (blocks: Block[]): Block[] => {
+  return blocks
+    .sort((a, b) => {
+      // Primeiro por nível de hierarquia
+      const aLevel = a.indentLevel || 0;
+      const bLevel = b.indentLevel || 0;
+      if (aLevel !== bLevel) return aLevel - bLevel;
+      
+      // Depois por ordem original
+      return a.order - b.order;
+    })
+    .map((block, index) => ({ ...block, order: index * 10 })); // Usar múltiplos de 10
+};
+
+// Usar uma máquina de estados para gerenciar o ciclo de vida dos flashcards
+type FlashcardState = 'draft' | 'pending' | 'saved' | 'editing';
+
+interface BlockWithState extends Block {
+  state: FlashcardState;
+  parentState?: FlashcardState;
+}
+
+const getNextState = (currentState: FlashcardState, action: string): FlashcardState => {
+  switch (currentState) {
+    case 'draft':
+      return action === 'convert' ? 'pending' : 'draft';
+    case 'pending':
+      return action === 'save' ? 'saved' : action === 'cancel' ? 'draft' : 'pending';
+    case 'saved':
+      return action === 'edit' ? 'editing' : 'saved';
+    case 'editing':
+      return action === 'save' ? 'saved' : action === 'cancel' ? 'saved' : 'editing';
+    default:
+      return currentState;
+  }
+};
 
