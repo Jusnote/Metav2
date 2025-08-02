@@ -741,9 +741,10 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
             }
           : block
       );
+      saveState(updated);
       return updated;
     });
-  }, []);
+  }, [saveState]);
 
   // Adicionar estas funções ANTES da função createSubFlashcard (por volta da linha 460-470)
   
