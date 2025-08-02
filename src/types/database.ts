@@ -6,7 +6,7 @@ export type Database = {
           id: string;
           deck_id: string | null;
           user_id: string;
-          blocks_data: any; // JSON data
+          blocks_data: Record<string, unknown>; // JSON data
           created_at: string;
           updated_at: string;
         };
@@ -14,7 +14,7 @@ export type Database = {
           id?: string;
           deck_id?: string | null;
           user_id: string;
-          blocks_data: any;
+          blocks_data: Record<string, unknown>;
           created_at?: string;
           updated_at?: string;
         };
@@ -22,7 +22,7 @@ export type Database = {
           id?: string;
           deck_id?: string | null;
           user_id?: string;
-          blocks_data?: any;
+          blocks_data?: Record<string, unknown>;
           created_at?: string;
           updated_at?: string;
         };

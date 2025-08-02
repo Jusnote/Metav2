@@ -175,7 +175,7 @@ export const CriarQuestaoForm: React.FC = () => {
             </Label>
             <Select
               value={questao.modalidade}
-              onValueChange={(value) => handleQuestaoChange('modalidade', value as any)}
+              onValueChange={(value) => handleQuestaoChange('modalidade', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione a modalidade" />
@@ -194,7 +194,7 @@ export const CriarQuestaoForm: React.FC = () => {
             </Label>
             <Select
               value={questao.dificuldade}
-              onValueChange={(value) => handleQuestaoChange('dificuldade', value as any)}
+              onValueChange={(value) => handleQuestaoChange('dificuldade', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione a dificuldade" />
@@ -213,7 +213,7 @@ export const CriarQuestaoForm: React.FC = () => {
             </Label>
             <Select
               value={questao.nivel}
-              onValueChange={(value) => handleQuestaoChange('nivel', value as any)}
+              onValueChange={(value) => handleQuestaoChange('nivel', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o nível" />
@@ -233,7 +233,7 @@ export const CriarQuestaoForm: React.FC = () => {
           </Label>
           <Select
             value={questao.tipo}
-            onValueChange={(value) => handleQuestaoChange('tipo', value as any)}
+            onValueChange={(value) => handleQuestaoChange('tipo', value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecione o tipo" />

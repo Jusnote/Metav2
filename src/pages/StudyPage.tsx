@@ -117,7 +117,7 @@ const StudyPage = () => {
       // Carregar resumo salvo pelo ID
       const savedResumos = JSON.parse(localStorage.getItem('savedResumos') || '{}');
       const allSavedResumos = Object.values(savedResumos).flat() as Resumo[];
-      const resumoSalvo = allSavedResumos.find((r: any) => r.id === resumoIdFromUrl);
+      const resumoSalvo = allSavedResumos.find((r: Resumo) => r.id === resumoIdFromUrl);
       
       if (resumoSalvo) {
         const loadedResumo: Resumo = {
@@ -219,7 +219,7 @@ const StudyPage = () => {
     );
     
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode()) !== null) {
       textNodes.push(node as Text);
     }
     

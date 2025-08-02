@@ -25,7 +25,17 @@ declare module '@tiptap/core' {
   }
 }
 
-const CalloutComponent = ({ node, deleteNode }: any) => {
+interface CalloutComponentProps {
+  node: {
+    attrs: {
+      type?: 'info' | 'warning' | 'success' | 'error' | 'tip' | 'note';
+    };
+  };
+  updateAttributes: (attrs: any) => void;
+  deleteNode: () => void;
+}
+
+const CalloutComponent = ({ node, updateAttributes, deleteNode }: CalloutComponentProps) => {
   const type = node.attrs.type || 'info';
   
   const icons = {

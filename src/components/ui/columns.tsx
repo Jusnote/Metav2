@@ -43,7 +43,18 @@ const ColumnEditor = ({ content, onUpdate, index }: { content: string; onUpdate:
   );
 };
 
-const ColumnsComponent = ({ node, updateAttributes, deleteNode }: any) => {
+interface ColumnsComponentProps {
+  node: {
+    attrs: {
+      count?: number;
+      columns?: string[];
+    };
+  };
+  updateAttributes: (attrs: any) => void;
+  deleteNode: () => void;
+}
+
+const ColumnsComponent = ({ node, updateAttributes, deleteNode }: ColumnsComponentProps) => {
   const count = node.attrs.count || 2;
   const columns = node.attrs.columns || Array.from({ length: count }, () => '');
 

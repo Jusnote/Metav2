@@ -142,7 +142,7 @@ const EditResumoPage = () => {
       // Carregar resumo salvo pelo ID
       const savedResumos = JSON.parse(localStorage.getItem('savedResumos') || '{}');
       const allSavedResumos = Object.values(savedResumos).flat() as Resumo[];
-      const resumoSalvo = allSavedResumos.find((r: any) => r.id === resumoIdFromUrl);
+      const resumoSalvo = allSavedResumos.find((r: Resumo) => r.id === resumoIdFromUrl);
       
       if (resumoSalvo) {
         const loadedResumo: Resumo = {
@@ -244,11 +244,11 @@ const EditResumoPage = () => {
     const walker = document.createTreeWalker(
       contentRef,
       NodeFilter.SHOW_TEXT,
-      null
+      null as NodeFilter | null
     );
     
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode()) !== null) {
       textNodes.push(node as Text);
     }
     
@@ -359,7 +359,7 @@ const EditResumoPage = () => {
     }
     
     // Verificar se já existe um resumo com o mesmo nome
-    const existingIndex = savedResumos[disciplinaId].findIndex((r: any) => r.title === currentResumo.title);
+    const existingIndex = savedResumos[disciplinaId].findIndex((r: Resumo) => r.title === currentResumo.title);
     
     const resumoToSave = {
       id: currentResumo.id,

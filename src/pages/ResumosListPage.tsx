@@ -7,6 +7,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Search, Star, ChevronUp, ChevronDown } from "lucide-react";
+
+interface ResumoSalvo {
+  title: string;
+  content?: string;
+  id?: string;
+}
+
+interface Disciplina {
+  id: string;
+  name: string;
+  icon?: React.ComponentType;
+  subtitle?: string;
+  count?: string | number;
+  isFavorite?: boolean;
+  resumos: string[];
+}
 const ResumosListPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,11 +30,11 @@ const ResumosListPage = () => {
   const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [resumoName, setResumoName] = useState("");
-  const [resumosSalvos, setResumosSalvos] = useState<Record<string, any[]>>({});
+  const [resumosSalvos, setResumosSalvos] = useState<Record<string, ResumoSalvo[]>>({});
   const [selectedDisciplinaForCreation, setSelectedDisciplinaForCreation] = useState<string>("");
 
   // Mock data - disciplinas
-  const disciplinas = [{
+  const disciplinas: Disciplina[] = [{
     id: "favoritos",
     name: "Favoritos",
     icon: Star,
@@ -95,20 +111,20 @@ const ResumosListPage = () => {
   useEffect(() => {
     const savedResumos = localStorage.getItem('savedResumos');
     if (savedResumos) {
-      setResumosSalvos(JSON.parse(savedResumos));
+      setResumosSalvos(JSON.parse(savedResumos) as Record<string, ResumoSalvo[]>);
     }
   }, []);
 
   const getResumosDaDisciplina = () => {
     if (!selectedDisciplina) return [];
-    const disciplina = disciplinas.find(d => d.id === selectedDisciplina);
+    const disciplina = disciplinas.find((d: Disciplina) => d.id === selectedDisciplina);
     const resumosMock = disciplina?.resumos || [];
     const resumosSalvosDisciplina = resumosSalvos[selectedDisciplina] || [];
     
     // Combinar resumos mock com resumos salvos
     const todosResumos = [
       ...resumosMock,
-      ...resumosSalvosDisciplina.map((r: any) => r.title)
+      ...resumosSalvosDisciplina.map((r: ResumoSalvo) => r.title)
     ];
     
     return todosResumos;
@@ -119,7 +135,7 @@ const ResumosListPage = () => {
   const handleCommencar = (topico: string) => {
     // Verificar se é um resumo salvo
     const resumosSalvosDisciplina = resumosSalvos[selectedDisciplina!] || [];
-    const resumoSalvo = resumosSalvosDisciplina.find((r: any) => r.title === topico);
+    const resumoSalvo = resumosSalvosDisciplina.find(r => r.title === topico);
     
     if (resumoSalvo) {
       // Se é um resumo salvo, abrir na página de estudo (não de edição)
@@ -160,7 +176,7 @@ const ResumosListPage = () => {
           
           <div className="flex-1 overflow-hidden">
             <div className="flex flex-col gap-2 items-center">
-              {visibleThumbnails.map((thumb, index) => <div key={needsNavigation ? currentThumbnailIndex + index : index} className="flex-shrink-0 w-20 h-16 bg-muted border border-border rounded-lg flex items-center justify-center text-xs font-medium text-center leading-tight p-2">
+              {visibleThumbnails.map((thumb: string, index: number) => <div key={needsNavigation ? currentThumbnailIndex + index : index} className="flex-shrink-0 w-20 h-16 bg-muted border border-border rounded-lg flex items-center justify-center text-xs font-medium text-center leading-tight p-2">
                   {thumb}
                 </div>)}
             </div>
@@ -208,7 +224,7 @@ const ResumosListPage = () => {
                           <SelectValue placeholder="Selecione uma disciplina" />
                         </SelectTrigger>
                         <SelectContent>
-                          {disciplinas.filter(d => !d.isFavorite).map((disciplina) => (
+                          {disciplinas.filter(d => !d.isFavorite).map((disciplina: Disciplina) => (
                             <SelectItem key={disciplina.id} value={disciplina.id}>
                               {disciplina.name}
                             </SelectItem>
@@ -231,7 +247,7 @@ const ResumosListPage = () => {
           </div>
           <ScrollArea className="flex-1 min-h-0">
             <div className="p-3 pt-0 px-[15.5px]">
-              {disciplinas.map(disciplina => <div key={disciplina.id} className={`mb-2 cursor-pointer hover:bg-accent/50 p-2 rounded-lg transition-colors ${disciplina.isFavorite ? 'border-b border-border pb-2 mb-3' : ''} ${selectedDisciplina === disciplina.id ? 'bg-accent' : ''}`} onClick={() => handleDisciplinaClick(disciplina.id)}>
+              {disciplinas.map((disciplina: Disciplina) => <div key={disciplina.id} className={`mb-2 cursor-pointer hover:bg-accent/50 p-2 rounded-lg transition-colors ${disciplina.isFavorite ? 'border-b border-border pb-2 mb-3' : ''} ${selectedDisciplina === disciplina.id ? 'bg-accent' : ''}`} onClick={() => handleDisciplinaClick(disciplina.id)}>
                   <div className="flex items-center gap-2 mb-1">
                     {disciplina.isFavorite && <Star className="h-3 w-3 text-yellow-500" />}
                     <span className="font-medium text-xs">{disciplina.name}</span>
@@ -249,7 +265,7 @@ const ResumosListPage = () => {
           <div className="p-3 border-b border-border flex-shrink-0 py-[8px]">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Digite para pesquisar" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 h-8" />
+              <Input placeholder="Digite para pesquisar" value={searchTerm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)} className="pl-10 h-8" />
             </div>
           </div>
 
@@ -258,7 +274,7 @@ const ResumosListPage = () => {
             <ScrollArea className="h-full">
               <div className="p-3">
                 {selectedDisciplina ? <div className="space-y-2">
-                    {getResumosDaDisciplina().map((resumo, index) => <div key={index} className="flex items-center justify-between py-1 border-b border-border last:border-b-0">
+                    {getResumosDaDisciplina().map((resumo: string, index: number) => <div key={index} className="flex items-center justify-between py-1 border-b border-border last:border-b-0">
                         <span className="text-sm font-medium">{resumo}</span>
                         <Button onClick={() => handleCommencar(resumo)} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1 text-xs rounded">
                           COMEÇAR

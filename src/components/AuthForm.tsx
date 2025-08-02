@@ -37,9 +37,10 @@ export const AuthForm: React.FC = () => {
 
       toast.success('Login realizado com sucesso!');
       navigate('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no login:', error);
-      toast.error(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao fazer login. Verifique suas credenciais.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -81,9 +82,10 @@ export const AuthForm: React.FC = () => {
 
       toast.success('Conta criada com sucesso! Verifique seu email para confirmar a conta.');
       // Não navegar automaticamente, pois o usuário precisa confirmar o email
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no cadastro:', error);
-      toast.error(error.message || 'Erro ao criar conta. Tente novamente.');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao criar conta. Tente novamente.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

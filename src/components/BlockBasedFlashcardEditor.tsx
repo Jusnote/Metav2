@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, EyeOff, Check, Plus, X, Link2 } from 'lucide-react';
+import { FileText, EyeOff, Check, Plus, X, Link2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Tipos de bloco
@@ -30,6 +30,7 @@ export interface Block {
 interface BlockBasedFlashcardEditorProps {
   onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
   onUpdateCard?: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => Promise<void>;
+  onDeleteCard?: (cardId: string) => Promise<void>;
   // Adicionar novas props para rascunhos
   onSaveDraft?: (deckId: string, blocks: Block[]) => Promise<void>;
   onLoadDraft?: (deckId: string) => Promise<Block[] | null>;
@@ -57,6 +58,7 @@ interface BlockComponentProps {
   onStartEdit: (blockId: string) => void;
   onSaveEdit: (blockId: string, front: string, back: string, hiddenWords?: string[], explanation?: string) => void;
   onCancelEdit: (blockId: string) => void;
+  onDeleteFlashcard: (blockId: string) => void;
 }
 
 function BlockComponent({
@@ -76,7 +78,8 @@ function BlockComponent({
   selectedWords,
   hasTextSelection,
   onTextSelect,
-  onMarkSelectedWords
+  onMarkSelectedWords,
+  onDeleteFlashcard
 }: BlockComponentProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -143,7 +146,7 @@ function BlockComponent({
   const [editingBack, setEditingBack] = useState('');
   const [editingHiddenWords, setEditingHiddenWords] = useState<string[]>([]);
   const [editingExplanation, setEditingExplanation] = useState('');
-  const [originalData, setOriginalData] = useState<any>(null);
+  const [originalData, setOriginalData] = useState<Block['flashcardData'] | null>(null);
 
   // Inicializar dados de edição quando entrar em modo de edição
   useEffect(() => {
@@ -233,38 +236,56 @@ function BlockComponent({
             </div>
           ) : (
           // Modo de visualização (clicável para editar)
-          <div 
-            className="cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
-            onClick={() => onStartEdit(block.id)}
-            title="Clique para editar"
-          >
-            {/* Renderização específica para word-hiding */}
-            {block.flashcardType === 'word-hiding' ? (
-              <div className="text-sm text-foreground">
-                {(() => {
-                  console.log('Renderizando word-hiding para bloco:', block.id, 'dados:', block.flashcardData);
-                  return renderWordHidingText(block.flashcardData.back, block.flashcardData.hiddenWords || []);
-                })()}
-              </div>
-            ) : (
-              // Renderização normal para outros tipos (traditional, true-false)
-              <>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Frente:</span> {(() => {
-                    console.log('Renderizando flashcard tradicional para bloco:', block.id, 'front:', block.flashcardData.front);
-                    return block.flashcardData.front;
+          <div className="relative group">
+            <div 
+              className="cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+              onClick={() => onStartEdit(block.id)}
+              title="Clique para editar"
+            >
+              {/* Renderização específica para word-hiding */}
+              {block.flashcardType === 'word-hiding' ? (
+                <div className="text-sm text-foreground">
+                  {(() => {
+                    console.log('Renderizando word-hiding para bloco:', block.id, 'dados:', block.flashcardData);
+                    return renderWordHidingText(block.flashcardData.back, block.flashcardData.hiddenWords || []);
                   })()}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Verso:</span> {block.flashcardData.back}
-                </div>
-                {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
+              ) : (
+                // Renderização normal para outros tipos (traditional, true-false)
+                <>
                   <div className="text-sm text-muted-foreground">
-                    <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(", ")}
+                    <span className="font-medium">Frente:</span> {(() => {
+                      console.log('Renderizando flashcard tradicional para bloco:', block.id, 'front:', block.flashcardData.front);
+                      return block.flashcardData.front;
+                    })()}
                   </div>
-                )}
-              </>
-            )}
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-medium">Verso:</span> {block.flashcardData.back}
+                  </div>
+                  {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(", ")}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            
+            {/* Botão de Delete - aparece no hover */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600 z-10 pointer-events-auto"
+              onClick={(e) => {
+                console.log('Botão de deletar clicado para block:', block.id);
+                e.preventDefault();
+                e.stopPropagation();
+                onDeleteFlashcard(block.id);
+              }}
+              title="Deletar flashcard"
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
           </div>
         )}
         </div>
@@ -427,6 +448,7 @@ function BlockComponent({
 export function BlockBasedFlashcardEditor({ 
   onSave, 
   onUpdateCard, 
+  onDeleteCard,
   onSaveDraft, 
   onLoadDraft, 
   placeholder, 
@@ -753,7 +775,7 @@ export function BlockBasedFlashcardEditor({
     }
   }, [blocks, updateBlock]);
 
-  const updateFlashcardBlock = useCallback((blockId: string, flashcardType: FlashcardType, flashcardData: any) => {
+  const updateFlashcardBlock = useCallback((blockId: string, flashcardType: FlashcardType, flashcardData: Block['flashcardData']) => {
     setBlocks(prev => {
       const updated = prev.map(block => 
         block.id === blockId 
@@ -1179,8 +1201,62 @@ export function BlockBasedFlashcardEditor({
     // Simplesmente sair do modo de edição sem salvar
     // Os dados originais serão restaurados automaticamente pelo estado local
     setEditingBlockId(null);
-    console.log('Edição cancelada para bloco:', blockId);
   }, []);
+
+  // Função para deletar flashcard
+  const handleDeleteFlashcard = useCallback(async (blockId: string) => {
+    console.log('handleDeleteFlashcard chamada com blockId:', blockId);
+    const block = blocks.find(b => b.id === blockId);
+    console.log('Block encontrado:', block);
+    
+    if (!block || !block.flashcardData) {
+      console.log('Block não encontrado ou sem flashcardData');
+      return;
+    }
+
+    // Confirmação antes de deletar
+    const confirmDelete = window.confirm(
+      `Tem certeza que deseja deletar este flashcard?\n\nFrente: ${block.flashcardData.front}\nVerso: ${block.flashcardData.back}`
+    );
+    
+    console.log('Confirmação de deleção:', confirmDelete);
+    if (!confirmDelete) return;
+
+    try {
+      // Deletar do backend se houver um ID (flashcard já existe) e a função onDeleteCard estiver disponível
+      if (block.flashcardData.id && onDeleteCard) {
+        console.log("Deletando flashcard do backend:", block.flashcardData.id);
+        await onDeleteCard(block.flashcardData.id);
+        console.log("Flashcard deletado do backend com sucesso");
+      }
+
+      // Remover o bloco completamente e focar no último bloco
+      setBlocks(prev => {
+        const updatedBlocks = prev.filter(b => b.id !== blockId);
+        
+        console.log('Flashcard removido completamente:', blockId);
+        
+        // Salvar o rascunho após a remoção
+        saveState(updatedBlocks);
+        
+        // Focar no último bloco após a remoção
+        setTimeout(() => {
+          if (updatedBlocks.length > 0) {
+            const lastBlock = updatedBlocks[updatedBlocks.length - 1];
+            setActiveBlockId(lastBlock.id);
+            console.log('Foco movido para o último bloco:', lastBlock.id);
+          }
+        }, 100);
+        
+        return updatedBlocks;
+      });
+
+      console.log("Flashcard deletado com sucesso");
+    } catch (error) {
+      console.error("Erro ao deletar flashcard:", error);
+      alert("Erro ao deletar o flashcard. Tente novamente.");
+    }
+  }, [blocks, onDeleteCard, saveState]);
 
   const getPendingFlashcardType = useCallback((blockId: string): FlashcardType | null => {
     return pendingFlashcardType?.blockId === blockId ? pendingFlashcardType.type : null;
@@ -1208,6 +1284,7 @@ export function BlockBasedFlashcardEditor({
           hasTextSelection={textSelection?.blockId === block.id}
           onTextSelect={handleTextSelect}
           onMarkSelectedWords={handleMarkSelectedWords}
+          onDeleteFlashcard={handleDeleteFlashcard}
         />
       ))}
     </div>

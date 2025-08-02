@@ -284,7 +284,7 @@ export function useSupabaseFlashcards() {
     }
   };
 
-  const updateCardContent = async (cardId: string, front: string, back: string, hiddenWords?: string[]): Promise<void> => {
+  const updateCardContent = async (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]): Promise<void> => {
     try {
       setIsUpdatingCard(true);
       
@@ -292,6 +292,10 @@ export function useSupabaseFlashcards() {
         front,
         back,
       };
+
+      if (explanation !== undefined) {
+        updateData.explanation = explanation;
+      }
 
       if (hiddenWords !== undefined) {
         updateData.hidden_words = hiddenWords;
@@ -311,6 +315,7 @@ export function useSupabaseFlashcards() {
               ...card, 
               front, 
               back, 
+              explanation: explanation !== undefined ? explanation : card.explanation,
               hiddenWords: hiddenWords || card.hiddenWords 
             }
           : card
@@ -402,6 +407,9 @@ export function useSupabaseFlashcards() {
 
   const deleteCard = async (cardId: string): Promise<void> => {
     try {
+      setIsDeletingCard(true);
+      console.log('Iniciando deleção do cartão:', cardId);
+      
       const { error } = await supabase
         .from('flashcards')
         .delete()
@@ -410,6 +418,12 @@ export function useSupabaseFlashcards() {
       if (error) throw error;
 
       setCards(prev => prev.filter(c => c.id !== cardId));
+      console.log('Cartão deletado com sucesso:', cardId);
+      
+      toast({
+        title: "Cartão excluído",
+        description: "O flashcard foi removido com sucesso.",
+      });
     } catch (error) {
       console.error('Error deleting card:', error);
       toast({
@@ -417,6 +431,9 @@ export function useSupabaseFlashcards() {
         description: "Não foi possível excluir o cartão.",
         variant: "destructive",
       });
+      throw error;
+    } finally {
+      setIsDeletingCard(false);
     }
   };
 

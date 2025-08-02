@@ -460,7 +460,10 @@ const Index = () => {
                  <FlashcardEditor
                    onSave={handleCreateCard}
                    onUpdateCard={updateCardContent}
-                   placeholder={`Criando cards para "${selectedDeck?.name}"\n\nPergunta == Resposta`}
+                   onDeleteCard={deleteCard}
+                   placeholder={`Criando cards para "${selectedDeck?.name}"
+
+Pergunta == Resposta`}
                    deckId={selectedDeckId}
                  />
                </div>

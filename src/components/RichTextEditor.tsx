@@ -278,7 +278,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
     editor.chain().focus().toggleCodeBlock().run();
   };
 
-  const onEmojiClick = (emojiData: any) => {
+  const onEmojiClick = (emojiData: { emoji: string }) => {
     editor.chain().focus().insertContent(emojiData.emoji).run();
     setShowEmojiPicker(false);
   };
@@ -291,7 +291,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         const base64 = e.target?.result as string;
         editor.chain().focus().setImage({ src: base64 }).run();
       };
@@ -514,7 +514,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
                 <div>
                   <h4 className="text-sm font-medium mb-2">Cor do texto</h4>
                   <div className="grid grid-cols-6 gap-1">
-                    {colors.map((color) => (
+                    {colors.map((color: string) => (
                       <button
                         key={color}
                         className="w-8 h-8 rounded border border-border hover:scale-110 transition-transform"
@@ -531,7 +531,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
                 <div>
                   <h4 className="text-sm font-medium mb-2">Realce</h4>
                   <div className="grid grid-cols-6 gap-1">
-                    {highlightColors.map((color) => (
+                    {highlightColors.map((color: string) => (
                       <button
                         key={color}
                         className="w-8 h-8 rounded border border-border hover:scale-110 transition-transform"
@@ -872,7 +872,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
               </div>
             </SelectTrigger>
             <SelectContent>
-              {fontFamilies.map((font) => (
+              {fontFamilies.map((font: { value: string; label: string }) => (
                 <SelectItem key={font.value} value={font.value}>
                   {font.label}
                 </SelectItem>

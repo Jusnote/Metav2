@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuestoes } from "@/hooks/useQuestoes";
+import { useQuestoes, QuestaoCompleta } from "@/hooks/useQuestoes";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 
 export const ListaQuestoes: React.FC = () => {
   const { questoes, loading, error, deleteQuestao } = useQuestoes();
-  const [selectedQuestao, setSelectedQuestao] = useState<any | null>(null);
+  const [selectedQuestao, setSelectedQuestao] = useState<QuestaoCompleta | null>(null);
   const [respostasSelecionadas, setRespostasSelecionadas] = useState<{[key: string]: string}>({});
 
   const getStatusIcon = (status: string) => {
