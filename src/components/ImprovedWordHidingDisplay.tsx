@@ -7,12 +7,14 @@ interface ImprovedWordHidingDisplayProps {
   text: string;
   hiddenWords: string[];
   isStudyMode?: boolean;
+  onAllWordsRevealed?: () => void; // Nova prop
 }
 
 export function ImprovedWordHidingDisplay({ 
   text, 
   hiddenWords, 
-  isStudyMode = true 
+  isStudyMode = true,
+  onAllWordsRevealed // Nova prop
 }: ImprovedWordHidingDisplayProps) {
   const [revealedWords, setRevealedWords] = useState<Set<string>>(new Set());
   const [showAnswer, setShowAnswer] = useState(false);
@@ -22,11 +24,17 @@ export function ImprovedWordHidingDisplay({
   
   const revealWord = (word: string) => {
     if (isStudyMode) {
-      // Remove pontuação da palavra para comparação
       const wordWithoutPunctuation = word.toLowerCase().replace(/[.,!?;:()]/g, '');
       const shouldReveal = hiddenWords.some(hw => hw.toLowerCase() === wordWithoutPunctuation);
       if (shouldReveal) {
-        setRevealedWords(prev => new Set([...prev, wordWithoutPunctuation]));
+        const newRevealedWords = new Set([...revealedWords, wordWithoutPunctuation]);
+        setRevealedWords(newRevealedWords);
+        
+        // Verificar se todas as palavras foram reveladas
+        const allWordsWithoutPunctuation = hiddenWords.map(w => w.toLowerCase().replace(/[.,!?;:()]/g, ''));
+        if (newRevealedWords.size === allWordsWithoutPunctuation.length && onAllWordsRevealed) {
+          onAllWordsRevealed();
+        }
       }
     }
   };
@@ -36,10 +44,13 @@ export function ImprovedWordHidingDisplay({
       setRevealedWords(new Set());
       setShowAnswer(false);
     } else {
-      // Usar palavras sem pontuação para o estado revelado
       const wordsWithoutPunctuation = hiddenWords.map(w => w.toLowerCase().replace(/[.,!?;:()]/g, ''));
       setRevealedWords(new Set(wordsWithoutPunctuation));
       setShowAnswer(true);
+      // Chamar callback quando revelar todas via botão
+      if (onAllWordsRevealed) {
+        onAllWordsRevealed();
+      }
     }
   };
 
@@ -47,6 +58,10 @@ export function ImprovedWordHidingDisplay({
     const wordsWithoutPunctuation = hiddenWords.map(w => w.toLowerCase().replace(/[.,!?;:()]/g, ''));
     setRevealedWords(new Set(wordsWithoutPunctuation));
     setShowAnswer(true);
+    // Chamar callback quando revelar todas
+    if (onAllWordsRevealed) {
+      onAllWordsRevealed();
+    }
   };
 
   const hideAllWords = () => {

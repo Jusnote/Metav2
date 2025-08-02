@@ -104,6 +104,21 @@ function BlockComponent({
     return highlightedText;
   }, [block.content, selectedWords]);
 
+  // Função para renderizar texto de word-hiding com palavras destacadas
+  const renderWordHidingText = useCallback((text: string, hiddenWords: string[]) => {
+    if (!hiddenWords || hiddenWords.length === 0) {
+      return text;
+    }
+
+    let highlightedText = text;
+    hiddenWords.forEach(word => {
+      const regex = new RegExp(`\\b(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi');
+      highlightedText = highlightedText.replace(regex, '<span style="background-color: #fbbf24; color: #92400e; padding: 2px 4px; border-radius: 3px; font-weight: 500;">$1</span>');
+    });
+
+    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+  }, []);
+
   // Auto-resize textarea
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -202,25 +217,35 @@ function BlockComponent({
               </div>
             </div>
           ) : (
-            // Modo de visualização (clicável para editar)
-            <div 
-              className="cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
-              onClick={() => onStartEdit(block.id)}
-              title="Clique para editar"
-            >
-              <div className="text-sm text-muted-foreground">
-                <span className="font-medium">Frente:</span> {block.flashcardData.front}
+          // Modo de visualização (clicável para editar)
+          <div 
+            className="cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+            onClick={() => onStartEdit(block.id)}
+            title="Clique para editar"
+          >
+            {/* Renderização específica para word-hiding */}
+            {block.flashcardType === 'word-hiding' ? (
+              <div className="text-sm text-foreground">
+                {renderWordHidingText(block.flashcardData.back, block.flashcardData.hiddenWords || [])}
               </div>
-              <div className="text-sm text-muted-foreground">
-                <span className="font-medium">Verso:</span> {block.flashcardData.back}
-              </div>
-              {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
+            ) : (
+              // Renderização normal para outros tipos (traditional, true-false)
+              <>
                 <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(", ")}
+                  <span className="font-medium">Frente:</span> {block.flashcardData.front}
                 </div>
-              )}
-            </div>
-          )}
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-medium">Verso:</span> {block.flashcardData.back}
+                </div>
+                {block.flashcardData.hiddenWords && block.flashcardData.hiddenWords.length > 0 && (
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-medium">Palavras ocultas:</span> {block.flashcardData.hiddenWords.join(", ")}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
         </div>
       </div>
     );
@@ -381,6 +406,44 @@ function BlockComponent({
 export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, deckId }: BlockBasedFlashcardEditorProps) {
   const generateBlockId = () => `block-${Date.now()}-${Math.random()}`;
   const getStorageKey = () => `flashcard-editor-blocks-${deckId || 'default'}`;
+  
+  // Função para renderizar texto com palavras destacadas em amarelo
+  const renderWordHidingText = useCallback((text: string, hiddenWords: string[]) => {
+    if (!hiddenWords || hiddenWords.length === 0) {
+      return <span>{text}</span>;
+    }
+
+    // Dividir o texto em palavras mantendo espaços e pontuação
+    const words = text.split(/(\s+|[.,!?;:()\[\]{}"'])/g);
+    
+    return (
+      <span>
+        {words.map((word, index) => {
+          const cleanWord = word.trim().toLowerCase();
+          const wordWithoutPunctuation = cleanWord.replace(/[.,!?;:()\[\]{}"']/g, '');
+          const shouldBeHighlighted = hiddenWords.some(hw => hw.toLowerCase() === wordWithoutPunctuation);
+          
+          if (!word.trim()) {
+            return <span key={index}>{word}</span>;
+          }
+          
+          if (shouldBeHighlighted) {
+            return (
+              <mark 
+                key={index} 
+                className="bg-yellow-200 px-1 py-0.5 rounded"
+                style={{ backgroundColor: '#fef08a' }}
+              >
+                {word}
+              </mark>
+            );
+          }
+          
+          return <span key={index}>{word}</span>;
+        })}
+      </span>
+    );
+  }, []);
   
   // Função para carregar estado salvo
   const loadSavedState = useCallback((): Block[] => {

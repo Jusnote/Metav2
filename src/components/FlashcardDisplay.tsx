@@ -37,6 +37,9 @@ export function FlashcardDisplay({
   const [trueFalseAnswer, setTrueFalseAnswer] = useState<'true' | 'false' | null>(null);
   const [trueFalseIsCorrect, setTrueFalseIsCorrect] = useState<boolean | null>(null);
 
+  // State for word-hiding cards
+  const [wordHidingAllRevealed, setWordHidingAllRevealed] = useState(false);
+
   const handleTrueFalseAnswer = (userAnswer: 'true' | 'false', isCorrect: boolean) => {
     setTrueFalseAnswer(userAnswer);
     setTrueFalseIsCorrect(isCorrect);
@@ -61,6 +64,7 @@ export function FlashcardDisplay({
     setMainCardAnswered(false);
     setUserGotItRight(null);
     setShowSubFlashcardSection(false); // Reset sub-flashcard section visibility
+    setWordHidingAllRevealed(false); // Reset word-hiding state
   };
 
   const handleMainCardResponse = (gotItRight: boolean) => {
@@ -96,6 +100,12 @@ export function FlashcardDisplay({
       setIsLoadingAnimationActive(false);
       setShowSubFlashcardSection(false); // Hide sub-flashcards when hiding main answer
     }
+  };
+
+  // Handler for when all words are revealed in word-hiding flashcards
+  const handleAllWordsRevealed = () => {
+    setWordHidingAllRevealed(true);
+    setShowAnswer(true); // Automatically show answer
   };
 
   const hasParents = parentCards.length > 0;
@@ -242,6 +252,7 @@ export function FlashcardDisplay({
                         text={card.back}
                         hiddenWords={card.hiddenWords || []}
                         isStudyMode={true}
+                        onAllWordsRevealed={handleAllWordsRevealed}
                       />
                     </div>
                   ) : card.type === 'true-false' ? (
@@ -287,7 +298,7 @@ export function FlashcardDisplay({
                 </div>
               </div>
 
-              {card.type !== 'true-false' && (
+              {card.type !== 'true-false' && card.type !== 'word-hiding' && (
                 <div className="flex justify-center gap-3">
                   <Button
                     onClick={toggleAnswer}
@@ -378,7 +389,7 @@ export function FlashcardDisplay({
                         }}
                         variant="outline"
                         size="sm"
-                        className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                        className="gap-1 text-xs bg-green-500 border-green-200 text-green-700 hover:bg-green-100"
                       >
                         ✓ Acertei
                       </Button>
@@ -402,15 +413,15 @@ export function FlashcardDisplay({
                 </div>
               )}
 
-
-
-              {showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection && (
+              {/* Botões Acertei/Errei para flashcards principais */}
+              {((showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection) || 
+                (card.type === 'word-hiding' && wordHidingAllRevealed && !hasParents && !mainCardAnswered && !showSubFlashcardSection)) && (
                 <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
                   <Button
                     onClick={() => handleMainCardResponse(true)}
                     variant="outline"
                     size="sm"
-                    className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                    className="gap-1 text-xs bg-green-500 border-green-200 text-green-700 hover:bg-green-100"
                   >
                     ✓ Acertei
                   </Button>
@@ -487,4 +498,3 @@ export function FlashcardDisplay({
     </div>
   );
 }
-
