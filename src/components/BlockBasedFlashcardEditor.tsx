@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils';
 
 // Tipos de bloco
 type BlockType = 'paragraph' | 'flashcard' | 'sub-flashcard' | 'title' | 'subtitle';
-type FlashcardType = 'traditional' | 'word-hiding' | 'true-false';
+export type FlashcardType = 'traditional' | 'word-hiding' | 'true-false';
 
-interface Block {
+export interface Block {
   id: string;
   type: BlockType;
   content: string;
@@ -30,6 +30,9 @@ interface Block {
 interface BlockBasedFlashcardEditorProps {
   onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
   onUpdateCard?: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => Promise<void>;
+  // Adicionar novas props para rascunhos
+  onSaveDraft?: (deckId: string, blocks: Block[]) => Promise<void>;
+  onLoadDraft?: (deckId: string) => Promise<Block[] | null>;
   placeholder?: string;
   deckId?: string;
 }
@@ -403,7 +406,14 @@ function BlockComponent({
   );
 }
 
-export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, deckId }: BlockBasedFlashcardEditorProps) {
+export function BlockBasedFlashcardEditor({ 
+  onSave, 
+  onUpdateCard, 
+  onSaveDraft, 
+  onLoadDraft, 
+  placeholder, 
+  deckId 
+}: BlockBasedFlashcardEditorProps) {
   const generateBlockId = () => `block-${Date.now()}-${Math.random()}`;
   const getStorageKey = () => `flashcard-editor-blocks-${deckId || 'default'}`;
   
@@ -446,41 +456,59 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
   }, []);
   
   // Função para carregar estado salvo
-  const loadSavedState = useCallback((): Block[] => {
+  const loadSavedState = useCallback(async (): Promise<Block[]> => {
     try {
+      // Tentar carregar do banco primeiro
+      if (onLoadDraft && deckId) {
+        const draftBlocks = await onLoadDraft(deckId);
+        if (draftBlocks && draftBlocks.length > 0) {
+          console.log('Carregando rascunho do banco:', draftBlocks);
+          
+          // Verificar se há pelo menos um bloco vazio
+          const hasEmptyBlock = draftBlocks.some((block: Block) => 
+            block.type === 'paragraph' && 
+            block.content.trim() === '' && 
+            !block.isSubCard
+          );
+          
+          if (!hasEmptyBlock) {
+            const lastBlock = draftBlocks[draftBlocks.length - 1];
+            const newBlock: Block = {
+              id: generateBlockId(),
+              type: 'paragraph',
+              content: '',
+              order: lastBlock.order + 1,
+              indentLevel: 0
+            };
+            
+            const updatedBlocks = [...draftBlocks, newBlock];
+            await saveState(updatedBlocks);
+            return updatedBlocks;
+          }
+          
+          return draftBlocks;
+        }
+      }
+      
+      // Fallback para localStorage
       const saved = localStorage.getItem(getStorageKey());
       if (saved) {
         const parsedBlocks = JSON.parse(saved);
-        console.log('Carregando estado salvo:', parsedBlocks);
-        
-        // Verificar se há pelo menos um bloco vazio para continuar escrevendo
-        const hasEmptyBlock = parsedBlocks.some((block: Block) => 
-          block.type === 'paragraph' && 
-          block.content.trim() === '' && 
-          !block.isSubCard
-        );
-        
-        // Se não há bloco vazio, adicionar um
-        if (!hasEmptyBlock && parsedBlocks.length > 0) {
-          const lastBlock = parsedBlocks[parsedBlocks.length - 1];
-          const newBlock: Block = {
-            id: `block-${Date.now()}-${Math.random()}`,
-            type: 'paragraph',
-            content: '',
-            order: lastBlock.order + 1,
-            indentLevel: 0
-          };
-          
-          const updatedBlocks = [...parsedBlocks, newBlock];
-          // Salvar o estado atualizado
-          localStorage.setItem(getStorageKey(), JSON.stringify(updatedBlocks));
-          return updatedBlocks;
-        }
-        
+        console.log('Carregando do localStorage:', parsedBlocks);
         return parsedBlocks;
       }
     } catch (error) {
-      console.error('Erro ao carregar estado salvo:', error);
+      console.error('Erro ao carregar rascunho:', error);
+      
+      // Tentar localStorage como último recurso
+      try {
+        const saved = localStorage.getItem(getStorageKey());
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (localError) {
+        console.error('Erro ao carregar do localStorage:', localError);
+      }
     }
     
     // Estado inicial se não houver nada salvo
@@ -490,20 +518,25 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
       content: '', 
       order: 0 
     }];
-  }, [deckId]);
+  }, [deckId, onLoadDraft]);
 
-  const [blocks, setBlocks] = useState<Block[]>(loadSavedState);
-  const [activeBlockId, setActiveBlockId] = useState<string>(() => {
-    const initialBlocks = loadSavedState();
-    // Procurar pelo primeiro bloco vazio (parágrafo)
-    const emptyBlock = initialBlocks.find(block => 
-      block.type === 'paragraph' && 
-      block.content.trim() === '' && 
-      !block.isSubCard
-    );
-    // Se encontrou um bloco vazio, focar nele; senão, focar no último bloco
-    return emptyBlock?.id || initialBlocks[initialBlocks.length - 1]?.id || `block-${Date.now()}-${Math.random()}`;
-  });
+  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [activeBlockId, setActiveBlockId] = useState<string>('');
+  
+  // Carregar estado inicial
+  useEffect(() => {
+    loadSavedState().then((initialBlocks) => {
+      setBlocks(initialBlocks);
+      // Procurar pelo primeiro bloco vazio (parágrafo)
+      const emptyBlock = initialBlocks.find(block => 
+        block.type === 'paragraph' && 
+        block.content.trim() === '' && 
+        !block.isSubCard
+      );
+      // Se encontrou um bloco vazio, focar nele; senão, focar no último bloco
+      setActiveBlockId(emptyBlock?.id || initialBlocks[initialBlocks.length - 1]?.id || generateBlockId());
+    });
+  }, [loadSavedState]);
   const [selectedText, setSelectedText] = useState('');
   const [pendingFlashcardType, setPendingFlashcardType] = useState<{blockId: string, type: FlashcardType} | null>(null);
   const [pendingWordHiding, setPendingWordHiding] = useState<{blockId: string, words: string[]} | null>(null);
@@ -521,14 +554,23 @@ export function BlockBasedFlashcardEditor({ onSave, onUpdateCard, placeholder, d
   const [textSelection, setTextSelection] = useState<{blockId: string, start: number, end: number, text: string} | null>(null);
 
   // Função para salvar estado automaticamente
-  const saveState = useCallback((blocksToSave: Block[]) => {
+  const saveState = useCallback(async (blocksToSave: Block[]) => {
     try {
-      localStorage.setItem(getStorageKey(), JSON.stringify(blocksToSave));
-      console.log('Estado salvo automaticamente:', blocksToSave);
+      // Tentar salvar no banco primeiro
+      if (onSaveDraft && deckId) {
+        await onSaveDraft(deckId, blocksToSave);
+        console.log('Rascunho salvo no banco:', blocksToSave);
+      } else {
+        // Fallback para localStorage se não houver função de banco
+        localStorage.setItem(getStorageKey(), JSON.stringify(blocksToSave));
+        console.log('Estado salvo no localStorage:', blocksToSave);
+      }
     } catch (error) {
-      console.error('Erro ao salvar estado:', error);
+      console.error('Erro ao salvar no banco, usando localStorage:', error);
+      // Fallback para localStorage em caso de erro
+      localStorage.setItem(getStorageKey(), JSON.stringify(blocksToSave));
     }
-  }, [deckId]);
+  }, [deckId, onSaveDraft]);
 
   // Adicionar estas novas funções:
   const handleTextSelect = useCallback((blockId: string, start: number, end: number, text: string) => {
