@@ -148,6 +148,7 @@ function BlockComponent({
   // Inicializar dados de edição quando entrar em modo de edição
   useEffect(() => {
     if (isEditing && block.flashcardData) {
+      console.log('Inicializando dados de edição para bloco:', block.id, block.flashcardData);
       setEditingFront(block.flashcardData.front || '');
       setEditingBack(block.flashcardData.back || '');
       setEditingHiddenWords(block.flashcardData.hiddenWords || []);
@@ -155,6 +156,17 @@ function BlockComponent({
       setOriginalData(block.flashcardData);
     }
   }, [isEditing, block.flashcardData]);
+
+  // Resetar estados de edição quando sair do modo de edição
+  useEffect(() => {
+    if (!isEditing) {
+      setEditingFront('');
+      setEditingBack('');
+      setEditingHiddenWords([]);
+      setEditingExplanation('');
+      setOriginalData(null);
+    }
+  }, [isEditing]);
 
   // Função para lidar com teclas durante a edição
   const handleEditKeyDown = (e: React.KeyboardEvent) => {
@@ -229,13 +241,19 @@ function BlockComponent({
             {/* Renderização específica para word-hiding */}
             {block.flashcardType === 'word-hiding' ? (
               <div className="text-sm text-foreground">
-                {renderWordHidingText(block.flashcardData.back, block.flashcardData.hiddenWords || [])}
+                {(() => {
+                  console.log('Renderizando word-hiding para bloco:', block.id, 'dados:', block.flashcardData);
+                  return renderWordHidingText(block.flashcardData.back, block.flashcardData.hiddenWords || []);
+                })()}
               </div>
             ) : (
               // Renderização normal para outros tipos (traditional, true-false)
               <>
                 <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Frente:</span> {block.flashcardData.front}
+                  <span className="font-medium">Frente:</span> {(() => {
+                    console.log('Renderizando flashcard tradicional para bloco:', block.id, 'front:', block.flashcardData.front);
+                    return block.flashcardData.front;
+                  })()}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   <span className="font-medium">Verso:</span> {block.flashcardData.back}
@@ -417,43 +435,7 @@ export function BlockBasedFlashcardEditor({
   const generateBlockId = () => `block-${Date.now()}-${Math.random()}`;
   const getStorageKey = () => `flashcard-editor-blocks-${deckId || 'default'}`;
   
-  // Função para renderizar texto com palavras destacadas em amarelo
-  const renderWordHidingText = useCallback((text: string, hiddenWords: string[]) => {
-    if (!hiddenWords || hiddenWords.length === 0) {
-      return <span>{text}</span>;
-    }
 
-    // Dividir o texto em palavras mantendo espaços e pontuação
-    const words = text.split(/(\s+|[.,!?;:()\[\]{}"'])/g);
-    
-    return (
-      <span>
-        {words.map((word, index) => {
-          const cleanWord = word.trim().toLowerCase();
-          const wordWithoutPunctuation = cleanWord.replace(/[.,!?;:()\[\]{}"']/g, '');
-          const shouldBeHighlighted = hiddenWords.some(hw => hw.toLowerCase() === wordWithoutPunctuation);
-          
-          if (!word.trim()) {
-            return <span key={index}>{word}</span>;
-          }
-          
-          if (shouldBeHighlighted) {
-            return (
-              <mark 
-                key={index} 
-                className="bg-yellow-200 px-1 py-0.5 rounded"
-                style={{ backgroundColor: '#fef08a' }}
-              >
-                {word}
-              </mark>
-            );
-          }
-          
-          return <span key={index}>{word}</span>;
-        })}
-      </span>
-    );
-  }, []);
   
   // Função para carregar estado salvo
   const loadSavedState = useCallback(async (): Promise<Block[]> => {
@@ -1158,19 +1140,27 @@ export function BlockBasedFlashcardEditor({
       }
 
       // Atualizar o bloco localmente após salvar no backend
-      setBlocks(prev => prev.map(b => 
-        b.id === blockId 
-          ? { 
-              ...b, 
-              flashcardData: { 
-                ...b.flashcardData!, 
-                front, 
-                back, 
-                hiddenWords: hiddenWords || [], 
-              } 
-            }
-          : b
-      ));
+      setBlocks(prev => {
+        const updatedBlocks = prev.map(b => 
+          b.id === blockId 
+            ? { 
+                ...b, 
+                flashcardData: { 
+                  ...b.flashcardData!, 
+                  front, 
+                  back, 
+                  hiddenWords: hiddenWords || [], 
+                } 
+              }
+            : b
+        );
+        console.log('Blocos atualizados:', updatedBlocks.find(b => b.id === blockId));
+        
+        // Salvar o rascunho após a atualização
+        saveState(updatedBlocks);
+        
+        return updatedBlocks;
+      });
 
       setEditingBlockId(null);
       console.log("Flashcard editado e salvo com sucesso");
