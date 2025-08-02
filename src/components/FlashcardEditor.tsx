@@ -5,7 +5,7 @@ import { saveDraftToDatabase, loadDraftFromDatabase } from '@/integrations/supab
 interface FlashcardEditorProps {
   onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
   onUpdateCard?: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => Promise<void>;
-  onDeleteCard?: (cardId: string) => Promise<void>;
+  onDeleteCard?: (cardId: string, deleteOption?: 'cascade' | 'promote') => Promise<void>;
   placeholder?: string;
   deckId?: string;
 }

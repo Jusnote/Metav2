@@ -405,11 +405,73 @@ export function useSupabaseFlashcards() {
     }
   };
 
-  const deleteCard = async (cardId: string): Promise<void> => {
+  const deleteCard = async (cardId: string, deleteOption: 'cascade' | 'promote' = 'cascade'): Promise<void> => {
     try {
       setIsDeletingCard(true);
-      console.log('Iniciando deleção do cartão:', cardId);
+      console.log('Iniciando deleção do cartão:', cardId, 'com opção:', deleteOption);
       
+      const cardToDelete = cards.find(c => c.id === cardId);
+      if (!cardToDelete) {
+        throw new Error('Cartão não encontrado');
+      }
+
+      const childCards = getChildCards(cardId);
+      
+      if (childCards.length > 0) {
+        console.log(`Cartão possui ${childCards.length} subflashcards. Aplicando estratégia: ${deleteOption}`);
+        
+        switch (deleteOption) {
+          case 'cascade':
+            // O banco já faz CASCADE automaticamente devido ao ON DELETE CASCADE
+            // Apenas deletamos o pai e os filhos serão removidos automaticamente
+            break;
+            
+          case 'promote':
+            // Promover os filhos diretos para o nível do pai
+            const parentId = cardToDelete.parentId;
+            const parentLevel = cardToDelete.level;
+            
+            for (const child of childCards) {
+              const { error: updateError } = await supabase
+                .from('flashcards')
+                .update({
+                  parent_id: parentId, // null se o pai era root, ou o avô
+                  level: parentLevel,
+                })
+                .eq('id', child.id);
+                
+              if (updateError) {
+                console.error('Erro ao promover cartão filho:', updateError);
+                throw updateError;
+              }
+            }
+            
+            // Atualizar child_ids do pai (se existir)
+            if (parentId) {
+              const parentCard = cards.find(c => c.id === parentId);
+              if (parentCard) {
+                const updatedChildIds = [
+                  ...(parentCard.childIds || []).filter(id => id !== cardId),
+                  ...childCards.map(c => c.id)
+                ];
+                
+                const { error: parentUpdateError } = await supabase
+                  .from('flashcards')
+                  .update({ child_ids: updatedChildIds })
+                  .eq('id', parentId);
+                  
+                if (parentUpdateError) {
+                  console.error('Erro ao atualizar pai:', parentUpdateError);
+                }
+              }
+            }
+            break;
+            
+
+        }
+      }
+
+      // Deletar o cartão principal
       const { error } = await supabase
         .from('flashcards')
         .delete()
@@ -417,13 +479,46 @@ export function useSupabaseFlashcards() {
 
       if (error) throw error;
 
-      setCards(prev => prev.filter(c => c.id !== cardId));
-      console.log('Cartão deletado com sucesso:', cardId);
+      // Atualizar estado local baseado na estratégia
+      if (deleteOption === 'cascade') {
+        // Remover o cartão e todos os seus descendentes
+        const hierarchyToDelete = getCardHierarchy(cardToDelete);
+        const idsToDelete = hierarchyToDelete.map(c => c.id);
+        setCards(prev => prev.filter(c => !idsToDelete.includes(c.id)));
+        console.log(`Cartão e ${hierarchyToDelete.length - 1} descendentes deletados em cascata`);
+      } else {
+        // Apenas remover o cartão pai e atualizar os filhos conforme a estratégia
+        setCards(prev => {
+          const updated = prev.filter(c => c.id !== cardId);
+          
+          if (deleteOption === 'promote') {
+            return updated.map(c => {
+              if (childCards.some(child => child.id === c.id)) {
+                return {
+                  ...c,
+                  parentId: cardToDelete.parentId,
+                  level: cardToDelete.level,
+                };
+              }
+              return c;
+            });
+          }
+          
+          return updated;
+        });
+      }
+      
+      const strategyMessages = {
+        cascade: 'O flashcard e todos os seus subflashcards foram removidos.',
+        promote: 'O flashcard foi removido e seus subflashcards foram promovidos.'
+      };
       
       toast({
         title: "Cartão excluído",
-        description: "O flashcard foi removido com sucesso.",
+        description: strategyMessages[deleteOption],
       });
+      
+      console.log('Cartão deletado com sucesso:', cardId);
     } catch (error) {
       console.error('Error deleting card:', error);
       toast({

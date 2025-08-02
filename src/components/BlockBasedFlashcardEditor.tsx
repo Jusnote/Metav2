@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, EyeOff, Check, Plus, X, Link2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DeleteCardDialog } from './DeleteCardDialog';
 
 // Tipos de bloco
 type BlockType = 'paragraph' | 'flashcard' | 'sub-flashcard' | 'title' | 'subtitle';
@@ -20,6 +21,7 @@ export interface Block {
     back: string;
     hiddenWords?: string[];
     explanation?: string;
+    parent_id?: string; // ID do flashcard pai
   };
   // Novos campos para hierarquia
   isSubCard?: boolean;
@@ -30,7 +32,7 @@ export interface Block {
 interface BlockBasedFlashcardEditorProps {
   onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;
   onUpdateCard?: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => Promise<void>;
-  onDeleteCard?: (cardId: string) => Promise<void>;
+  onDeleteCard?: (cardId: string, deleteOption?: 'cascade' | 'promote') => Promise<void>;
   // Adicionar novas props para rascunhos
   onSaveDraft?: (deckId: string, blocks: Block[]) => Promise<void>;
   onLoadDraft?: (deckId: string) => Promise<Block[] | null>;
@@ -556,6 +558,12 @@ export function BlockBasedFlashcardEditor({
   // Adicionar estes novos estados:
   const [selectedWords, setSelectedWords] = useState<{[blockId: string]: string[]}>({});
   const [textSelection, setTextSelection] = useState<{blockId: string, start: number, end: number, text: string} | null>(null);
+  const [deleteDialogState, setDeleteDialogState] = useState<{
+    isOpen: boolean;
+    blockId: string | null;
+    cardTitle: string;
+    subCardCount: number;
+  }>({ isOpen: false, blockId: null, cardTitle: '', subCardCount: 0 });
 
   // Função para salvar estado automaticamente
   const saveState = useCallback(async (blocksToSave: Block[]) => {
@@ -1214,7 +1222,26 @@ export function BlockBasedFlashcardEditor({
       return;
     }
 
-    // Confirmação antes de deletar
+    // Verificar se há sub-flashcards
+    const subCards = blocks.filter(b => 
+      b.isSubCard && 
+      b.parentBlockId === blockId
+    );
+    
+    console.log('Sub-flashcards encontrados:', subCards.length);
+    
+    // Se há sub-flashcards, mostrar o diálogo de opções
+    if (subCards.length > 0) {
+      setDeleteDialogState({
+        isOpen: true,
+        blockId: blockId,
+        cardTitle: block.flashcardData.front || 'Flashcard',
+        subCardCount: subCards.length
+      });
+      return;
+    }
+
+    // Se não há sub-flashcards, usar confirmação simples
     const confirmDelete = window.confirm(
       `Tem certeza que deseja deletar este flashcard?\n\nFrente: ${block.flashcardData.front}\nVerso: ${block.flashcardData.back}`
     );
@@ -1222,17 +1249,40 @@ export function BlockBasedFlashcardEditor({
     console.log('Confirmação de deleção:', confirmDelete);
     if (!confirmDelete) return;
 
+    await executeDelete(blockId, 'cascade');
+  }, [blocks]);
+
+  // Função para executar a exclusão com a estratégia escolhida
+  const executeDelete = useCallback(async (blockId: string, deleteOption: 'cascade' | 'promote') => {
+    const block = blocks.find(b => b.id === blockId);
+    if (!block || !block.flashcardData) return;
+
     try {
       // Deletar do backend se houver um ID (flashcard já existe) e a função onDeleteCard estiver disponível
       if (block.flashcardData.id && onDeleteCard) {
-        console.log("Deletando flashcard do backend:", block.flashcardData.id);
-        await onDeleteCard(block.flashcardData.id);
+        console.log("Deletando flashcard do backend:", block.flashcardData.id, "com opção:", deleteOption);
+        await onDeleteCard(block.flashcardData.id, deleteOption);
         console.log("Flashcard deletado do backend com sucesso");
       }
 
       // Remover o bloco completamente e focar no último bloco
       setBlocks(prev => {
-        const updatedBlocks = prev.filter(b => b.id !== blockId);
+        let updatedBlocks = prev.filter(b => b.id !== blockId);
+        
+        // Aplicar a estratégia de exclusão escolhida
+        if (deleteOption === 'cascade') {
+          // Remover todos os sub-flashcards
+          updatedBlocks = updatedBlocks.filter(b => 
+            !(b.isSubCard && b.parentBlockId === blockId)
+          );
+        } else if (deleteOption === 'promote') {
+          // Promover sub-flashcards para o nível principal
+          updatedBlocks = updatedBlocks.map(b => 
+            b.isSubCard && b.parentBlockId === blockId
+              ? { ...b, isSubCard: false, parentBlockId: undefined, indentLevel: 0 }
+              : b
+          );
+        }
         
         console.log('Flashcard removido completamente:', blockId);
         
@@ -1257,6 +1307,19 @@ export function BlockBasedFlashcardEditor({
       alert("Erro ao deletar o flashcard. Tente novamente.");
     }
   }, [blocks, onDeleteCard, saveState]);
+
+  // Função para lidar com a confirmação do diálogo de exclusão
+  const handleDeleteConfirm = useCallback(async (deleteOption: 'cascade' | 'promote') => {
+    if (deleteDialogState.blockId) {
+      await executeDelete(deleteDialogState.blockId, deleteOption);
+    }
+    setDeleteDialogState({ isOpen: false, blockId: null, cardTitle: '', subCardCount: 0 });
+  }, [deleteDialogState.blockId, executeDelete]);
+
+  // Função para cancelar o diálogo de exclusão
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteDialogState({ isOpen: false, blockId: null, cardTitle: '', subCardCount: 0 });
+  }, []);
 
   const getPendingFlashcardType = useCallback((blockId: string): FlashcardType | null => {
     return pendingFlashcardType?.blockId === blockId ? pendingFlashcardType.type : null;
@@ -1287,6 +1350,14 @@ export function BlockBasedFlashcardEditor({
           onDeleteFlashcard={handleDeleteFlashcard}
         />
       ))}
+      
+      <DeleteCardDialog
+        isOpen={deleteDialogState.isOpen}
+        cardTitle={deleteDialogState.cardTitle}
+        subCardCount={deleteDialogState.subCardCount}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }
