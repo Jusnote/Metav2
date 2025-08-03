@@ -85,6 +85,7 @@ function BlockComponent({
   onRemoveSelectedWord,
   onDeleteFlashcard
 }: BlockComponentProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Adicionar esta função wrapper:
@@ -313,11 +314,15 @@ function BlockComponent({
   }
 
   return (
-    <div className={cn(
-      "group relative min-h-0",
-      // Visual para sub-flashcards
-      block.isSubCard && "ml-8 pl-4 relative"
-    )}>
+    <div 
+      className={cn(
+        "group relative min-h-0",
+        // Visual para sub-flashcards
+        block.isSubCard && "ml-8 pl-4 relative"
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Bolinha azul indicadora de sub-flashcard */}
       {block.isSubCard && (
         <div className="absolute -left-6 top-2 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-sm">
@@ -343,13 +348,16 @@ function BlockComponent({
         )} />
       )}
       
-      {/* Botões flutuantes verticais - 3 botões originais */}
+      {/* Botões flutuantes verticais - COLUNA 1: Ícones de tipo (apenas no bloco ativo) */}
       {isActive && 
        block.type === 'paragraph' && 
        block.content.trim() && 
        !block.content.includes(' → ') && 
        !flashcardsWithSubOption.includes(block.id) && (
-        <div className="absolute -right-16 top-0 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className={cn(
+          "absolute -right-16 top-0 flex flex-col gap-1 transition-opacity duration-200",
+          "opacity-60 hover:opacity-100"
+        )}>
           <Button
             variant="outline"
             size="sm"
@@ -386,9 +394,12 @@ function BlockComponent({
         </div>
       )}
       
-      {/* Botão de sub-flashcard - aparece APENAS quando um tipo foi selecionado */}
+      {/* Botão de sub-flashcard - COLUNA 2: Ícone de sub-flashcard (apenas no bloco ativo) */}
       {isActive && flashcardsWithSubOption.includes(block.id) && (
-        <div className="absolute -right-16 top-0 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className={cn(
+          "absolute -right-28 top-0 flex flex-col gap-1 transition-opacity duration-200",
+          "opacity-60 hover:opacity-100"
+        )}>
           <Button
             variant="outline"
             size="sm"
