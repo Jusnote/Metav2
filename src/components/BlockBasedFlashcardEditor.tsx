@@ -56,6 +56,7 @@ interface BlockComponentProps {
   hasTextSelection: boolean;
   onTextSelect: (blockId: string, start: number, end: number, text: string) => void;
   onMarkSelectedWords: (blockId: string) => void;
+  onRemoveSelectedWord: (blockId: string, word: string) => void;
   isEditing: boolean;
   onStartEdit: (blockId: string) => void;
   onSaveEdit: (blockId: string, front: string, back: string, hiddenWords?: string[], explanation?: string) => void;
@@ -81,6 +82,7 @@ function BlockComponent({
   hasTextSelection,
   onTextSelect,
   onMarkSelectedWords,
+  onRemoveSelectedWord,
   onDeleteFlashcard
 }: BlockComponentProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -112,6 +114,11 @@ function BlockComponent({
     return highlightedText;
   }, [block.content, selectedWords]);
 
+  // Função para normalizar texto removendo acentos
+  const normalizeText = (text: string): string => {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  };
+
   // Função para renderizar texto de word-hiding com palavras destacadas
   const renderWordHidingText = useCallback((text: string, hiddenWords: string[]) => {
     if (!hiddenWords || hiddenWords.length === 0) {
@@ -120,7 +127,10 @@ function BlockComponent({
 
     let highlightedText = text;
     hiddenWords.forEach(word => {
-      const regex = new RegExp(`\\b(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi');
+      // Criar regex que funciona com acentos
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Usar lookahead e lookbehind para word boundaries que funcionam com acentos
+      const regex = new RegExp(`(?<=^|\\s|[^\\p{L}\\p{N}])(${escapedWord})(?=\\s|[^\\p{L}\\p{N}]|$)`, 'giu');
       highlightedText = highlightedText.replace(regex, '<span style="background-color: #fbbf24; color: #92400e; padding: 2px 4px; border-radius: 3px; font-weight: 500;">$1</span>');
     });
 
@@ -172,6 +182,13 @@ function BlockComponent({
       setOriginalData(null);
     }
   }, [isEditing]);
+
+  // useEffect crítico para sincronização
+  useEffect(() => {
+    if (isEditing && block.flashcardType === 'word-hiding') {
+      setEditingHiddenWords(selectedWords);
+    }
+  }, [isEditing, selectedWords, block.flashcardType]);
 
   // Função para lidar com teclas durante a edição
   const handleEditKeyDown = (e: React.KeyboardEvent) => {
@@ -384,34 +401,18 @@ function BlockComponent({
         </div>
       )}
       
-      {/* Container para textarea com overlay de highlights */}
+      {/* Textarea principal com destaque visual simplificado */}
       <div className="relative">
-        {/* Div de background com highlights (apenas visível quando há palavras selecionadas) */}
+        {/* Badge pequeno e discreto */}
         {selectedWords.length > 0 && (
-          <div 
-            className={cn(
-              "absolute inset-0 pointer-events-none whitespace-pre-wrap break-words",
-              "w-full border-none bg-transparent resize-none overflow-hidden",
-              "text-foreground p-0 m-0 leading-tight",
-              (isPendingFlashcard || block.content.includes(' → ')) && "pl-4"
-            )}
-            style={{ 
-              height: 'auto',
-              minHeight: '1.2em',
-              lineHeight: '1.2',
-              paddingTop: '0px',
-              paddingBottom: '0px',
-              marginTop: '0px',
-              marginBottom: '0px',
-              fontSize: 'inherit',
-              fontFamily: 'inherit',
-              zIndex: 1
-            }}
-            dangerouslySetInnerHTML={{ __html: renderTextWithHighlights() }}
-          />
+          <div className="absolute -top-1 -right-1 z-10">
+            <span className="inline-block bg-yellow-200 text-yellow-800 px-1 py-0.5 rounded-full font-normal text-[9px] leading-none">
+              {selectedWords.length} {selectedWords.length === 1 ? 'palavra' : 'palavras'}
+            </span>
+          </div>
         )}
         
-        {/* Textarea original (transparente quando há highlights) */}
+        {/* Textarea com destaque por CSS */}
         <textarea
           ref={textareaRef}
           data-block-id={block.id}
@@ -422,14 +423,13 @@ function BlockComponent({
           onSelect={handleTextSelectEvent}
           placeholder="Digite seu texto aqui..."
           className={cn(
-            "w-full border-none bg-transparent resize-none overflow-hidden relative",
-            "focus:outline-none focus:ring-0 text-foreground",
+            "w-full border-none bg-transparent resize-none overflow-hidden",
+            "focus:outline-none focus:ring-0",
             "placeholder:text-muted-foreground/50",
             isActive && "ring-2 ring-primary/20 rounded-md",
             "p-0 m-0 leading-tight block",
             (isPendingFlashcard || block.content.includes(' → ')) && "pl-4",
-            selectedWords.length > 0 && "text-transparent caret-black", // Tornar texto transparente mas manter cursor
-            "z-10 relative"
+            selectedWords.length > 0 && "bg-yellow-50 border border-yellow-200 rounded"
           )}
           style={{ 
             height: 'auto',
@@ -438,10 +438,30 @@ function BlockComponent({
             paddingTop: '0px',
             paddingBottom: '0px',
             marginTop: '0px',
-            marginBottom: '0px',
-            display: 'block'
+            marginBottom: '0px'
           }}
         />
+        
+        {/* Lista de palavras selecionadas */}
+        {selectedWords.length > 0 && (
+          <div className="mt-1 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+            <div className="text-xs text-yellow-800 font-medium mb-1">Palavras selecionadas:</div>
+            <div className="flex flex-wrap gap-1">
+              {selectedWords.map((word, index) => (
+                <span key={index} className="inline-flex items-center px-2 py-1 bg-yellow-200 text-yellow-900 text-xs rounded-md font-bold">
+                  {word}
+                  <button 
+                    onClick={() => onRemoveSelectedWord(block.id, word)}
+                    className="ml-1 hover:bg-yellow-300 rounded-full w-4 h-4 flex items-center justify-center"
+                    title="Remover palavra"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -598,17 +618,29 @@ export function BlockBasedFlashcardEditor({
     if (!textSelection || textSelection.blockId !== blockId) return;
     
     const currentWords = selectedWords[blockId] || [];
-    const newWord = textSelection.text;
+    // Dividir texto selecionado em palavras
+    const selectedText = textSelection.text;
+    const wordsToAdd = selectedText.split(/\s+/).filter(word => word.trim().length > 0);
     
-    if (!currentWords.includes(newWord)) {
+    // Adicionar apenas palavras únicas
+    const uniqueNewWords = wordsToAdd.filter(word => !currentWords.includes(word));
+    
+    if (uniqueNewWords.length > 0) {
       setSelectedWords(prev => ({
         ...prev,
-        [blockId]: [...currentWords, newWord]
+        [blockId]: [...currentWords, ...uniqueNewWords]
       }));
     }
     
     setTextSelection(null);
   }, [textSelection, selectedWords]);
+
+  const handleRemoveSelectedWord = useCallback((blockId: string, wordToRemove: string) => {
+    setSelectedWords(prev => ({
+      ...prev,
+      [blockId]: (prev[blockId] || []).filter(word => word !== wordToRemove)
+    }));
+  }, []);
 
   const finalizeVisualWordHidingFlashcard = useCallback(async (blockId: string) => {
     const block = blocks.find(b => b.id === blockId);
@@ -1344,9 +1376,10 @@ export function BlockBasedFlashcardEditor({
           onSaveEdit={handleSaveEdit}
           onCancelEdit={handleCancelEdit}
           selectedWords={selectedWords[block.id] || []}
-          hasTextSelection={textSelection?.blockId === block.id}
-          onTextSelect={handleTextSelect}
-          onMarkSelectedWords={handleMarkSelectedWords}
+            hasTextSelection={textSelection?.blockId === block.id}
+            onTextSelect={handleTextSelect}
+            onMarkSelectedWords={handleMarkSelectedWords}
+            onRemoveSelectedWord={handleRemoveSelectedWord}
           onDeleteFlashcard={handleDeleteFlashcard}
         />
       ))}

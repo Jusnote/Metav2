@@ -48,12 +48,21 @@ export class FlashcardParser {
     return { text: cleanText, hiddenWords };
   }
 
+  // Função para normalizar texto removendo acentos
+  private static normalizeText(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
   static createHiddenWordIndices(text: string, hiddenWords: string[]): number[] {
     const words = text.split(/(\s+)/).filter(word => word.trim());
     const indices: number[] = [];
     
     hiddenWords.forEach(hiddenWord => {
-      const wordIndex = words.findIndex(word => word.trim().toLowerCase() === hiddenWord.toLowerCase());
+      const normalizedHiddenWord = this.normalizeText(hiddenWord.toLowerCase());
+      const wordIndex = words.findIndex(word => {
+        const normalizedWord = this.normalizeText(word.trim().toLowerCase());
+        return normalizedWord === normalizedHiddenWord;
+      });
       if (wordIndex !== -1 && !indices.includes(wordIndex)) {
         indices.push(wordIndex);
       }

@@ -33,7 +33,7 @@ export function DeleteCardDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onCancel}>
-      <AlertDialogContent className="max-w-md w-full mx-4 p-6">
+      <AlertDialogContent className="max-w-md w-full mx-4 p-6 fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <Trash2 className="h-5 w-5 text-destructive" />
