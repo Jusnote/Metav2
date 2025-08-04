@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, EyeOff, Check, Plus, X, Link2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DeleteCardDialog } from './DeleteCardDialog';
+import { TrueFalseEditor } from './TrueFalseEditor';
 
 // Tipos de bloco
 type BlockType = 'paragraph' | 'flashcard' | 'sub-flashcard' | 'title' | 'subtitle';
@@ -779,7 +780,7 @@ export function BlockBasedFlashcardEditor({
 
   const convertToFlashcard = useCallback((blockId: string, flashcardType: FlashcardType) => {
     const block = blocks.find(b => b.id === blockId);
-    if (!block || !block.content.trim()) return;
+    if (!block) return;
 
     // Definir tipo de flashcard pendente para mostrar a barrinha
     setPendingFlashcardType({ blockId, type: flashcardType });
@@ -822,7 +823,10 @@ export function BlockBasedFlashcardEditor({
       }, 0);
       setPendingWordHiding({ blockId, words: [] });
     } else if (flashcardType === 'true-false') {
-      setPendingTrueFalse({ blockId, statement: block.content });
+      // Capturar o texto atual e limpar o bloco
+      const currentText = block.content;
+      updateBlock(blockId, ''); // Limpar o conteúdo do bloco
+      setPendingTrueFalse({ blockId, statement: currentText });
     }
   }, [blocks, updateBlock]);
 
@@ -1130,6 +1134,35 @@ export function BlockBasedFlashcardEditor({
     return true;
   }, [blocks, onSave, deckId, updateFlashcardBlock, addNewBlock]);
 
+  // NOVA função para finalizar flashcard verdadeiro/falso
+  const finalizeTrueFalseFlashcard = useCallback(async (blockId: string, front: string, back: string, explanation?: string) => {
+    try {
+      const savedId = await onSave(front, back, 'true-false', undefined, undefined, explanation, undefined, deckId);
+      
+      if (savedId) {
+        updateFlashcardBlock(blockId, 'true-false', {
+          id: savedId,
+          front,
+          back,
+          explanation
+        });
+        
+        // Limpar estado pendente
+        setPendingTrueFalse(null);
+        setPendingFlashcardType(null);
+        
+        // Adicionar novo bloco após este
+        addNewBlock(blockId);
+        
+        return true;
+      }
+    } catch (error) {
+      console.error('Erro ao salvar flashcard verdadeiro/falso:', error);
+    }
+    
+    return false;
+  }, [onSave, deckId, updateFlashcardBlock, addNewBlock]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent, blockId: string) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -1151,6 +1184,23 @@ export function BlockBasedFlashcardEditor({
         if (finalizeWordHidingFlashcard(blockId, block.content)) {
           return;
         }
+      }
+      
+      // NOVO: Verificar se há flashcard verdadeiro/falso pendente
+      if (pendingTrueFalse?.blockId === blockId) {
+        // Tentar detectar padrão inline: "Pergunta? [T/F] - Explicação"
+        const trueFalsePattern = /^(.+?)\?\s*\[([TF])\](?:\s*-\s*(.+))?$/i;
+        const match = block.content.match(trueFalsePattern);
+        
+        if (match) {
+          const [, question, answer, explanation] = match;
+          const answerText = answer.toUpperCase() === 'T' ? 'Certo' : 'Errado';
+          finalizeTrueFalseFlashcard(blockId, question.trim(), answerText, explanation?.trim());
+          return;
+        }
+        
+        // Se não há padrão inline, manter o editor aberto para entrada manual
+        return;
       }
       
       // Se o bloco contém " → " e tem frente e verso, finalizar o flashcard
@@ -1187,7 +1237,14 @@ export function BlockBasedFlashcardEditor({
       // Comportamento padrão: criar novo bloco
       addNewBlock(blockId);
     }
-  }, [blocks, selectedWords, finalizeVisualWordHidingFlashcard, finalizeTraditionalFlashcard, addNewBlock, pendingWordHiding, finalizeWordHidingFlashcard]);
+    
+    // NOVO: Cancelar editor verdadeiro/falso com Esc
+    if (e.key === 'Escape' && pendingTrueFalse?.blockId === blockId) {
+      setPendingTrueFalse(null);
+      setPendingFlashcardType(null);
+      return;
+    }
+  }, [blocks, selectedWords, pendingWordHiding, pendingTrueFalse, finalizeVisualWordHidingFlashcard, finalizeTraditionalFlashcard, finalizeTrueFalseFlashcard, addNewBlock, finalizeWordHidingFlashcard]);
 
   const handleFocus = useCallback((blockId: string) => {
     setActiveBlockId(blockId);
@@ -1370,30 +1427,57 @@ export function BlockBasedFlashcardEditor({
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-2">
-      {blocks.map((block) => (
-        <BlockComponent
-          key={block.id}
-          block={block}
-          isActive={activeBlockId === block.id}
-          isPendingFlashcard={getPendingFlashcardType(block.id)}
-          onUpdate={updateBlock}
-          onFocus={handleFocus}
-          onKeyDown={handleKeyDown}
-          onConvertToFlashcard={convertToFlashcard}
-          onCreateSubFlashcard={createSubFlashcard}
-          flashcardsWithSubOption={flashcardsWithSubOption}
-          isEditing={editingBlockId === block.id}
-          onStartEdit={handleStartEdit}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
-          selectedWords={selectedWords[block.id] || []}
+      {blocks.map((block) => {
+        // NOVO: Ocultar o bloco se ele está sendo editado como true-false
+        const isBeingEditedAsTrueFalse = pendingTrueFalse?.blockId === block.id;
+        
+        if (isBeingEditedAsTrueFalse) {
+          return null; // Não renderizar o bloco durante a edição true-false
+        }
+        
+        return (
+          <BlockComponent
+            key={block.id}
+            block={block}
+            isActive={activeBlockId === block.id}
+            isPendingFlashcard={getPendingFlashcardType(block.id)}
+            onUpdate={updateBlock}
+            onFocus={handleFocus}
+            onKeyDown={handleKeyDown}
+            onConvertToFlashcard={convertToFlashcard}
+            onCreateSubFlashcard={createSubFlashcard}
+            flashcardsWithSubOption={flashcardsWithSubOption}
+            isEditing={editingBlockId === block.id}
+            onStartEdit={handleStartEdit}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+            selectedWords={selectedWords[block.id] || []}
             hasTextSelection={textSelection?.blockId === block.id}
             onTextSelect={handleTextSelect}
             onMarkSelectedWords={handleMarkSelectedWords}
             onRemoveSelectedWord={handleRemoveSelectedWord}
-          onDeleteFlashcard={handleDeleteFlashcard}
-        />
-      ))}
+            onDeleteFlashcard={handleDeleteFlashcard}
+          />
+        );
+      })}
+      
+      {/* Editor de Flashcard Verdadeiro/Falso - versão ultra compacta */}
+      {pendingTrueFalse && (
+        <div className="p-3 border border-gray-200 rounded-lg shadow-sm bg-blue-50/30">
+          <TrueFalseEditor
+            initialStatement={pendingTrueFalse.statement}
+            onSave={(front, back, type, explanation) => {
+              finalizeTrueFalseFlashcard(pendingTrueFalse.blockId, front, back, explanation);
+            }}
+            onCancel={() => {
+              // Restaurar o texto original no bloco
+              updateBlock(pendingTrueFalse.blockId, pendingTrueFalse.statement);
+              setPendingTrueFalse(null);
+              setPendingFlashcardType(null);
+            }}
+          />
+        </div>
+      )}
       
       <DeleteCardDialog
         isOpen={deleteDialogState.isOpen}
