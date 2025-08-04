@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { WordHidingDisplay } from '@/components/WordHidingDisplay';
 import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
 import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 
@@ -172,151 +173,101 @@ export function FlashcardDisplay({
 
         <div className="flex justify-center">
           <Card className={cn(
-            "relative transition-all duration-500 transform",
-            "p-6 shadow-lg hover:shadow-xl",
-            !hasParents && [
-              "bg-gradient-to-br from-background via-background to-purple-500/5",
-              "border-2 border-purple-500/20 shadow-lg shadow-purple-500/10",
-              "before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-500/5 before:via-transparent before:to-purple-500/5 before:animate-pulse before:duration-3000",
-              "after:absolute after:top-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-r after:from-purple-400/40 after:via-purple-600 after:to-purple-400/40",
-              "max-w-3xl w-full"
-            ],
-            hasParents && [
-              "bg-gradient-card border-l-4 border-l-primary/50 ml-8",
-              "max-w-xl"
-            ],
+            "w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200",
+            !hasParents && "max-w-5xl",
+            hasParents && "max-w-xl ml-8 border-l-4 border-l-primary/50"
           )}>
-            <>
-              {isLoadingAnimationActive && !showAnswer && !hasParents && (
-                <>
-                  <div
-                    className="absolute -top-[93px] -left-[19px] w-[80px] h-[80px] flex items-center justify-center z-40 animate-iconColorFade"
-                    style={{
-                      animationDelay: '0.6s'
-                    }}
-                  >
-                    <div className="bg-purple-500 rounded-full w-6 h-6 flex items-center justify-center">
-                      <Zap className="w-3 h-3 text-white" />
-                    </div>
-                  </div>
-                  <div className="absolute -top-[105px] -left-[19px] w-[80px] h-[80px] flex flex-col items-center justify-end space-y-1 z-30">
-                    <div
-                      className="bg-purple-500 rounded-full animate-colorFade"
-                      style={{
-                        width: '0.64rem',
-                        height: '0.64rem'
-                      }}
-                    ></div>
-                  </div>
-                </>
-              )}
-
-              <div className="absolute -top-[20px] -left-[20px] w-[80px] h-[80px] bg-background border-4 border-purple-500/40 rounded-full shadow-lg z-10 brain-circle transition-all duration-300 hover:shadow-purple-500/30 hover:shadow-xl hover:scale-105 cursor-pointer group"></div>
-
-              <div className="absolute -top-[20px] -left-[20px] w-[80px] h-[80px] flex items-center justify-center z-20 transition-all duration-300 group-hover:scale-110">
-                <img
-                  src="/brain-icon.png"
-                  alt="Brain icon"
-                  className="w-[48px] h-[48px] object-contain transition-all duration-300 hover:drop-shadow-lg hover:brightness-110"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)'
-                  }}
-                />
-              </div>
-            </>
-            <div className="relative z-10 space-y-4">
-              <div className="text-center">
-                {!hasParents && (
-                  <div className="mb-4">
-                    <div className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-500 font-medium px-4 py-2 rounded-full border border-purple-500/20">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm">Pergunta Principal</span>
-                    </div>
-                  </div>
-                )}
-
-                {hasParents && (
-                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
-                    <Link2 className="h-4 w-4" />
-                    <span className="font-medium">Sub-flashcard • Nível {card.level + 1}</span>
-                  </div>
-                )}
-
-                <div className="space-y-4">
-                  {card.type === 'word-hiding' ? (
-                    <div>
-                      <ImprovedWordHidingDisplay
-                        text={card.back}
-                        hiddenWords={card.hiddenWords || []}
-                        isStudyMode={true}
-                        onAllWordsRevealed={handleAllWordsRevealed}
-                      />
-                    </div>
-                  ) : card.type === 'true-false' ? (
-                    <div>
-                      <TrueFalseDisplay
-                        statement={card.front}
-                        correctAnswer={card.back}
-                        explanation={card.explanation}
-                        onAnswer={handleTrueFalseAnswer}
-                        hasAnswered={trueFalseAnswer !== null}
-                        userAnswer={trueFalseAnswer || undefined}
-                        isCorrect={trueFalseIsCorrect || undefined}
-                      />
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className={cn(
-                        "text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20",
-                        !hasParents ? "text-sm" : "text-xs"
-                      )}>
-                        <strong>Pergunta:</strong> {card.front}
-                      </div>
-
-                      {showAnswer && (
-                        <div className={cn(
-                          "animate-fade-in",
-                          showSubFlashcardSection ? "text-sm text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20" : (!hasParents ? "text-lg" : "text-base")
-                        )}>
-                          <div className={cn(
-                            "bg-primary/5 p-4 rounded-lg border-l-4 border-l-primary/40 shadow-sm",
-                            showSubFlashcardSection && "bg-transparent p-0 border-none shadow-none"
-                          )}>
-                            <strong className={cn(
-                              "text-primary",
-                              showSubFlashcardSection && "text-muted-foreground"
-                            )}>
-                              Resposta:</strong> {card.back}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 pb-3">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src="/brain-icon.png" alt="Flashcard" />
+                  <AvatarFallback>
+                    <Brain className="h-5 w-5 text-purple-600" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-gray-900 text-sm">
+                    {!hasParents ? 'Pergunta Principal' : `Sub-flashcard • Nível ${card.level + 1}`}
+                  </span>
+                  <span className="text-gray-500 text-xs flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {card.type === 'traditional' ? 'Tradicional' : 
+                     card.type === 'word-hiding' ? 'Palavras Ocultas' : 'Verdadeiro/Falso'}
+                  </span>
                 </div>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-gray-100"
+              >
+                <MoreHorizontal className="h-4 w-4 text-gray-500" />
+              </Button>
+            </div>
+            {/* Content */}
+            <div className="px-4 pb-3">
+              <div className="space-y-4">
 
-              {card.type !== 'true-false' && card.type !== 'word-hiding' && (
-                <div className="flex justify-center gap-3">
+
+                {card.type === 'word-hiding' ? (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <ImprovedWordHidingDisplay
+                      text={card.back}
+                      hiddenWords={card.hiddenWords || []}
+                      isStudyMode={true}
+                      onAllWordsRevealed={handleAllWordsRevealed}
+                    />
+                  </div>
+                ) : card.type === 'true-false' ? (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <TrueFalseDisplay
+                      statement={card.front}
+                      correctAnswer={card.back}
+                      explanation={card.explanation}
+                      onAnswer={handleTrueFalseAnswer}
+                      hasAnswered={trueFalseAnswer !== null}
+                      userAnswer={trueFalseAnswer || undefined}
+                      isCorrect={trueFalseIsCorrect || undefined}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20 text-sm">
+                      <strong>Pergunta:</strong> {card.front}
+                    </div>
+
+                    {showAnswer && (
+                      <div className="animate-fade-in">
+                        <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-l-primary/40 shadow-sm">
+                          <strong className="text-primary">Resposta:</strong> {card.back}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            {card.type !== 'true-false' && card.type !== 'word-hiding' && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+                <div className="flex items-center space-x-3">
                   <Button
                     onClick={toggleAnswer}
-                    variant="outline"
-                    size="default"
-                    className={cn(
-                      "gap-2 font-medium transition-all duration-300"
-                    )}
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-2 h-8 px-3 hover:bg-blue-50 transition-colors"
                   >
                     {showAnswer ? (
                       <>
                         <EyeOff className="h-4 w-4" />
-                        Ocultar Resposta
+                        <span className="text-xs font-medium">Ocultar</span>
                       </>
                     ) : (
                       <>
                         <Eye className="h-4 w-4" />
-                        Ver Resposta
+                        <span className="text-xs font-medium">Ver Resposta</span>
                       </>
                     )}
                   </Button>
@@ -324,23 +275,27 @@ export function FlashcardDisplay({
                   {showAnswer && hasChildren && (
                     <Button
                       onClick={() => setShowSubFlashcardSection(!showSubFlashcardSection)}
-                      variant="outline"
-                      size="default"
-                      className="gap-2 border-primary/30 text-primary hover:bg-primary/10 font-medium transition-all duration-300"
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center space-x-2 h-8 px-3 hover:bg-purple-50 transition-colors text-purple-600"
                     >
-                      {showSubFlashcardSection ? "Esconder Sub-Flashcard" : "Mostrar Sub-Flashcard"}
+                      <GitBranch className="h-4 w-4" />
+                      <span className="text-xs font-medium">
+                        {showSubFlashcardSection ? "Esconder" : "Sub-Cards"}
+                      </span>
                     </Button>
                   )}
                 </div>
-              )}
+              </div>
+            )}
 
               {showSubFlashcardSection && hasChildren && (
-                <div className="mt-4 space-y-3">
+                <div className="mt-4 space-y-3 mx-4 mb-6">
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-primary mb-4">Sub-Flashcards</h3>
                   </div>
                   {childCards.map((childCard, index) => (
-                    <div key={childCard.id} className="pl-4">
+                    <div key={childCard.id}>
                       <div className="p-5 bg-background rounded-lg border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 bg-gradient-to-br from-background via-background to-purple-500/5">
                         <div className="text-center">
                           <div className="space-y-3">
@@ -413,35 +368,37 @@ export function FlashcardDisplay({
                 </div>
               )}
 
-              {/* Botões Acertei/Errei para flashcards principais */}
-              {((showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection) || 
-                (card.type === 'word-hiding' && wordHidingAllRevealed && !hasParents && !mainCardAnswered && !showSubFlashcardSection)) && (
-                <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
-                  <Button
-                    onClick={() => handleMainCardResponse(true)}
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 text-xs bg-green-500 border-green-200 text-green-700 hover:bg-green-100"
-                  >
-                    ✓ Acertei
-                  </Button>
-
-                  <Button
-                    onClick={() => handleMainCardResponse(false)}
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                  >
-                    ✗ Errei
-                  </Button>
-                </div>
-              )}
-            </div>
           </Card>
         </div>
 
+        {/* Botões Acertei/Errei para flashcards principais */}
+        {((showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection) || 
+          (card.type === 'word-hiding' && wordHidingAllRevealed && !hasParents && !mainCardAnswered && !showSubFlashcardSection)) && (
+          <div className="space-y-4 animate-fade-in">
+            <h3 className="text-center text-sm font-medium text-muted-foreground">
+              Como você avalia sua resposta?
+            </h3>
+            <div className="flex justify-center gap-2">
+              <Button
+                onClick={() => handleMainCardResponse(true)}
+                variant="outline"
+                size="sm"
+                className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+              >
+                ✓ Acertei
+              </Button>
 
-          
+              <Button
+                onClick={() => handleMainCardResponse(false)}
+                variant="outline"
+                size="sm"
+                className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+              >
+                ✗ Errei
+              </Button>
+            </div>
+          </div>
+        )}
 
         {(showAnswer || (card.type === 'true-false' && trueFalseAnswer !== null)) && (hasParents || mainCardAnswered) && (
           <div className="space-y-4 animate-fade-in">
