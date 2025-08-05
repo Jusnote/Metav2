@@ -260,7 +260,7 @@ const Index = () => {
         </div>
 
         {/* Study Area - Centralizada */}
-        <div className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="flex-1 flex justify-center px-6 pt-4">
           <div className="w-full max-w-4xl">
             {currentStudyCard && (
               <FlashcardDisplay

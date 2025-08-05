@@ -147,7 +147,7 @@ export function FlashcardDisplay({
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto">
         {hasParents && (
           <div className="space-y-4 animate-fade-in">
             {parentCards.map((parent, index) => (
