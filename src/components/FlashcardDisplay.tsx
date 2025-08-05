@@ -33,6 +33,8 @@ export function FlashcardDisplay({
   const [subCardResults, setSubCardResults] = useState<Record<string, boolean | null>>({});
   const [isLoadingAnimationActive, setIsLoadingAnimationActive] = useState(true);
   const [showSubFlashcardSection, setShowSubFlashcardSection] = useState(false);
+  const [questionPulseTriggered, setQuestionPulseTriggered] = useState(false);
+  const [answerPulseTriggered, setAnswerPulseTriggered] = useState(false);
 
   // States for true-false cards
   const [trueFalseAnswer, setTrueFalseAnswer] = useState<'true' | 'false' | null>(null);
@@ -40,6 +42,24 @@ export function FlashcardDisplay({
 
   // State for word-hiding cards
   const [wordHidingAllRevealed, setWordHidingAllRevealed] = useState(false);
+
+  // Effect to trigger question pulse on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setQuestionPulseTriggered(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Effect to trigger answer pulse when answer is shown
+  useEffect(() => {
+    if (showAnswer && !answerPulseTriggered) {
+      const timer = setTimeout(() => {
+        setAnswerPulseTriggered(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showAnswer, answerPulseTriggered]);
 
   const handleTrueFalseAnswer = (userAnswer: 'true' | 'false', isCorrect: boolean) => {
     setTrueFalseAnswer(userAnswer);
@@ -66,6 +86,8 @@ export function FlashcardDisplay({
     setUserGotItRight(null);
     setShowSubFlashcardSection(false); // Reset sub-flashcard section visibility
     setWordHidingAllRevealed(false); // Reset word-hiding state
+    setQuestionPulseTriggered(false); // Reset question pulse for next card
+    setAnswerPulseTriggered(false); // Reset answer pulse for next card
   };
 
   const handleMainCardResponse = (gotItRight: boolean) => {
@@ -233,7 +255,10 @@ export function FlashcardDisplay({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="relative bg-gradient-to-r from-slate-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-slate-400 shadow-sm hover:shadow-md transition-all duration-300 min-h-[100px] flex items-center">
+                    <div className={cn(
+                      "relative bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-slate-400 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center",
+                      questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                    )}>
                        <div className="absolute top-2 right-3">
              <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
                PERGUNTA
@@ -244,7 +269,10 @@ export function FlashcardDisplay({
 
                     {showAnswer && (
                       <div className="animate-fade-in">
-                        <div className="relative bg-gradient-to-r from-orange-50 to-yellow-50 p-6 rounded-xl border-l-4 border-l-orange-400 shadow-md hover:shadow-lg transition-all duration-300 min-h-[100px] flex items-center">
+                        <div className={cn(
+                          "relative bg-gradient-to-45deg from-orange-50 via-pink-50 to-yellow-50 p-6 rounded-xl border-l-4 border-l-orange-400 shadow-md hover:shadow-xl hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center",
+                          answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                        )}>
                            <div className="absolute top-2 right-3">
               <span className="bg-orange-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-orange-600">
                 RESPOSTA
