@@ -54,33 +54,36 @@ export function TrueFalseDisplay({
 
   return (
     <div className="space-y-6">
-      {/* Statement */}
-      <div className="text-center">
-        <div className="text-lg font-medium text-foreground leading-relaxed">
-          {statement}
+      {/* Statement Box - Same style as traditional flashcard */}
+      <div className="relative bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-emerald-500 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center">
+        <div className="absolute top-2 right-3">
+          <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
+            C/E?
+          </span>
         </div>
+        <p className="text-slate-800 leading-relaxed w-full text-center">{statement}</p>
       </div>
 
-      {/* Answer Options */}
-      <div className="flex justify-center gap-4">
+      {/* Answer Options - Outside the box */}
+      <div className="flex gap-3 w-full">
         <Button
           onClick={() => handleAnswerClick('true')}
           disabled={hasAnswered}
           variant="outline"
           size="lg"
           className={cn(
-            "flex items-center gap-3 min-w-[120px] transition-all duration-300",
-            hasAnswered && userAnswer === 'true' && isCorrect && "bg-success/15 border-success text-foreground ring-1 ring-success/30",
-            hasAnswered && userAnswer === 'true' && !isCorrect && "bg-destructive/10 border-destructive text-destructive-foreground",
-            hasAnswered && userAnswer !== 'true' && correctIsTrue && "bg-success/15 border-success text-foreground ring-2 ring-success/30",
-            !hasAnswered && "hover:bg-success/5 hover:border-success/30"
+            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-sm hover:shadow-md",
+            hasAnswered && userAnswer === 'true' && isCorrect && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-200 shadow-emerald-100",
+            hasAnswered && userAnswer === 'true' && !isCorrect && "bg-red-50 border-red-400 text-red-700 ring-2 ring-red-200 shadow-red-100",
+            hasAnswered && userAnswer !== 'true' && correctIsTrue && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-300 shadow-emerald-100",
+            !hasAnswered && "hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 hover:scale-[1.02]"
           )}
         >
-          <Check className="h-5 w-5" />
-          <span className="font-medium">Certo</span>
+          <Check className="h-6 w-6" />
+          <span>Certo</span>
           {hasAnswered && correctIsTrue && userAnswer !== 'true' && (
-             <Badge variant="outline" className="ml-2 text-xs bg-success/20 text-success border-success/30">
-              Correto
+             <Badge variant="outline" className="ml-2 text-xs bg-emerald-100 text-emerald-700 border-emerald-300">
+              ✓
             </Badge>
           )}
         </Button>
@@ -91,18 +94,18 @@ export function TrueFalseDisplay({
           variant="outline"
           size="lg"
           className={cn(
-            "flex items-center gap-3 min-w-[120px] transition-all duration-300",
-            hasAnswered && userAnswer === 'false' && isCorrect && "bg-success/15 border-success text-foreground ring-1 ring-success/30",
-            hasAnswered && userAnswer === 'false' && !isCorrect && "bg-destructive/10 border-destructive text-destructive-foreground",
-            hasAnswered && userAnswer !== 'false' && !correctIsTrue && "bg-success/15 border-success text-foreground ring-2 ring-success/30",
-            !hasAnswered && "hover:bg-destructive/5 hover:border-destructive/30"
+            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-sm hover:shadow-md",
+            hasAnswered && userAnswer === 'false' && isCorrect && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-200 shadow-emerald-100",
+            hasAnswered && userAnswer === 'false' && !isCorrect && "bg-red-50 border-red-400 text-red-700 ring-2 ring-red-200 shadow-red-100",
+            hasAnswered && userAnswer !== 'false' && !correctIsTrue && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-300 shadow-emerald-100",
+            !hasAnswered && "hover:bg-red-50 hover:border-red-300 hover:text-red-700 hover:scale-[1.02]"
           )}
         >
-          <X className="h-5 w-5" />
-          <span className="font-medium">Errado</span>
+          <X className="h-6 w-6" />
+          <span>Errado</span>
           {hasAnswered && !correctIsTrue && userAnswer !== 'false' && (
-            <Badge variant="outline" className="ml-2 text-xs bg-success/20 text-success border-success/30">
-              Correto
+            <Badge variant="outline" className="ml-2 text-xs bg-emerald-100 text-emerald-700 border-emerald-300">
+              ✓
             </Badge>
           )}
         </Button>

@@ -274,7 +274,7 @@ export function FlashcardDisplay({
                     />
                   </div>
                 ) : card.type === 'true-false' ? (
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <div>
                     <TrueFalseDisplay
                       statement={card.front}
                       correctAnswer={card.back}
