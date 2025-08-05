@@ -6,7 +6,7 @@ import { WordHidingDisplay } from '@/components/WordHidingDisplay';
 import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
 import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 
@@ -219,13 +219,45 @@ export function FlashcardDisplay({
                   </span>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-gray-100"
-              >
-                <MoreHorizontal className="h-4 w-4 text-gray-500" />
-              </Button>
+              <div className="flex items-center gap-1">
+                {/* Compact Action Buttons */}
+                {card.type !== 'true-false' && card.type !== 'word-hiding' && (
+                  <Button
+                    onClick={toggleAnswer}
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 hover:bg-blue-50 transition-colors"
+                    title={showAnswer ? "Ocultar resposta" : "Ver resposta"}
+                  >
+                    {showAnswer ? (
+                      <EyeOff className="h-3 w-3 text-blue-600" />
+                    ) : (
+                      <Eye className="h-3 w-3 text-blue-600" />
+                    )}
+                  </Button>
+                )}
+                
+                {showAnswer && hasChildren && (
+                  <Button
+                    onClick={() => setShowSubFlashcardSection(!showSubFlashcardSection)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 hover:bg-purple-50 transition-colors"
+                    title={showSubFlashcardSection ? "Esconder sub-cards" : "Mostrar sub-cards"}
+                  >
+                    <GitBranch className="h-3 w-3 text-purple-600" />
+                  </Button>
+                )}
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-gray-100"
+                  title="Mais opções"
+                >
+                  <MoreHorizontal className="h-3 w-3 text-gray-500" />
+                </Button>
+              </div>
             </div>
             {/* Content */}
             <div className="px-4 pb-3">
@@ -287,122 +319,129 @@ export function FlashcardDisplay({
               </div>
             </div>
 
-            {/* Action Buttons */}
-            {card.type !== 'true-false' && card.type !== 'word-hiding' && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-                <div className="flex items-center space-x-3">
-                  <Button
-                    onClick={toggleAnswer}
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center space-x-2 h-8 px-3 hover:bg-blue-50 transition-colors"
-                  >
-                    {showAnswer ? (
-                      <>
-                        <EyeOff className="h-4 w-4" />
-                        <span className="text-xs font-medium">Ocultar</span>
-                      </>
-                    ) : (
-                      <>
-                        <Eye className="h-4 w-4" />
-                        <span className="text-xs font-medium">Ver Resposta</span>
-                      </>
-                    )}
-                  </Button>
-
-                  {showAnswer && hasChildren && (
-                    <Button
-                      onClick={() => setShowSubFlashcardSection(!showSubFlashcardSection)}
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center space-x-2 h-8 px-3 hover:bg-purple-50 transition-colors text-purple-600"
-                    >
-                      <GitBranch className="h-4 w-4" />
-                      <span className="text-xs font-medium">
-                        {showSubFlashcardSection ? "Esconder" : "Sub-Cards"}
-                      </span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Removed Action Buttons - now in header */}
 
               {showSubFlashcardSection && hasChildren && (
-                <div className="mt-4 space-y-3 mx-4 mb-6">
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-primary mb-4">Sub-Flashcards</h3>
+                <div className="mt-4 mx-8 mb-6">
+                  {/* Elegant Hierarchical Separator */}
+                  <div className="relative flex items-center justify-center mb-8">
+                    {/* Gradient Line */}
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full h-px bg-gradient-to-r from-transparent via-blue-400/80 to-transparent"></div>
+                    </div>
+                    {/* Central Indicator */}
+                      <div className="relative flex items-center gap-1.5 bg-gradient-to-r from-slate-100/95 via-blue-100/90 to-purple-100/95 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/50 shadow-md ring-1 ring-inset ring-white/40">
+                        <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full animate-pulse"></div>
+                        <span className="font-mono text-[10px] tracking-widest uppercase text-slate-700 font-medium">Aprofundamento</span>
+                        <Layers className="h-3 w-3 text-slate-600" />
+                      </div>
                   </div>
-                  {childCards.map((childCard, index) => (
-                    <div key={childCard.id}>
-                      <div className="p-5 bg-background rounded-lg border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 bg-gradient-to-br from-background via-background to-purple-500/5">
-                        <div className="text-center">
-                          <div className="space-y-3">
-                            <div className="text-muted-foreground/80 bg-muted/30 p-3 rounded-lg border-l-4 border-l-muted-foreground/20 text-sm">
-                              <strong>Pergunta:</strong> {childCard.front}
-                            </div>
 
-                            {subCardAnswers[childCard.id] && (
-                              <div className="animate-fade-in">
-                                <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-l-primary/40 shadow-sm">
-                                  <strong className="text-primary">Resposta:</strong> {childCard.back}
-                                </div>
+                  {/* Chat Container */}
+                  <div className="bg-gradient-to-b from-gray-50 to-white rounded-xl border border-gray-200 p-4 max-h-96 overflow-y-auto">
+                    <div className="space-y-4">
+                      {childCards.map((childCard, index) => (
+                        <div key={childCard.id} className="space-y-3">
+                          {/* Professor Question */}
+                          <div className="flex items-start gap-3 animate-fade-in">
+                            <Avatar className="h-8 w-8 border-2 border-blue-200">
+                              <AvatarImage src="/brain-icon.png" alt="Professor" />
+                              <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                                <Brain className="h-4 w-4" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+                                <p className="text-sm text-gray-800">{childCard.front}</p>
                               </div>
-                            )}
+                              <div className="flex items-center gap-1 mt-1 ml-2">
+                                <span className="text-xs text-gray-500">Professor</span>
+                                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                <span className="text-xs text-gray-400">agora</span>
+                              </div>
+                            </div>
                           </div>
 
+                          {/* Show Answer Button or Answer */}
                           {!subCardAnswers[childCard.id] ? (
-                            <div className="flex justify-center gap-3 mt-4">
+                            <div className="flex justify-end">
                               <Button
                                 onClick={() => toggleSubCardAnswer(childCard.id, index)}
                                 variant="outline"
-                                size="default"
-                                className="gap-2 font-medium transition-all duration-300"
+                                size="sm"
+                                className="gap-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 rounded-full px-4 py-2"
                               >
-                                <Eye className="h-4 w-4" />
+                                <Eye className="h-3 w-3" />
                                 Ver Resposta
                               </Button>
                             </div>
-                          ) : null}
+                          ) : (
+                            <>
+                              {/* Professor Answer - Right Side */}
+                               <div className="flex items-start gap-3 animate-fade-in justify-end">
+                                 <div className="flex-1 flex justify-end">
+                                   <div className="max-w-[80%]">
+                                     <div className="bg-white text-gray-800 rounded-2xl rounded-tr-sm px-4 py-3 shadow-lg border-2 border-orange-400">
+                                       <p className="text-sm">{childCard.back}</p>
+                                     </div>
+                                     <div className="flex items-center gap-1 mt-1 mr-2 justify-end">
+                                       <span className="text-xs text-gray-400">agora</span>
+                                       <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                       <span className="text-xs text-gray-500">Professor</span>
+                                     </div>
+                                   </div>
+                                 </div>
+                                 <Avatar className="h-8 w-8 border-2 border-blue-200">
+                                   <AvatarImage src="/brain-icon.png" alt="Professor" />
+                                   <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                                     <Brain className="h-4 w-4" />
+                                   </AvatarFallback>
+                                 </Avatar>
+                               </div>
+
+                              {/* Student Response Buttons */}
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  onClick={() => {
+                                    handleSubCardResponse(childCard.id, index, false);
+                                  }}
+                                  variant="outline"
+                                  size="sm"
+                                  className="gap-1 bg-red-50 border-red-200 text-red-700 hover:bg-red-100 rounded-full px-3 py-1 text-xs"
+                                >
+                                  😕 Não entendi
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    handleSubCardResponse(childCard.id, index, true);
+                                  }}
+                                  variant="outline"
+                                  size="sm"
+                                  className="gap-1 bg-green-50 border-green-200 text-green-700 hover:bg-green-100 rounded-full px-3 py-1 text-xs"
+                                >
+                                  ✅ Entendi!
+                                </Button>
+                              </div>
+                            </>
+                          )}
+
+                          {/* Divider between conversations */}
+                          {index < childCards.length - 1 && (
+                            <div className="flex items-center gap-2 my-4">
+                              <div className="flex-1 h-px bg-gray-200"></div>
+                              <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">próxima pergunta</span>
+                              <div className="flex-1 h-px bg-gray-200"></div>
+                            </div>
+                          )}
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                  
-                  {/* Botão único de resposta para sub-flashcards */}
-                  {Object.values(subCardAnswers).some(answer => answer) && (
-                    <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
-                      <Button
-                        onClick={() => {
-                          // Encontrar o primeiro sub-flashcard com resposta mostrada
-                          const firstAnsweredCard = childCards.find(card => subCardAnswers[card.id]);
-                          if (firstAnsweredCard) {
-                            const cardIndex = childCards.findIndex(card => card.id === firstAnsweredCard.id);
-                            handleSubCardResponse(firstAnsweredCard.id, cardIndex, true);
-                          }
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className="gap-1 text-xs bg-green-500 border-green-200 text-green-700 hover:bg-green-100"
-                      >
-                        ✓ Acertei
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          // Encontrar o primeiro sub-flashcard com resposta mostrada
-                          const firstAnsweredCard = childCards.find(card => subCardAnswers[card.id]);
-                          if (firstAnsweredCard) {
-                            const cardIndex = childCards.findIndex(card => card.id === firstAnsweredCard.id);
-                            handleSubCardResponse(firstAnsweredCard.id, cardIndex, false);
-                          }
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                      >
-                        ✗ Errei
-                      </Button>
-                    </div>
-                  )}
+                  </div>
+
+                  {/* Chat Footer */}
+                  <div className="text-center mt-4">
+                    <p className="text-xs text-gray-500">💬 Interface de chat para melhor aprendizado</p>
+                  </div>
                 </div>
               )}
 
