@@ -173,7 +173,7 @@ export function FlashcardDisplay({
 
         <div className="flex justify-center">
           <Card className={cn(
-            "w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200",
+            "w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 min-h-[25rem]",
             !hasParents && "max-w-5xl",
             hasParents && "max-w-xl ml-8 border-l-4 border-l-primary/50"
           )}>
