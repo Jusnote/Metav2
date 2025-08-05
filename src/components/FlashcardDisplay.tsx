@@ -7,6 +7,7 @@ import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDispla
 import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal, Layers } from 'lucide-react';
+import { FlashcardInfoPanel } from '@/components/FlashcardInfoPanel';
 import { cn } from '@/lib/utils';
 
 
@@ -193,13 +194,14 @@ export function FlashcardDisplay({
           </div>
         )}
 
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-4">
+          {/* Card principal */}
           <Card className={cn(
             "w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 min-h-[25rem]",
             !hasParents && "max-w-5xl",
-            hasParents && "max-w-xl ml-8 border-l-4 border-l-primary/50"
+            hasParents && "max-w-xl border-l-4 border-l-primary/50"
           )}>
-            {/* Header */}
+            {/* Header com FlashcardInfoPanel integrado */}
             <div className="flex items-center justify-between p-4 pb-3">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-10 w-10">
@@ -209,9 +211,22 @@ export function FlashcardDisplay({
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-gray-900 text-sm">
-                    {!hasParents ? 'Pergunta Principal' : `Sub-flashcard • Nível ${card.level + 1}`}
-                  </span>
+                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                    {!hasParents ? (
+                      <>
+                        <span>Card Status</span>
+                        <div className="w-px h-4 bg-gray-300"></div>
+                        <FlashcardInfoPanel 
+                          card={card}
+                          hasParents={hasParents}
+                          hasChildren={hasChildren}
+                          showAnswer={showAnswer}
+                        />
+                      </>
+                    ) : (
+                      <span>Sub-flashcard • Nível {card.level + 1}</span>
+                    )}
+                  </div>
                   <span className="text-gray-500 text-xs flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {card.type === 'traditional' ? 'Tradicional' : 
