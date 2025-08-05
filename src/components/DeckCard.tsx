@@ -2,8 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Deck } from '@/types/flashcard';
-import { BookOpen, Calendar, MoreVertical, Play } from 'lucide-react';
+import { BookOpen, Calendar, MoreVertical, Play, Edit3, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface DeckCardProps {
   deck: Deck;
@@ -11,10 +17,11 @@ interface DeckCardProps {
   totalCards: number;
   onStudy: () => void;
   onEdit: () => void;
+  onDelete: () => void;
   className?: string;
 }
 
-export function DeckCard({ deck, dueCount, totalCards, onStudy, onEdit, className }: DeckCardProps) {
+export function DeckCard({ deck, dueCount, totalCards, onStudy, onEdit, onDelete, className }: DeckCardProps) {
   const progressPercentage = totalCards > 0 ? ((totalCards - dueCount) / totalCards) * 100 : 0;
 
   return (
@@ -35,17 +42,42 @@ export function DeckCard({ deck, dueCount, totalCards, onStudy, onEdit, classNam
               </p>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+                className="gap-2"
+              >
+                <Edit3 className="h-4 w-4" />
+                Editar Deck
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="gap-2 text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+                Excluir Deck
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
 

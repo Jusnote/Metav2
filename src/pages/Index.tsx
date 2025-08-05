@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { useSupabaseFlashcards } from '@/hooks/useSupabaseFlashcards';
 import { DataMigrationDialog } from '@/components/DataMigrationDialog';
+import { DeleteDeckDialog } from '@/components/DeleteDeckDialog';
 import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
@@ -25,13 +26,19 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { decks, cards, loading, isCreatingDeck, isCreatingCard, syncStatus, createDeck, createCard, updateCardContent, deleteCard, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
+  const { decks, cards, loading, isCreatingDeck, isCreatingCard, syncStatus, createDeck, createCard, updateCardContent, deleteCard, deleteDeck, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
   
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDescription, setNewDeckDescription] = useState('');
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [isCreateDeckOpen, setIsCreateDeckOpen] = useState(false);
   const [showCardBacks, setShowCardBacks] = useState<{[key: string]: boolean}>({});
+  
+  // Estados para exclusão de deck
+  const [deleteDeckDialog, setDeleteDeckDialog] = useState<{
+    isOpen: boolean;
+    deck: { id: string; name: string; cardCount: number } | null;
+  }>({ isOpen: false, deck: null });
   
   // Verificar se está em modo de estudo
   const studyDeckId = searchParams.get('study');
@@ -99,6 +106,50 @@ const Index = () => {
     }
     
     return cardId;
+  };
+
+  // Funções para exclusão de deck
+  const handleDeleteDeck = (deck: { id: string; name: string }) => {
+    const deckCards = getCardsByDeck(deck.id);
+    setDeleteDeckDialog({
+      isOpen: true,
+      deck: {
+        id: deck.id,
+        name: deck.name,
+        cardCount: deckCards.length
+      }
+    });
+  };
+
+  const handleConfirmDeleteDeck = async () => {
+    if (!deleteDeckDialog.deck) return;
+    
+    try {
+      await deleteDeck(deleteDeckDialog.deck.id);
+      
+      // Se o deck excluído era o selecionado, limpar seleção
+      if (selectedDeckId === deleteDeckDialog.deck.id) {
+        setSelectedDeckId(null);
+      }
+      
+      setDeleteDeckDialog({ isOpen: false, deck: null });
+      
+      toast({
+        title: "Sucesso!",
+        description: `Deck "${deleteDeckDialog.deck.name}" excluído com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Erro ao excluir deck:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir deck. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelDeleteDeck = () => {
+    setDeleteDeckDialog({ isOpen: false, deck: null });
   };
 
   const handleStudyDeck = (deckId: string) => {
@@ -323,6 +374,15 @@ const Index = () => {
       {/* Diálogo de Migração de Dados */}
       <DataMigrationDialog />
       
+      {/* Diálogo de exclusão de deck */}
+      <DeleteDeckDialog
+        isOpen={deleteDeckDialog.isOpen}
+        onCancel={handleCancelDeleteDeck}
+        onConfirm={handleConfirmDeleteDeck}
+        deckName={deleteDeckDialog.deck?.name || ''}
+        cardCount={deleteDeckDialog.deck?.cardCount || 0}
+      />
+      
       {/* Header */}
       <div className="border-b border-border/50 bg-card/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -440,13 +500,25 @@ const Index = () => {
                   <Tabs value={selectedDeckId} onValueChange={setSelectedDeckId}>
                     <TabsList className="grid w-full grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 bg-muted p-1">
                       {decks.map((deck) => (
-                        <TabsTrigger 
-                          key={deck.id} 
-                          value={deck.id}
-                          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm px-3 py-2"
-                        >
-                          {deck.name}
-                        </TabsTrigger>
+                        <div key={deck.id} className="relative group">
+                          <TabsTrigger 
+                            value={deck.id}
+                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm px-3 py-2 pr-8 w-full"
+                          >
+                            {deck.name}
+                          </TabsTrigger>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteDeck({ id: deck.id, name: deck.name });
+                            }}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       ))}
                     </TabsList>
                   </Tabs>
@@ -536,17 +608,29 @@ Pergunta == Resposta`}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {decks.map((deck) => (
-                      <Button
-                        key={deck.id}
-                        variant={selectedDeckId === deck.id ? "default" : "outline"}
-                        onClick={() => setSelectedDeckId(deck.id)}
-                        className="justify-start h-auto p-3"
-                      >
-                        <div className="text-left">
-                          <div className="font-medium">{deck.name}</div>
-                          <div className="text-xs opacity-75">{deck.cardCount} cards</div>
-                        </div>
-                      </Button>
+                      <div key={deck.id} className="relative group">
+                        <Button
+                          variant={selectedDeckId === deck.id ? "default" : "outline"}
+                          onClick={() => setSelectedDeckId(deck.id)}
+                          className="justify-start h-auto p-3 w-full pr-12"
+                        >
+                          <div className="text-left">
+                            <div className="font-medium">{deck.name}</div>
+                            <div className="text-xs opacity-75">{deck.cardCount} cards</div>
+                          </div>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteDeck({ id: deck.id, name: deck.name });
+                          }}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ))}
                   </div>
                 </Card>
@@ -596,7 +680,8 @@ Pergunta == Resposta`}
                         dueCount={stats.due}
                         totalCards={stats.total}
                         onStudy={() => handleStudyDeck(deck.id)}
-                        onEdit={() => {/* TODO: Implement edit */}}
+                        onEdit={() => setSelectedDeckId(deck.id)}
+                        onDelete={() => handleDeleteDeck({ id: deck.id, name: deck.name })}
                       />
                     );
                   })}
