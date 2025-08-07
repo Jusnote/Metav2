@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { WordHidingDisplay } from '@/components/WordHidingDisplay';
 import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
 import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
@@ -73,11 +72,8 @@ export function FlashcardDisplay({
         setCurrentHighlightedSub(0);
         setTimeout(() => setCurrentHighlightedSub(null), 8000);
       }, 800);
-    } else if (!isCorrect) {
-      setTimeout(() => {
-        handleAnswer('again');
-      }, 2000);
     }
+    // Removed automatic 'again' handling - user should choose difficulty manually
   };
 
   const handleAnswer = (difficulty: StudyDifficulty) => {
@@ -89,6 +85,9 @@ export function FlashcardDisplay({
     setWordHidingAllRevealed(false); // Reset word-hiding state
     setQuestionPulseTriggered(false); // Reset question pulse for next card
     setAnswerPulseTriggered(false); // Reset answer pulse for next card
+    // Reset true-false states to prevent state leakage between cards
+    setTrueFalseAnswer(null);
+    setTrueFalseIsCorrect(null);
   };
 
   const handleMainCardResponse = (gotItRight: boolean) => {
@@ -100,9 +99,8 @@ export function FlashcardDisplay({
         setCurrentHighlightedSub(0);
         setTimeout(() => setCurrentHighlightedSub(null), 8000);
       }, 800);
-    } else if (!gotItRight) {
-      handleAnswer('again');
     }
+    // Removed automatic 'again' handling - user should choose difficulty manually
   };
 
   const handleSubCardResponse = (cardId: string, cardIndex: number, gotItRight: boolean) => {

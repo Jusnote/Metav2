@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,12 @@ export function ImprovedWordHidingDisplay({
 }: ImprovedWordHidingDisplayProps) {
   const [revealedWords, setRevealedWords] = useState<Set<string>>(new Set());
   const [showAnswer, setShowAnswer] = useState(false);
+
+  // Reset state when text or hiddenWords change (new flashcard)
+  useEffect(() => {
+    setRevealedWords(new Set());
+    setShowAnswer(false);
+  }, [text, hiddenWords]);
 
   // Dividir texto em palavras mantendo espaços e pontuação
   const words = text.split(/(\s+)/);
