@@ -64,7 +64,7 @@ export function FlashcardInfoPanel({
     .slice(0, 4); // Limitar a 4 ícones no rodapé
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={100}>
       <div className="flex items-center gap-1">
         {/* Estado FSRS */}
         {stateTag && (
