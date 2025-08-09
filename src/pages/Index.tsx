@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { FlashcardEditor } from '@/components/FlashcardEditor';
+import EditorSelector from '@/components/EditorSelector';
 import { FlashcardDisplay } from '@/components/FlashcardDisplay';
 
 import { DeckCard } from '@/components/DeckCard';
@@ -526,17 +526,15 @@ const Index = () => {
               </Card>
             )}
 
-            {/* Editor de criação integrado com cards existentes */}
+            {/* Editor Selector - permite escolher entre FlashcardEditor e BlockNoteEditor */}
             {selectedDeck && (
                <div className="animate-slide-down-in">
-                 <FlashcardEditor
+                 <EditorSelector
+                   selectedDeck={selectedDeck}
                    onSave={handleCreateCard}
                    onUpdateCard={updateCardContent}
                    onDeleteCard={deleteCard}
-                   placeholder={`Criando cards para "${selectedDeck?.name}"
-
-Pergunta == Resposta`}
-                   deckId={selectedDeckId}
+                   onClose={() => setSelectedDeckId(null)}
                  />
                </div>
             )}
