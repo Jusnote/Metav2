@@ -117,8 +117,8 @@ export const FlashcardBlock = createReactBlockSpec(
                      <Textarea
                        value={editFront}
                        onChange={(e) => setEditFront(e.target.value)}
-                       className="w-full min-w-0 px-3 py-1 text-sm border border-white/20 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-200 bg-white/80 backdrop-blur-sm min-h-[4rem] h-8"
-                       rows={1}
+                       className="w-full min-w-0 px-3 py-2 text-sm border border-white/20 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-200 bg-white/80 backdrop-blur-sm min-h-[4rem]"
+                       rows={3}
                        placeholder="Digite a pergunta ou frente do flashcard..."
                        autoFocus
                      />
@@ -127,16 +127,16 @@ export const FlashcardBlock = createReactBlockSpec(
                    {/* Seta elegante entre as text areas */}
                    <div className="flex justify-center items-center">
                      <div className="bg-gradient-to-r from-purple-400 to-green-400 p-1.5 rounded-md transform md:rotate-0 rotate-90">
-                <ArrowRight className="w-4 h-4 text-white" />
-              </div>
+                       <ArrowRight className="w-4 h-4 text-white" />
+                     </div>
                    </div>
                    
                    <div className="w-full">
                      <Textarea
                        value={editBack}
                        onChange={(e) => setEditBack(e.target.value)}
-                       className="w-full min-w-0 px-3 py-1 text-sm border border-white/20 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400 transition-all duration-200 bg-white/80 backdrop-blur-sm min-h-[4rem] h-8"
-                       rows={1}
+                       className="w-full min-w-0 px-3 py-2 text-sm border border-white/20 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400 transition-all duration-200 bg-white/80 backdrop-blur-sm min-h-[4rem]"
+                       rows={3}
                        placeholder="Digite a resposta ou verso do flashcard..."
                      />
                    </div>

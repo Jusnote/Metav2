@@ -77,7 +77,7 @@ const insertFlashcardItem = (editor: CustomEditor) => ({
           type: "flashcard",
           props: {
             front: frontText,
-            back: "Verso do cartão",
+            back: "",
             cardType: "traditional",
             showBack: false,
             autoEdit: currentText ? true : false,
