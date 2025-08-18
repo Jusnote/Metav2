@@ -299,32 +299,31 @@ export function FlashcardDisplay({
                     />
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <div className={cn(
-                      "relative bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-slate-400 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center",
-                      questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
-                    )}>
-                       <div className="absolute top-2 right-3">
-             <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
-               PERGUNTA
-             </span>
-           </div>
-                       <p className="text-slate-800 leading-relaxed w-full text-center">{card.front}</p>
-                     </div>
+                  <div className="space-y-2">
+                    {/* Pergunta como bubble da esquerda */}
+                    <div className="chat-container">
+                      <div className={cn(
+                        "bubble left",
+                        questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                      )}>
+                        {card.front}
+                      </div>
+                    </div>
 
                     {showAnswer && (
                       <div className="animate-fade-in">
+                        {/* Resposta com layout original */}
                         <div className={cn(
-                          "relative bg-gradient-to-45deg from-orange-50 via-pink-50 to-yellow-50 p-6 rounded-xl border-l-4 border-l-orange-400 shadow-md hover:shadow-xl hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center",
+                          "relative bg-gradient-to-45deg from-orange-50 via-pink-50 to-yellow-50 p-6 rounded-xl border-l-4 border-l-orange-400 shadow-md hover:shadow-xl hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center max-w-[570px]",
                           answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
                         )}>
-                           <div className="absolute top-2 right-3">
-              <span className="bg-orange-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-orange-600">
-                RESPOSTA
-              </span>
-            </div>
-                           <p className="text-orange-800 leading-relaxed w-full text-center">{card.back}</p>
-                         </div>
+                          <div className="absolute top-2 right-3">
+                            <span className="bg-orange-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-orange-600">
+                              RESPOSTA
+                            </span>
+                          </div>
+                          <p className="text-orange-800 leading-relaxed w-full text-center">{card.back}</p>
+                        </div>
                       </div>
                     )}
                   </div>
