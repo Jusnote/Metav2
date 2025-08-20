@@ -302,11 +302,16 @@ export function FlashcardDisplay({
                   <div className="space-y-2">
                     {/* Pergunta como bubble da esquerda */}
                     <div className="chat-container">
-                      <div className={cn(
-                        "bubble left",
-                        questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
-                      )}>
-                        {card.front}
+                      <div className="chat-message left">
+                        <div className="chat-avatar">
+                          Q
+                        </div>
+                        <div className={cn(
+                          "bubble left",
+                          questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                        )}>
+                          {card.front}
+                        </div>
                       </div>
                     </div>
 

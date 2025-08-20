@@ -626,8 +626,8 @@ All colors MUST be HSL.
     radial-gradient(100% 100% at var(--_p) 0,#0000 99%,#000 102%) 
       var(--_p) 100%/var(--t) var(--t) no-repeat, 
     linear-gradient(#000 0 0) padding-box;
-  background: linear-gradient(135deg,#FE6D00,#1384C5) border-box;
-  color: #fff;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.15), rgba(219, 234, 254, 0.2)) border-box;
+  color: #374151;
   font-size: 16px;
   line-height: 1.4;
 }
@@ -650,4 +650,38 @@ All colors MUST be HSL.
   gap: 8px;
   font-family: system-ui, sans-serif;
   padding: 0;
+}
+
+.chat-message {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.chat-message.left {
+  justify-content: flex-start;
+}
+
+.chat-message.left .bubble {
+  margin-left: -12px;
+}
+
+.chat-message.right {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #3B82F6, #1E40AF);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-bottom: 4px;
 }

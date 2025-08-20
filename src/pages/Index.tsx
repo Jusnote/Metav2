@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import EditorSelector from '@/components/EditorSelector';
 import { FlashcardDisplay } from '@/components/FlashcardDisplay';
+import { DialogFlashcardDisplay } from '@/components/DialogFlashcardDisplay';
 
 import { DeckCard } from '@/components/DeckCard';
 import { DeckCardsList } from '@/components/DeckCardsList';
@@ -313,14 +314,12 @@ const Index = () => {
         {/* Study Area - Centralizada */}
         <div className="flex-1 flex justify-center px-6 pt-4">
           <div className="w-full max-w-4xl">
-            {currentStudyCard && (
-              <FlashcardDisplay
-                card={currentStudyCard}
-                onAnswer={handleStudyAnswer}
-                getChildCards={getChildCards}
-                showAnswer={false}
-              />
-            )}
+            <DialogFlashcardDisplay
+              cards={studyCards}
+              currentCardIndex={currentCardIndex}
+              onAnswer={handleStudyAnswer}
+              onComplete={() => setIsStudyComplete(true)}
+            />
           </div>
         </div>
       </div>
