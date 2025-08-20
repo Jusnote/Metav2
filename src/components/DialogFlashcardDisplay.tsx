@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { Brain, User, Eye, RotateCcw, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface DialogMessage {
   id: string;
@@ -153,7 +154,16 @@ export function DialogFlashcardDisplay({
       return (
         <div key={message.id} className="chat-message left">
           <div className="chat-avatar">
-            Q
+            <DotLottieReact
+              src="https://lottie.host/5ac5cbef-1c62-4c32-afb2-b89d754067ce/h56zrNH9BP.lottie"
+              loop
+              autoplay
+              style={{ 
+                width: '200px', 
+                height: '200px',
+                imageRendering: 'crisp-edges'
+              }}
+            />
           </div>
           <div className="bubble left">
             {message.content}
