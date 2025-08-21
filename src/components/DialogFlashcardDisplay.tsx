@@ -155,7 +155,7 @@ export function DialogFlashcardDisplay({
       const hasAnswer = !!answerMessage;
       
       return (
-        <div key={message.id} className="flex items-start gap-4 mb-10">
+        <div key={message.id} className="flex items-start gap-1 mb-10">
           <div className="-mt-8">
             <DotLottieReact
                src="https://lottie.host/5ac5cbef-1c62-4c32-afb2-b89d754067ce/h56zrNH9BP.lottie"
