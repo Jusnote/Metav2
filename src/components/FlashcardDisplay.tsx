@@ -192,28 +192,40 @@ export function FlashcardDisplay({
           </div>
         )}
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-6">
           {/* Card principal */}
           <Card className={cn(
-            "w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 min-h-[25rem]",
-            !hasParents && "max-w-5xl",
-            hasParents && "max-w-xl border-l-4 border-l-primary/50"
+            "w-full max-w-4xl mx-auto relative overflow-hidden",
+            "bg-gradient-to-br from-slate-50/80 via-white to-blue-50/60",
+            "border border-slate-200/60 rounded-2xl shadow-lg hover:shadow-xl",
+            "transition-all duration-500 ease-out min-h-[28rem]",
+            "backdrop-blur-sm ring-1 ring-white/20",
+            !hasParents && "max-w-5xl shadow-2xl",
+            hasParents && "max-w-xl border-l-4 border-l-gradient-to-b from-blue-400 to-purple-500"
           )}>
+            {/* Gradient overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-slate-100/30 pointer-events-none" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-400" />
             {/* Header com FlashcardInfoPanel integrado */}
-            <div className="flex items-center justify-between p-4 pb-3">
-              <div className="flex items-center space-x-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="/brain-icon.png" alt="Flashcard" />
-                  <AvatarFallback>
-                    <Brain className="h-5 w-5 text-purple-600" />
-                  </AvatarFallback>
-                </Avatar>
+            <div className="relative z-10 flex items-center justify-between p-6 pb-4">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-md" />
+                  <Avatar className="h-12 w-12 relative border-2 border-white/50 shadow-lg">
+                    <AvatarImage src="/brain-icon.png" alt="Flashcard" className="object-cover" />
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                      <Brain className="h-6 w-6" />
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                  <div className="flex items-center gap-3 text-sm font-medium">
                     {!hasParents ? (
                       <>
-                        <span>Card Status</span>
-                        <div className="w-px h-4 bg-gray-300"></div>
+                        <span className="bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent font-semibold">
+                          Flashcard Inteligente
+                        </span>
+                        <div className="w-px h-4 bg-gradient-to-b from-slate-300 to-slate-400"></div>
                         <FlashcardInfoPanel 
                           card={card}
                           hasParents={hasParents}
@@ -222,11 +234,13 @@ export function FlashcardDisplay({
                         />
                       </>
                     ) : (
-                      <span>Sub-flashcard • Nível {card.level + 1}</span>
+                      <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+                        Sub-flashcard • Nível {card.level + 1}
+                      </span>
                     )}
                   </div>
-                  <span className="text-gray-500 text-xs flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
+                  <span className="text-slate-500 text-xs flex items-center gap-1 mt-1">
+                    <Clock className="h-3 w-3 text-slate-400" />
                     {card.type === 'traditional' ? 'Tradicional' : 
                      card.type === 'word-hiding' ? 'Palavras Ocultas' : 'Verdadeiro/Falso'}
                   </span>
@@ -239,13 +253,13 @@ export function FlashcardDisplay({
                     onClick={toggleAnswer}
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 hover:bg-blue-50 transition-colors"
+                    className="h-8 w-8 p-0 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 border border-blue-200/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
                     title={showAnswer ? "Ocultar resposta" : "Ver resposta"}
                   >
                     {showAnswer ? (
-                      <EyeOff className="h-3 w-3 text-blue-600" />
+                      <EyeOff className="h-4 w-4 text-blue-600" />
                     ) : (
-                      <Eye className="h-3 w-3 text-blue-600" />
+                      <Eye className="h-4 w-4 text-blue-600" />
                     )}
                   </Button>
                 )}
@@ -255,10 +269,10 @@ export function FlashcardDisplay({
                     onClick={() => setShowSubFlashcardSection(!showSubFlashcardSection)}
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 hover:bg-purple-50 transition-colors"
+                    className="h-8 w-8 p-0 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-purple-200/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
                     title={showSubFlashcardSection ? "Esconder sub-cards" : "Mostrar sub-cards"}
                   >
-                    <GitBranch className="h-3 w-3 text-purple-600" />
+                    <GitBranch className="h-4 w-4 text-purple-600" />
                   </Button>
                 )}
                 
@@ -273,12 +287,10 @@ export function FlashcardDisplay({
               </div>
             </div>
             {/* Content */}
-            <div className="px-4 pb-3">
-              <div className="space-y-4">
-
-
+            <div className="relative z-10 flex-1 p-8 pt-4">
+              <div className="space-y-8">
                 {card.type === 'word-hiding' ? (
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="bg-gradient-to-br from-gray-50/80 to-slate-100/60 rounded-2xl p-6 border border-gray-200/50 shadow-lg">
                     <ImprovedWordHidingDisplay
                       text={card.back}
                       hiddenWords={card.hiddenWords || []}
@@ -287,7 +299,7 @@ export function FlashcardDisplay({
                     />
                   </div>
                 ) : card.type === 'true-false' ? (
-                  <div>
+                  <div className="space-y-6">
                     <TrueFalseDisplay
                       statement={card.front}
                       correctAnswer={card.back}
@@ -299,35 +311,63 @@ export function FlashcardDisplay({
                     />
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    {/* Pergunta como bubble da esquerda */}
-                    <div className="chat-container">
-                      <div className="chat-message left">
-                        <div className="chat-avatar">
-                          Q
-                        </div>
+                  <div className="space-y-6">
+                    {/* Pergunta */}
+                    <div className="text-center">
+                      <div className="relative">
                         <div className={cn(
-                          "bubble left",
+                          "relative overflow-hidden",
+                          "bg-gradient-to-br from-blue-50/90 via-indigo-50/80 to-purple-50/90",
+                          "backdrop-blur-sm border border-blue-200/50 rounded-2xl",
+                          "shadow-lg hover:shadow-2xl transition-all duration-700",
+                          "min-h-[120px] flex items-center max-w-[600px] mx-auto",
+                          "ring-1 ring-white/30 hover:ring-blue-300/50",
+                          "hover:scale-[1.01] transform-gpu",
                           questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
                         )}>
-                          {card.front}
+                          {/* Subtle animated background */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-pink-400/5 animate-[gentle-flow_8s_ease-in-out_infinite]" />
+                          
+                          <div className="absolute top-3 right-4">
+                            <span className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-md px-3 py-1.5 rounded-full font-medium text-xs tracking-wide uppercase text-blue-700 border border-blue-200/30">
+                              ❓ Pergunta
+                            </span>
+                          </div>
+                          <div className="relative z-10 w-full px-6">
+                            <p className="text-slate-800 leading-relaxed text-center font-medium text-lg">{card.front}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {showAnswer && (
                       <div className="animate-fade-in">
-                        {/* Resposta com layout original */}
-                        <div className={cn(
-                          "relative bg-gradient-to-45deg from-orange-50 via-pink-50 to-yellow-50 p-6 rounded-xl border-l-4 border-l-orange-400 shadow-md hover:shadow-xl hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center max-w-[570px]",
-                          answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
-                        )}>
-                          <div className="absolute top-2 right-3">
-                            <span className="bg-orange-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-orange-600">
-                              RESPOSTA
-                            </span>
+                        {/* Resposta */}
+                        <div className="text-center">
+                          <div className="relative">
+                            <div className={cn(
+                              "relative overflow-hidden",
+                              "bg-gradient-to-br from-orange-50/90 via-pink-50/80 to-yellow-50/90",
+                              "backdrop-blur-sm border border-orange-200/50 rounded-2xl",
+                              "shadow-lg hover:shadow-2xl transition-all duration-700",
+                              "min-h-[120px] flex items-center max-w-[600px] mx-auto",
+                              "ring-1 ring-white/30 hover:ring-orange-300/50",
+                              "hover:scale-[1.01] transform-gpu",
+                              answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                            )}>
+                              {/* Subtle animated background */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-orange-400/5 via-pink-400/5 to-yellow-400/5 animate-[gentle-flow_8s_ease-in-out_infinite_reverse]" />
+                              
+                              <div className="absolute top-3 right-4">
+                                <span className="bg-gradient-to-r from-orange-500/10 to-pink-500/10 backdrop-blur-md px-3 py-1.5 rounded-full font-medium text-xs tracking-wide uppercase text-orange-700 border border-orange-200/30">
+                                  💡 Resposta
+                                </span>
+                              </div>
+                              <div className="relative z-10 w-full px-6">
+                                <p className="text-slate-800 leading-relaxed text-center font-medium text-lg">{card.back}</p>
+                              </div>
+                            </div>
                           </div>
-                          <p className="text-orange-800 leading-relaxed w-full text-center">{card.back}</p>
                         </div>
                       </div>
                     )}
@@ -424,7 +464,7 @@ export function FlashcardDisplay({
                                   }}
                                   variant="outline"
                                   size="sm"
-                                  className="gap-1 bg-red-50 border-red-200 text-red-700 hover:bg-red-100 rounded-full px-3 py-1 text-xs"
+                                  className="gap-2 bg-gradient-to-r from-red-50/80 to-rose-50/80 border-red-200/60 text-red-700 hover:from-red-100/90 hover:to-rose-100/90 hover:border-red-300/70 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
                                 >
                                   😕 Não entendi
                                 </Button>
@@ -434,7 +474,7 @@ export function FlashcardDisplay({
                                   }}
                                   variant="outline"
                                   size="sm"
-                                  className="gap-1 bg-green-50 border-green-200 text-green-700 hover:bg-green-100 rounded-full px-3 py-1 text-xs"
+                                  className="gap-2 bg-gradient-to-r from-green-50/80 to-emerald-50/80 border-green-200/60 text-green-700 hover:from-green-100/90 hover:to-emerald-100/90 hover:border-green-300/70 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
                                 >
                                   ✅ Entendi!
                                 </Button>
@@ -469,15 +509,15 @@ export function FlashcardDisplay({
         {((showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection) || 
           (card.type === 'word-hiding' && wordHidingAllRevealed && !hasParents && !mainCardAnswered && !showSubFlashcardSection)) && (
           <div className="space-y-4 animate-fade-in">
-            <h3 className="text-center text-sm font-medium text-muted-foreground">
-              Como você avalia sua resposta?
+            <h3 className="text-center text-sm font-medium bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
+              ✨ Como você avalia sua resposta?
             </h3>
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-4">
               <Button
                 onClick={() => handleMainCardResponse(true)}
                 variant="outline"
                 size="sm"
-                className="gap-1 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                className="gap-2 text-sm bg-gradient-to-r from-green-50/90 to-emerald-50/90 border-green-200/70 text-green-700 hover:from-green-100/95 hover:to-emerald-100/95 hover:border-green-300/80 rounded-full px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-green-200/30"
               >
                 ✓ Acertei
               </Button>
@@ -486,7 +526,7 @@ export function FlashcardDisplay({
                 onClick={() => handleMainCardResponse(false)}
                 variant="outline"
                 size="sm"
-                className="gap-1 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                className="gap-2 text-sm bg-gradient-to-r from-red-50/90 to-rose-50/90 border-red-200/70 text-red-700 hover:from-red-100/95 hover:to-rose-100/95 hover:border-red-300/80 rounded-full px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-red-200/30"
               >
                 ✗ Errei
               </Button>
@@ -495,17 +535,17 @@ export function FlashcardDisplay({
         )}
 
         {(showAnswer || (card.type === 'true-false' && trueFalseAnswer !== null)) && (hasParents || mainCardAnswered) && (
-          <div className="space-y-4 animate-fade-in">
-            <h3 className="text-center text-sm font-medium text-muted-foreground">
-              Como você avalia sua resposta?
+          <div className="space-y-6 animate-fade-in">
+            <h3 className="text-center text-sm font-medium bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
+              ✨ Como você avalia sua resposta?
             </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Button
                 onClick={() => handleAnswer('again')}
                 variant="again"
                 size="study"
-                className="flex-1"
+                className="flex-1 bg-gradient-to-r from-red-50/90 to-rose-50/90 border-red-200/70 text-red-700 hover:from-red-100/95 hover:to-rose-100/95 hover:border-red-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-red-200/30 gap-2 py-4"
               >
                 <RotateCcw className="h-4 w-4" />
                 Novamente
@@ -515,7 +555,7 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('hard')}
                 variant="hard"
                 size="study"
-                className="flex-1"
+                className="flex-1 bg-gradient-to-r from-orange-50/90 to-amber-50/90 border-orange-200/70 text-orange-700 hover:from-orange-100/95 hover:to-amber-100/95 hover:border-orange-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-orange-200/30 gap-2 py-4"
               >
                 Difícil
               </Button>
@@ -524,7 +564,7 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('medium')}
                 variant="medium"
                 size="study"
-                className="flex-1"
+                className="flex-1 bg-gradient-to-r from-blue-50/90 to-indigo-50/90 border-blue-200/70 text-blue-700 hover:from-blue-100/95 hover:to-indigo-100/95 hover:border-blue-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-blue-200/30 gap-2 py-4"
               >
                 Médio
               </Button>
@@ -533,15 +573,15 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('easy')}
                 variant="easy"
                 size="study"
-                className="flex-1"
+                className="flex-1 bg-gradient-to-r from-green-50/90 to-emerald-50/90 border-green-200/70 text-green-700 hover:from-green-100/95 hover:to-emerald-100/95 hover:border-green-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-green-200/30 gap-2 py-4"
               >
                 Fácil
               </Button>
             </div>
 
-            <div className="text-xs text-center text-muted-foreground space-y-1">
-              <p><strong>Novamente:</strong> Não lembrei • <strong>Difícil:</strong> Lembrei com dificuldade</p>
-              <p><strong>Médio:</strong> Lembrei bem • <strong>Fácil:</strong> Muito fácil</p>
+            <div className="text-xs text-center text-slate-600/80 space-y-1 bg-gradient-to-r from-slate-50/50 to-gray-50/50 rounded-lg p-3 backdrop-blur-sm border border-slate-200/30">
+              <p><strong className="text-red-600">Novamente:</strong> Não lembrei • <strong className="text-orange-600">Difícil:</strong> Lembrei com dificuldade</p>
+              <p><strong className="text-blue-600">Médio:</strong> Lembrei bem • <strong className="text-green-600">Fácil:</strong> Muito fácil</p>
             </div>
           </div>
         )}

@@ -151,60 +151,103 @@ export function DialogFlashcardDisplay({
     const isUserResponse = message.type === 'user-response';
 
     if (isQuestion) {
+      const answerMessage = messages.find(m => m.cardId === message.cardId && m.type === 'answer');
+      const hasAnswer = !!answerMessage;
+      
       return (
-        <div key={message.id} className="chat-message left">
-          <div className="chat-avatar">
+        <div key={message.id} className="flex items-start gap-4 mb-10">
+          <div className="-mt-8">
             <DotLottieReact
-              src="https://lottie.host/5ac5cbef-1c62-4c32-afb2-b89d754067ce/h56zrNH9BP.lottie"
-              loop
-              autoplay
-              style={{ 
-                width: '200px', 
-                height: '200px',
-                imageRendering: 'crisp-edges'
-              }}
-            />
+               src="https://lottie.host/5ac5cbef-1c62-4c32-afb2-b89d754067ce/h56zrNH9BP.lottie"
+               loop
+               autoplay
+               style={{
+                 width: '180px',
+                 height: '180px'
+               }}
+             />
           </div>
-          <div className="bubble left">
-            {message.content}
+          <div className="flex-1 max-w-[85%]">
+            <div className="bg-gradient-to-br from-slate-50/90 via-white to-blue-50/60 backdrop-blur-sm border border-slate-200/60 rounded-2xl rounded-tl-md px-6 py-4 shadow-lg ring-1 ring-slate-200/40">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">❓ PERGUNTA</span>
+              </div>
+              <div className="text-slate-800 leading-relaxed font-medium text-lg" dangerouslySetInnerHTML={{ __html: message.content }} />
+              
+              {/* Botão Ver Resposta dentro do balão da pergunta */}
+              {!hasAnswer && message.showAnswerButton && (
+                <div className="mt-4 pt-4 border-t border-slate-200/50">
+                  <Button
+                    onClick={() => handleShowAnswer(message.cardId)}
+                    size="sm"
+                    className="gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border border-blue-300/50 rounded-full px-4 py-2 shadow-md hover:shadow-lg backdrop-blur-sm ring-1 ring-blue-400/30 transition-all duration-300 font-medium text-sm"
+                  >
+                    <Eye className="h-3 w-3" />
+                    Ver Resposta
+                  </Button>
+                </div>
+              )}
+              
+              {/* Resposta expandida dentro do balão da pergunta */}
+              {hasAnswer && (
+                <div className="mt-4 pt-4 border-t border-orange-200/50 animate-in slide-in-from-top-2 fade-in duration-500">
+                  <div className="relative bg-gradient-to-br from-orange-50/95 via-pink-50/90 to-yellow-50/95 backdrop-blur-md border border-orange-200/70 rounded-xl px-4 py-4 shadow-lg ring-1 ring-orange-200/50 group hover:shadow-xl transition-all duration-300">
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse shadow-sm"></div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 shadow-sm">
+                        <span className="text-white text-xs font-bold">💡</span>
+                      </div>
+                      <span className="text-xs font-bold bg-gradient-to-r from-orange-600 via-pink-600 to-red-600 bg-clip-text text-transparent tracking-wide uppercase">Resposta</span>
+                      <div className="flex-1 h-px bg-gradient-to-r from-orange-200 to-transparent"></div>
+                    </div>
+                    <div className="text-slate-800 leading-relaxed font-medium prose max-w-none group-hover:text-slate-900 transition-colors duration-200" dangerouslySetInnerHTML={{ __html: answerMessage.content }} />
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 via-transparent to-orange-100/20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-1 mt-2 ml-4">
+              <span className="text-xs font-medium text-slate-600">Flashcard Inteligente</span>
+              <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+              <span className="text-xs text-slate-400">agora</span>
+            </div>
           </div>
         </div>
       );
     }
 
+    // Não renderizar mensagens de resposta separadamente, pois agora estão dentro da pergunta
     if (isAnswer) {
-      return (
-        <div key={message.id} className="mb-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: message.content }} />
-          </div>
-        </div>
-      );
+      return null;
     }
 
     if (isUserResponse) {
       return (
-        <div key={message.id} className="flex items-start gap-3 mb-4">
-          <Avatar className="h-8 w-8 border-2 border-gray-200">
-            <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
-              <User className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
+        <div key={message.id} className="flex items-start gap-3 mb-6 justify-end">
+          <div className="flex-1 flex justify-end">
             <div className="max-w-[80%]">
               <div className={cn(
-                "text-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg",
-                message.difficulty ? getDifficultyColor(message.difficulty) : "bg-gray-500"
+                "text-white rounded-2xl rounded-tr-md px-6 py-4 shadow-lg backdrop-blur-sm border border-white/20 ring-1 ring-white/10",
+                message.difficulty === 'again' && "bg-gradient-to-br from-red-500 to-red-600",
+                message.difficulty === 'hard' && "bg-gradient-to-br from-orange-500 to-orange-600",
+                message.difficulty === 'medium' && "bg-gradient-to-br from-blue-500 to-blue-600",
+                message.difficulty === 'easy' && "bg-gradient-to-br from-green-500 to-green-600",
+                !message.difficulty && "bg-gradient-to-br from-gray-500 to-gray-600"
               )}>
-                <p className="text-sm">{message.content}</p>
+                <p className="text-sm font-medium">{message.content}</p>
               </div>
-              <div className="flex items-center gap-1 mt-1 ml-2">
-                <span className="text-xs text-gray-500">Você</span>
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                <span className="text-xs text-gray-400">agora</span>
+              <div className="flex items-center gap-1 mt-2 mr-4 justify-end">
+                <span className="text-xs text-slate-400">agora</span>
+                <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                <span className="text-xs font-medium text-slate-600">Você</span>
               </div>
             </div>
           </div>
+          <Avatar className="h-12 w-12 border-2 border-gradient-to-r from-blue-200 to-purple-200 shadow-md">
+            <AvatarFallback className="bg-gradient-to-br from-blue-100 to-purple-100 text-slate-700 text-sm font-semibold">
+              <User className="h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
         </div>
       );
     }
@@ -217,61 +260,52 @@ export function DialogFlashcardDisplay({
       {/* Área de mensagens */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-y-auto px-4 py-6 space-y-4 min-h-[400px] max-h-[600px]"
+        className="flex-1 overflow-y-auto px-6 py-8 space-y-6 min-h-[400px] max-h-[600px] bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30"
       >
         {messages.map(renderMessage)}
         
-        {/* Botão Ver Resposta */}
-        {currentCard && showAnswerForCard !== currentCard.id && (
-          <div className="flex justify-end">
-            <Button
-              onClick={() => handleShowAnswer(currentCard.id)}
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 rounded-full px-4 py-2"
-            >
-              <Eye className="h-3 w-3" />
-              Ver Resposta
-            </Button>
-          </div>
-        )}
+
         
         {/* Botões de dificuldade */}
         {currentCard && showAnswerForCard === currentCard.id && !isProcessingAnswer && (
-          <div className="flex justify-center gap-2 mt-6">
-            <Button
-              onClick={() => handleDifficultyAnswer('again')}
-              variant="outline"
-              size="sm"
-              className="gap-2 border-red-200 text-red-700 hover:bg-red-50"
-            >
-              <RotateCcw className="h-3 w-3" />
-              Novamente
-            </Button>
-            <Button
-              onClick={() => handleDifficultyAnswer('hard')}
-              variant="outline"
-              size="sm"
-              className="gap-2 border-orange-200 text-orange-700 hover:bg-orange-50"
-            >
-              Difícil
-            </Button>
-            <Button
-              onClick={() => handleDifficultyAnswer('medium')}
-              variant="outline"
-              size="sm"
-              className="gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"
-            >
-              Médio
-            </Button>
-            <Button
-              onClick={() => handleDifficultyAnswer('easy')}
-              variant="outline"
-              size="sm"
-              className="gap-2 border-green-200 text-green-700 hover:bg-green-50"
-            >
-              Fácil
-            </Button>
+          <div className="space-y-4 mt-8">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent mb-2">
+                Como você avalia sua resposta?
+              </h3>
+              <p className="text-sm text-slate-600">Sua avaliação ajuda a otimizar o cronograma de revisão</p>
+            </div>
+            <div className="flex justify-center gap-3 flex-wrap">
+              <Button
+                onClick={() => handleDifficultyAnswer('again')}
+                size="lg"
+                className="gap-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border border-red-300/50 rounded-full px-6 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm ring-1 ring-red-400/30 transition-all duration-300 font-semibold"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Novamente
+              </Button>
+              <Button
+                onClick={() => handleDifficultyAnswer('hard')}
+                size="lg"
+                className="gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border border-orange-300/50 rounded-full px-6 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm ring-1 ring-orange-400/30 transition-all duration-300 font-semibold"
+              >
+                Difícil
+              </Button>
+              <Button
+                onClick={() => handleDifficultyAnswer('medium')}
+                size="lg"
+                className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border border-blue-300/50 rounded-full px-6 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm ring-1 ring-blue-400/30 transition-all duration-300 font-semibold"
+              >
+                Médio
+              </Button>
+              <Button
+                onClick={() => handleDifficultyAnswer('easy')}
+                size="lg"
+                className="gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white border border-green-300/50 rounded-full px-6 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm ring-1 ring-green-400/30 transition-all duration-300 font-semibold"
+              >
+                Fácil
+              </Button>
+            </div>
           </div>
         )}
         
