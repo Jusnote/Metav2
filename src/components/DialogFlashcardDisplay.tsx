@@ -22,13 +22,15 @@ interface DialogFlashcardDisplayProps {
   currentCardIndex: number;
   onAnswer: (difficulty: StudyDifficulty) => void;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
 export function DialogFlashcardDisplay({
   cards,
   currentCardIndex,
   onAnswer,
-  onComplete
+  onComplete,
+  onBack
 }: DialogFlashcardDisplayProps) {
   const [messages, setMessages] = useState<DialogMessage[]>([]);
   const [showAnswerForCard, setShowAnswerForCard] = useState<string | null>(null);
@@ -170,7 +172,7 @@ export function DialogFlashcardDisplay({
           <div className="flex-1 max-w-[85%]">
             <div className="bg-gradient-to-br from-slate-50/90 via-white to-blue-50/60 backdrop-blur-sm border border-slate-200/60 rounded-2xl rounded-tl-md px-6 py-4 shadow-lg ring-1 ring-slate-200/40">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">❓ PERGUNTA</span>
+                <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Responda mentalmente...</span>
               </div>
               <div className="text-slate-800 leading-relaxed font-medium text-lg" dangerouslySetInnerHTML={{ __html: message.content }} />
               
@@ -257,10 +259,30 @@ export function DialogFlashcardDisplay({
 
   return (
     <div className="max-w-4xl mx-auto h-full flex flex-col">
+      {/* Cabeçalho com botão Voltar - apenas quando onBack é fornecido */}
+      {onBack && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-border/50">
+          <div className="px-6 py-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="gap-2 hover:bg-slate-100/80 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Button>
+          </div>
+        </div>
+      )}
+      
       {/* Área de mensagens */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-y-auto px-6 py-8 space-y-6 min-h-[400px] max-h-[600px] bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30"
+        className={cn(
+          "flex-1 overflow-y-auto px-6 py-8 space-y-6 min-h-[400px] max-h-[600px] bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30",
+          onBack && "pt-24"
+        )}
       >
         {messages.map(renderMessage)}
         

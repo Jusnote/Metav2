@@ -275,53 +275,14 @@ const Index = () => {
     }
 
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        {/* Header */}
-        <div className="border-b border-border/50 bg-card/50 backdrop-blur">
-          <div className="max-w-4xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/flashcards')}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Voltar
-                </Button>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Brain className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h1 className="text-lg font-semibold text-foreground">Estudando: {studyDeck?.name}</h1>
-                    <p className="text-sm text-muted-foreground">
-                      Card {currentCardIndex + 1} de {studyCards.length}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="mt-4">
-              <Progress value={studyProgress} className="h-2" />
-            </div>
-          </div>
-        </div>
-
-        {/* Study Area - Centralizada */}
-        <div className="flex-1 flex justify-center px-6 pt-4">
-          <div className="w-full max-w-4xl">
-            <DialogFlashcardDisplay
-              cards={studyCards}
-              currentCardIndex={currentCardIndex}
-              onAnswer={handleStudyAnswer}
-              onComplete={() => setIsStudyComplete(true)}
-            />
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30">
+        <DialogFlashcardDisplay
+          cards={studyCards}
+          currentCardIndex={currentCardIndex}
+          onAnswer={handleStudyAnswer}
+          onComplete={() => setIsStudyComplete(true)}
+          onBack={() => navigate('/flashcards')}
+        />
       </div>
     );
   }
