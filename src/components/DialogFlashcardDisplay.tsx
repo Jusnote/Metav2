@@ -158,14 +158,14 @@ export function DialogFlashcardDisplay({
       
       return (
         <div key={message.id} className="flex items-start mb-10">
-          <div className="-mt-8">
+          <div className="-mt-2">
             <DotLottieReact
-               src="https://lottie.host/5ac5cbef-1c62-4c32-afb2-b89d754067ce/h56zrNH9BP.lottie"
+               src="https://lottie.host/e690172a-0d3d-4dd5-ab43-0c21c1d6743f/WKrosrGgfu.lottie"
                loop
                autoplay
                style={{
-                 width: '180px',
-                 height: '180px'
+                 width: '170px',
+                 height: '170px'
                }}
              />
           </div>
