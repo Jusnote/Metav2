@@ -170,7 +170,7 @@ export function DialogFlashcardDisplay({
              />
           </div>
           <div className="flex-1 max-w-[85%] -ml-2">
-            <div className="bg-gradient-to-br from-slate-50/90 via-white to-blue-50/60 backdrop-blur-sm border border-slate-200/60 rounded-2xl rounded-tl-md px-6 py-4 shadow-lg ring-1 ring-slate-200/40">
+            <div className="relative bg-gradient-to-br from-slate-50/99 via-white/98 to-blue-50/95 backdrop-blur-2xl rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(59,130,246,0.15),0_0_0_1px_rgba(255,255,255,0.8),inset_0_1px_0_rgba(255,255,255,0.9)] border border-white/80 ring-4 ring-blue-100/30 ring-offset-4 ring-offset-white/70 px-6 py-4 overflow-hidden z-10">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Responda mentalmente...</span>
               </div>
