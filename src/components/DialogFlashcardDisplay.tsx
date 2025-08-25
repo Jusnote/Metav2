@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { Brain, User, Eye, RotateCcw, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ export function DialogFlashcardDisplay({
   const [messages, setMessages] = useState<DialogMessage[]>([]);
   const [showAnswerForCard, setShowAnswerForCard] = useState<string | null>(null);
   const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
+  const [wordHidingAllRevealed, setWordHidingAllRevealed] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -96,6 +98,12 @@ export function DialogFlashcardDisplay({
     });
   };
 
+  // Handler para quando todas as palavras são reveladas em flashcards word-hiding
+  const handleAllWordsRevealed = (cardId: string) => {
+    setWordHidingAllRevealed(prev => ({ ...prev, [cardId]: true }));
+    setShowAnswerForCard(cardId);
+  };
+
   const handleDifficultyAnswer = (difficulty: StudyDifficulty) => {
     if (isProcessingAnswer) return;
     
@@ -117,6 +125,9 @@ export function DialogFlashcardDisplay({
     setTimeout(() => {
       onAnswer(difficulty);
       setIsProcessingAnswer(false);
+      
+      // Reset word hiding state for next card
+      setWordHidingAllRevealed({});
       
       // Se não há mais cards, completar o estudo
       if (currentCardIndex >= cards.length - 1) {
@@ -174,21 +185,40 @@ export function DialogFlashcardDisplay({
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Responda mentalmente...</span>
               </div>
-              <div className="text-slate-800 leading-relaxed font-medium text-lg" dangerouslySetInnerHTML={{ __html: message.content }} />
+              <div className="text-slate-800 leading-relaxed font-medium text-lg">
+                {(() => {
+                  const card = cards.find(c => c.id === message.cardId);
+                  if (card && card.type === 'word-hiding' && card.hiddenWords && card.hiddenWords.length > 0) {
+                    return (
+                      <ImprovedWordHidingDisplay
+                        text={card.back}
+                        hiddenWords={card.hiddenWords}
+                        isStudyMode={true}
+                        onAllWordsRevealed={() => handleAllWordsRevealed(message.cardId)}
+                      />
+                    );
+                  }
+                  return <span dangerouslySetInnerHTML={{ __html: message.content }} />;
+                })()}
+              </div>
               
               {/* Botão Ver Resposta dentro do balão da pergunta */}
-              {!hasAnswer && message.showAnswerButton && (
-                <div className="mt-4 pt-4 border-t border-slate-200/50">
-                  <Button
-                    onClick={() => handleShowAnswer(message.cardId)}
-                    size="sm"
-                    className="gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border border-blue-300/50 rounded-full px-4 py-2 shadow-md hover:shadow-lg backdrop-blur-sm ring-1 ring-blue-400/30 transition-all duration-300 font-medium text-sm"
-                  >
-                    <Eye className="h-3 w-3" />
-                    Ver Resposta
-                  </Button>
-                </div>
-              )}
+              {(() => {
+                const card = cards.find(c => c.id === message.cardId);
+                const isWordHiding = card && card.type === 'word-hiding' && card.hiddenWords && card.hiddenWords.length > 0;
+                return !hasAnswer && message.showAnswerButton && !isWordHiding && (
+                  <div className="mt-4 pt-4 border-t border-slate-200/50">
+                    <Button
+                      onClick={() => handleShowAnswer(message.cardId)}
+                      size="sm"
+                      className="gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border border-blue-300/50 rounded-full px-4 py-2 shadow-md hover:shadow-lg backdrop-blur-sm ring-1 ring-blue-400/30 transition-all duration-300 font-medium text-sm"
+                    >
+                      <Eye className="h-3 w-3" />
+                      Ver Resposta
+                    </Button>
+                  </div>
+                );
+              })()}
               
               {/* Resposta expandida dentro do balão da pergunta */}
               {hasAnswer && (
@@ -289,7 +319,7 @@ export function DialogFlashcardDisplay({
 
         
         {/* Botões de dificuldade */}
-        {currentCard && showAnswerForCard === currentCard.id && !isProcessingAnswer && (
+        {currentCard && (showAnswerForCard === currentCard.id || wordHidingAllRevealed[currentCard.id]) && !isProcessingAnswer && (
           <div className="space-y-4 mt-8">
             <div className="text-center">
               <h3 className="text-lg font-semibold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent mb-2">
