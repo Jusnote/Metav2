@@ -158,7 +158,7 @@ export function DialogFlashcardDisplay({
       
       return (
         <div key={message.id} className="flex items-start mb-10">
-          <div className="-mt-2">
+          <div className="-mt-3">
             <DotLottieReact
                src="https://lottie.host/13bf810c-e6d7-4461-807d-518e30a73454/OHla7gSTVg.lottie"
                loop
@@ -169,7 +169,7 @@ export function DialogFlashcardDisplay({
                }}
              />
           </div>
-          <div className="flex-1 max-w-[85%]">
+          <div className="flex-1 max-w-[85%] -ml-2">
             <div className="bg-gradient-to-br from-slate-50/90 via-white to-blue-50/60 backdrop-blur-sm border border-slate-200/60 rounded-2xl rounded-tl-md px-6 py-4 shadow-lg ring-1 ring-slate-200/40">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Responda mentalmente...</span>
