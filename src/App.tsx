@@ -1,10 +1,9 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
-import { AppSidebar } from "./components/AppSidebar";
+import { AppHeader } from "./components/AppHeader";
 import HomePage from "./pages/HomePage";
 import Index from "./pages/Index";
 import StudyPage from "./pages/StudyPage";
@@ -46,21 +45,14 @@ const AppContent = () => {
     );
   }
   
-  // Modo normal - com sidebar e header
+  // Modo normal - com header horizontal
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="w-full h-screen bg-background">
-        <AppSidebar />
-        <div className="flex flex-col h-full ml-20">
-          <header className="h-12 flex items-center border-b border-border bg-card/50 backdrop-blur px-4 flex-shrink-0">
-            <SidebarTrigger className="text-sidebar-foreground" />
-          </header>
-          <main className="flex-1 h-0">
-            <Outlet />
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <div className="w-full h-screen bg-background flex flex-col">
+      <AppHeader />
+      <main className="flex-1 overflow-auto">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 
