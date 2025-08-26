@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, X, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface TrueFalseDisplayProps {
+interface TrueFalseDialogDisplayProps {
   statement: string;
   correctAnswer: string; // "Certo" ou "Errado"
   explanation?: string; // Explicação personalizada opcional
@@ -12,19 +12,17 @@ interface TrueFalseDisplayProps {
   hasAnswered?: boolean;
   userAnswer?: 'true' | 'false';
   isCorrect?: boolean;
-  showStatement?: boolean; // Controla se mostra a pergunta ou apenas os botões
 }
 
-export function TrueFalseDisplay({
+export function TrueFalseDialogDisplay({
   statement,
   correctAnswer,
   explanation,
   onAnswer,
   hasAnswered = false,
   userAnswer,
-  isCorrect,
-  showStatement = true
-}: TrueFalseDisplayProps) {
+  isCorrect
+}: TrueFalseDialogDisplayProps) {
   const correctIsTrue = correctAnswer === 'Certo';
 
   const handleAnswerClick = (answer: 'true' | 'false') => {
@@ -56,17 +54,10 @@ export function TrueFalseDisplay({
 
   return (
     <div className="space-y-6">
-      {/* Statement Box - Same style as traditional flashcard */}
-      {showStatement && (
-        <div className="relative bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-emerald-500 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center">
-          <div className="absolute top-2 right-3">
-            <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
-              C/E?
-            </span>
-          </div>
-          <p className="text-slate-800 leading-relaxed w-full text-center">{statement}</p>
-        </div>
-      )}
+      {/* Statement with same container as traditional flashcard */}
+      <div className="text-slate-800 leading-relaxed font-medium text-lg">
+        {statement}
+      </div>
 
       {/* Answer Options - Outside the box */}
       <div className="flex gap-3 w-full">
