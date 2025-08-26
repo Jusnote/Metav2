@@ -132,64 +132,28 @@ export function ImprovedWordHidingDisplay({
       {isStudyMode && hiddenWords.length > 0 && (
         <div className="space-y-4">
           {/* Botão principal Ver Resposta */}
-          <div className="flex justify-center">
+          <div className="flex justify-start">
             <Button
               onClick={toggleAnswer}
               variant={showAnswer ? "outline" : "study"}
               size="lg"
-              className="gap-2 min-w-[150px]"
+              className={showAnswer ? "inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-white hover:bg-gray-50 h-9 gap-2 text-gray-700 border border-gray-300/50 rounded-full px-4 py-2 shadow-md hover:shadow-lg backdrop-blur-sm ring-1 ring-gray-400/30 transition-all duration-300 font-medium text-sm" : "inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary hover:bg-primary-hover h-9 gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border border-blue-300/50 rounded-full px-4 py-2 shadow-md hover:shadow-lg backdrop-blur-sm ring-1 ring-blue-400/30 transition-all duration-300 font-medium text-sm"}
             >
               {showAnswer ? (
-                <>
-                  <EyeOff className="h-4 w-4" />
-                  Ocultar Resposta
-                </>
-              ) : (
-                <>
-                  <Eye className="h-4 w-4" />
-                  Ver Resposta
-                </>
-              )}
+              <>
+                <EyeOff className="h-3 w-3" strokeWidth={2} />
+                Ocultar
+              </>
+            ) : (
+              <>
+                <Eye className="h-3 w-3" strokeWidth={2} />
+                Revelar
+              </>
+            )}
             </Button>
           </div>
 
-          {/* Estatísticas e controles adicionais */}
-          <div className="pt-4 border-t border-border/30">
-            <div className="flex justify-between items-center mb-3">
-              <div className="text-sm text-muted-foreground">
-                <span className="font-medium">
-                  {showAnswer ? 'Todas as palavras reveladas' : 
-                   `${remainingHiddenCount} de ${hiddenWords.length} palavra${hiddenWords.length !== 1 ? 's' : ''} oculta${hiddenWords.length !== 1 ? 's' : ''}`
-                  }
-                </span>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button 
-                  onClick={hideAllWords} 
-                  variant="ghost" 
-                  size="sm"
-                  disabled={remainingHiddenCount === hiddenWords.length}
-                >
-                  Ocultar Todas
-                </Button>
-                <Button 
-                  onClick={revealAllWords} 
-                  variant="ghost" 
-                  size="sm"
-                  disabled={remainingHiddenCount === 0}
-                >
-                  Revelar Todas
-                </Button>
-              </div>
-            </div>
 
-            {!showAnswer && remainingHiddenCount > 0 && (
-              <p className="text-xs text-muted-foreground text-center">
-                💡 Clique nas palavras ocultas (____) para revelá-las individualmente
-              </p>
-            )}
-          </div>
         </div>
       )}
     </div>
