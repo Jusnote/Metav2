@@ -102,11 +102,11 @@ export function AppHeader() {
   };
 
   const getNavClassName = (path: string) => {
-    const baseClasses = "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:bg-accent hover:text-accent-foreground hover:scale-105 active:scale-95";
+    const baseClasses = "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95";
     if (isActive(path)) {
-      return `${baseClasses} bg-primary text-primary-foreground shadow-sm`;
+      return `${baseClasses} bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md hover:from-blue-700 hover:to-purple-700`;
     }
-    return `${baseClasses} text-muted-foreground hover:text-foreground hover:bg-accent`;
+    return `${baseClasses} text-slate-600 hover:text-slate-800 hover:bg-slate-200/80`;
   };
 
   const handleLogout = async () => {
@@ -120,24 +120,24 @@ export function AppHeader() {
   };
 
   return (
-    <header className="w-full bg-background border-b border-border">
+    <header className="w-full bg-slate-900 shadow-lg">
       {/* Container centralizado com respiro nas laterais */}
       <div className="max-w-7xl mx-auto">
-        {/* Linha Superior: Logo + Menu do usuário */}
-        <div className="flex items-center justify-between px-6 lg:px-8 py-3 border-b border-border/50">
+        {/* Linha Superior: Logo + Notificações + Menu do usuário */}
+        <div className="flex items-center justify-between px-6 lg:px-8 py-3 bg-slate-900 rounded-b-xl">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary">
-              <Skull className="h-6 w-6 text-primary-foreground" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 shadow-md">
+              <Skull className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-foreground hidden sm:block">FlashCard Scribe</span>
-            <span className="text-lg font-bold text-foreground sm:hidden">FCS</span>
+            <span className="text-xl font-bold text-white hidden sm:block">FlashCard Scribe</span>
+            <span className="text-lg font-bold text-white sm:hidden">FCS</span>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Notificações */}
             <div className="relative">
-              <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative hover:bg-slate-800 text-slate-300 hover:text-white">
                 <Bell className="h-4 w-4" />
                 {notifications.unread > 0 && (
                   <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
@@ -157,7 +157,7 @@ export function AppHeader() {
             <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                  <Button variant="ghost" size="sm" className="h-9 w-9 p-0 hover:bg-slate-800 text-slate-300 hover:text-white">
                     <Menu className="h-4 w-4" />
                   </Button>
                 </SheetTrigger>
@@ -204,7 +204,7 @@ export function AppHeader() {
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 px-3 py-2 relative">
+                  <Button variant="ghost" className="flex items-center gap-2 px-3 py-2 relative hover:bg-slate-800 text-slate-300 hover:text-white">
                     <UserCircle className="h-5 w-5" />
                     <span className="text-sm hidden sm:inline truncate max-w-32">{user.email}</span>
                     <ChevronDown className="h-4 w-4" />
@@ -243,7 +243,7 @@ export function AppHeader() {
         </div>
 
         {/* Linha Inferior: Navegação principal + Ferramentas (Desktop apenas) */}
-        <div className="hidden md:flex items-center justify-between px-6 lg:px-8 py-2.5">
+        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-white backdrop-blur-sm border-t border-slate-200/50 rounded-t-xl">
           {/* Navegação Principal */}
           <nav className="flex items-center gap-2">
             {navigationItems.map((item) => (
@@ -263,7 +263,7 @@ export function AppHeader() {
           <div className="flex items-center">
             <DropdownMenu open={isToolsOpen} onOpenChange={setIsToolsOpen}>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium">
+                <Button variant="outline" size="sm" className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border-slate-300/60 bg-white/70 text-slate-600 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-400/80 shadow-sm">
                   <Wrench className="h-4 w-4" />
                   <span>Ferramentas</span>
                   <ChevronDown className="h-3 w-3" />
