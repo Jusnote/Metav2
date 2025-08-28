@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { AppHeader } from "./components/AppHeader";
+
 import HomePage from "./pages/HomePage";
 import Index from "./pages/Index";
 import StudyPage from "./pages/StudyPage";
@@ -11,6 +12,7 @@ import EditResumoPage from "./pages/EditResumoPage";
 import ResumosListPage from "./pages/ResumosListPage";
 import QuestoesPage from "./pages/QuestoesPage";
 import CriarQuestaoPage from "./pages/CriarQuestaoPage";
+import CronogramaPage from "./pages/CronogramaPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import { useAuth } from "./hooks/useAuth";
@@ -70,12 +72,14 @@ const App = () => (
             <Route path="resumos-list" element={<PrivateRoute><ResumosListPage /></PrivateRoute>} />
             <Route path="resumos" element={<PrivateRoute><EditResumoPage /></PrivateRoute>} />
             <Route path="study" element={<PrivateRoute><StudyPage /></PrivateRoute>} />
+            <Route path="cronograma" element={<PrivateRoute><CronogramaPage /></PrivateRoute>} />
             <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
             <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+
     </TooltipProvider>
   </QueryClientProvider>
 );

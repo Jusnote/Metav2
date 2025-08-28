@@ -90,6 +90,28 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Cores específicas para o cronograma de estudos
+				schedule: {
+					primary: 'hsl(var(--schedule-primary))',
+					secondary: 'hsl(var(--schedule-secondary))',
+					accent: 'hsl(var(--schedule-accent))',
+					muted: 'hsl(var(--schedule-muted))',
+					border: 'hsl(var(--schedule-border))',
+					background: 'hsl(var(--schedule-background))',
+					foreground: 'hsl(var(--schedule-foreground))'
+				},
+				task: {
+					pending: 'hsl(var(--task-pending))',
+					'in-progress': 'hsl(var(--task-in-progress))',
+					completed: 'hsl(var(--task-completed))',
+					overdue: 'hsl(var(--task-overdue))'
+				},
+				priority: {
+					low: 'hsl(var(--priority-low))',
+					medium: 'hsl(var(--priority-medium))',
+					high: 'hsl(var(--priority-high))',
+					urgent: 'hsl(var(--priority-urgent))'
 				}
 			},
 			borderRadius: {

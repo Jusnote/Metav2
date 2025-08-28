@@ -8,6 +8,8 @@ import { CarouselRenderer } from "@/components/CarouselRenderer";
 import { ProgressSidebar } from "@/components/ProgressSidebar";
 import { ProgressMarker } from "@/hooks/useProgressMarkers";
 
+import { Toaster } from "@/components/ui/toaster";
+
 interface Topic {
   id: string;
   title: string;
@@ -799,6 +801,9 @@ const StudyPage = () => {
           onMarkerClick={handleMarkerClick}
         />
       </div>
+      
+      {/* Toast notifications */}
+      <Toaster />
     </div>
   );
 };
