@@ -1,0 +1,39 @@
+/* CSS adicional para ícones do Lexical no Vite */
+.lexical-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Fallback para ícones que não carregarem */
+.icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+}
+
+/* Garantir que os ícones tenham o tamanho correto */
+.toolbar .icon,
+.dropdown .icon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+/* Melhorar contraste dos ícones */
+.icon {
+  opacity: 0.8;
+}
+
+.icon:hover {
+  opacity: 1;
+}
+
+/* Ícones em botões desabilitados */
+button:disabled .icon {
+  opacity: 0.4;
+}

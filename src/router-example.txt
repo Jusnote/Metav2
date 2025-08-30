@@ -1,0 +1,18 @@
+// Exemplo de como adicionar a rota no seu App.tsx ou router
+// Se você estiver usando React Router:
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import EditorPage from './pages/EditorPage';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Suas rotas existentes */}
+        <Route path="/editor" element={<EditorPage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;

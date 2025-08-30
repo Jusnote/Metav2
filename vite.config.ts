@@ -8,7 +8,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@lexical-playground': path.resolve(__dirname, './src/components/lexical-playground'),
+      '@lexical-shared': path.resolve(__dirname, './src/components/lexical-playground/shared/src'),
     },
+  },
+  define: {
+    'process.env': {},
+    global: 'globalThis',
   },
   server: {
     host: true,
