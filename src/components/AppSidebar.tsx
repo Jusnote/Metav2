@@ -31,7 +31,8 @@ import {
   HelpCircle,
   Plus,
   LogOut,
-  UserCircle
+  UserCircle,
+  Code2
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ const toolsItems = [
   { title: "Insights", url: "/insights", icon: Lightbulb },
   { title: "Analytics", url: "/analytics", icon: TrendingUp },
   { title: "Marketplace", url: "/marketplace", icon: ShoppingCart },
+  { title: "Playground", url: "/playground", icon: Code2 },
 ];
 
 export function AppSidebar() {
