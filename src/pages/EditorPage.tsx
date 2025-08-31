@@ -36,23 +36,9 @@ export default function EditorPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-sm border">
-          <div className="p-6">
-            <div className="mb-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-2">
-                Criar Novo Flashcard
-              </h2>
-              <p className="text-sm text-gray-600">
-                Use o editor abaixo para criar o conteúdo do seu flashcard com formatação rica.
-              </p>
-            </div>
-            
-            {/* Lexical Playground Component */}
-            <div className="border rounded-lg overflow-hidden">
-              <LexicalPlaygroundComponent 
-                className="min-h-[500px]"
-                style={{ minHeight: '500px' }}
-              />
-            </div>
+          {/* Lexical Playground Component */}
+          <div className="rounded-lg overflow-auto">
+            <LexicalPlaygroundComponent />
           </div>
         </div>
       </main>
