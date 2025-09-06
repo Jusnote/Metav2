@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
 import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
 import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal, Layers } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal, Layers, Timer } from 'lucide-react';
 import { FlashcardInfoPanel } from '@/components/FlashcardInfoPanel';
 import { FlashcardStatistics } from '@/components/FlashcardStatistics';
 import { cn } from '@/lib/utils';
@@ -44,6 +44,22 @@ export function FlashcardDisplay({
   // State for word-hiding cards
   const [wordHidingAllRevealed, setWordHidingAllRevealed] = useState(false);
 
+  // Timer states
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [timerActive, setTimerActive] = useState(true);
+
+  // Calculate hierarchy context
+  const childCards = getChildCards ? getChildCards(card.id) : [];
+  const hasParents = parentCards.length > 0;
+  const hasChildren = childCards.length > 0;
+
+  // Format timer display
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Effect to trigger question pulse on mount
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -61,6 +77,35 @@ export function FlashcardDisplay({
       return () => clearTimeout(timer);
     }
   }, [showAnswer, answerPulseTriggered]);
+
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (timerActive) {
+      interval = setInterval(() => {
+        setTimerSeconds(prev => prev + 1);
+      }, 1000);
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [timerActive]);
+
+  // Stop timer when evaluation buttons appear
+  useEffect(() => {
+    const shouldShowEvaluationButtons = 
+      (showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection) ||
+      (card.type === 'word-hiding' && wordHidingAllRevealed && !hasParents && !mainCardAnswered && !showSubFlashcardSection) ||
+      ((showAnswer || (card.type === 'true-false' && trueFalseAnswer !== null)) && (hasParents || mainCardAnswered));
+    
+    if (shouldShowEvaluationButtons && timerActive) {
+      setTimerActive(false);
+    }
+  }, [showAnswer, hasParents, mainCardAnswered, showSubFlashcardSection, card.type, wordHidingAllRevealed, trueFalseAnswer, timerActive]);
 
   const handleTrueFalseAnswer = (userAnswer: 'true' | 'false', isCorrect: boolean) => {
     setTrueFalseAnswer(userAnswer);
@@ -131,10 +176,6 @@ export function FlashcardDisplay({
     setShowAnswer(true); // Automatically show answer
   };
 
-  const hasParents = parentCards.length > 0;
-  const childCards = getChildCards ? getChildCards(card.id) : [];
-  const hasChildren = childCards.length > 0;
-
   const toggleSubCardAnswer = (cardId: string, cardIndex: number) => {
     setSubCardAnswers(prev => ({
       ...prev,
@@ -169,7 +210,7 @@ export function FlashcardDisplay({
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {hasParents && (
           <div className="space-y-4 animate-fade-in">
             {parentCards.map((parent, index) => (
@@ -204,13 +245,13 @@ export function FlashcardDisplay({
           {/* Card principal */}
           <div className="flex-1">
             <Card className={cn(
-              "w-full max-w-4xl mx-auto relative overflow-hidden",
+              "w-full max-w-5xl mx-auto relative overflow-hidden",
               "bg-gradient-to-br from-slate-50/80 via-white to-blue-50/60",
               "border border-slate-200/60 rounded-2xl shadow-lg hover:shadow-xl",
               "transition-all duration-500 ease-out min-h-[28rem]",
               "backdrop-blur-sm ring-1 ring-white/20",
-              !hasParents && "max-w-5xl shadow-2xl",
-              hasParents && "max-w-xl border-l-4 border-l-gradient-to-b from-blue-400 to-purple-500"
+              !hasParents && "max-w-6xl shadow-2xl",
+              hasParents && "max-w-5xl border-l-4 border-l-gradient-to-b from-blue-400 to-purple-500"
             )}>
             {/* Gradient overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-slate-100/30 pointer-events-none" />
@@ -232,15 +273,15 @@ export function FlashcardDisplay({
                     {!hasParents ? (
                       <>
                         <span className="bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent font-semibold">
-                          Flashcard Inteligente
+                          {timerActive ? "Análise temporal" : "Respondido em exatos"}
                         </span>
                         <div className="w-px h-4 bg-gradient-to-b from-slate-300 to-slate-400"></div>
-                        <FlashcardInfoPanel 
-                          card={card}
-                          hasParents={hasParents}
-                          hasChildren={hasChildren}
-                          showAnswer={showAnswer}
-                        />
+                        <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-blue-200/50">
+                          <Timer className={`h-4 w-4 ${timerActive ? 'text-orange-600 animate-pulse' : 'text-green-600'}`} />
+                          <span className={`font-mono text-sm font-medium ${timerActive ? 'text-orange-700' : 'text-green-700'}`}>
+                            {formatTime(timerSeconds)}
+                          </span>
+                        </div>
                       </>
                     ) : (
                       <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
@@ -299,7 +340,7 @@ export function FlashcardDisplay({
             <div className="relative z-10 flex-1 p-8 pt-4">
               <div className="space-y-8">
                 {card.type === 'word-hiding' ? (
-                  <div className="bg-gradient-to-br from-gray-50/80 to-slate-100/60 rounded-2xl p-6 border border-gray-200/50 shadow-lg">
+                  <div className="bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 border-l-4 border-l-emerald-500 rounded-xl p-6 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700">
                     <ImprovedWordHidingDisplay
                       text={card.back}
                       hiddenWords={card.hiddenWords || []}
@@ -321,65 +362,55 @@ export function FlashcardDisplay({
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {/* Pergunta */}
-                    <div className="text-center">
-                      <div className="relative">
-                        <div className={cn(
-                          "relative overflow-hidden",
-                          "bg-gradient-to-br from-blue-50/90 via-indigo-50/80 to-purple-50/90",
-                          "backdrop-blur-sm border border-blue-200/50 rounded-2xl",
-                          "shadow-lg hover:shadow-2xl transition-all duration-700",
-                          "min-h-[120px] flex items-center max-w-[600px] mx-auto",
-                          "ring-1 ring-white/30 hover:ring-blue-300/50",
-                          "hover:scale-[1.01] transform-gpu",
-                          questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
-                        )}>
-                          {/* Subtle animated background */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-pink-400/5 animate-[gentle-flow_8s_ease-in-out_infinite]" />
-                          
-                          <div className="absolute top-3 right-4">
-                            <span className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-md px-3 py-1.5 rounded-full font-medium text-xs tracking-wide uppercase text-blue-700 border border-blue-200/30">
-                              ❓ Pergunta
-                            </span>
-                          </div>
-                          <div className="relative z-10 w-full px-6">
-                            <p className="text-slate-800 leading-relaxed text-center font-medium text-lg">{card.front}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {showAnswer && (
-                      <div className="animate-fade-in">
-                        {/* Resposta */}
-                        <div className="text-center">
-                          <div className="relative">
-                            <div className={cn(
-                              "relative overflow-hidden",
-                              "bg-gradient-to-br from-orange-50/90 via-pink-50/80 to-yellow-50/90",
-                              "backdrop-blur-sm border border-orange-200/50 rounded-2xl",
-                              "shadow-lg hover:shadow-2xl transition-all duration-700",
-                              "min-h-[120px] flex items-center max-w-[600px] mx-auto",
-                              "ring-1 ring-white/30 hover:ring-orange-300/50",
-                              "hover:scale-[1.01] transform-gpu",
-                              answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
-                            )}>
-                              {/* Subtle animated background */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-orange-400/5 via-pink-400/5 to-yellow-400/5 animate-[gentle-flow_8s_ease-in-out_infinite_reverse]" />
-                              
-                              <div className="absolute top-3 right-4">
-                                <span className="bg-gradient-to-r from-orange-500/10 to-pink-500/10 backdrop-blur-md px-3 py-1.5 rounded-full font-medium text-xs tracking-wide uppercase text-orange-700 border border-orange-200/30">
-                                  💡 Resposta
-                                </span>
-                              </div>
-                              <div className="relative z-10 w-full px-6">
-                                <p className="text-slate-800 leading-relaxed text-center font-medium text-lg">{card.back}</p>
-                              </div>
+                      {/* Pergunta */}
+                      <div className="text-center">
+                        <div className="relative">
+                          <div className={cn(
+                            "relative overflow-hidden",
+                            "bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100",
+                            "border-l-4 border-l-emerald-500 rounded-xl",
+                            "shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700",
+                            "min-h-[100px] flex items-center max-w-4xl mx-auto",
+                            questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                          )}>
+                            <div className="absolute top-2 right-3">
+                              <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
+                                ❓ Pergunta
+                              </span>
+                            </div>
+                            <div className="relative z-10 w-full px-6">
+                              <p className="text-slate-800 leading-relaxed text-center font-medium text-lg">{card.front}</p>
                             </div>
                           </div>
                         </div>
                       </div>
-                    )}
+
+                    {showAnswer && (
+                        <div className="animate-fade-in">
+                          {/* Resposta */}
+                          <div className="text-center">
+                            <div className="relative">
+                              <div className={cn(
+                                "relative overflow-hidden",
+                                "bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100",
+                                "border-l-4 border-l-emerald-500 rounded-xl",
+                                "shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700",
+                                "min-h-[100px] flex items-center max-w-4xl mx-auto",
+                                answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
+                              )}>
+                                <div className="absolute top-2 right-3">
+                                  <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
+                                    💡 Resposta
+                                  </span>
+                                </div>
+                                <div className="relative z-10 w-full px-6">
+                                  <p className="text-slate-800 leading-relaxed text-center font-medium text-lg">{card.back}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>

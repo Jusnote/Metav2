@@ -276,7 +276,7 @@ const Index = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 p-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <Button 
               onClick={() => navigate('/flashcards')}

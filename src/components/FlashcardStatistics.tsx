@@ -72,8 +72,109 @@ export function FlashcardStatistics({ card, className }: FlashcardStatisticsProp
     return diffDays;
   };
 
+  // Função melhorada para calcular a retrievability com normalização mais equilibrada
+  const calculateRetrievability = () => {
+    if (!card.due || !card.stability) return 0.9; // Cards novos têm alta retrievability inicial
+    
+    const now = new Date();
+    const dueDate = new Date(card.due);
+    const daysSinceDue = Math.max(0, (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Fórmula FSRS melhorada: R = exp(-t/S) com ajustes
+    let baseRetrievability = Math.exp(-daysSinceDue / Math.max(card.stability, 0.1));
+    
+    // Ajustes baseados no estado do card
+    if (card.state === 0) { // Novo
+      baseRetrievability = Math.max(0.85, baseRetrievability); // Cards novos mantêm alta retrievability
+    } else if (card.state === 1) { // Aprendendo
+      baseRetrievability = Math.max(0.7, baseRetrievability); // Cards em aprendizado têm retrievability moderada
+    }
+    
+    // Ajuste baseado na dificuldade (cards mais fáceis têm retrievability ligeiramente maior)
+    const difficultyAdjustment = 1 + (5 - card.difficulty) * 0.02; // Máximo +10%, mínimo -10%
+    baseRetrievability *= difficultyAdjustment;
+    
+    // Ajuste baseado no número de revisões (experiência melhora a retenção)
+    const reviewBonus = Math.min(0.1, (card.review_count || 0) * 0.01); // Máximo +10%
+    baseRetrievability += reviewBonus;
+    
+    // Garantir que fique entre 0 e 1
+    return Math.max(0, Math.min(1, baseRetrievability));
+  };
+
+  // Função para determinar o tipo de memória baseado na retrievability (ajustada para nova estratégia)
+  const getMemoryType = (retrievability: number) => {
+    if (retrievability >= 0.85) {
+      return {
+        type: 'Longo prazo',
+        description: 'Memória muito bem consolidada',
+        color: 'text-green-600',
+        bgColor: 'bg-white',
+        borderColor: 'border-green-200',
+        icon: '🏆'
+      };
+    } else if (retrievability >= 0.7) {
+      return {
+        type: 'Médio prazo',
+        description: 'Memória bem estabelecida',
+        color: 'text-blue-600',
+        bgColor: 'bg-white',
+        borderColor: 'border-blue-200',
+        icon: '💡'
+      };
+    } else if (retrievability >= 0.5) {
+      return {
+        type: 'Curto-médio prazo',
+        description: 'Memória moderadamente estável',
+        color: 'text-yellow-600',
+        bgColor: 'bg-white',
+        borderColor: 'border-yellow-200',
+        icon: '⚡'
+      };
+    } else {
+      return {
+        type: 'Curto prazo',
+        description: 'Necessita revisão urgente',
+        color: 'text-red-600',
+        bgColor: 'bg-white',
+        borderColor: 'border-red-200',
+        icon: '🔥'
+      };
+    }
+  };
+
+  // Função melhorada para calcular o domínio baseada em FSRS
+  const calculateMasteryLevel = () => {
+    const retrievability = calculateRetrievability();
+    const stabilityFactor = Math.min(1, card.stability / 30); // Normalizar estabilidade (30 dias = 100%)
+    const difficultyFactor = (10 - card.difficulty) / 10; // Inverso da dificuldade
+    const reviewCountFactor = Math.min(1, (card.review_count || 0) / 10); // Fator de experiência
+    
+    // Combinar fatores com pesos diferentes
+    const masteryScore = (
+      retrievability * 0.4 +        // 40% - Probabilidade atual de lembrar
+      stabilityFactor * 0.3 +       // 30% - Quão estável é a memória
+      difficultyFactor * 0.2 +      // 20% - Facilidade percebida
+      reviewCountFactor * 0.1       // 10% - Experiência com o card
+    );
+    
+    return Math.min(100, masteryScore * 100);
+  };
+
   const stabilityPercentage = Math.min(100, (card.stability / 365) * 100); // Assumindo 1 ano como máximo
-  const masteryLevel = Math.min(100, ((10 - card.difficulty) / 10) * 100);
+  const masteryLevel = calculateMasteryLevel();
+  const retrievability = calculateRetrievability();
+  const memoryType = getMemoryType(retrievability);
+
+  // Função para gerar descrição dinâmica baseada no percentual de domínio
+  const getMasteryDescription = (level: number) => {
+    if (level >= 90) return "Conhecimento muito bem consolidado";
+    if (level >= 75) return "Conhecimento bem consolidado";
+    if (level >= 60) return "Conhecimento moderadamente consolidado";
+    if (level >= 40) return "Conhecimento em desenvolvimento";
+    if (level >= 20) return "Conhecimento inicial";
+    return "Conhecimento em fase de aprendizado";
+  };
 
   return (
     <Card className={cn(
@@ -83,7 +184,7 @@ export function FlashcardStatistics({ card, className }: FlashcardStatisticsProp
       "sticky top-4",
       className
     )}>
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3 pb-4 border-b border-slate-200/50">
           <div className="p-2 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-lg">
@@ -126,6 +227,41 @@ export function FlashcardStatistics({ card, className }: FlashcardStatisticsProp
             </span>
           </div>
           <Progress value={masteryLevel} className="h-2" />
+          <div className="text-xs text-slate-500">
+            {getMasteryDescription(masteryLevel)}
+          </div>
+        </div>
+
+        {/* Memória (Baseado em Retrievability) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              Memória
+            </span>
+            <Badge 
+              variant="secondary" 
+              className={cn(
+                "text-xs font-medium px-2 py-1 flex items-center gap-1",
+                memoryType.color,
+                memoryType.bgColor,
+                memoryType.borderColor,
+                "border"
+              )}
+            >
+              <span>{memoryType.icon}</span>
+              <span>{memoryType.type}</span>
+            </Badge>
+          </div>
+          <div className={cn(
+            "text-xs p-2 rounded-md border",
+            memoryType.bgColor,
+            memoryType.borderColor
+          )}>
+            <span className={memoryType.color}>
+              {memoryType.description}
+            </span>
+          </div>
         </div>
 
         {/* Dificuldade */}
@@ -142,8 +278,24 @@ export function FlashcardStatistics({ card, className }: FlashcardStatisticsProp
               {getDifficultyLevel(card.difficulty)}
             </span>
           </div>
+        </div>
+
+        {/* Tempo médio */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <Timer className="h-4 w-4" />
+              Tempo médio
+            </span>
+            <span className="text-sm font-semibold text-slate-800">
+              {card.average_response_time ? `${(card.average_response_time / 1000).toFixed(1)}s` : 'N/A'}
+            </span>
+          </div>
           <div className="text-xs text-slate-500">
-            Índice: {card.difficulty.toFixed(1)}/10
+            {card.average_response_time ? 
+              (card.average_response_time < 3000 ? 'Resposta rápida' :
+               card.average_response_time < 10000 ? 'Resposta moderada' : 'Resposta lenta') :
+              'Sem dados de tempo'}
           </div>
         </div>
 
