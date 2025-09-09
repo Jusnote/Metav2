@@ -20,6 +20,7 @@ import {HashtagPlugin} from '@lexical/react/LexicalHashtagPlugin';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import {HorizontalRulePlugin} from '@lexical/react/LexicalHorizontalRulePlugin';
 import {ListPlugin} from '@lexical/react/LexicalListPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
 import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
 import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
 import {SelectionAlwaysOnDisplay} from '@lexical/react/LexicalSelectionAlwaysOnDisplay';
@@ -27,7 +28,8 @@ import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
 import {TablePlugin} from '@lexical/react/LexicalTablePlugin';
 import {useLexicalEditable} from '@lexical/react/useLexicalEditable';
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
+import {EditorState, LexicalEditor} from 'lexical';
 import {CAN_USE_DOM} from './shared/src/canUseDOM';
 
 import {createWebsocketProvider} from './collaboration';
@@ -117,6 +119,23 @@ export default function Editor(): JSX.Element {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
+  // Função de salvamento automático
+  const handleEditorChange = useCallback(
+    (editorState: EditorState, editor: LexicalEditor) => {
+      // Serializar o estado do editor
+      const serializedState = JSON.stringify(editorState.toJSON());
+      
+      // Salvar no localStorage
+      try {
+        localStorage.setItem('lexical-editor-state', serializedState);
+        console.log('Estado do editor salvo automaticamente');
+      } catch (error) {
+        console.error('Erro ao salvar estado do editor:', error);
+      }
+    },
+    []
+  );
+
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
@@ -198,6 +217,7 @@ export default function Editor(): JSX.Element {
               }
               ErrorBoundary={LexicalErrorBoundary}
             />
+            <OnChangePlugin onChange={handleEditorChange} />
             <MarkdownShortcutPlugin />
             <CodeHighlightPlugin />
             <ListPlugin />
@@ -252,6 +272,7 @@ export default function Editor(): JSX.Element {
               contentEditable={<ContentEditable placeholder={placeholder} />}
               ErrorBoundary={LexicalErrorBoundary}
             />
+            <OnChangePlugin onChange={handleEditorChange} />
             <HistoryPlugin externalHistoryState={historyState} />
           </>
         )}

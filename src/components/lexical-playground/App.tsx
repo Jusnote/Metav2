@@ -193,9 +193,27 @@ function App(): JSX.Element {
     settings: {isCollab, emptyEditor, measureTypingPerf},
   } = useSettings();
 
+  // Função para carregar estado salvo do localStorage
+  const loadSavedEditorState = () => {
+    try {
+      const savedState = localStorage.getItem('lexical-editor-state');
+      if (savedState) {
+        console.log('Carregando estado salvo do editor');
+        return savedState;
+      }
+    } catch (error) {
+      console.error('Erro ao carregar estado salvo:', error);
+    }
+    return null;
+  };
+
+  const savedState = loadSavedEditorState();
+
   const initialConfig = {
     editorState: isCollab
       ? null
+      : savedState
+      ? savedState
       : emptyEditor
       ? undefined
       : $prepopulatedRichText,
