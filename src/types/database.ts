@@ -106,6 +106,41 @@ export type Database = {
           created_at?: string;
         };
       };
+      documents: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          content: any;
+          content_text: string | null;
+          created_at: string;
+          updated_at: string;
+          is_favorite: boolean;
+          tags: string[];
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          content: any;
+          content_text?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          is_favorite?: boolean;
+          tags?: string[];
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          content?: any;
+          content_text?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          is_favorite?: boolean;
+          tags?: string[];
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -131,4 +166,8 @@ export type AlternativaUpdate = Database['public']['Tables']['alternativas']['Up
 export type DeckDraft = Database['public']['Tables']['deck_drafts']['Row'];
 export type DeckDraftInsert = Database['public']['Tables']['deck_drafts']['Insert'];
 export type DeckDraftUpdate = Database['public']['Tables']['deck_drafts']['Update'];
+
+export type Document = Database['public']['Tables']['documents']['Row'];
+export type DocumentInsert = Database['public']['Tables']['documents']['Insert'];
+export type DocumentUpdate = Database['public']['Tables']['documents']['Update'];
 

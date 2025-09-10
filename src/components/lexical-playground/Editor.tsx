@@ -83,7 +83,11 @@ const skipCollaborationInit =
   // @ts-expect-error
   window.parent != null && window.parent.frames.right === window;
 
-export default function Editor(): JSX.Element {
+interface EditorProps {
+  debouncedSave?: (data: { content: any; content_text: string }) => void;
+}
+
+export default function Editor({ debouncedSave }: EditorProps = {}): JSX.Element {
   const {historyState} = useSharedHistoryContext();
   const {
     settings: {
@@ -119,21 +123,27 @@ export default function Editor(): JSX.Element {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
-  // Função de salvamento automático
   const handleEditorChange = useCallback(
     (editorState: EditorState, editor: LexicalEditor) => {
-      // Serializar o estado do editor
       const serializedState = JSON.stringify(editorState.toJSON());
       
-      // Salvar no localStorage
-      try {
-        localStorage.setItem('lexical-editor-state', serializedState);
-        console.log('Estado do editor salvo automaticamente');
-      } catch (error) {
-        console.error('Erro ao salvar estado do editor:', error);
+      // Auto-save with debounce to Supabase if debouncedSave is provided
+      if (debouncedSave) {
+        const textContent = editorState.read(() => {
+          const root = editor.getRootElement();
+          return root ? root.textContent || '' : '';
+        });
+        
+        debouncedSave({
+          content: editorState.toJSON(),
+          content_text: textContent
+        });
       }
+      
+      // Keep localStorage as fallback for now
+      localStorage.setItem('lexical-playground-state', serializedState);
     },
-    []
+    [debouncedSave],
   );
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {

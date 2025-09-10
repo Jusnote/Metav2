@@ -45,7 +45,7 @@ const navigationItems = [
   { title: "Resumos", url: "/resumos-list", icon: FileText },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
   { title: "Criar Questão", url: "/criar-questao", icon: Plus },
-  { title: "Segurança", url: "/security", icon: Shield },
+  { title: "Documentos", url: "/documents", icon: FileText },
   { title: "Configurações", url: "/settings", icon: Settings },
 ];
 

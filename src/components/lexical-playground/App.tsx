@@ -188,7 +188,15 @@ function buildImportMap(): DOMConversionMap {
   return importMap;
 }
 
-function App(): JSX.Element {
+interface AppProps {
+  initialDocument?: {
+    content: any;
+    title: string;
+  } | null;
+  debouncedSave?: (data: { content: any; content_text: string }) => void;
+}
+
+function App({ initialDocument, debouncedSave }: AppProps): JSX.Element {
   const {
     settings: {isCollab, emptyEditor, measureTypingPerf},
   } = useSettings();
@@ -208,10 +216,18 @@ function App(): JSX.Element {
   };
 
   const savedState = loadSavedEditorState();
+  
+  // Use document content if provided, otherwise fallback to saved state
+  const documentContent = initialDocument?.content ? 
+    (typeof initialDocument.content === 'string' ? initialDocument.content : JSON.stringify(initialDocument.content)) : null;
+
+
 
   const initialConfig = {
     editorState: isCollab
       ? null
+      : documentContent
+      ? documentContent
       : savedState
       ? savedState
       : emptyEditor
@@ -226,8 +242,14 @@ function App(): JSX.Element {
     theme: PlaygroundEditorTheme,
   };
 
+  // Create a unique key to force re-initialization when document changes
+  const editorKey = initialDocument?.id || 'new-document';
+
   return (
-    <LexicalComposer initialConfig={initialConfig}>
+    <LexicalComposer 
+      key={editorKey}
+      initialConfig={initialConfig}
+    >
       <SharedHistoryContext>
         <TableContext>
           <ToolbarContext>
@@ -237,7 +259,7 @@ function App(): JSX.Element {
               </a>
             </header>
             <div className="editor-shell">
-              <Editor />
+              <Editor debouncedSave={debouncedSave} />
             </div>
             <Settings />
             {isDevPlayground ? <DocsPlugin /> : null}
@@ -252,13 +274,12 @@ function App(): JSX.Element {
   );
 }
 
-export default function PlaygroundApp(): JSX.Element {
+export default function PlaygroundApp({ initialDocument, debouncedSave }: AppProps): JSX.Element {
   return (
     <SettingsContext>
       <FlashMessageContext>
-        <App />
+        <App initialDocument={initialDocument} debouncedSave={debouncedSave} />
       </FlashMessageContext>
-
     </SettingsContext>
   );
 }

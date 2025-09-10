@@ -16,6 +16,7 @@ import CronogramaPage from "./pages/CronogramaPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import EditorPage from "./pages/EditorPage";
+import DocumentsManager from "./components/DocumentsManager";
 import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -77,6 +78,7 @@ const App = () => (
             <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
             <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
             <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
+            <Route path="documents" element={<PrivateRoute><DocumentsManager /></PrivateRoute>} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
