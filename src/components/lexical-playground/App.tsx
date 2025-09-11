@@ -27,7 +27,7 @@ import {SettingsContext, useSettings} from './context/SettingsContext';
 import {SharedHistoryContext} from './context/SharedHistoryContext';
 import {ToolbarContext} from './context/ToolbarContext';
 import Editor from './Editor';
-import logo from './images/logo.svg';
+// import logo from './images/logo.svg'; // Logo removido
 import PlaygroundNodes from './nodes/PlaygroundNodes';
 import DocsPlugin from './plugins/DocsPlugin';
 import PasteLogPlugin from './plugins/PasteLogPlugin';
@@ -253,11 +253,7 @@ function App({ initialDocument, debouncedSave }: AppProps): JSX.Element {
       <SharedHistoryContext>
         <TableContext>
           <ToolbarContext>
-            <header>
-              <a href="https://lexical.dev" target="_blank" rel="noreferrer">
-                <img src={logo} alt="Lexical Logo" />
-              </a>
-            </header>
+            {/* Header com logo removido */}
             <div className="editor-shell">
               <Editor debouncedSave={debouncedSave} />
             </div>
