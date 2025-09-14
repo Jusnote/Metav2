@@ -24,7 +24,8 @@ import {
   AlertCircle,
   CheckCircle,
   Wrench,
-  Code2
+  Code2,
+  BookOpen
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -49,9 +50,10 @@ const navigationItems = [
   { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Flashcards", url: "/flashcards", icon: Play },
   { title: "Resumos", url: "/resumos-list", icon: FileText },
+  { title: "Conteúdos", url: "/documents-organization", icon: BookOpen },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
   { title: "Criar Questão", url: "/criar-questao", icon: Plus },
-  { title: "Documentos", url: "/documents", icon: FileText },
+
   { title: "Configurações", url: "/settings", icon: Settings },
 ];
 

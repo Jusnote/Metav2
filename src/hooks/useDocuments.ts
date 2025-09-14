@@ -12,13 +12,16 @@ export interface Document {
   updated_at: string;
   is_favorite: boolean;
   tags: string[];
+  subtopic_id?: string;
 }
 
 export interface CreateDocumentData {
   title?: string;
   content: any;
+  content_text?: string;
   is_favorite?: boolean;
   tags?: string[];
+  subtopic_id?: string;
 }
 
 export interface UpdateDocumentData {
@@ -26,6 +29,7 @@ export interface UpdateDocumentData {
   content?: any;
   is_favorite?: boolean;
   tags?: string[];
+  subtopic_id?: string;
 }
 
 export function useDocuments(user: User | null) {
@@ -73,7 +77,8 @@ export function useDocuments(user: User | null) {
           title: documentData.title || 'Untitled Document',
           content: documentData.content,
           is_favorite: documentData.is_favorite || false,
-          tags: documentData.tags || []
+          tags: documentData.tags || [],
+          subtopic_id: documentData.subtopic_id
         })
         .select()
         .single();
@@ -227,7 +232,7 @@ export function useDocuments(user: User | null) {
 }
 
 // Hook for auto-saving documents with debounce
-export function useAutoSave() {
+export function useAutoSave(user: User | null = null) {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -242,7 +247,6 @@ export function useAutoSave() {
       setIsLoading(true);
       setSaveError(null);
 
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -254,7 +258,17 @@ export function useAutoSave() {
         .eq('user_id', user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.log('❌ Error loading document:', error);
+        throw error;
+      }
+      
+      console.log('✅ Document loaded successfully:', {
+        id: data.id,
+        title: data.title,
+        contentType: typeof data.content,
+        hasContent: !!data.content
+      });
       
       setCurrentDocument(data);
       return data;
@@ -264,13 +278,16 @@ export function useAutoSave() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   // Load document when currentDocumentId changes
   useEffect(() => {
+    console.log('🔄 useEffect triggered - currentDocumentId changed:', currentDocumentId);
     if (currentDocumentId) {
+      console.log('📥 Loading document:', currentDocumentId);
       loadDocument(currentDocumentId);
     } else {
+      console.log('🗑️ Clearing current document');
       setCurrentDocument(null);
     }
   }, [currentDocumentId, loadDocument]);
@@ -279,18 +296,26 @@ export function useAutoSave() {
     title?: string;
     content: any;
     content_text?: string;
+    subtopic_id?: string;
   }) => {
     try {
       setIsSaving(true);
       setSaveError(null);
 
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error('User not authenticated');
+        console.log('❌ saveDocument: No user found');
+        return;
       }
 
-      if (currentDocumentId) {
+      console.log('💾 saveDocument started:', {
+        currentDocumentId,
+        title: documentData.title,
+        subtopic_id: documentData.subtopic_id,
+        user_id: user.id
+      });
+
+      if (currentDocumentId && !currentDocumentId.startsWith('temp-')) {
+        console.log('📝 Updating existing document:', currentDocumentId);
         // Update existing document
         const { error } = await supabase
           .from('documents')
@@ -301,8 +326,13 @@ export function useAutoSave() {
           .eq('id', currentDocumentId)
           .eq('user_id', user.id);
 
-        if (error) throw error;
+        if (error) {
+          console.log('❌ Update error:', error);
+          throw error;
+        }
+        console.log('✅ Document updated successfully');
       } else {
+        console.log('📄 Creating new document');
         // Create new document
         const { data, error } = await supabase
           .from('documents')
@@ -316,25 +346,41 @@ export function useAutoSave() {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.log('❌ Insert error:', error);
+          throw error;
+        }
         if (data) {
+          console.log('✅ Document created with ID:', data.id);
           setCurrentDocumentId(data.id);
         }
       }
       
       setLastSaved(new Date());
+      console.log('✅ saveDocument completed successfully');
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Failed to save document');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save document';
+      console.log('❌ saveDocument error:', errorMessage);
+      setSaveError(errorMessage);
     } finally {
       setIsSaving(false);
     }
-  }, [currentDocumentId]);
+  }, [currentDocumentId, user]);
 
   const debouncedSave = useCallback((documentData: {
     title?: string;
     content: any;
     content_text?: string;
+    subtopic_id?: string;
   }) => {
+    console.log('🔄 debouncedSave called with:', {
+      title: documentData.title,
+      subtopic_id: documentData.subtopic_id,
+      currentDocumentId,
+      hasContent: !!documentData.content,
+      contentText: documentData.content_text?.substring(0, 50) + '...'
+    });
+    
     // Clear previous timeout if it exists
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -342,7 +388,12 @@ export function useAutoSave() {
 
     // Set new timeout to save after 2 seconds
     debounceRef.current = setTimeout(() => {
-      saveDocument(documentData);
+      if (currentDocumentId) {
+        console.log('⏰ Executing saveDocument after debounce');
+        saveDocument(documentData);
+      } else {
+        console.log('⏰ Skipping save - no document ID available');
+      }
     }, 2000);
   }, [saveDocument, currentDocumentId]);
 

@@ -106,6 +106,75 @@ export type Database = {
           created_at?: string;
         };
       };
+      units: {
+        Row: {
+          id: string;
+          title: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      topics: {
+        Row: {
+          id: string;
+          unit_id: string;
+          title: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          unit_id: string;
+          title: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          unit_id?: string;
+          title?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      subtopics: {
+        Row: {
+          id: string;
+          topic_id: string;
+          title: string;
+          average_time: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          topic_id: string;
+          title: string;
+          average_time?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          topic_id?: string;
+          title?: string;
+          average_time?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       documents: {
         Row: {
           id: string;
@@ -117,6 +186,7 @@ export type Database = {
           updated_at: string;
           is_favorite: boolean;
           tags: string[];
+          subtopic_id: string | null;
         };
         Insert: {
           id?: string;
@@ -128,6 +198,7 @@ export type Database = {
           updated_at?: string;
           is_favorite?: boolean;
           tags?: string[];
+          subtopic_id?: string | null;
         };
         Update: {
           id?: string;
@@ -139,6 +210,7 @@ export type Database = {
           updated_at?: string;
           is_favorite?: boolean;
           tags?: string[];
+          subtopic_id?: string | null;
         };
       };
     };
@@ -166,6 +238,18 @@ export type AlternativaUpdate = Database['public']['Tables']['alternativas']['Up
 export type DeckDraft = Database['public']['Tables']['deck_drafts']['Row'];
 export type DeckDraftInsert = Database['public']['Tables']['deck_drafts']['Insert'];
 export type DeckDraftUpdate = Database['public']['Tables']['deck_drafts']['Update'];
+
+export type Unit = Database['public']['Tables']['units']['Row'];
+export type UnitInsert = Database['public']['Tables']['units']['Insert'];
+export type UnitUpdate = Database['public']['Tables']['units']['Update'];
+
+export type Topic = Database['public']['Tables']['topics']['Row'];
+export type TopicInsert = Database['public']['Tables']['topics']['Insert'];
+export type TopicUpdate = Database['public']['Tables']['topics']['Update'];
+
+export type Subtopic = Database['public']['Tables']['subtopics']['Row'];
+export type SubtopicInsert = Database['public']['Tables']['subtopics']['Insert'];
+export type SubtopicUpdate = Database['public']['Tables']['subtopics']['Update'];
 
 export type Document = Database['public']['Tables']['documents']['Row'];
 export type DocumentInsert = Database['public']['Tables']['documents']['Insert'];

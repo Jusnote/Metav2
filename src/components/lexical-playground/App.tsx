@@ -190,6 +190,7 @@ function buildImportMap(): DOMConversionMap {
 
 interface AppProps {
   initialDocument?: {
+    id?: string;
     content: any;
     title: string;
   } | null;
@@ -217,9 +218,23 @@ function App({ initialDocument, debouncedSave }: AppProps): JSX.Element {
 
   const savedState = loadSavedEditorState();
   
-  // Use document content if provided, otherwise fallback to saved state
-  const documentContent = initialDocument?.content ? 
-    (typeof initialDocument.content === 'string' ? initialDocument.content : JSON.stringify(initialDocument.content)) : null;
+  // Process document content
+  let documentContent = null;
+  if (initialDocument?.content) {
+    console.log('📄 Loading document content:', {
+      id: initialDocument.id,
+      contentType: typeof initialDocument.content,
+      content: initialDocument.content
+    });
+    
+    if (typeof initialDocument.content === 'string') {
+      documentContent = initialDocument.content;
+    } else {
+      documentContent = JSON.stringify(initialDocument.content);
+    }
+  } else {
+    console.log('⚠️ No document content found for:', initialDocument?.id);
+  }
 
 
 
@@ -243,7 +258,7 @@ function App({ initialDocument, debouncedSave }: AppProps): JSX.Element {
   };
 
   // Create a unique key to force re-initialization when document changes
-  const editorKey = initialDocument?.id || 'new-document';
+  const editorKey = initialDocument?.id || initialDocument?.title || 'new-document';
 
   return (
     <LexicalComposer 
