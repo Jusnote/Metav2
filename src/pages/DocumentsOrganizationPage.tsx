@@ -23,7 +23,7 @@ const DocumentsOrganizationPage = () => {
   
   const { user } = useAuth();
   const { debouncedSave, isSaving, lastSaved, currentDocumentId, setCurrentDocumentId, currentDocument: loadedDocument, isLoading } = useAutoSave(user);
-  const { documents, createDocument, refetch: fetchDocuments } = useDocuments(user);
+  const { documents, createDocument, updateDocument, refetch: fetchDocuments } = useDocuments(user);
 
   // Recarregar documentos quando o usuário muda
   useEffect(() => {
@@ -134,199 +134,7 @@ const DocumentsOrganizationPage = () => {
     setCurrentDocumentId(null);
   };
 
-  // Dados de exemplo iniciais
-  const initialUnits: Unit[] = [
-    {
-      id: "550e8400-e29b-41d4-a716-446655440000",
-      title: "Unit 2: Cells",
-      totalChapters: 10,
-      subject: "Biologia e Bioquímica",
-      topics: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440001",
-          title: "Cell membrane overview",
-          date: "Sep 13",
-          totalAulas: 6,
-          subtopics: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440010",
-              title: "Membrane structure and composition",
-              date: "Sep 13",
-              totalAulas: 2,
-              status: "completed",
-              tempo: "10min",
-              resumosVinculados: 3,
-              flashcardsVinculados: 15,
-              questoesVinculadas: 8
-            },
-            {
-              id: "550e8400-e29b-41d4-a716-446655440011",
-              title: "Membrane proteins and functions",
-              date: "Sep 13",
-              totalAulas: 2,
-              status: "in-progress",
-              tempo: "15min",
-              resumosVinculados: 2,
-              flashcardsVinculados: 12,
-              questoesVinculadas: 6
-            },
-            {
-              id: "550e8400-e29b-41d4-a716-446655440012",
-              title: "Membrane dynamics and fluidity",
-              date: "Sep 13",
-              totalAulas: 2,
-              status: "not-started",
-              tempo: "12min",
-              resumosVinculados: 1,
-              flashcardsVinculados: 8,
-              questoesVinculadas: 4
-            }
-          ]
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440002",
-          title: "Transport across a cell membrane",
-          date: "Sep 13",
-          totalAulas: 7,
-          subtopics: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440020",
-              title: "Passive transport mechanisms",
-              date: "Sep 13",
-              totalAulas: 3,
-              status: "not-started",
-              tempo: "18min",
-              resumosVinculados: 2,
-              flashcardsVinculados: 20,
-              questoesVinculadas: 10
-            },
-            {
-              id: "550e8400-e29b-41d4-a716-446655440021",
-              title: "Active transport systems",
-              date: "Sep 13",
-              totalAulas: 2,
-              status: "not-started",
-              tempo: "14min",
-              resumosVinculados: 1,
-              flashcardsVinculados: 16,
-              questoesVinculadas: 7
-            },
-            {
-              id: "550e8400-e29b-41d4-a716-446655440022",
-              title: "Vesicular transport",
-              date: "Sep 13",
-              totalAulas: 2,
-              status: "not-started",
-              tempo: "11min",
-              resumosVinculados: 1,
-              flashcardsVinculados: 9,
-              questoesVinculadas: 5
-            }
-          ]
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440003",
-          title: "Cell-cell interactions",
-          date: "Sep 13",
-          totalAulas: 5,
-          subtopics: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440030",
-              title: "Cell junctions and adhesion",
-              date: "Sep 13",
-              totalAulas: 3,
-              status: "completed",
-              tempo: "16min",
-              resumosVinculados: 2,
-              flashcardsVinculados: 18,
-              questoesVinculadas: 9
-            },
-            {
-              id: "550e8400-e29b-41d4-a716-446655440031",
-              title: "Cell signaling pathways",
-              date: "Sep 13",
-              totalAulas: 2,
-              status: "in-progress",
-              tempo: "13min",
-              resumosVinculados: 1,
-              flashcardsVinculados: 14,
-              questoesVinculadas: 6
-            }
-          ]
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440004",
-          title: "Eukaryotic cells",
-          date: "Sep 14",
-          totalAulas: 6
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440005",
-          title: "Cytoskeleton",
-          date: "Sep 14",
-          totalAulas: 3
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440006",
-          title: "Prokaryotes/bacteria",
-          date: "Sep 14",
-          totalAulas: 3
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440007",
-          title: "Viruses",
-          date: "Sep 14",
-          totalAulas: 4
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440008",
-          title: "Cellular division",
-          date: "Sep 14",
-          totalAulas: 8
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440009",
-          title: "Embryology",
-          date: "Sep 14",
-          totalAulas: 6
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440010",
-          title: "Cellular development",
-          date: "Sep 14",
-          totalAulas: 4
-        }
-      ]
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440100",
-      title: "Unit 3: Organ systems",
-      totalChapters: 18,
-      subject: "Biologia e Bioquímica",
-      topics: [
-        {
-          id: "nervous-system",
-          title: "Biological basis of behavior: The nervous system",
-          date: "Sep 14",
-          totalAulas: 15
-        },
-        {
-          id: "neural-cells",
-          title: "Neural cells",
-          date: "Sep 14",
-          totalAulas: 8
-        },
-        {
-          id: "neuron-membrane",
-          title: "Neuron membrane potentials",
-          date: "Sep 14",
-          totalAulas: 9
-        }
-      ]
-    }
-  ];
-
-  // Inicializar o hook de gerenciamento de unidades
+  // Inicializar o hook de gerenciamento de unidades (sem dados iniciais)
   const {
     units,
     addUnit,
@@ -341,7 +149,7 @@ const DocumentsOrganizationPage = () => {
     startEditing,
     stopEditing,
     isEditing
-  } = useUnitsManager(initialUnits);
+  } = useUnitsManager();
 
   // Debug: Log dos dados carregados
   console.log('🔍 Units loaded from useUnitsManager:', units);
