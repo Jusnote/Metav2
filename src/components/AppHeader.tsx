@@ -48,13 +48,13 @@ import { toast } from "sonner";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Flashcards", url: "/flashcards", icon: Play },
   { title: "Conteúdos", url: "/documents-organization", icon: BookOpen },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
 ];
 
 const toolsItems = [
+  { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Resumos", url: "/resumos-list", icon: FileText },
   { title: "Criar Questão", url: "/criar-questao", icon: Plus },
   { title: "Configurações", url: "/settings", icon: Settings },

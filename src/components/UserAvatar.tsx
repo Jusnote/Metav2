@@ -61,13 +61,15 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
       variant === 'mobile' 
         ? 'cursor-pointer hover:bg-white/10 border-0 bg-transparent shadow-none' 
         : 'border border-slate-200/60 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-white/80'
-    } ${variant === 'desktop' ? 'min-w-[420px]' : ''}`}>
+    } ${variant === 'desktop' ? 'min-w-[490px]' : ''}`}>
       {/* Avatar com nível */}
       <div className="relative flex-shrink-0">
-        <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold border-2 ${
-          getLevelColor(progress.level)
-        }`}>
-          <User className="w-6 h-6" />
+        <div className="w-32 h-25 rounded-lg overflow-hidden">
+          <img 
+            src="/avatar1.png" 
+            alt="Avatar" 
+            className="w-full h-full rounded-lg object-cover"
+          />
         </div>
         <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white border-2 border-white ${
           getLevelColor(progress.level).split(' ')[0]
@@ -109,9 +111,9 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
 
       {/* Informações expandidas do usuário (apenas desktop) */}
       {variant === 'desktop' && (
-        <div className="flex-1 flex items-center gap-2.5">
+        <div className="flex-1 flex items-center gap-3">
           {/* Primeira seção: Informações básicas */}
-          <div className="flex-[0.8] space-y-1">
+          <div className="flex-[1.2] space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-gray-900 truncate">
                 {user.email?.split('@')[0] || 'Usuário'}
@@ -144,10 +146,10 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
           </div>
 
           {/* Divisor vertical */}
-          <div className="h-16 w-px bg-gray-300 mx-2"></div>
+          <div className="h-16 w-px bg-gray-300 mx-1"></div>
 
           {/* Segunda seção: Medalhas */}
-          <div className="flex items-center justify-center">
+          <div className="flex-[0.8] flex items-center justify-center">
             {/* Medalhas */}
             {progress.medals.length > 0 && (
               <div className="space-y-0.5">

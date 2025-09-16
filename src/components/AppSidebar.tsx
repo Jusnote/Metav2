@@ -40,7 +40,6 @@ import { toast } from "sonner";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Flashcards", url: "/flashcards", icon: Play },
   { title: "Resumos", url: "/resumos-list", icon: FileText },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
@@ -50,6 +49,7 @@ const navigationItems = [
 ];
 
 const toolsItems = [
+  { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Filtros", url: "/filters", icon: Filter },
   { title: "Insights", url: "/insights", icon: Lightbulb },
   { title: "Analytics", url: "/analytics", icon: TrendingUp },
