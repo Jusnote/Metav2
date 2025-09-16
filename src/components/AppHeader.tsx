@@ -28,6 +28,7 @@ import {
   BookOpen
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -49,15 +50,14 @@ const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Flashcards", url: "/flashcards", icon: Play },
-  { title: "Resumos", url: "/resumos-list", icon: FileText },
   { title: "Conteúdos", url: "/documents-organization", icon: BookOpen },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
-  { title: "Criar Questão", url: "/criar-questao", icon: Plus },
-
-  { title: "Configurações", url: "/settings", icon: Settings },
 ];
 
 const toolsItems = [
+  { title: "Resumos", url: "/resumos-list", icon: FileText },
+  { title: "Criar Questão", url: "/criar-questao", icon: Plus },
+  { title: "Configurações", url: "/settings", icon: Settings },
   { title: "Filtros", url: "/filters", icon: Filter },
   { title: "Insights", url: "/insights", icon: Lightbulb },
   { title: "Analytics", url: "/analytics", icon: TrendingUp },
@@ -128,19 +128,21 @@ export function AppHeader() {
       {/* Container centralizado com respiro nas laterais */}
       <div className="max-w-7xl mx-auto">
         {/* Linha Superior: Logo + Notificações + Menu do usuário */}
-        <div className="flex items-center justify-between px-6 lg:px-8 py-3 bg-slate-900 rounded-b-xl">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 shadow-md">
-              <Skull className="h-6 w-6 text-white" />
+        <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-2 md:py-3 bg-slate-900 rounded-b-xl">
+          {/* Logo - Desktop apenas */}
+          <div className="hidden md:flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 shadow-md">
+              <Skull className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-white hidden sm:block">FlashCard Scribe</span>
-            <span className="text-lg font-bold text-white sm:hidden">FCS</span>
+            <span className="text-xl font-bold text-white">Meta 01</span>
           </div>
+          
+          {/* Espaçador mobile para centralizar avatar */}
+          <div className="md:hidden"></div>
 
-          <div className="flex items-center gap-2">
-            {/* Notificações */}
-            <div className="relative">
+          <div className="flex items-center gap-1 md:gap-2">
+            {/* Notificações - Desktop apenas */}
+            <div className="relative hidden md:block">
               <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative hover:bg-slate-800 text-slate-300 hover:text-white">
                 <Bell className="h-4 w-4" />
                 {notifications.unread > 0 && (
@@ -156,6 +158,17 @@ export function AppHeader() {
                 )}
               </Button>
             </div>
+
+            {/* Barrinha antes do Avatar Mobile */}
+            <div className="md:hidden w-0.5 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+            
+            {/* Avatar Mobile */}
+            <div className="md:hidden">
+              <UserAvatar variant="mobile" />
+            </div>
+            
+            {/* Barrinha depois do Avatar Mobile */}
+            <div className="md:hidden w-0.5 h-8 bg-gradient-to-b from-purple-600 to-blue-500 rounded-full"></div>
 
             {/* Menu Mobile */}
             <div className="md:hidden">
@@ -248,8 +261,10 @@ export function AppHeader() {
 
         {/* Linha Inferior: Navegação principal + Ferramentas (Desktop apenas) */}
         <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-white backdrop-blur-sm border-t border-slate-200/50 rounded-t-xl">
-          {/* Navegação Principal */}
-          <nav className="flex items-center gap-2">
+          {/* Avatar do Usuário + Navegação Principal */}
+          <div className="flex items-center gap-6">
+            <UserAvatar variant="desktop" />
+            <nav className="flex items-center gap-2">
             {navigationItems.map((item) => (
               <NavLink
                 key={item.title}
@@ -261,7 +276,8 @@ export function AppHeader() {
                 <span className="transition-all duration-200">{item.title}</span>
               </NavLink>
             ))}
-          </nav>
+            </nav>
+          </div>
 
           {/* Ferramentas Dropdown */}
           <div className="flex items-center">
