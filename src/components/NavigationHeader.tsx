@@ -32,9 +32,9 @@ export function NavigationHeader() {
   };
 
   const getNavClassName = (path: string) => {
-    const baseClasses = "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95";
+    const baseClasses = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95";
     if (isActive(path)) {
-      return `${baseClasses} bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md hover:from-blue-700 hover:to-purple-700`;
+      return `${baseClasses} bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md hover:from-orange-600 hover:to-orange-700`;
     }
     return `${baseClasses} text-slate-600 hover:text-slate-800 hover:bg-slate-100 border border-slate-200/50`;
   };

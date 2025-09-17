@@ -11,11 +11,11 @@ export function StudyModeToggle() {
   };
 
   const getButtonClassName = (mode: StudyMode) => {
-    const baseClasses = "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95";
+    const baseClasses = "flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98] rounded-lg border";
     if (studyMode === mode) {
-      return cn(baseClasses, "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md hover:from-blue-700 hover:to-purple-700");
+      return cn(baseClasses, "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg border-orange-500 hover:from-orange-600 hover:to-orange-700 hover:shadow-xl");
     }
-    return cn(baseClasses, "text-slate-600 hover:text-slate-800 hover:bg-slate-100 border border-slate-300");
+    return cn(baseClasses, "text-slate-300 hover:text-white hover:bg-slate-700/50 border-slate-600 hover:border-slate-500 bg-slate-800/30 backdrop-blur-sm");
   };
 
   return (

@@ -60,7 +60,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
     <div className={`flex items-center gap-2.5 py-1 px-3 rounded-lg transition-all duration-200 ${
       variant === 'mobile' 
         ? 'cursor-pointer hover:bg-white/10 border-0 bg-transparent shadow-none' 
-        : 'border border-slate-200/60 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-white/80'
+        : 'border border-slate-900 bg-slate-900 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-slate-800'
     } ${variant === 'desktop' ? 'min-w-[490px]' : ''}`}>
       {/* Avatar com nível */}
       <div className="relative flex-shrink-0">
@@ -115,7 +115,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
           {/* Primeira seção: Informações básicas */}
           <div className="flex-[1.2] space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-gray-900 truncate">
+              <span className="text-sm font-semibold text-white truncate">
                 {user.email?.split('@')[0] || 'Usuário'}
               </span>
               <Badge variant="secondary" className="text-xs">
@@ -126,11 +126,11 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             {/* Barra de XP expandida */}
              <div className="space-y-0.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">Progresso XP</span>
-                <span className="font-medium">{Math.round(xpPercentage)}%</span>
+                <span className="text-slate-300">Progresso XP</span>
+                <span className="font-medium text-white">{Math.round(xpPercentage)}%</span>
               </div>
               <Progress value={xpPercentage} className="h-2" />
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex justify-between text-xs text-slate-400">
                 <span>{progress.totalXP} XP</span>
                 <span>{progress.xpToNextLevel} para próximo nível</span>
               </div>
@@ -139,14 +139,14 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             {/* Streak de dias */}
             <div className="flex items-center gap-2">
               <Flame className="w-4 h-4 text-orange-500" />
-              <span className="text-xs font-medium text-gray-700">
+              <span className="text-xs font-medium text-slate-300">
                 {progress.streak || 0} dias consecutivos
               </span>
             </div>
           </div>
 
           {/* Divisor vertical */}
-          <div className="h-16 w-px bg-gray-300 mx-1"></div>
+          <div className="h-16 w-px bg-slate-600 mx-1"></div>
 
           {/* Segunda seção: Medalhas */}
           <div className="flex-[0.8] flex items-center justify-center">
@@ -155,7 +155,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1">
                   <Trophy className="w-4 h-4 text-yellow-500" />
-                  <span className="text-xs font-medium text-gray-700">
+                  <span className="text-xs font-medium text-slate-300">
                     {progress.medals.length} medalhas
                   </span>
                 </div>

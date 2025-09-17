@@ -133,8 +133,11 @@ export function AppHeader() {
       <div className="max-w-7xl mx-auto">
         {/* Linha Superior: Logo + Notificações + Menu do usuário */}
         <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-2 md:py-1 bg-slate-900 rounded-b-xl">
-          {/* Logo - Desktop apenas */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Espaçador esquerdo - Desktop apenas */}
+          <div className="hidden md:flex flex-1"></div>
+          
+          {/* Logo Centralizada - Desktop apenas */}
+          <div className="hidden md:flex items-center gap-2 justify-center">
             <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 shadow-md">
               <Skull className="h-5 w-5 text-white" />
             </div>
@@ -144,7 +147,7 @@ export function AppHeader() {
           {/* Espaçador mobile para centralizar avatar */}
           <div className="md:hidden"></div>
 
-          <div className="flex items-center gap-1 md:gap-2">
+          <div className="flex items-center gap-1 md:gap-2 md:flex-1 md:justify-end">
             {/* Notificações - Desktop apenas */}
             <div className="relative hidden md:block">
               <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative hover:bg-slate-800 text-slate-300 hover:text-white">
@@ -264,7 +267,7 @@ export function AppHeader() {
         </div>
 
         {/* Linha Inferior: Avatar + Toggle de Modo de Estudo (Desktop apenas) */}
-        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-white backdrop-blur-sm border-t border-slate-200/50 rounded-t-xl">
+        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-slate-900 backdrop-blur-sm border-t border-slate-700/50 rounded-t-xl">
           {/* Avatar do Usuário */}
           <div className="flex items-center">
             <UserAvatar variant="desktop" />
@@ -303,7 +306,11 @@ export function AppHeader() {
             </DropdownMenu>
           </div>
         </div>
+        
       </div>
+      
+      {/* Barra Laranja Divisória - Fora do container para ocupar toda a largura */}
+      <div className="w-full h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 shadow-sm"></div>
     </header>
   );
 }
