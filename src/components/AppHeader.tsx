@@ -25,7 +25,9 @@ import {
   CheckCircle,
   Wrench,
   Code2,
-  BookOpen
+  BookOpen,
+  GraduationCap,
+  User
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -45,6 +47,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { useStudyMode, StudyMode } from "@/contexts/StudyModeContext";
+import { StudyModeToggle } from "@/components/StudyModeToggle";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -128,7 +132,7 @@ export function AppHeader() {
       {/* Container centralizado com respiro nas laterais */}
       <div className="max-w-7xl mx-auto">
         {/* Linha Superior: Logo + Notificações + Menu do usuário */}
-        <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-2 md:py-3 bg-slate-900 rounded-b-xl">
+        <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-2 md:py-1 bg-slate-900 rounded-b-xl">
           {/* Logo - Desktop apenas */}
           <div className="hidden md:flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 shadow-md">
@@ -259,42 +263,36 @@ export function AppHeader() {
           </div>
         </div>
 
-        {/* Linha Inferior: Navegação principal + Ferramentas (Desktop apenas) */}
+        {/* Linha Inferior: Avatar + Toggle de Modo de Estudo (Desktop apenas) */}
         <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-white backdrop-blur-sm border-t border-slate-200/50 rounded-t-xl">
-          {/* Avatar do Usuário + Navegação Principal */}
-          <div className="flex items-center gap-6">
+          {/* Avatar do Usuário */}
+          <div className="flex items-center">
             <UserAvatar variant="desktop" />
-            <nav className="flex items-center gap-2">
-            {navigationItems.map((item) => (
-              <NavLink
-                key={item.title}
-                to={item.url}
-                end={item.url === "/"}
-                className={`${getNavClassName(item.url)} group px-3 py-2 text-sm font-medium`}
-              >
-                <item.icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-                <span className="transition-all duration-200">{item.title}</span>
-              </NavLink>
-            ))}
-            </nav>
           </div>
 
-          {/* Ferramentas Dropdown */}
-          <div className="flex items-center">
+          {/* Toggle de Modo de Estudo e Ferramentas */}
+          <div className="flex items-center gap-4 mt-24">
+            <StudyModeToggle />
+            
+            {/* Dropdown de Ferramentas */}
             <DropdownMenu open={isToolsOpen} onOpenChange={setIsToolsOpen}>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border-slate-300/60 bg-white/70 text-slate-600 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-400/80 shadow-sm">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 border-slate-300"
+                >
                   <Wrench className="h-4 w-4" />
-                  <span>Ferramentas</span>
-                  <ChevronDown className="h-3 w-3" />
+                  <span className="text-sm font-medium">Ferramentas</span>
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-56">
                 {toolsItems.map((item) => (
                   <DropdownMenuItem key={item.title} asChild>
                     <NavLink
                       to={item.url}
-                      className="flex items-center gap-2 w-full cursor-pointer text-sm"
+                      className="flex items-center gap-2 w-full px-2 py-1.5 text-sm hover:bg-slate-100 rounded-sm"
+                      onClick={() => setIsToolsOpen(false)}
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>

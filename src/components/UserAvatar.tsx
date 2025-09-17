@@ -57,7 +57,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
     (Math.pow(progress.level, 2) * 100 - Math.pow(progress.level - 1, 2) * 100)) * 100;
 
   const UserAvatarContent = () => (
-    <div className={`flex items-center gap-2.5 p-3 rounded-lg transition-all duration-200 ${
+    <div className={`flex items-center gap-2.5 py-1 px-3 rounded-lg transition-all duration-200 ${
       variant === 'mobile' 
         ? 'cursor-pointer hover:bg-white/10 border-0 bg-transparent shadow-none' 
         : 'border border-slate-200/60 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-white/80'
