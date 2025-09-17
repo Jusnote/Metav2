@@ -27,7 +27,8 @@ import {
   Code2,
   BookOpen,
   GraduationCap,
-  User
+  User,
+  ChevronUp
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -72,6 +73,7 @@ const toolsItems = [
 export function AppHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
   const { user, signOut } = useAuth();
@@ -142,6 +144,19 @@ export function AppHeader() {
               <Skull className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-white">Meta 01</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+              className="h-8 w-8 p-0 ml-2 hover:bg-slate-800 text-slate-300 hover:text-white transition-all duration-200"
+              title={isHeaderCollapsed ? "Expandir header" : "Colapsar header"}
+            >
+              {isHeaderCollapsed ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronUp className="h-4 w-4" />
+              )}
+            </Button>
           </div>
           
           {/* Espaçador mobile para centralizar avatar */}
@@ -267,45 +282,47 @@ export function AppHeader() {
         </div>
 
         {/* Linha Inferior: Avatar + Toggle de Modo de Estudo (Desktop apenas) */}
-        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-slate-900 backdrop-blur-sm border-t border-slate-700/50 rounded-t-xl">
-          {/* Avatar do Usuário */}
-          <div className="flex items-center">
-            <UserAvatar variant="desktop" />
-          </div>
+        {!isHeaderCollapsed && (
+          <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-slate-900 backdrop-blur-sm border-t border-slate-700/50 rounded-t-xl transition-all duration-300 ease-in-out">
+            {/* Avatar do Usuário */}
+            <div className="flex items-center">
+              <UserAvatar variant="desktop" />
+            </div>
 
-          {/* Toggle de Modo de Estudo e Ferramentas */}
-          <div className="flex items-center gap-4 mt-24">
-            <StudyModeToggle />
-            
-            {/* Dropdown de Ferramentas */}
-            <DropdownMenu open={isToolsOpen} onOpenChange={setIsToolsOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 border-slate-300"
-                >
-                  <Wrench className="h-4 w-4" />
-                  <span className="text-sm font-medium">Ferramentas</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {toolsItems.map((item) => (
-                  <DropdownMenuItem key={item.title} asChild>
-                    <NavLink
-                      to={item.url}
-                      className="flex items-center gap-2 w-full px-2 py-1.5 text-sm hover:bg-slate-100 rounded-sm"
-                      onClick={() => setIsToolsOpen(false)}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Toggle de Modo de Estudo e Ferramentas */}
+            <div className="flex items-center gap-4 mt-24">
+              <StudyModeToggle />
+              
+              {/* Dropdown de Ferramentas */}
+              <DropdownMenu open={isToolsOpen} onOpenChange={setIsToolsOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 border-slate-300"
+                  >
+                    <Wrench className="h-4 w-4" />
+                    <span className="text-sm font-medium">Ferramentas</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {toolsItems.map((item) => (
+                    <DropdownMenuItem key={item.title} asChild>
+                      <NavLink
+                        to={item.url}
+                        className="flex items-center gap-2 w-full px-2 py-1.5 text-sm hover:bg-slate-100 rounded-sm"
+                        onClick={() => setIsToolsOpen(false)}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </NavLink>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-        </div>
+        )}
         
       </div>
       
