@@ -36,10 +36,12 @@ import {
   $getRoot,
   $getSelection,
   $isElementNode,
+  $isParagraphNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
+  CLEAR_EDITOR_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   ElementFormatType,
   FORMAT_ELEMENT_COMMAND,
@@ -68,6 +70,8 @@ import DropdownColorPicker from '../../ui/DropdownColorPicker';
 import {getSelectedNode} from '../../utils/getSelectedNode';
 import {sanitizeUrl} from '../../utils/url';
 import {EmbedConfigs} from '../AutoEmbedPlugin';
+import useFlashMessage from '../../hooks/useFlashMessage';
+import Button from '../../ui/Button';
 import {INSERT_COLLAPSIBLE_COMMAND} from '../CollapsiblePlugin';
 import {InsertEquationDialog} from '../EquationsPlugin';
 import {INSERT_EXCALIDRAW_COMMAND} from '../ExcalidrawPlugin';
@@ -288,6 +292,37 @@ function BlockFormatDropDown({
   );
 }
 
+function ShowClearDialog({
+  editor,
+  onClose,
+}: {
+  editor: LexicalEditor;
+  onClose: () => void;
+}): JSX.Element {
+  return (
+    <>
+      Are you sure you want to clear the editor?
+      <div className="Modal__content">
+        <Button
+          onClick={() => {
+            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+            editor.focus();
+            onClose();
+          }}>
+          Clear
+        </Button>{' '}
+        <Button
+          onClick={() => {
+            editor.focus();
+            onClose();
+          }}>
+          Cancel
+        </Button>
+      </div>
+    </>
+  );
+}
+
 function Divider(): JSX.Element {
   return <div className="divider" />;
 }
@@ -483,7 +518,29 @@ export default function ToolbarPlugin({
     null,
   );
   const [modal, showModal] = useModal();
+  const showFlashMessage = useFlashMessage();
+  const [isEditorEmpty, setIsEditorEmpty] = useState(true);
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
+  
+  useEffect(() => {
+    return activeEditor.registerUpdateListener(() => {
+      activeEditor.getEditorState().read(() => {
+        const root = $getRoot();
+        const children = root.getChildren();
+
+        if (children.length > 1) {
+          setIsEditorEmpty(false);
+        } else {
+          if ($isParagraphNode(children[0])) {
+            const paragraphChildren = children[0].getChildren();
+            setIsEditorEmpty(paragraphChildren.length === 0);
+          } else {
+            setIsEditorEmpty(false);
+          }
+        }
+      });
+    });
+  }, [activeEditor]);
   const {toolbarState, updateToolbarState} = useToolbarState();
 
   const $updateToolbar = useCallback(() => {
@@ -1074,7 +1131,7 @@ export default function ToolbarPlugin({
                   onClick={() =>
                     insertGifOnClick({
                       altText: 'Cat typing on a laptop',
-                      src: catTypingGif.src,
+                      src: catTypingGif,
                     })
                   }
                   className="item">
@@ -1194,6 +1251,33 @@ export default function ToolbarPlugin({
         editor={activeEditor}
         isRTL={toolbarState.isRTL}
       />
+      
+      <Divider />
+      
+      {/* Clear Button */}
+      <button
+        className="toolbar-item spaced"
+        disabled={isEditorEmpty}
+        onClick={() => {
+          showModal('Clear editor', (onClose) => (
+            <ShowClearDialog editor={activeEditor} onClose={onClose} />
+          ));
+        }}
+        title="Clear"
+        aria-label="Clear editor contents">
+        <i className="format clear" />
+      </button>
+      
+      {/* Lock/Unlock Button */}
+      <button
+        className={`toolbar-item spaced ${!isEditable ? 'unlock' : 'lock'}`}
+        onClick={() => {
+          activeEditor.setEditable(!activeEditor.isEditable());
+        }}
+        title="Read-Only Mode"
+        aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
+        <i className={`format ${!isEditable ? 'unlock' : 'lock'}`} />
+      </button>
 
       {modal}
     </div>
