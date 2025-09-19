@@ -63,6 +63,10 @@
   cursor: pointer;
 }
 
+.first-heading.selected-heading {
+  color: #3578e5 !important;
+}
+
 .headings {
   list-style: none;
   margin-top: 0;
