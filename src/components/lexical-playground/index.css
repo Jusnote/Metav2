@@ -1319,6 +1319,10 @@ i.page-break,
   background-image: url(/lexical-icons/lock.svg);
 }
 
+.actions i.help-circle {
+  background-image: url(/lexical-icons/chat-right-text.svg);
+}
+
 .actions i.left-align {
   background-image: url(/lexical-icons/text-left.svg);
 }

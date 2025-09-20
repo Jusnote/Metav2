@@ -73,15 +73,57 @@ import TableCellActionMenuPlugin from './plugins/TableActionMenuPlugin';
 import TableCellResizer from './plugins/TableCellResizer';
 import TableHoverActionsPlugin from './plugins/TableHoverActionsPlugin';
 import TableOfContentsPlugin from './plugins/TableOfContentsPlugin';
+import { useStudyMode as useGlobalStudyMode } from '../../contexts/StudyModeContext';
 import ToolbarPlugin from './plugins/ToolbarPlugin';
 import TreeViewPlugin from './plugins/TreeViewPlugin';
 import TwitterPlugin from './plugins/TwitterPlugin';
 import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
+import { StudyModeControls } from '../StudyModeControls';
+import { StudyCompletionToast } from '../StudyCompletionToast';
+import { QuestionModal } from '../QuestionModal';
+import StudyModePlugin from './plugins/StudyModePlugin';
+import './plugins/StudyModePlugin/index.css';
+import QuestionEditorPlugin from './plugins/QuestionEditorPlugin';
+import { useStudyMode } from '../../hooks/useStudyMode';
 
 const skipCollaborationInit =
   // @ts-expect-error
   window.parent != null && window.parent.frames.right === window;
+
+// Wrapper para passar dados do study mode para o TableOfContents
+function TableOfContentsPluginWithStudyMode() {
+  const globalStudyMode = useGlobalStudyMode();
+  const [isTableOfContentsVisible, setIsTableOfContentsVisible] = useState(true);
+  
+  return (
+    <div className="flex items-center gap-2">
+      {/* Botão para mostrar/esconder */}
+      <button
+        onClick={() => setIsTableOfContentsVisible(!isTableOfContentsVisible)}
+        className="flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 transition-colors"
+        title={isTableOfContentsVisible ? 'Esconder navegação' : 'Mostrar navegação'}
+      >
+        {isTableOfContentsVisible ? (
+          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+      
+      {/* TableOfContents colapsável */}
+      {isTableOfContentsVisible && (
+        <div className="flex-1">
+          <TableOfContentsPlugin studyModeData={globalStudyMode} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface EditorProps {
   debouncedSave?: (data: { content: any; content_text: string }) => void;
@@ -89,6 +131,27 @@ interface EditorProps {
 
 export default function Editor({ debouncedSave }: EditorProps = {}): JSX.Element {
   const {historyState} = useSharedHistoryContext();
+  const { 
+    showCompletionToast, 
+    setShowCompletionToast,
+    showQuestionModal,
+    pendingSectionIndex
+  } = useGlobalStudyMode();
+  
+  // Hook para modal de perguntas
+  const { 
+    getQuestionsForSection, 
+    handleQuestionsComplete, 
+    handleQuestionsSkip 
+  } = useStudyMode();
+  
+  console.log('🎬 Editor render, showCompletionToast (GLOBAL):', showCompletionToast);
+  console.log('❓ Editor render, showQuestionModal (GLOBAL):', showQuestionModal, 'pendingSectionIndex (GLOBAL):', pendingSectionIndex);
+  
+  const hideCompletionToast = () => {
+    console.log('🔇 Ocultando toast via Editor');
+    setShowCompletionToast(false);
+  };
   const {
     settings: {
       isCollab,
@@ -179,6 +242,14 @@ export default function Editor({ debouncedSave }: EditorProps = {}): JSX.Element
           setIsLinkEditMode={setIsLinkEditMode}
         />
       )}
+      
+      {/* TableOfContents entre Toolbar e Editor - Fixo e Compacto */}
+      {showTableOfContents && (
+        <div className="table-of-contents-bar sticky top-9 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-3 py-1.5 shadow-sm">
+          <TableOfContentsPluginWithStudyMode />
+        </div>
+      )}
+      
       {isRichText && (
         <ShortcutsPlugin
           editor={activeEditor}
@@ -293,15 +364,38 @@ export default function Editor({ debouncedSave }: EditorProps = {}): JSX.Element
           />
         )}
         {isAutocomplete && <AutocompletePlugin />}
-        <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
         {shouldUseLexicalContextMenu && <ContextMenuPlugin />}
         {shouldAllowHighlightingWithBrackets && <SpecialTextPlugin />}
         <ActionsPlugin
           isRichText={isRichText}
           shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
         />
+        
+            {/* Study mode controls - only shows when conditions are met */}
+            <StudyModeControls />
+            
+            {/* Study mode plugin - controls content visibility */}
+            <StudyModePlugin />
+            
+            {/* Question editor plugin - adds question buttons to H1s in edit mode */}
+            {/* <QuestionEditorPlugin /> */}
       </div>
       {showTreeView && <TreeViewPlugin />}
+      
+      {/* Toast de conclusão do estudo */}
+      <StudyCompletionToast 
+        show={showCompletionToast} 
+        onHide={hideCompletionToast}
+      />
+      
+      {/* Modal de perguntas */}
+      <QuestionModal
+        sectionQuestions={pendingSectionIndex !== null ? getQuestionsForSection(pendingSectionIndex) : null}
+        isOpen={showQuestionModal}
+        onClose={() => handleQuestionsSkip()}
+        onComplete={handleQuestionsComplete}
+        onSkip={handleQuestionsSkip}
+      />
     </>
   );
 }

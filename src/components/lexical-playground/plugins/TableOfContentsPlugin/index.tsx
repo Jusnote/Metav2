@@ -16,6 +16,8 @@ import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {TableOfContentsPlugin as LexicalTableOfContentsPlugin} from '@lexical/react/LexicalTableOfContentsPlugin';
 import {useEffect, useRef, useState} from 'react';
 import * as React from 'react';
+import { StudyProgressIndicator } from '../../../StudyProgressIndicator';
+import { useStudyMode } from '../../../../hooks/useStudyMode';
 
 function indent(tagName: HeadingTagType) {
   if (tagName === 'h2') {
@@ -73,14 +75,93 @@ function isHeadingBelowTheTopOfThePage(element: HTMLElement, scrollContainer: HT
   return elementRelativeY > 50;
 }
 
-function TableOfContentsList({
+// Componente horizontal para o header
+function HorizontalTableOfContents({
   tableOfContents,
+  studyModeData,
+  selectedKey,
+  onScrollToNode
 }: {
   tableOfContents: Array<TableOfContentsEntry>;
+  studyModeData: any;
+  selectedKey: string;
+  onScrollToNode: (key: NodeKey, index: number) => void;
+}): JSX.Element {
+  const isStudyModeEnabled = studyModeData?.isStudyModeEnabled || false;
+  const currentSectionIndex = studyModeData?.currentSectionIndex || 0;
+  const completedSections = studyModeData?.completedSections || [];
+
+  return (
+    <div className="flex items-center gap-3">
+      {/* Indicador de progresso ultra-compacto */}
+      {isStudyModeEnabled && (
+        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 rounded border border-blue-200">
+          <span className="text-xs font-medium text-blue-800">{completedSections.length}/{tableOfContents.length}</span>
+          <div className="flex gap-0.5">
+            {Array.from({ length: Math.min(tableOfContents.length, 4) }).map((_, index) => {
+              const isCompleted = completedSections.length > index;
+              const isCurrent = index === currentSectionIndex;
+              return (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isCompleted ? 'bg-green-500' : isCurrent ? 'bg-blue-500' : 'bg-gray-300'
+                  }`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Navegação horizontal compacta */}
+      <div className="flex items-center gap-1 overflow-x-auto flex-1">
+        {tableOfContents.slice(0, 6).map(([key, text, tag], index) => {
+          const isSelected = selectedKey === key;
+  return (
+            <button
+              key={key}
+              onClick={() => onScrollToNode(key, index)}
+              className={`px-2 py-0.5 text-xs rounded whitespace-nowrap transition-colors ${
+                isSelected 
+                  ? 'bg-blue-100 text-blue-700 font-medium' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {tag.toUpperCase()} {('' + text).length > 12 ? text.substring(0, 12) + '...' : text}
+            </button>
+          );
+        })}
+        {tableOfContents.length > 6 && (
+          <span className="text-xs text-gray-400 px-1">+{tableOfContents.length - 6}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TableOfContentsList({
+  tableOfContents,
+  studyModeData
+}: {
+  tableOfContents: Array<TableOfContentsEntry>;
+  studyModeData: {
+    isStudyModeEnabled: boolean;
+    currentSectionIndex: number;
+    completedSections: string[];
+  } | null;
 }): JSX.Element {
   const [selectedKey, setSelectedKey] = useState('');
   const selectedIndex = useRef(0);
   const [editor] = useLexicalComposerContext();
+  
+  // Dados do modo estudo vindos como props
+  const isStudyModeEnabled = studyModeData?.isStudyModeEnabled || false;
+  const currentSectionIndex = studyModeData?.currentSectionIndex || 0;
+  const completedSections = studyModeData?.completedSections || [];
+  
+  
+  
 
   function scrollToNode(key: NodeKey, currIndex: number) {
     editor.getEditorState().read(() => {
@@ -106,53 +187,71 @@ function TableOfContentsList({
         return;
       }
       
-      // Usar viewport da janela como referência
-      const viewportTop = window.scrollY;
-      const viewportBottom = viewportTop + window.innerHeight;
-      
-      let selectedHeadingIndex = 0;
-      let bestScore = -Infinity;
-      
-      for (let i = 0; i < tableOfContents.length; i++) {
-        const heading = editor.getElementByKey(tableOfContents[i][0]);
-        if (heading) {
-          const rect = heading.getBoundingClientRect();
-          const elementTop = window.scrollY + rect.top;
-          const elementBottom = window.scrollY + rect.bottom;
-          
-          // Verificar se está visível no viewport
-          const isVisible = elementBottom > viewportTop && elementTop < viewportBottom;
-          
-          // Calcular score: mais próximo do topo = score maior
-          let score = 0;
-          if (isVisible) {
-            if (elementTop <= viewportTop) {
-              // Header está acima do viewport, mas visível
-              score = 1000 - (viewportTop - elementTop);
-            } else {
-              // Header está abaixo do topo do viewport
-              score = 1000 - (elementTop - viewportTop);
+        // Usar viewport da janela como referência
+        const viewportTop = window.scrollY;
+        const viewportHeight = window.innerHeight;
+        const viewportBottom = viewportTop + viewportHeight;
+        const viewportCenter = viewportTop + viewportHeight / 2;
+        
+        let selectedHeadingIndex = 0;
+        let bestDistance = Infinity;
+        let hasVisibleHeader = false;
+        
+        // Primeiro: verificar se há algum header visível
+        for (let i = 0; i < tableOfContents.length; i++) {
+          const heading = editor.getElementByKey(tableOfContents[i][0]);
+          if (heading) {
+            const rect = heading.getBoundingClientRect();
+            const elementTop = window.scrollY + rect.top;
+            const elementBottom = window.scrollY + rect.bottom;
+            
+            // Se o header está visível na tela
+            if (elementTop < viewportBottom && elementBottom > viewportTop) {
+              hasVisibleHeader = true;
+              const elementCenter = elementTop + rect.height / 2;
+              const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
+              
+              if (distanceFromCenter < bestDistance) {
+                bestDistance = distanceFromCenter;
+                selectedHeadingIndex = i;
+              }
+              console.log(`👀 Header ${i} VISÍVEL (${heading.textContent?.substring(0, 20)}), distância do centro: ${distanceFromCenter.toFixed(1)}`);
             }
           }
+        }
+        
+        // Se não há header visível, encontrar o mais próximo
+        if (!hasVisibleHeader) {
+          bestDistance = Infinity;
           
-          console.log(`📍 Header ${i} (${heading.textContent?.substring(0, 20)}): 
-            top: ${elementTop.toFixed(1)}px, 
-            bottom: ${elementBottom.toFixed(1)}px,
-            viewport: ${viewportTop.toFixed(1)}px - ${viewportBottom.toFixed(1)}px,
-            visível: ${isVisible}, score: ${score.toFixed(1)}`);
-          
-          if (score > bestScore) {
-            bestScore = score;
-            selectedHeadingIndex = i;
+          for (let i = 0; i < tableOfContents.length; i++) {
+            const heading = editor.getElementByKey(tableOfContents[i][0]);
+            if (heading) {
+              const rect = heading.getBoundingClientRect();
+              const elementTop = window.scrollY + rect.top;
+              const elementCenter = elementTop + rect.height / 2;
+              
+              // Calcular distância absoluta do centro do viewport
+              const distanceFromViewport = Math.abs(elementCenter - viewportCenter);
+              
+              if (distanceFromViewport < bestDistance) {
+                bestDistance = distanceFromViewport;
+                selectedHeadingIndex = i;
+              }
+              
+              const status = elementTop < viewportTop ? 'ACIMA' : 'ABAIXO';
+              console.log(`${status === 'ACIMA' ? '⬆️' : '⬇️'} Header ${i} ${status} (${heading.textContent?.substring(0, 20)}), distância: ${distanceFromViewport.toFixed(1)}`);
+            }
           }
         }
-      }
+        
+        console.log(`🎯 ${hasVisibleHeader ? 'Header visível' : 'Header mais próximo'}: ${selectedHeadingIndex} (distância: ${bestDistance.toFixed(1)})`);
       
       // Atualizar seleção apenas se mudou
       if (selectedIndex.current !== selectedHeadingIndex) {
         selectedIndex.current = selectedHeadingIndex;
         const selectedHeadingKey = tableOfContents[selectedHeadingIndex][0];
-        console.log('✅ Selecionando header:', selectedHeadingKey, 'índice:', selectedHeadingIndex, 'score:', bestScore.toFixed(1));
+        console.log('✅ Selecionando header:', selectedHeadingKey, 'índice:', selectedHeadingIndex);
         console.log('🔑 selectedKey atual:', selectedKey, 'novo:', selectedHeadingKey, 'são iguais?', selectedKey === selectedHeadingKey);
         setSelectedKey(selectedHeadingKey);
       } else {
@@ -223,12 +322,32 @@ function TableOfContentsList({
     };
   }, [tableOfContents, editor]);
 
+  // NOVA LÓGICA: Sempre renderizar na posição atual (entre toolbar e editor)
+  // O portal para o header foi desabilitado para usar a nova posição
+  
   return (
-    <div className="table-of-contents">
+    <HorizontalTableOfContents
+      tableOfContents={tableOfContents}
+      studyModeData={studyModeData}
+      selectedKey={selectedKey}
+      onScrollToNode={scrollToNode}
+    />
+  );
+
+  // Código antigo para renderização vertical (não usado mais)
+  /*
+  return (
+    <div className="table-of-contents" style={{flexDirection: 'column', height: 'auto', minHeight: '300px'}}>
+      <StudyProgressIndicator
+        totalSections={tableOfContents.length}
+        currentSectionIndex={currentSectionIndex}
+        completedSections={completedSections}
+        isStudyModeEnabled={isStudyModeEnabled}
+      />
+      
       <ul className="headings">
         {tableOfContents.map(([key, text, tag], index) => {
           const isSelected = selectedKey === key;
-          console.log(`🎨 Header ${index} (${text?.substring(0, 20)}): key=${key}, selectedKey=${selectedKey}, isSelected=${isSelected}`);
           
           if (index === 0) {
             return (
@@ -278,14 +397,33 @@ function TableOfContentsList({
       </ul>
     </div>
   );
+  */
 }
 
-export default function TableOfContentsPlugin() {
+export default function TableOfContentsPlugin({ studyModeData }: { studyModeData?: any }) {
+  
   return (
     <LexicalTableOfContentsPlugin>
       {(tableOfContents) => {
-        return <TableOfContentsList tableOfContents={tableOfContents} />;
+        return <TableOfContentsWrapper tableOfContents={tableOfContents} studyModeData={studyModeData} />;
       }}
     </LexicalTableOfContentsPlugin>
+  );
+}
+
+// Wrapper para usar o hook useStudyMode fora do contexto do TableOfContents
+function TableOfContentsWrapper({
+  tableOfContents,
+  studyModeData
+}: {
+  tableOfContents: Array<TableOfContentsEntry>;
+  studyModeData?: any;
+}) {
+  
+  return (
+    <TableOfContentsList 
+      tableOfContents={tableOfContents} 
+      studyModeData={studyModeData}
+    />
   );
 }

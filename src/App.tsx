@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "rea
 import { AppHeader } from "./components/AppHeader";
 import { NavigationHeader } from "./components/NavigationHeader";
 import { StudyModeProvider } from "./contexts/StudyModeContext";
+import { QuestionsProvider } from "./contexts/QuestionsContext";
 
 import HomePage from "./pages/HomePage";
 import Index from "./pages/Index";
@@ -68,27 +69,29 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <StudyModeProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/" element={<AppContent />}>
-              <Route index element={<PrivateRoute><HomePage /></PrivateRoute>} />
-              <Route path="flashcards" element={<PrivateRoute><Index /></PrivateRoute>} />
-              <Route path="resumos-list" element={<PrivateRoute><ResumosListPage /></PrivateRoute>} />
-              <Route path="resumos" element={<PrivateRoute><EditResumoPage /></PrivateRoute>} />
-              <Route path="study" element={<PrivateRoute><StudyPage /></PrivateRoute>} />
-              <Route path="cronograma" element={<PrivateRoute><CronogramaPage /></PrivateRoute>} />
-              <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
-              <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
-              <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
+        <QuestionsProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/" element={<AppContent />}>
+                <Route index element={<PrivateRoute><HomePage /></PrivateRoute>} />
+                <Route path="flashcards" element={<PrivateRoute><Index /></PrivateRoute>} />
+                <Route path="resumos-list" element={<PrivateRoute><ResumosListPage /></PrivateRoute>} />
+                <Route path="resumos" element={<PrivateRoute><EditResumoPage /></PrivateRoute>} />
+                <Route path="study" element={<PrivateRoute><StudyPage /></PrivateRoute>} />
+                <Route path="cronograma" element={<PrivateRoute><CronogramaPage /></PrivateRoute>} />
+                <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
+                <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
+                <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
 
-              <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+                <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </QuestionsProvider>
       </StudyModeProvider>
     </TooltipProvider>
   </QueryClientProvider>

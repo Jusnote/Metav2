@@ -181,9 +181,9 @@ const DocumentsOrganizationPage = () => {
   if (showEditor && currentSubtopic) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header do Editor */}
+        {/* Header do Editor com TableOfContents Integrado */}
         <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -213,6 +213,7 @@ const DocumentsOrganizationPage = () => {
               )}
             </div>
           </div>
+          
         </div>
 
         {/* Editor Lexical */}

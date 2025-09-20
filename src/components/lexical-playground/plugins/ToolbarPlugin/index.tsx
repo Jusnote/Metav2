@@ -9,11 +9,14 @@
 import type {JSX} from 'react';
 
 import {
+  $createCodeNode,
   $isCodeNode,
   CODE_LANGUAGE_FRIENDLY_NAME_MAP,
   CODE_LANGUAGE_MAP,
   getLanguageFriendlyName,
 } from '@lexical/code';
+import { QuestionManagerSimple } from '../../../QuestionManagerSimple';
+import { useStudyMode as useGlobalStudyMode } from '../../../../contexts/StudyModeContext';
 import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {$isListNode, ListNode} from '@lexical/list';
 import {INSERT_EMBED_COMMAND} from '@lexical/react/LexicalAutoEmbedPlugin';
@@ -23,6 +26,7 @@ import {
   $getSelectionStyleValueForProperty,
   $isParentElementRTL,
   $patchStyleText,
+  $setBlocksType,
 } from '@lexical/selection';
 import {$isTableNode, $isTableSelection} from '@lexical/table';
 import {
@@ -57,6 +61,7 @@ import {
 import {Dispatch, useCallback, useEffect, useState} from 'react';
 import * as React from 'react';
 import {IS_APPLE} from '../../shared/src/environment';
+import { HelpCircle, Lock, Unlock } from 'lucide-react';
 
 import {
   blockTypeToBlockName,
@@ -514,6 +519,7 @@ export default function ToolbarPlugin({
   setActiveEditor: Dispatch<LexicalEditor>;
   setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element {
+  const [showQuestionManager, setShowQuestionManager] = useState(false);
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
     null,
   );
@@ -521,6 +527,7 @@ export default function ToolbarPlugin({
   const showFlashMessage = useFlashMessage();
   const [isEditorEmpty, setIsEditorEmpty] = useState(true);
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
+  const { isGuidedMode } = useGlobalStudyMode();
   
   useEffect(() => {
     return activeEditor.registerUpdateListener(() => {
@@ -788,7 +795,6 @@ export default function ToolbarPlugin({
   };
 
   const canViewerSeeInsertDropdown = !toolbarState.isImageCaption;
-  const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
   return (
     <div className="toolbar">
@@ -901,21 +907,6 @@ export default function ToolbarPlugin({
             aria-label={`Format text to underlined. Shortcut: ${SHORTCUTS.UNDERLINE}`}>
             <i className="format underline" />
           </button>
-          {canViewerSeeInsertCodeButton && (
-            <button
-              disabled={!isEditable}
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
-              }}
-              className={
-                'toolbar-item spaced ' + (toolbarState.isCode ? 'active' : '')
-              }
-              title={`Insert code block (${SHORTCUTS.INSERT_CODE_BLOCK})`}
-              type="button"
-              aria-label="Insert code block">
-              <i className="format code" />
-            </button>
-          )}
           <button
             disabled={!isEditable}
             onClick={insertLink}
@@ -1204,6 +1195,26 @@ export default function ToolbarPlugin({
                 </DropDownItem>
                 <DropDownItem
                   onClick={() => {
+                    activeEditor.update(() => {
+                      const selection = $getSelection();
+                      if ($isRangeSelection(selection)) {
+                        if (selection.isCollapsed()) {
+                          $setBlocksType(selection, () => $createCodeNode());
+                        } else {
+                          const textContent = selection.getTextContent();
+                          const codeNode = $createCodeNode();
+                          selection.insertNodes([codeNode]);
+                          selection.insertRawText(textContent);
+                        }
+                      }
+                    });
+                  }}
+                  className="item">
+                  <i className="icon code" />
+                  <span className="text">Code Block</span>
+                </DropDownItem>
+                <DropDownItem
+                  onClick={() => {
                     editor.update(() => {
                       const root = $getRoot();
                       const stickyNode = $createStickyNode(0, 0);
@@ -1268,6 +1279,17 @@ export default function ToolbarPlugin({
         <i className="format clear" />
       </button>
       
+      {/* Question Manager Button - Only show in Guided Mode */}
+      {isGuidedMode && (
+        <button
+          className="toolbar-item spaced"
+          onClick={() => setShowQuestionManager(true)}
+          title="Gerenciar Perguntas"
+          aria-label="Abrir gerenciador de perguntas">
+          <HelpCircle className="h-4 w-4" />
+        </button>
+      )}
+      
       {/* Lock/Unlock Button */}
       <button
         className={`toolbar-item spaced ${!isEditable ? 'unlock' : 'lock'}`}
@@ -1276,8 +1298,18 @@ export default function ToolbarPlugin({
         }}
         title="Read-Only Mode"
         aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
-        <i className={`format ${!isEditable ? 'unlock' : 'lock'}`} />
+        {!isEditable ? (
+          <Unlock className="h-4 w-4" />
+        ) : (
+          <Lock className="h-4 w-4" />
+        )}
       </button>
+
+      {/* Question Manager Modal */}
+      <QuestionManagerSimple
+        isOpen={showQuestionManager}
+        onClose={() => setShowQuestionManager(false)}
+      />
 
       {modal}
     </div>
