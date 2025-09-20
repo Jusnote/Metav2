@@ -68,18 +68,16 @@ interface QuestionsContextType {
 
 const QuestionsContext = createContext<QuestionsContextType | undefined>(undefined);
 
-// Função para obter ID único do documento baseado na URL atual
-function getCurrentDocumentId(): string {
-  // Por enquanto, usar a URL atual como ID do documento
-  // Em produção, pode ser um hash da URL ou um ID específico
-  return window.location.pathname + window.location.search || 'default-document';
+interface QuestionsProviderProps {
+  children: ReactNode;
+  documentId?: string | null;
 }
 
-export function QuestionsProvider({ children }: { children: ReactNode }) {
+export function QuestionsProvider({ children, documentId: propDocumentId }: QuestionsProviderProps) {
   const [questions, setQuestions] = useState<SectionQuestions[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [documentId, setDocumentId] = useState<string>(() => getCurrentDocumentId());
+  const [documentId, setDocumentId] = useState<string>(propDocumentId || 'default-document');
 
   // Função para carregar perguntas do Supabase
   const loadQuestions = async () => {
@@ -103,9 +101,20 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Sincronizar com prop documentId
+  useEffect(() => {
+    if (propDocumentId && propDocumentId !== documentId) {
+      console.log('📄 [CONTEXT] Atualizando documentId:', documentId, '->', propDocumentId);
+      setDocumentId(propDocumentId);
+    }
+  }, [propDocumentId, documentId]);
+
   // Carregar perguntas quando o documento mudar
   useEffect(() => {
-    loadQuestions();
+    if (documentId && documentId !== 'default-document') {
+      console.log('🔄 [CONTEXT] Carregando perguntas para documento:', documentId);
+      loadQuestions();
+    }
   }, [documentId]);
 
   // Função para atualizar o document ID

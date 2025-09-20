@@ -38,6 +38,7 @@ import TypingPerfPlugin from './plugins/TypingPerfPlugin';
 import Settings from './Settings';
 import PlaygroundEditorTheme from './themes/PlaygroundEditorTheme';
 import {parseAllowedColor} from './ui/ColorPicker';
+import { QuestionsProvider } from '../../contexts/QuestionsContext';
 
 console.warn(
   'If you are profiling the playground app, please ensure you turn off the debug view. You can disable it by pressing on the settings control in the bottom-left of your screen and toggling the debug view setting.',
@@ -261,27 +262,29 @@ function App({ initialDocument, debouncedSave }: AppProps): JSX.Element {
   const editorKey = initialDocument?.id || initialDocument?.title || 'new-document';
 
   return (
-    <LexicalComposer 
-      key={editorKey}
-      initialConfig={initialConfig}
-    >
-      <SharedHistoryContext>
-        <TableContext>
-          <ToolbarContext>
-            {/* Header com logo removido */}
-            <div className="editor-shell">
-              <Editor debouncedSave={debouncedSave} />
-            </div>
-            <Settings />
-            {isDevPlayground ? <DocsPlugin /> : null}
-            {isDevPlayground ? <PasteLogPlugin /> : null}
-            {isDevPlayground ? <TestRecorderPlugin /> : null}
+    <QuestionsProvider documentId={initialDocument?.id}>
+      <LexicalComposer 
+        key={editorKey}
+        initialConfig={initialConfig}
+      >
+        <SharedHistoryContext>
+          <TableContext>
+            <ToolbarContext>
+              {/* Header com logo removido */}
+              <div className="editor-shell">
+                <Editor debouncedSave={debouncedSave} />
+              </div>
+              <Settings />
+              {isDevPlayground ? <DocsPlugin /> : null}
+              {isDevPlayground ? <PasteLogPlugin /> : null}
+              {isDevPlayground ? <TestRecorderPlugin /> : null}
 
-            {measureTypingPerf ? <TypingPerfPlugin /> : null}
-          </ToolbarContext>
-        </TableContext>
-      </SharedHistoryContext>
-    </LexicalComposer>
+              {measureTypingPerf ? <TypingPerfPlugin /> : null}
+            </ToolbarContext>
+          </TableContext>
+        </SharedHistoryContext>
+      </LexicalComposer>
+    </QuestionsProvider>
   );
 }
 
