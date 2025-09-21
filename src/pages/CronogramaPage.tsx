@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, BookOpen } from 'lucide-react';
+import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle } from 'lucide-react';
 import { DayWithProgress } from '../components/DayWithProgress';
 
 // Mock data para progresso dos dias
@@ -23,7 +23,13 @@ const mockTopics = [
     estimatedTime: '0 min',
     cardsCount: 1,
     status: null,
-    completed: false
+    completed: false,
+    description: 'Visão geral do sistema RemNote para preparação do MCAT',
+    subtopics: [
+      'Introdução ao RemNote',
+      'Estrutura do MCAT',
+      'Estratégias de estudo'
+    ]
   },
   {
     id: '2', 
@@ -31,7 +37,14 @@ const mockTopics = [
     estimatedTime: '19 min',
     cardsCount: 6,
     status: 'Pré-teste',
-    completed: false
+    completed: false,
+    description: 'Estrutura e função das membranas celulares',
+    subtopics: [
+      'Composição da membrana',
+      'Modelo do mosaico fluido',
+      'Transporte através da membrana',
+      'Proteínas de membrana'
+    ]
   },
   {
     id: '3',
@@ -39,7 +52,14 @@ const mockTopics = [
     estimatedTime: '13 min',
     cardsCount: 15,
     status: null,
-    completed: false
+    completed: false,
+    description: 'Fundamentos neurobiológicos do comportamento',
+    subtopics: [
+      'Anatomia do sistema nervoso',
+      'Neurônios e sinapses',
+      'Neurotransmissores',
+      'Reflexos e comportamentos'
+    ]
   },
   {
     id: '4',
@@ -47,7 +67,13 @@ const mockTopics = [
     estimatedTime: '3 min', 
     cardsCount: 4,
     status: null,
-    completed: false
+    completed: false,
+    description: 'Conceitos fundamentais de vetores e escalares',
+    subtopics: [
+      'Definição de vetor',
+      'Definição de escalar',
+      'Operações com vetores'
+    ]
   },
   {
     id: '5',
@@ -55,7 +81,14 @@ const mockTopics = [
     estimatedTime: '12 min',
     cardsCount: 14, 
     status: null,
-    completed: false
+    completed: false,
+    description: 'Equilíbrios ácido-base em sistemas químicos',
+    subtopics: [
+      'Teorias ácido-base',
+      'pH e pOH',
+      'Titulações',
+      'Sistemas tampão'
+    ]
   },
   {
     id: '6',
@@ -63,17 +96,49 @@ const mockTopics = [
     estimatedTime: '8 min',
     cardsCount: 10,
     status: null,
-    completed: false
+    completed: false,
+    description: 'Desenvolvimento e conceitos de identidade pessoal',
+    subtopics: [
+      'Teoria da identidade',
+      'Desenvolvimento da personalidade',
+      'Fatores sociais'
+    ]
   }
 ];
 
 export default function CronogramaPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(21);
+  const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
+  const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set(['2'])); // Topic 2 já completo para demo
   
   const handleDayClick = (day: number) => {
     setSelectedDay(day);
     // Aqui você pode atualizar os tópicos baseado no dia selecionado
+  };
+  
+  const toggleTopicExpansion = (topicId: string) => {
+    setExpandedTopics(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(topicId)) {
+        newSet.delete(topicId);
+      } else {
+        newSet.add(topicId);
+      }
+      return newSet;
+    });
+  };
+  
+  const toggleTopicCompletion = (topicId: string) => {
+    setCompletedTopics(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(topicId)) {
+        newSet.delete(topicId);
+      } else {
+        newSet.add(topicId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -341,51 +406,122 @@ export default function CronogramaPage() {
 
               {/* Topics List */}
               <div className="space-y-1">
-                {mockTopics.map((topic) => (
-                  <div key={topic.id} className="flex items-center justify-between py-2 hover:bg-gray-50 transition-colors rounded-lg px-2">
-                    {/* Topic Info */}
-                    <div className="flex items-center gap-3 flex-1">
-                      {/* Checkbox */}
-                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
-                        {topic.completed && (
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        )}
-                      </div>
-                      
-                      {/* Topic Title */}
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{topic.title}</h3>
-                        {topic.status && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-1">
-                            🧠 {topic.status}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                {mockTopics.map((topic) => {
+                  const isExpanded = expandedTopics.has(topic.id);
+                  const isCompleted = completedTopics.has(topic.id);
+                  
+                  return (
+                    <div key={topic.id}>
+                      {/* Container com borda quando expandido */}
+                      <div className={`${isExpanded ? 'border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden' : ''}`}>
+                        {/* Topic Header */}
+                        <div className={`flex items-center justify-between py-2 transition-colors px-2 ${
+                          isExpanded 
+                            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100' 
+                            : 'hover:bg-gray-50 rounded-lg'
+                        }`}>
+                          {/* Topic Info */}
+                          <div className="flex items-center gap-3 flex-1">
+                            {/* Checkbox */}
+                            <button 
+                              onClick={() => toggleTopicCompletion(topic.id)}
+                              className={`w-5 h-5 border-2 rounded-full flex items-center justify-center transition-all ${
+                                isCompleted 
+                                  ? 'border-green-500 bg-green-500' 
+                                  : 'border-gray-300 hover:border-green-400'
+                              }`}
+                            >
+                              {isCompleted && (
+                                <CheckCircle className="h-4 w-4 text-white" />
+                              )}
+                            </button>
+                            
+                            {/* Topic Title */}
+                            <div className="flex-1">
+                              <h3 className={`font-medium transition-all ${
+                                isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
+                              }`}>
+                                {topic.title}
+                              </h3>
+                              {topic.status && (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-1">
+                                  🧠 {topic.status}
+                                </span>
+                              )}
+                            </div>
+                          </div>
 
-                    {/* Topic Stats */}
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      {/* Time */}
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{topic.estimatedTime}</span>
+                          {/* Topic Stats */}
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            {/* Time */}
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{topic.estimatedTime}</span>
+                            </div>
+                            
+                            {/* Cards Count */}
+                            <div className="flex items-center gap-1">
+                              <BookOpen className="h-4 w-4" />
+                              <span>{topic.cardsCount}</span>
+                            </div>
+                            
+                            {/* Expand Button */}
+                            <button 
+                              onClick={() => toggleTopicExpansion(topic.id)}
+                              className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Expanded Content */}
+                        {isExpanded && (
+                          <div className="p-4 space-y-4">
+                            {/* Description */}
+                            <div>
+                              <p className="text-sm text-gray-700 leading-relaxed">{topic.description}</p>
+                            </div>
+                            
+                            {/* Subtopics */}
+                            <div>
+                              <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Subtópicos</h5>
+                              <div className="grid gap-2">
+                                {topic.subtopics.map((subtopic, index) => (
+                                  <div 
+                                    key={index} 
+                                    className="flex items-center gap-3 p-2 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+                                  >
+                                    <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                      <span className="text-xs font-medium text-blue-600">{index + 1}</span>
+                                    </div>
+                                    <span className="text-sm text-gray-700">{subtopic}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 pt-2 border-t border-gray-100">
+                              <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors shadow-sm">
+                                <Play className="h-4 w-4" />
+                                Iniciar Estudo
+                              </button>
+                              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors">
+                                <BookOpen className="h-4 w-4" />
+                                Ver Flashcards
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      
-                      {/* Cards Count */}
-                      <div className="flex items-center gap-1">
-                        <BookOpen className="h-4 w-4" />
-                        <span>{topic.cardsCount}</span>
-                      </div>
-                      
-                      {/* Expand Button */}
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
