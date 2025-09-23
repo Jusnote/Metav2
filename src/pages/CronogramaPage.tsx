@@ -1,7 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square } from 'lucide-react';
+import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square, Settings, X } from 'lucide-react';
 import { DayWithProgress } from '../components/DayWithProgress';
 
+
+// Interface para tópicos agendados
+interface ScheduledTopic {
+  topicId: string;
+  originalDay: number;
+  currentDay: number;
+  scheduledDate?: Date;
+  movedAt?: Date;
+  topic: TopicData;
+}
+
+interface TopicData {
+  id: string;
+  title: string;
+  estimatedTime: string;
+  cardsCount: number;
+  status: string | null;
+  completed: boolean;
+  description: string;
+  subtopics: string[];
+}
 
 // Mock data organizado por dia
 const mockTopicsByDay = {
@@ -209,17 +230,58 @@ const mockTopicsByDay = {
   ]
 };
 
+// Função para converter mock data para estrutura flexível
+const convertMockToScheduledTopics = (): ScheduledTopic[] => {
+  const scheduledTopics: ScheduledTopic[] = [];
+  
+  Object.entries(mockTopicsByDay).forEach(([day, topics]) => {
+    topics.forEach(topic => {
+      scheduledTopics.push({
+        topicId: topic.id,
+        originalDay: parseInt(day),
+        currentDay: parseInt(day),
+        topic: topic
+      });
+    });
+  });
+  
+  return scheduledTopics;
+};
+
 export default function CronogramaPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDay, setSelectedDay] = useState(21);
+  const [selectedDay, setSelectedDay] = useState(() => new Date().getDate());
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set(['1-2', '28-2'])); // Alguns tópicos já completos para demo
   const [completedSubtopics, setCompletedSubtopics] = useState<Set<string>>(new Set(['21-2-0', '21-2-1', '28-1-0', '28-1-2'])); // Formato: topicId-subtopicIndex
+  
+  // Estados para reagendamento
+  const [scheduledTopics, setScheduledTopics] = useState<ScheduledTopic[]>(() => convertMockToScheduledTopics());
+  const [rescheduleMode, setRescheduleMode] = useState(false);
+  const [rescheduleModal, setRescheduleModal] = useState<{isOpen: boolean; topic: TopicData | null}>({
+    isOpen: false,
+    topic: null
+  });
   
   // Estados para timers
   const [activeTimers, setActiveTimers] = useState<Set<string>>(new Set()); // IDs dos timers ativos
   const [timeSpent, setTimeSpent] = useState<Record<string, number>>({}); // Tempo gasto em segundos
   const intervalRefs = useRef<Record<string, NodeJS.Timeout>>({});
+  
+  // Funções de data
+  const currentDate = new Date();
+  const currentDay = currentDate.getDate();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  
+  // Obter informações do mês atual
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+  
+  const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
   
   const handleDayClick = (day: number) => {
     setSelectedDay(day);
@@ -335,9 +397,9 @@ export default function CronogramaPage() {
     }, 0);
   };
   
-  // Calcular progresso real de cada dia
+  // Calcular progresso real de cada dia usando nova estrutura
   const calculateDayProgress = (day: number) => {
-    const dayTopics = mockTopicsByDay[day] || [];
+    const dayTopics = getTopicsForDay(day);
     if (dayTopics.length === 0) return 0;
     
     const completedCount = dayTopics.filter(topic => {
@@ -404,6 +466,36 @@ export default function CronogramaPage() {
       startTimer(id);
     }
   };
+
+  // Funções de reagendamento
+  const openRescheduleModal = (topic: TopicData) => {
+    setRescheduleModal({
+      isOpen: true,
+      topic: topic
+    });
+  };
+
+  const closeRescheduleModal = () => {
+    setRescheduleModal({
+      isOpen: false,
+      topic: null
+    });
+  };
+
+  const rescheduleTopicToDay = (topicId: string, newDay: number) => {
+    setScheduledTopics(prev => 
+      prev.map(scheduledTopic => 
+        scheduledTopic.topicId === topicId
+          ? {
+              ...scheduledTopic,
+              currentDay: newDay,
+              movedAt: new Date()
+            }
+          : scheduledTopic
+      )
+    );
+    closeRescheduleModal();
+  };
   
   // Cleanup dos intervals quando componente desmonta
   useEffect(() => {
@@ -414,8 +506,15 @@ export default function CronogramaPage() {
     };
   }, []);
   
+  // Função para obter tópicos do dia selecionado usando a nova estrutura
+  const getTopicsForDay = (day: number): TopicData[] => {
+    return scheduledTopics
+      .filter(scheduledTopic => scheduledTopic.currentDay === day)
+      .map(scheduledTopic => scheduledTopic.topic);
+  };
+  
   // Obter tópicos do dia selecionado
-  const currentTopics = mockTopicsByDay[selectedDay] || [];
+  const currentTopics = getTopicsForDay(selectedDay);
   
   // Calcular estatísticas do dia atual
   const totalTopics = currentTopics.length;
@@ -452,12 +551,16 @@ export default function CronogramaPage() {
             <div className="col-span-12 lg:col-span-3 border-r border-gray-200 p-6">
               {/* Date Info */}
               <div className="mb-6">
-                <div className="text-2xl font-bold text-gray-900">Sep {selectedDay}</div>
-                <div className="text-sm text-gray-500">Sunday</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {monthNames[currentMonth].substring(0, 3)} {selectedDay}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {new Date(currentYear, currentMonth, selectedDay).toLocaleDateString('pt-BR', { weekday: 'long' })}
+                </div>
               </div>
               
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                Novembro de 2024
+                {monthNames[currentMonth]} de {currentYear}
               </h2>
               
               {/* Simple Calendar Grid */}
@@ -475,202 +578,47 @@ export default function CronogramaPage() {
                 
                 {/* Calendar Days */}
                 <div className="grid grid-cols-7 gap-1">
-                  {/* Week 1 */}
-                  <DayWithProgress day={0} progress={0} isEmpty />
-                  <DayWithProgress day={0} progress={0} isEmpty />
-                  <DayWithProgress day={0} progress={0} isEmpty />
-                  <DayWithProgress day={0} progress={0} isEmpty />
-                  <DayWithProgress day={0} progress={0} isEmpty />
-                  <DayWithProgress 
-                    day={1} 
-                    progress={calculateDayProgress(1)}
-                    isSelected={selectedDay === 1}
-                    onClick={() => handleDayClick(1)}
-                  />
-                  <DayWithProgress 
-                    day={2} 
-                    progress={calculateDayProgress(2)}
-                    isSelected={selectedDay === 2}
-                    onClick={() => handleDayClick(2)}
-                  />
+                  {/* Dias vazios no início do mês */}
+                  {Array.from({ length: firstDayOfMonth }, (_, i) => (
+                    <DayWithProgress key={`empty-${i}`} day={0} progress={0} isEmpty />
+                  ))}
                   
-                  {/* Week 2 */}
-                  <DayWithProgress 
-                    day={3} 
-                    progress={calculateDayProgress(3)}
-                    isSelected={selectedDay === 3}
-                    onClick={() => handleDayClick(3)}
-                  />
-                  <DayWithProgress 
-                    day={4} 
-                    progress={calculateDayProgress(4)}
-                    isSelected={selectedDay === 4}
-                    onClick={() => handleDayClick(4)}
-                  />
-                  <DayWithProgress 
-                    day={5} 
-                    progress={calculateDayProgress(5)}
-                    isSelected={selectedDay === 5}
-                    onClick={() => handleDayClick(5)}
-                  />
-                  <DayWithProgress 
-                    day={6} 
-                    progress={calculateDayProgress(6)}
-                    isSelected={selectedDay === 6}
-                    onClick={() => handleDayClick(6)}
-                  />
-                  <DayWithProgress 
-                    day={7} 
-                    progress={calculateDayProgress(7)}
-                    isSelected={selectedDay === 7}
-                    onClick={() => handleDayClick(7)}
-                  />
-                  <DayWithProgress 
-                    day={8} 
-                    progress={calculateDayProgress(8)}
-                    isSelected={selectedDay === 8}
-                    onClick={() => handleDayClick(8)}
-                  />
-                  <DayWithProgress 
-                    day={9} 
-                    progress={calculateDayProgress(9)}
-                    isSelected={selectedDay === 9}
-                    onClick={() => handleDayClick(9)}
-                  />
-                  
-                  {/* Week 3 */}
-                  <DayWithProgress 
-                    day={10} 
-                    progress={calculateDayProgress(10)}
-                    isSelected={selectedDay === 10}
-                    onClick={() => handleDayClick(10)}
-                  />
-                  <DayWithProgress 
-                    day={11} 
-                    progress={calculateDayProgress(11)}
-                    isSelected={selectedDay === 11}
-                    onClick={() => handleDayClick(11)}
-                  />
-                  <DayWithProgress 
-                    day={12} 
-                    progress={calculateDayProgress(12)}
-                    isSelected={selectedDay === 12}
-                    onClick={() => handleDayClick(12)}
-                  />
-                  <DayWithProgress 
-                    day={13} 
-                    progress={calculateDayProgress(13)}
-                    isSelected={selectedDay === 13}
-                    onClick={() => handleDayClick(13)}
-                  />
-                  <DayWithProgress 
-                    day={14} 
-                    progress={calculateDayProgress(14)}
-                    isSelected={selectedDay === 14}
-                    onClick={() => handleDayClick(14)}
-                  />
-                  <DayWithProgress 
-                    day={15} 
-                    progress={calculateDayProgress(15)}
-                    isSelected={selectedDay === 15}
-                    onClick={() => handleDayClick(15)}
-                  />
-                  <DayWithProgress 
-                    day={16} 
-                    progress={calculateDayProgress(16)}
-                    isSelected={selectedDay === 16}
-                    onClick={() => handleDayClick(16)}
-                  />
-                  
-                  {/* Week 4 */}
-                  <DayWithProgress 
-                    day={17} 
-                    progress={calculateDayProgress(17)}
-                    isSelected={selectedDay === 17}
-                    onClick={() => handleDayClick(17)}
-                  />
-                  <DayWithProgress 
-                    day={18} 
-                    progress={calculateDayProgress(18)}
-                    isSelected={selectedDay === 18}
-                    onClick={() => handleDayClick(18)}
-                  />
-                  <DayWithProgress 
-                    day={19} 
-                    progress={calculateDayProgress(19)}
-                    isSelected={selectedDay === 19}
-                    onClick={() => handleDayClick(19)}
-                  />
-                  <DayWithProgress 
-                    day={20} 
-                    progress={calculateDayProgress(20)}
-                    isSelected={selectedDay === 20}
-                    onClick={() => handleDayClick(20)}
-                  />
-                  <DayWithProgress 
-                    day={21} 
-                    progress={calculateDayProgress(21)}
-                    isSelected={selectedDay === 21}
-                    isToday={true}
-                    onClick={() => handleDayClick(21)}
-                  />
-                  <DayWithProgress 
-                    day={22} 
-                    progress={calculateDayProgress(22)}
-                    isSelected={selectedDay === 22}
-                    onClick={() => handleDayClick(22)}
-                  />
-                  <DayWithProgress 
-                    day={23} 
-                    progress={calculateDayProgress(23)}
-                    isSelected={selectedDay === 23}
-                    onClick={() => handleDayClick(23)}
-                  />
-                  
-                  {/* Week 5 */}
-                  <DayWithProgress 
-                    day={24} 
-                    progress={calculateDayProgress(24)}
-                    isSelected={selectedDay === 24}
-                    onClick={() => handleDayClick(24)}
-                  />
-                  <DayWithProgress 
-                    day={25} 
-                    progress={calculateDayProgress(25)}
-                    isSelected={selectedDay === 25}
-                    onClick={() => handleDayClick(25)}
-                  />
-                  <DayWithProgress 
-                    day={26} 
-                    progress={calculateDayProgress(26)}
-                    isSelected={selectedDay === 26}
-                    onClick={() => handleDayClick(26)}
-                  />
-                  <DayWithProgress 
-                    day={27} 
-                    progress={calculateDayProgress(27)}
-                    isSelected={selectedDay === 27}
-                    onClick={() => handleDayClick(27)}
-                  />
-                  <DayWithProgress 
-                    day={28} 
-                    progress={calculateDayProgress(28)}
-                    isSelected={selectedDay === 28}
-                    onClick={() => handleDayClick(28)}
-                  />
-                  <DayWithProgress 
-                    day={29} 
-                    progress={calculateDayProgress(29)}
-                    isSelected={selectedDay === 29}
-                    onClick={() => handleDayClick(29)}
-                  />
-                  <DayWithProgress 
-                    day={30} 
-                    progress={calculateDayProgress(30)}
-                    isSelected={selectedDay === 30}
-                    onClick={() => handleDayClick(30)}
-                  />
+                  {/* Dias do mês atual */}
+                  {Array.from({ length: daysInCurrentMonth }, (_, i) => {
+                    const day = i + 1;
+                    return (
+                      <DayWithProgress 
+                        key={day}
+                        day={day} 
+                        progress={calculateDayProgress(day)}
+                        isSelected={selectedDay === day}
+                        isToday={day === currentDay}
+                        onClick={() => handleDayClick(day)}
+                      />
+                    );
+                  })}
                 </div>
+              </div>
+              
+              {/* Botão de Reagendamento */}
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => setRescheduleMode(!rescheduleMode)}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    rescheduleMode
+                      ? 'bg-blue-500 text-white hover:bg-blue-600'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Settings className="h-4 w-4" />
+                  {rescheduleMode ? 'Sair do Modo Reagendamento' : 'Reagendamento Manual'}
+                </button>
+                
+                {rescheduleMode && (
+                  <p className="text-xs text-gray-500 text-center mt-2">
+                    Clique no ícone de calendário nos tópicos para reagendar
+                  </p>
+                )}
               </div>
               
             </div>
@@ -681,7 +629,7 @@ export default function CronogramaPage() {
               {/* Topics Header */}
               <div className="mb-6 border-b pb-4">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Tópicos do Dia - {selectedDay} de Setembro
+                  Tópicos do Dia - {selectedDay} de {monthNames[currentMonth]}
                 </h2>
                 
                 <div className="mt-2 space-y-2">
@@ -771,6 +719,17 @@ export default function CronogramaPage() {
                                 </span>
                               )}
                             </div>
+                            
+                            {/* Ícone de Reagendamento */}
+                            {rescheduleMode && (
+                              <button
+                                onClick={() => openRescheduleModal(topic)}
+                                className="flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Reagendar tópico"
+                              >
+                                <Calendar className="h-4 w-4" />
+                              </button>
+                            )}
                           </div>
 
                         {/* Topic Stats */}
@@ -946,6 +905,108 @@ export default function CronogramaPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Reagendamento */}
+      {rescheduleModal.isOpen && rescheduleModal.topic && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            {/* Header do Modal */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Reagendar Tópico
+              </h3>
+              <button
+                onClick={closeRescheduleModal}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Informações do Tópico */}
+            <div className="mb-6 p-3 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-900">{rescheduleModal.topic.title}</h4>
+              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {rescheduleModal.topic.estimatedTime}
+                </span>
+                <span className="flex items-center gap-1">
+                  <BookOpen className="h-3 w-3" />
+                  {rescheduleModal.topic.cardsCount} cards
+                </span>
+              </div>
+            </div>
+
+            {/* Seletor de Dia */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Selecione o novo dia:
+              </label>
+              
+              <div className="grid grid-cols-7 gap-2">
+                {/* Cabeçalho dos dias da semana */}
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Dom</div>
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Seg</div>
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Ter</div>
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Qua</div>
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Qui</div>
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Sex</div>
+                <div className="text-xs font-medium text-gray-500 text-center py-1">Sáb</div>
+                
+                {/* Dias vazios no início do mês no modal */}
+                {Array.from({ length: firstDayOfMonth }, (_, i) => (
+                  <div key={`modal-empty-${i}`} className="h-8"></div>
+                ))}
+                
+                {/* Dias do mês atual no modal */}
+                {Array.from({ length: daysInCurrentMonth }, (_, i) => {
+                  const day = i + 1;
+                  const hasTopics = getTopicsForDay(day).length > 0;
+                  const currentTopicDay = scheduledTopics.find(st => st.topicId === rescheduleModal.topic?.id)?.currentDay;
+                  const isCurrentDay = day === currentTopicDay;
+                  
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => rescheduleModal.topic && rescheduleTopicToDay(rescheduleModal.topic.id, day)}
+                      disabled={isCurrentDay}
+                      className={`
+                        h-8 text-xs font-medium rounded transition-colors
+                        ${isCurrentDay 
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                          : hasTopics
+                            ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                        }
+                      `}
+                      title={
+                        isCurrentDay 
+                          ? 'Dia atual do tópico' 
+                          : hasTopics 
+                            ? `${getTopicsForDay(day).length} tópicos neste dia`
+                            : 'Dia disponível'
+                      }
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Botões de Ação */}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={closeRescheduleModal}
+                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
