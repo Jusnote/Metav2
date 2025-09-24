@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square, Settings, X } from 'lucide-react';
+import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square, Settings, X, FileText, HelpCircle } from 'lucide-react';
 import { DayWithProgress } from '../components/DayWithProgress';
+import { useTimer } from '../contexts/TimerContext';
 
 
 // Interface para tópicos agendados
@@ -263,10 +264,26 @@ export default function CronogramaPage() {
     topic: null
   });
   
-  // Estados para timers
+  // Hook do Timer Context
+  const { getTotalTimeForSubtopic, getActivityTime, startActivity, getCurrentSessionTime, timerState, activityTimers } = useTimer();
+
+  // Removido re-render em tempo real - subtópicos mostram apenas tempo salvo
+  
+  // Estados para timers manuais (mantidos para compatibilidade)
   const [activeTimers, setActiveTimers] = useState<Set<string>>(new Set()); // IDs dos timers ativos
   const [timeSpent, setTimeSpent] = useState<Record<string, number>>({}); // Tempo gasto em segundos
   const intervalRefs = useRef<Record<string, NodeJS.Timeout>>({});
+  
+  // Estado para modal de detalhamento de tempo
+  const [timeBreakdownModal, setTimeBreakdownModal] = useState<{
+    isOpen: boolean;
+    subtopicKey: string | null;
+    subtopicName: string | null;
+  }>({
+    isOpen: false,
+    subtopicKey: null,
+    subtopicName: null
+  });
   
   // Funções de data
   const currentDate = new Date();
@@ -393,8 +410,26 @@ export default function CronogramaPage() {
   const getTopicTotalTime = (topicId: string, subtopics: string[]) => {
     return subtopics.reduce((total, _, index) => {
       const subtopicKey = `${topicId}-${index}`;
-      return total + (timeSpent[subtopicKey] || 0);
+      const totalActivityTime = getTotalTimeForSubtopic(subtopicKey);
+      return total + totalActivityTime + (timeSpent[subtopicKey] || 0);
     }, 0);
+  };
+
+  // Funções do modal de breakdown
+  const openTimeBreakdown = (subtopicKey: string, subtopicName: string) => {
+    setTimeBreakdownModal({
+      isOpen: true,
+      subtopicKey,
+      subtopicName
+    });
+  };
+
+  const closeTimeBreakdown = () => {
+    setTimeBreakdownModal({
+      isOpen: false,
+      subtopicKey: null,
+      subtopicName: null
+    });
   };
   
   // Calcular progresso real de cada dia usando nova estrutura
@@ -801,7 +836,7 @@ export default function CronogramaPage() {
                                   return (
                                     <div 
                                       key={index} 
-                                      className={`flex items-center gap-3 p-2 rounded-md transition-colors ${
+                                      className={`group flex items-center gap-3 p-2 rounded-md transition-colors ${
                                         isSubtopicCompleted ? 'bg-green-50 border border-green-200' : 'bg-gray-50 hover:bg-gray-100'
                                       }`}
                                     >
@@ -837,17 +872,60 @@ export default function CronogramaPage() {
                                         {subtopic}
                                       </span>
                                       
+                                      {/* Botões de Acesso - Aparecem no Hover */}
+                                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button
+                                          onClick={() => {
+                                            startActivity(subtopicKey, 'documento', `📄 ${subtopic} - Documento`);
+                                            // TODO: Navegar para página do documento
+                                            console.log(`Abrindo documento do subtópico: ${subtopicKey}`);
+                                          }}
+                                          className="p-1 hover:bg-white hover:shadow-sm rounded transition-colors"
+                                          title="Abrir documento"
+                                        >
+                                          <FileText className="h-4 w-4 text-blue-600" />
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            startActivity(subtopicKey, 'flashcards', `🃏 ${subtopic} - Flashcards`);
+                                            // TODO: Navegar para página de flashcards
+                                            console.log(`Abrindo flashcards do subtópico: ${subtopicKey}`);
+                                          }}
+                                          className="p-1 hover:bg-white hover:shadow-sm rounded transition-colors"
+                                          title="Estudar flashcards"
+                                        >
+                                          <BookOpen className="h-4 w-4 text-green-600" />
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            startActivity(subtopicKey, 'questoes', `❓ ${subtopic} - Questões`);
+                                            // TODO: Navegar para página de questões
+                                            console.log(`Abrindo questões do subtópico: ${subtopicKey}`);
+                                          }}
+                                          className="p-1 hover:bg-white hover:shadow-sm rounded transition-colors"
+                                          title="Resolver questões"
+                                        >
+                                          <HelpCircle className="h-4 w-4 text-purple-600" />
+                                        </button>
+                                      </div>
+                                      
                                       {/* Timer do Subtópico */}
                                       <div className="flex items-center gap-2">
-                                        <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono ${
-                                          activeTimers.has(subtopicKey) 
-                                            ? 'bg-green-100 text-green-700' 
-                                            : timeSpent[subtopicKey] > 0 
-                                              ? 'bg-blue-100 text-blue-700'
-                                              : 'bg-gray-100 text-gray-500'
-                                        }`}>
-                                          <span>{formatTime(timeSpent[subtopicKey] || 0)}</span>
-                                        </div>
+                                        <button
+                                          onClick={() => openTimeBreakdown(subtopicKey, subtopic)}
+                                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono hover:ring-2 hover:ring-blue-200 transition-all ${
+                                            timerState.isActive && timerState.currentSubtopicKey === subtopicKey
+                                              ? 'bg-green-100 text-green-700' 
+                                              : (timeSpent[subtopicKey] > 0 || getTotalTimeForSubtopic(subtopicKey) > 0)
+                                                ? 'bg-blue-100 text-blue-700'
+                                                : 'bg-gray-100 text-gray-500'
+                                          }`}
+                                          title="Ver detalhamento do tempo"
+                                        >
+                                     <span>{formatTime(
+                                       (timeSpent[subtopicKey] || 0) + getTotalTimeForSubtopic(subtopicKey)
+                                     )}</span>
+                                        </button>
                                         
                                         <div className="flex items-center gap-1">
                                           <button
@@ -1002,6 +1080,100 @@ export default function CronogramaPage() {
                 className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Detalhamento de Tempo */}
+      {timeBreakdownModal.isOpen && timeBreakdownModal.subtopicKey && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            {/* Header do Modal */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Tempo por Atividade
+              </h3>
+              <button
+                onClick={closeTimeBreakdown}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Nome do Subtópico */}
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-900">{timeBreakdownModal.subtopicName}</h4>
+            </div>
+
+            {/* Breakdown do Tempo */}
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-blue-50">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-900">Documento</span>
+                </div>
+                <span className="text-sm font-mono text-blue-700">
+                  {formatTime(getActivityTime(timeBreakdownModal.subtopicKey, 'documento'))}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-green-50">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-900">Flashcards</span>
+                </div>
+                <span className="text-sm font-mono text-green-700">
+                  {formatTime(getActivityTime(timeBreakdownModal.subtopicKey, 'flashcards'))}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-purple-50">
+                <div className="flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4 text-purple-600" />
+                  <span className="text-sm font-medium text-purple-900">Questões</span>
+                </div>
+                <span className="text-sm font-mono text-purple-700">
+                  {formatTime(getActivityTime(timeBreakdownModal.subtopicKey, 'questoes'))}
+                </span>
+              </div>
+              
+              {/* Timer Manual */}
+              {timeSpent[timeBreakdownModal.subtopicKey] > 0 && (
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-900">Timer Manual</span>
+                  </div>
+                  <span className="text-sm font-mono text-gray-700">
+                    {formatTime(timeSpent[timeBreakdownModal.subtopicKey])}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Tempo Total */}
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-indigo-50">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-indigo-600" />
+                  <span className="font-semibold text-indigo-900">Total</span>
+                </div>
+                <span className="text-lg font-mono font-bold text-indigo-700">
+                  {formatTime((timeSpent[timeBreakdownModal.subtopicKey] || 0) + getTotalTimeForSubtopic(timeBreakdownModal.subtopicKey))}
+                </span>
+              </div>
+            </div>
+
+            {/* Botão de Fechar */}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={closeTimeBreakdown}
+                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Fechar
               </button>
             </div>
           </div>
