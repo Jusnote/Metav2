@@ -785,3 +785,70 @@ All colors MUST be HSL.
 .priority-urgent {
   @apply text-priority-urgent;
 }
+
+/* 3D Flip Animation for StudyCard */
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@keyframes flipIn {
+  from {
+    transform: rotateY(-180deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+
+/* Floating animations for background circles */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-15px) translateX(5px);
+  }
+  50% {
+    transform: translateY(-8px) translateX(-3px);
+  }
+  75% {
+    transform: translateY(-20px) translateX(8px);
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(-12px) translateX(-6px);
+  }
+  66% {
+    transform: translateY(-18px) translateX(4px);
+  }
+}
+
+@keyframes float-fast {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-8px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 4s ease-in-out infinite;
+}
+
+.flip-in {
+  animation: flipIn 0.3s ease-in-out;
+}

@@ -12,6 +12,7 @@ import { EditModeToggle } from '@/components/EditModeToggle';
 import PlaygroundApp from '@/components/lexical-playground/App';
 import { useAutoSave, useDocuments } from '@/hooks/useDocuments';
 import { useAuth } from '@/hooks/useAuth';
+import { NotesModal } from '@/components/NotesModal';
 
 const DocumentsOrganizationPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const DocumentsOrganizationPage = () => {
   const [expandedUnits, setExpandedUnits] = useState<Set<string>>(new Set());
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [selectedSubtopic, setSelectedSubtopic] = useState<{unitId: string, topicId: string, subtopic: any} | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<{unitId: string, topic: any} | null>(null);
   const [editingUnit, setEditingUnit] = useState<string | null>(null);
   const [editingTopic, setEditingTopic] = useState<string | null>(null);
   const [editingSubtopic, setEditingSubtopic] = useState<string | null>(null);
@@ -37,6 +39,19 @@ const DocumentsOrganizationPage = () => {
     reviewId: null,
     date: null,
     data: null
+  });
+  
+  // Estados para o modal de anotações
+  const [notesModal, setNotesModal] = useState<{
+    isOpen: boolean;
+    subtopicId?: string | null;
+    topicId?: string | null;
+    title: string | null;
+  }>({
+    isOpen: false,
+    subtopicId: null,
+    topicId: null,
+    title: null
   });
   
   const { user } = useAuth();
@@ -140,7 +155,8 @@ const DocumentsOrganizationPage = () => {
     deleteSubtopic,
     startEditing,
     stopEditing,
-    isEditing
+    isEditing,
+    updateLastAccess
   } = useUnitsManager();
 
   // Expandir primeira unidade automaticamente
@@ -176,6 +192,21 @@ const DocumentsOrganizationPage = () => {
 
   const handleSubtopicSelect = (unitId: string, topicId: string, subtopic: any) => {
     setSelectedSubtopic({ unitId, topicId, subtopic });
+    setSelectedTopic(null); // Limpar seleção de tópico quando subtópico é selecionado
+    
+    // Atualizar last_access do subtópico
+    updateLastAccess('subtopic', subtopic.id);
+  };
+
+  const handleTopicSelect = (unitId: string, topic: any) => {
+    // Só selecionar tópico se ele não tiver subtópicos
+    if (!topic.subtopics || topic.subtopics.length === 0) {
+      setSelectedTopic({ unitId, topic });
+      setSelectedSubtopic(null); // Limpar seleção de subtópico
+      
+      // Atualizar last_access do tópico
+      updateLastAccess('topic', topic.id);
+    }
   };
 
   // Mock data para detalhes da revisão (em produção viria do backend)
@@ -426,8 +457,16 @@ const DocumentsOrganizationPage = () => {
                                 {/* Topic Header */}
                                 <div className="flex items-center gap-1">
                                   <button
-                                    onClick={() => toggleTopicExpansion(topic.id)}
-                                    className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-all duration-150 hover:bg-gray-100/50"
+                                    onClick={() => {
+                                      if (topic.subtopics && topic.subtopics.length > 0) {
+                                        toggleTopicExpansion(topic.id);
+                                      } else {
+                                        handleTopicSelect(unit.id, topic);
+                                      }
+                                    }}
+                                    className={`flex-1 flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-all duration-150 hover:bg-gray-100/50 ${
+                                      selectedTopic?.topic.id === topic.id ? 'bg-blue-50' : ''
+                                    }`}
                                   >
                                     {topic.subtopics && topic.subtopics.length > 0 && (
                                       <ChevronRight 
@@ -623,23 +662,27 @@ const DocumentsOrganizationPage = () => {
 
           {/* Painel de Detalhes */}
           <div className="flex-1 flex flex-col">
-            {selectedSubtopic ? (
+            {selectedSubtopic || selectedTopic ? (
               <>
-                {/* Header do Subtópico Selecionado */}
+                {/* Header do Item Selecionado */}
                 <div className="bg-white border-b border-gray-200 px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{['⚖️', '🏛️', '📋', '🏢', '💼', '📊'][units.findIndex(u => u.id === selectedSubtopic.unitId) % 6]}</span>
+                      <span className="text-2xl">{['⚖️', '🏛️', '📋', '🏢', '💼', '📊'][units.findIndex(u => u.id === (selectedSubtopic?.unitId || selectedTopic?.unitId)) % 6]}</span>
                       <div>
-                        <h1 className="text-xl font-semibold text-gray-900">{selectedSubtopic.subtopic.title}</h1>
+                        <h1 className="text-xl font-semibold text-gray-900">
+                          {selectedSubtopic ? selectedSubtopic.subtopic.title : selectedTopic?.topic.title}
+                        </h1>
                         <p className="text-sm text-gray-500">
-                          {units.find(u => u.id === selectedSubtopic.unitId)?.title} • 
-                          {units.find(u => u.id === selectedSubtopic.unitId)?.topics.find(t => t.id === selectedSubtopic.topicId)?.title}
+                          {units.find(u => u.id === (selectedSubtopic?.unitId || selectedTopic?.unitId))?.title}
+                          {selectedSubtopic && (
+                            <> • {units.find(u => u.id === selectedSubtopic.unitId)?.topics.find(t => t.id === selectedSubtopic.topicId)?.title}</>
+                          )}
                         </p>
                                </div>
                                  </div>
                     <div className="ml-auto">
-                      {getStatusIcon(selectedSubtopic.subtopic.status)}
+                      {selectedSubtopic ? getStatusIcon(selectedSubtopic.subtopic.status) : getStatusIcon(selectedTopic?.topic.status)}
                                </div>
                              </div>
                            </div>
@@ -708,30 +751,58 @@ const DocumentsOrganizationPage = () => {
                                           </div>
                             
                             <div className="space-y-2">
-                              {/* Último Acesso */}
+                              {/* Último Acesso e Tempo Investido */}
                               <div className="flex items-center gap-2 p-1.5 rounded-md bg-gray-50/50 border border-gray-200/50">
                                 <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
                                   <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                 </div>
-                                <div>
-                                  <div className="text-xs text-gray-500 font-medium">Último acesso</div>
-                                  <div className="text-xs font-semibold text-gray-800">Há 2 dias</div>
-                                        </div>
-                                      </div>
-                              
-                              {/* Tempo Investido */}
-                              <div className="flex items-center gap-2 p-1.5 rounded-md bg-gray-50/50 border border-gray-200/50">
-                                <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                                  <Clock className="w-3 h-3 text-gray-600" />
-                                </div>
-                                <div>
-                                  <div className="text-xs text-gray-500 font-medium">Tempo investido</div>
-                                  <div className="text-xs font-semibold text-gray-800">3h 45min</div>
-                                      </div>
+                                <div className="flex items-center gap-2">
+                                  <div>
+                                    <div className="text-xs text-gray-500 font-medium">Último acesso</div>
+                                    <div className="text-xs font-semibold text-gray-800">
+                                      {selectedSubtopic ? selectedSubtopic.subtopic.lastAccess : selectedTopic?.topic.lastAccess}
                                     </div>
                                   </div>
+                                  <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                                  <div>
+                                    <div className="text-xs text-gray-500 font-medium">Tempo investido</div>
+                                    <div className="text-xs font-semibold text-gray-800">
+                                      {selectedSubtopic ? selectedSubtopic.subtopic.tempoInvestido : selectedTopic?.topic.tempoInvestido}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Minhas Anotações */}
+              <div 
+                className="flex items-center gap-2 p-1.5 rounded-md bg-gray-50/50 border border-gray-200/50 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                onClick={() => {
+                  if (selectedSubtopic) {
+                    setNotesModal({
+                      isOpen: true,
+                      subtopicId: selectedSubtopic.subtopic.id,
+                      title: selectedSubtopic.subtopic.title
+                    });
+                  } else if (selectedTopic) {
+                    setNotesModal({
+                      isOpen: true,
+                      topicId: selectedTopic.topic.id,
+                      title: selectedTopic.topic.title
+                    });
+                  }
+                }}
+              >
+                <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                  <FileText className="w-3 h-3 text-gray-600" />
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 font-medium">Minhas anotações</div>
+                  <div className="text-xs font-semibold text-gray-800">Ver anotações</div>
+                </div>
+              </div>
+                            </div>
                                 </div>
                           
                           {/* Divisor Vertical */}
@@ -821,7 +892,12 @@ const DocumentsOrganizationPage = () => {
                       
                       {/* Documento */}
                       <button
-                        onClick={() => handlePlaySubtopic(selectedSubtopic.subtopic.id, selectedSubtopic.subtopic.title)}
+                        onClick={() => {
+                          const item = selectedSubtopic ? selectedSubtopic.subtopic : selectedTopic?.topic;
+                          if (item) {
+                            handlePlaySubtopic(item.id, item.title);
+                          }
+                        }}
                         className="w-full flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all text-left"
                       >
                         <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
@@ -829,7 +905,9 @@ const DocumentsOrganizationPage = () => {
                         </div>
                         <div className="flex-1">
                           <div className="font-medium text-gray-900">Documento</div>
-                          <div className="text-sm text-gray-500">{selectedSubtopic.subtopic.resumosVinculados} resumos vinculados</div>
+                          <div className="text-sm text-gray-500">
+                            {selectedSubtopic ? selectedSubtopic.subtopic.resumosVinculados : selectedTopic?.topic.resumosVinculados} resumos vinculados
+                          </div>
                         </div>
                         <Play className="w-4 h-4 text-gray-400" />
                       </button>
@@ -841,7 +919,9 @@ const DocumentsOrganizationPage = () => {
                               </div>
                         <div className="flex-1">
                           <div className="font-medium text-gray-900">Flashcards</div>
-                          <div className="text-sm text-gray-500">{selectedSubtopic.subtopic.flashcardsVinculados} cartões disponíveis</div>
+                          <div className="text-sm text-gray-500">
+                            {selectedSubtopic ? selectedSubtopic.subtopic.flashcardsVinculados : selectedTopic?.topic.flashcardsVinculados} cartões disponíveis
+                          </div>
                           </div>
                         <Play className="w-4 h-4 text-gray-400" />
                       </button>
@@ -853,7 +933,9 @@ const DocumentsOrganizationPage = () => {
                         </div>
                         <div className="flex-1">
                           <div className="font-medium text-gray-900">Questões</div>
-                          <div className="text-sm text-gray-500">{selectedSubtopic.subtopic.questoesVinculadas} questões disponíveis</div>
+                          <div className="text-sm text-gray-500">
+                          {selectedSubtopic ? selectedSubtopic.subtopic.questoesVinculadas : selectedTopic?.topic.questoesVinculadas} questões disponíveis
+                        </div>
                         </div>
                         <Play className="w-4 h-4 text-gray-400" />
                       </button>
@@ -865,8 +947,8 @@ const DocumentsOrganizationPage = () => {
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">📚</span>
-                  <h3 className="text-lg font-medium mb-2">Selecione um subtópico</h3>
-                  <p className="text-sm">Escolha um subtópico na sidebar para ver os detalhes e materiais de estudo</p>
+                  <h3 className="text-lg font-medium mb-2">Selecione um tópico ou subtópico</h3>
+                  <p className="text-sm">Escolha um tópico (sem subtópicos) ou subtópico na sidebar para ver os detalhes e materiais de estudo</p>
                      </div>
                   </div>
                 )}
@@ -980,6 +1062,15 @@ const DocumentsOrganizationPage = () => {
           </div>
         </div>
       )}
+      
+      {/* Modal de Anotações */}
+      <NotesModal
+        isOpen={notesModal.isOpen}
+        onClose={() => setNotesModal({ isOpen: false, subtopicId: null, topicId: null, title: null })}
+        subtopicId={notesModal.subtopicId}
+        topicId={notesModal.topicId}
+        title={notesModal.title || ''}
+      />
     </div>
   );
 };

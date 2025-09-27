@@ -16,6 +16,8 @@ export interface Topic {
   date: string;
   totalAulas: number;
   subtopics?: Subtopic[];
+  lastAccess?: string;
+  tempoInvestido?: string;
 }
 
 export interface Subtopic {
@@ -28,6 +30,8 @@ export interface Subtopic {
   resumosVinculados: number;
   flashcardsVinculados: number;
   questoesVinculadas: number;
+  lastAccess?: string;
+  tempoInvestido?: string;
 }
 
 const generateId = () => crypto.randomUUID();
@@ -66,7 +70,9 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
             subtopics (*)
           )
         `)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('created_at', { foreignTable: 'topics', ascending: true })
+        .order('created_at', { foreignTable: 'topics.subtopics', ascending: true });
 
       if (unitsError) {
         console.error('Error loading units from database:', unitsError);
@@ -84,7 +90,9 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
             tempo: subtopic.tempo || '0min',
             resumosVinculados: subtopic.resumos_vinculados || 0,
             flashcardsVinculados: subtopic.flashcards_vinculados || 0,
-            questoesVinculadas: subtopic.questoes_vinculadas || 0
+            questoesVinculadas: subtopic.questoes_vinculadas || 0,
+            lastAccess: subtopic.last_access,
+            tempoInvestido: subtopic.tempo_investido
           }));
 
           return {
@@ -92,7 +100,9 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
             title: topicData.title,
             date: new Date(topicData.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
             totalAulas: topicData.total_aulas || 0,
-            subtopics
+            subtopics,
+            lastAccess: topicData.last_access,
+            tempoInvestido: topicData.tempo_investido
           };
         });
 
@@ -450,6 +460,42 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
     return editingItem?.type === type && editingItem?.id === id;
   }, [editingItem]);
 
+  // Update last access for topics and subtopics
+  const updateLastAccess = useCallback(async (type: 'topic' | 'subtopic', id: string) => {
+    try {
+      const table = type === 'topic' ? 'topics' : 'subtopics';
+      const { error } = await supabase
+        .from(table)
+        .update({ last_access: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) {
+        console.error(`Error updating last_access for ${type}:`, error);
+        return;
+      }
+
+      // Update local state
+      setUnits(prev => prev.map(unit => ({
+        ...unit,
+        topics: unit.topics.map(topic => {
+          if (type === 'topic' && topic.id === id) {
+            return { ...topic, lastAccess: new Date().toISOString() };
+          }
+          return {
+            ...topic,
+            subtopics: topic.subtopics?.map(subtopic => 
+              type === 'subtopic' && subtopic.id === id 
+                ? { ...subtopic, lastAccess: new Date().toISOString() }
+                : subtopic
+            )
+          };
+        })
+      })));
+    } catch (error) {
+      console.error(`Error in updateLastAccess for ${type}:`, error);
+    }
+  }, []);
+
   return {
     units,
     setUnits,
@@ -475,6 +521,9 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
     editingItem,
     startEditing,
     stopEditing,
-    isEditing
+    isEditing,
+    
+    // Last access tracking
+    updateLastAccess
   };
 };

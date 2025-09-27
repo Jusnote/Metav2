@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import EditorSelector from '@/components/EditorSelector';
-import { FlashcardDisplay } from '@/components/FlashcardDisplay';
+import { StudyCard } from '@/components/StudyCard';
+import AnimatedBackground from '@/components/AnimatedBackground';
+import OrbitCircles from '@/components/OrbitCircles';
 
 
 import { DeckCard } from '@/components/DeckCard';
@@ -275,8 +277,14 @@ const Index = () => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 p-6">
-        <div className="max-w-5xl mx-auto">
+      <div className="min-h-screen p-6 relative" style={{
+        backgroundImage: 'url(/bg-mobile.webp)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        <AnimatedBackground />
+        <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex items-center justify-between mb-6">
             <Button 
               onClick={() => navigate('/flashcards')}
@@ -295,17 +303,23 @@ const Index = () => {
             <div className="w-24"> {/* Spacer */}</div>
           </div>
           
-          <div className="mb-4">
-            <Progress value={studyProgress} className="h-2" />
-          </div>
-          
           {currentStudyCard && (
-             <FlashcardDisplay
-               card={currentStudyCard}
-               onAnswer={handleStudyAnswer}
-               showAnswer={false}
-             />
+            <div className="relative">
+              <OrbitCircles />
+              <StudyCard
+                card={currentStudyCard}
+                onAnswer={handleStudyAnswer}
+                showAnswer={false}
+              />
+            </div>
            )}
+         </div>
+         
+         {/* Barra de progresso no final da página */}
+         <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t">
+           <div className="max-w-5xl mx-auto">
+             <Progress value={studyProgress} className="h-2" />
+           </div>
          </div>
        </div>
      );
@@ -408,7 +422,7 @@ const Index = () => {
               
               <Dialog open={isCreateDeckOpen} onOpenChange={setIsCreateDeckOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="study" className="gap-2">
+                  <Button variant="default" className="gap-2">
                     <Plus className="h-4 w-4" />
                     Novo Deck
                   </Button>
@@ -628,7 +642,7 @@ const Index = () => {
                   </p>
                   <Button 
                     onClick={() => setIsCreateDeckOpen(true)}
-                    variant="study"
+                    variant="default"
                     className="gap-2"
                   >
                     <Plus className="h-4 w-4" />

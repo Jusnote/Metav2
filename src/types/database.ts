@@ -133,6 +133,7 @@ export type Database = {
           title: string;
           created_at: string;
           updated_at: string;
+          last_access: string;
         };
         Insert: {
           id?: string;
@@ -140,6 +141,7 @@ export type Database = {
           title: string;
           created_at?: string;
           updated_at?: string;
+          last_access?: string;
         };
         Update: {
           id?: string;
@@ -147,6 +149,7 @@ export type Database = {
           title?: string;
           created_at?: string;
           updated_at?: string;
+          last_access?: string;
         };
       };
       subtopics: {
@@ -157,6 +160,7 @@ export type Database = {
           average_time: number;
           created_at: string;
           updated_at: string;
+          last_access: string;
         };
         Insert: {
           id?: string;
@@ -165,6 +169,7 @@ export type Database = {
           average_time?: number;
           created_at?: string;
           updated_at?: string;
+          last_access?: string;
         };
         Update: {
           id?: string;
@@ -173,6 +178,7 @@ export type Database = {
           average_time?: number;
           created_at?: string;
           updated_at?: string;
+          last_access?: string;
         };
       };
       documents: {
