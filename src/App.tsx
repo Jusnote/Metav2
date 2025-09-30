@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import EditorPage from "./pages/EditorPage";
 
 import DocumentsOrganizationPage from "./pages/DocumentsOrganizationPage";
+import NotesPage from "./pages/NotesPage";
 import { useAuth } from "./hooks/useAuth";
 import GlobalTimer from "./components/GlobalTimer";
 import React, { useState } from "react";
@@ -122,6 +123,7 @@ const App = () => (
                   <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
 
                   <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
+                  <Route path="notes" element={<PrivateRoute><NotesPage /></PrivateRoute>} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
