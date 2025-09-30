@@ -28,7 +28,8 @@ import {
   BookOpen,
   GraduationCap,
   User,
-  ChevronUp
+  ChevronUp,
+  StickyNote
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -61,6 +62,7 @@ const navigationItems = [
 const toolsItems = [
   { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Resumos", url: "/resumos-list", icon: FileText },
+  { title: "Notas", url: "/notes", icon: StickyNote },
   { title: "Criar Questão", url: "/criar-questao", icon: Plus },
   { title: "Configurações", url: "/settings", icon: Settings },
   { title: "Filtros", url: "/filters", icon: Filter },
