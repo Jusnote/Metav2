@@ -118,6 +118,39 @@ export function useBlockNoteFlashcards() {
     }
   }, [toast]);
 
+  // Atualizar conteúdo do flashcard (sincronização com nota)
+  const updateFlashcardContent = useCallback(async (
+    flashcardId: string,
+    title: string,
+    content: any[]
+  ): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('flashcards')
+        .update({
+          title,
+          front: content,
+          back: content,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', flashcardId);
+
+      if (error) throw error;
+
+      // Atualizar estado local
+      setFlashcards(prev => prev.map(f => 
+        f.id === flashcardId 
+          ? { ...f, title, front: content, back: content }
+          : f
+      ));
+
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar conteúdo do flashcard:', error);
+      return false;
+    }
+  }, []);
+
   // Atualizar resultado da revisão (spaced repetition)
   const updateFlashcardReview = useCallback(async (
     flashcardId: string,
@@ -180,7 +213,13 @@ export function useBlockNoteFlashcards() {
 
       if (error) throw error;
 
-      setFlashcards(prev => prev.filter(f => f.id !== flashcardId));
+      // Atualizar estado local
+      setFlashcards(prev => {
+        const updated = prev.filter(f => f.id !== flashcardId);
+        calculateStats(updated);
+        return updated;
+      });
+
       toast({
         title: 'Sucesso',
         description: 'Flashcard excluído com sucesso!',
@@ -300,6 +339,7 @@ export function useBlockNoteFlashcards() {
     fetchFlashcards,
     fetchDueFlashcards,
     createFlashcardFromNote,
+    updateFlashcardContent,
     updateFlashcardReview,
     deleteFlashcard,
     getDecks,

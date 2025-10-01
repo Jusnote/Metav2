@@ -18,6 +18,7 @@ interface QueueItem {
   timestamp: number;
   retries: number;
   isUpdate: boolean; // true para UPDATE, false para INSERT
+  flashcardId?: string;
 }
 
 interface SyncStatus {
@@ -93,7 +94,7 @@ export function useQuickNotes() {
   };
 
   // Salvamento instantâneo local + adição à queue
-  const saveNoteInstantly = useCallback((title: string, content: any[]) => {
+  const saveNoteInstantly = useCallback((title: string, content: any[], flashcardId?: string) => {
     const noteId = crypto.randomUUID();
     const newLocalNote = {
       id: noteId,
@@ -102,20 +103,25 @@ export function useQuickNotes() {
       createdAt: new Date(),
       isEditing: false,
       syncStatus: 'pending' as const,
-      needsSync: true
+      needsSync: true,
+      flashcardId
     };
 
     // Salvar instantaneamente no localStorage
     setLocalNotes(prev => [newLocalNote, ...prev]);
 
     // Adicionar à queue para sincronização (INSERT)
-    addToQueue(noteId, title, content, false);
-
+    addToQueue(noteId, title, content, false, flashcardId);
+    
     return noteId;
   }, []);
 
   // Função para salvar edições de notas
   const saveNoteEdit = useCallback((noteId: string, title: string, content: any[]) => {
+    // Encontrar a nota atual para preservar o flashcardId
+    const currentNote = localNotes.find(note => note.id === noteId);
+    const flashcardId = currentNote?.flashcardId;
+
     // Atualizar nota local
     setLocalNotes(prev => prev.map(note => 
       note.id === noteId 
@@ -124,10 +130,10 @@ export function useQuickNotes() {
     ));
 
     // Adicionar à queue para sincronização (UPDATE)
-    addToQueue(noteId, title, content, true);
-  }, []);
+    addToQueue(noteId, title, content, true, flashcardId);
+  }, [localNotes]);
 
-  const addToQueue = (id: string, title: string, content: any[], isUpdate: boolean) => {
+  const addToQueue = (id: string, title: string, content: any[], isUpdate: boolean, flashcardId?: string) => {
     // Remover item existente da queue se for update
     if (isUpdate) {
       queueRef.current = queueRef.current.filter(item => item.id !== id);
@@ -139,7 +145,8 @@ export function useQuickNotes() {
       content,
       timestamp: Date.now(),
       retries: 0,
-      isUpdate
+      isUpdate,
+      flashcardId
     };
 
     queueRef.current.push(queueItem);
@@ -177,7 +184,8 @@ export function useQuickNotes() {
           id: item.id,
           user_id: user.user.id,
           title: item.title,
-          content: item.content
+          content: item.content,
+          flashcard_id: item.flashcardId
         }));
 
         const { error: insertError } = await supabase
@@ -194,11 +202,34 @@ export function useQuickNotes() {
           .update({
             title: item.title,
             content: item.content,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            flashcard_id: item.flashcardId
           })
           .eq('id', item.id);
 
         if (updateError) throw updateError;
+
+        // Se a nota tem flashcard vinculado, sincronizar também
+        if (item.flashcardId) {
+          try {
+            const { error: flashcardError } = await supabase
+              .from('flashcards')
+              .update({
+                title: item.title,
+                front: item.content,
+                back: item.content,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', item.flashcardId);
+
+            if (flashcardError) {
+              console.error('Erro ao sincronizar flashcard:', flashcardError);
+              // Não falhar a operação toda por causa do flashcard
+            }
+          } catch (flashcardSyncError) {
+            console.error('Erro na sincronização do flashcard:', flashcardSyncError);
+          }
+        }
       }
 
       // Sucesso - limpar queue e atualizar status local
@@ -284,6 +315,10 @@ export function useQuickNotes() {
   // Deletar nota
   const deleteNote = useCallback(async (noteId: string) => {
     try {
+      // Encontrar a nota para verificar se tem flashcard vinculado
+      const noteToDelete = localNotes.find(note => note.id === noteId);
+      const flashcardId = noteToDelete?.flashcardId;
+
       // Remover do localStorage imediatamente
       setLocalNotes(prev => prev.filter(note => note.id !== noteId));
       
@@ -300,9 +335,27 @@ export function useQuickNotes() {
         throw error;
       }
 
+      // Se a nota tinha flashcard vinculado, deletar também (cascata)
+      if (flashcardId) {
+        try {
+          const { error: flashcardError } = await supabase
+            .from('flashcards')
+            .delete()
+            .eq('id', flashcardId);
+
+          if (flashcardError && flashcardError.code !== 'PGRST116') {
+            console.error('Erro ao deletar flashcard vinculado:', flashcardError);
+          }
+        } catch (flashcardDeleteError) {
+          console.error('Erro na deleção do flashcard:', flashcardDeleteError);
+        }
+      }
+
       toast({
         title: 'Sucesso',
-        description: 'Nota excluída com sucesso!',
+        description: flashcardId 
+          ? 'Nota e flashcard vinculado excluídos com sucesso!' 
+          : 'Nota excluída com sucesso!',
       });
 
     } catch (error) {
@@ -313,7 +366,7 @@ export function useQuickNotes() {
         variant: 'destructive',
       });
     }
-  }, [toast]);
+  }, [localNotes, toast]);
 
   return {
     // Notas locais (para exibição imediata)

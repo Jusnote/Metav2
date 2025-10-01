@@ -227,6 +227,7 @@ export type Database = {
           content: any; // BlockNote JSON structure
           created_at: string;
           updated_at: string;
+          flashcard_id?: string; // ID do flashcard vinculado (se houver)
         };
         Insert: {
           id?: string;
@@ -235,6 +236,7 @@ export type Database = {
           content: any;
           created_at?: string;
           updated_at?: string;
+          flashcard_id?: string;
         };
         Update: {
           id?: string;
@@ -243,6 +245,7 @@ export type Database = {
           content?: any;
           created_at?: string;
           updated_at?: string;
+          flashcard_id?: string;
         };
       };
       flashcards: {

@@ -110,8 +110,20 @@ export default function NotesPage() {
 
     const flashcard = await createFlashcardFromNote(note.title, note.content);
     if (flashcard) {
-      // Opcional: remover a nota após converter
-      // await deleteNote(cardId);
+      // Atualizar a nota local com o flashcard_id
+      setLocalNotes(prev => prev.map(n => 
+        n.id === cardId 
+          ? { ...n, flashcardId: flashcard.id }
+          : n
+      ));
+
+      // Salvar a vinculação no banco
+      saveNoteEdit(cardId, note.title, note.content);
+
+      toast({
+        title: "Sucesso!",
+        description: "Nota convertida para flashcard com sucesso!",
+      });
     }
   };
 
@@ -284,10 +296,11 @@ export default function NotesPage() {
                     </button>
                     <button 
                       onClick={() => handleConvertToFlashcard(card.id)}
-                      className="text-blue-400 hover:text-blue-600 text-sm"
-                      title="Converter para flashcard"
+                      className={`text-sm ${card.flashcardId ? 'text-green-500' : 'text-blue-400 hover:text-blue-600'}`}
+                      title={card.flashcardId ? "Já convertido para flashcard" : "Converter para flashcard"}
+                      disabled={!!card.flashcardId}
                     >
-                      🃏
+                      {card.flashcardId ? '✅' : '🃏'}
                     </button>
                     <button 
                       onClick={() => handleDeleteNote(card.id)}
