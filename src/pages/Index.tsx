@@ -316,7 +316,7 @@ const Index = () => {
          </div>
          
          {/* Barra de progresso no final da página */}
-         <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t">
+         <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-xs border-t">
            <div className="max-w-5xl mx-auto">
              <Progress value={studyProgress} className="h-2" />
            </div>
@@ -382,7 +382,7 @@ const Index = () => {
       />
       
       {/* Header */}
-      <div className="border-b border-border/50 bg-card/50 backdrop-blur">
+      <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -606,7 +606,7 @@ const Index = () => {
                     {decks.map((deck) => (
                       <div key={deck.id} className="relative group">
                         <Button
-                          variant={selectedDeckId === deck.id ? "default" : "outline"}
+                          variant={selectedDeckId === deck.id ? "default" : "outline-solid"}
                           onClick={() => setSelectedDeckId(deck.id)}
                           className="justify-start h-auto p-3 w-full pr-12"
                         >

@@ -215,7 +215,7 @@ export function FlashcardDisplay({
           <div className="space-y-4 animate-fade-in">
             {parentCards.map((parent, index) => (
               <Card key={parent.id} className={cn(
-                "p-5 bg-accent/15 border-l-4 shadow-sm hover:shadow-md transition-all duration-300",
+                "p-5 bg-accent/15 border-l-4 shadow-xs hover:shadow-md transition-all duration-300",
                 index === 0 && "border-l-primary",
                 index > 0 && "border-l-muted-foreground/30 ml-6"
               )}>
@@ -246,24 +246,24 @@ export function FlashcardDisplay({
           <div className="flex-1">
             <Card className={cn(
               "w-full max-w-5xl mx-auto relative overflow-hidden",
-              "bg-gradient-to-br from-slate-50/80 via-white to-blue-50/60",
+              "bg-linear-to-br from-slate-50/80 via-white to-blue-50/60",
               "border border-slate-200/60 rounded-2xl shadow-lg hover:shadow-xl",
-              "transition-all duration-500 ease-out min-h-[28rem]",
-              "backdrop-blur-sm ring-1 ring-white/20",
+              "transition-all duration-500 ease-out min-h-112",
+              "backdrop-blur-xs ring-1 ring-white/20",
               !hasParents && "max-w-6xl shadow-2xl",
               hasParents && "max-w-5xl border-l-4 border-l-gradient-to-b from-blue-400 to-purple-500"
             )}>
             {/* Gradient overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-slate-100/30 pointer-events-none" />
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-400" />
+            <div className="absolute inset-0 bg-linear-to-br from-white/40 via-transparent to-slate-100/30 pointer-events-none" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-400 via-purple-500 to-pink-400" />
             {/* Header com FlashcardInfoPanel integrado */}
             <div className="relative z-10 flex items-center justify-between p-6 pb-4">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-md" />
+                  <div className="absolute inset-0 bg-linear-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-md" />
                   <Avatar className="h-12 w-12 relative border-2 border-white/50 shadow-lg">
                     <AvatarImage src="/brain-icon.png" alt="Flashcard" className="object-cover" />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white">
                       <Brain className="h-6 w-6" />
                     </AvatarFallback>
                   </Avatar>
@@ -272,10 +272,10 @@ export function FlashcardDisplay({
                   <div className="flex items-center gap-3 text-sm font-medium">
                     {!hasParents ? (
                       <>
-                        <span className="bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent font-semibold">
+                        <span className="bg-linear-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent font-semibold">
                           {timerActive ? "Análise temporal" : "Respondido em exatos"}
                         </span>
-                        <div className="w-px h-4 bg-gradient-to-b from-slate-300 to-slate-400"></div>
+                        <div className="w-px h-4 bg-linear-to-b from-slate-300 to-slate-400"></div>
                         <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-blue-200/50">
                           <Timer className={`h-4 w-4 ${timerActive ? 'text-orange-600 animate-pulse' : 'text-green-600'}`} />
                           <span className={`font-mono text-sm font-medium ${timerActive ? 'text-orange-700' : 'text-green-700'}`}>
@@ -284,7 +284,7 @@ export function FlashcardDisplay({
                         </div>
                       </>
                     ) : (
-                      <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+                      <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
                         Sub-flashcard • Nível {card.level + 1}
                       </span>
                     )}
@@ -303,7 +303,7 @@ export function FlashcardDisplay({
                     onClick={toggleAnswer}
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 border border-blue-200/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
+                    className="h-8 w-8 p-0 rounded-full bg-linear-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 border border-blue-200/50 backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-xs hover:shadow-md"
                     title={showAnswer ? "Ocultar resposta" : "Ver resposta"}
                   >
                     {showAnswer ? (
@@ -319,7 +319,7 @@ export function FlashcardDisplay({
                     onClick={() => setShowSubFlashcardSection(!showSubFlashcardSection)}
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-purple-200/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
+                    className="h-8 w-8 p-0 rounded-full bg-linear-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-purple-200/50 backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-xs hover:shadow-md"
                     title={showSubFlashcardSection ? "Esconder sub-cards" : "Mostrar sub-cards"}
                   >
                     <GitBranch className="h-4 w-4 text-purple-600" />
@@ -340,7 +340,7 @@ export function FlashcardDisplay({
             <div className="relative z-10 flex-1 p-8 pt-4">
               <div className="space-y-8">
                 {card.type === 'word-hiding' ? (
-                  <div className="bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 border-l-4 border-l-emerald-500 rounded-xl p-6 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700">
+                  <div className="bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 border-l-4 border-l-emerald-500 rounded-xl p-6 shadow-xs hover:shadow-lg hover:scale-[1.002] transition-all duration-700">
                     <ImprovedWordHidingDisplay
                       text={card.back}
                       hiddenWords={card.hiddenWords || []}
@@ -369,12 +369,12 @@ export function FlashcardDisplay({
                             "relative overflow-hidden",
                             "bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100",
                             "border-l-4 border-l-emerald-500 rounded-xl",
-                            "shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700",
+                            "shadow-xs hover:shadow-lg hover:scale-[1.002] transition-all duration-700",
                             "min-h-[100px] flex items-center max-w-4xl mx-auto",
                             questionPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
                           )}>
                             <div className="absolute top-2 right-3">
-                              <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
+                              <span className="bg-slate-100/80 backdrop-blur-xs px-2 py-1 rounded-full font-mono text-[10px] tracking-widest uppercase text-slate-500">
                                 ❓ Pergunta
                               </span>
                             </div>
@@ -394,12 +394,12 @@ export function FlashcardDisplay({
                                 "relative overflow-hidden",
                                 "bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100",
                                 "border-l-4 border-l-emerald-500 rounded-xl",
-                                "shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700",
+                                "shadow-xs hover:shadow-lg hover:scale-[1.002] transition-all duration-700",
                                 "min-h-[100px] flex items-center max-w-4xl mx-auto",
                                 answerPulseTriggered && "animate-[single-pulse_0.6s_ease-out_forwards]"
                               )}>
                                 <div className="absolute top-2 right-3">
-                                  <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
+                                  <span className="bg-slate-100/80 backdrop-blur-xs px-2 py-1 rounded-full font-mono text-[10px] tracking-widest uppercase text-slate-500">
                                     💡 Resposta
                                   </span>
                                 </div>
@@ -424,18 +424,18 @@ export function FlashcardDisplay({
                   <div className="relative flex items-center justify-center mb-8">
                     {/* Gradient Line */}
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full h-px bg-gradient-to-r from-transparent via-blue-400/80 to-transparent"></div>
+                      <div className="w-full h-px bg-linear-to-r from-transparent via-blue-400/80 to-transparent"></div>
                     </div>
                     {/* Central Indicator */}
-                      <div className="relative flex items-center gap-1.5 bg-gradient-to-r from-slate-100/95 via-blue-100/90 to-purple-100/95 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/50 shadow-md ring-1 ring-inset ring-white/40">
-                        <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full animate-pulse"></div>
+                      <div className="relative flex items-center gap-1.5 bg-linear-to-r from-slate-100/95 via-blue-100/90 to-purple-100/95 backdrop-blur-xs px-3 py-1.5 rounded-full border border-white/50 shadow-md ring-1 ring-inset ring-white/40">
+                        <div className="w-2 h-2 bg-linear-to-r from-blue-400 to-blue-500 rounded-full animate-pulse"></div>
                         <span className="font-mono text-[10px] tracking-widest uppercase text-slate-700 font-medium">Aprofundamento</span>
                         <Layers className="h-3 w-3 text-slate-600" />
                       </div>
                   </div>
 
                   {/* Chat Container */}
-                  <div className="bg-gradient-to-b from-gray-50 to-white rounded-xl border border-gray-200 p-4 max-h-96 overflow-y-auto">
+                  <div className="bg-linear-to-b from-gray-50 to-white rounded-xl border border-gray-200 p-4 max-h-96 overflow-y-auto">
                     <div className="space-y-4">
                       {childCards.map((childCard, index) => (
                         <div key={childCard.id} className="space-y-3">
@@ -448,7 +448,7 @@ export function FlashcardDisplay({
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
-                              <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+                              <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-xs">
                                 <p className="text-sm text-gray-800">{childCard.front}</p>
                               </div>
                               <div className="flex items-center gap-1 mt-1 ml-2">
@@ -504,7 +504,7 @@ export function FlashcardDisplay({
                                   }}
                                   variant="outline"
                                   size="sm"
-                                  className="gap-2 bg-gradient-to-r from-red-50/80 to-rose-50/80 border-red-200/60 text-red-700 hover:from-red-100/90 hover:to-rose-100/90 hover:border-red-300/70 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
+                                  className="gap-2 bg-linear-to-r from-red-50/80 to-rose-50/80 border-red-200/60 text-red-700 hover:from-red-100/90 hover:to-rose-100/90 hover:border-red-300/70 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-xs hover:shadow-md"
                                 >
                                   😕 Não entendi
                                 </Button>
@@ -514,7 +514,7 @@ export function FlashcardDisplay({
                                   }}
                                   variant="outline"
                                   size="sm"
-                                  className="gap-2 bg-gradient-to-r from-green-50/80 to-emerald-50/80 border-green-200/60 text-green-700 hover:from-green-100/90 hover:to-emerald-100/90 hover:border-green-300/70 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md"
+                                  className="gap-2 bg-linear-to-r from-green-50/80 to-emerald-50/80 border-green-200/60 text-green-700 hover:from-green-100/90 hover:to-emerald-100/90 hover:border-green-300/70 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-xs hover:shadow-md"
                                 >
                                   ✅ Entendi!
                                 </Button>
@@ -549,7 +549,7 @@ export function FlashcardDisplay({
         {((showAnswer && !hasParents && !mainCardAnswered && !showSubFlashcardSection) || 
           (card.type === 'word-hiding' && wordHidingAllRevealed && !hasParents && !mainCardAnswered && !showSubFlashcardSection)) && (
           <div className="space-y-4 animate-fade-in">
-            <h3 className="text-center text-sm font-medium bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
+            <h3 className="text-center text-sm font-medium bg-linear-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
               ✨ Como você avalia sua resposta?
             </h3>
             <div className="flex justify-center gap-4">
@@ -557,7 +557,7 @@ export function FlashcardDisplay({
                 onClick={() => handleMainCardResponse(true)}
                 variant="outline"
                 size="sm"
-                className="gap-2 text-sm bg-gradient-to-r from-green-50/90 to-emerald-50/90 border-green-200/70 text-green-700 hover:from-green-100/95 hover:to-emerald-100/95 hover:border-green-300/80 rounded-full px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-green-200/30"
+                className="gap-2 text-sm bg-linear-to-r from-green-50/90 to-emerald-50/90 border-green-200/70 text-green-700 hover:from-green-100/95 hover:to-emerald-100/95 hover:border-green-300/80 rounded-full px-6 py-3 font-medium backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-green-200/30"
               >
                 ✓ Acertei
               </Button>
@@ -566,7 +566,7 @@ export function FlashcardDisplay({
                 onClick={() => handleMainCardResponse(false)}
                 variant="outline"
                 size="sm"
-                className="gap-2 text-sm bg-gradient-to-r from-red-50/90 to-rose-50/90 border-red-200/70 text-red-700 hover:from-red-100/95 hover:to-rose-100/95 hover:border-red-300/80 rounded-full px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-red-200/30"
+                className="gap-2 text-sm bg-linear-to-r from-red-50/90 to-rose-50/90 border-red-200/70 text-red-700 hover:from-red-100/95 hover:to-rose-100/95 hover:border-red-300/80 rounded-full px-6 py-3 font-medium backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-red-200/30"
               >
                 ✗ Errei
               </Button>
@@ -578,7 +578,7 @@ export function FlashcardDisplay({
         {/* Botões de Avaliação - Abaixo do Card */}
         {(showAnswer || (card.type === 'true-false' && trueFalseAnswer !== null)) && (hasParents || mainCardAnswered) && (
           <div className="space-y-6 animate-fade-in mt-8">
-            <h3 className="text-center text-sm font-medium bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
+            <h3 className="text-center text-sm font-medium bg-linear-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
               ✨ Como você avalia sua resposta?
             </h3>
 
@@ -587,7 +587,7 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('again')}
                 variant="default"
                 size="lg"
-                className="flex-1 bg-gradient-to-r from-red-50/90 to-rose-50/90 border-red-200/70 text-red-700 hover:from-red-100/95 hover:to-rose-100/95 hover:border-red-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-red-200/30 gap-2 py-4"
+                className="flex-1 bg-linear-to-r from-red-50/90 to-rose-50/90 border-red-200/70 text-red-700 hover:from-red-100/95 hover:to-rose-100/95 hover:border-red-300/80 rounded-xl backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-red-200/30 gap-2 py-4"
               >
                 <RotateCcw className="h-4 w-4" />
                 Novamente
@@ -597,7 +597,7 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('hard')}
                 variant="default"
                 size="lg"
-                className="flex-1 bg-gradient-to-r from-orange-50/90 to-amber-50/90 border-orange-200/70 text-orange-700 hover:from-orange-100/95 hover:to-amber-100/95 hover:border-orange-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-orange-200/30 gap-2 py-4"
+                className="flex-1 bg-linear-to-r from-orange-50/90 to-amber-50/90 border-orange-200/70 text-orange-700 hover:from-orange-100/95 hover:to-amber-100/95 hover:border-orange-300/80 rounded-xl backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-orange-200/30 gap-2 py-4"
               >
                 Difícil
               </Button>
@@ -606,7 +606,7 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('medium')}
                 variant="default"
                 size="lg"
-                className="flex-1 bg-gradient-to-r from-blue-50/90 to-indigo-50/90 border-blue-200/70 text-blue-700 hover:from-blue-100/95 hover:to-indigo-100/95 hover:border-blue-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-blue-200/30 gap-2 py-4"
+                className="flex-1 bg-linear-to-r from-blue-50/90 to-indigo-50/90 border-blue-200/70 text-blue-700 hover:from-blue-100/95 hover:to-indigo-100/95 hover:border-blue-300/80 rounded-xl backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-blue-200/30 gap-2 py-4"
               >
                 Médio
               </Button>
@@ -615,13 +615,13 @@ export function FlashcardDisplay({
                 onClick={() => handleAnswer('easy')}
                 variant="default"
                 size="lg"
-                className="flex-1 bg-gradient-to-r from-green-50/90 to-emerald-50/90 border-green-200/70 text-green-700 hover:from-green-100/95 hover:to-emerald-100/95 hover:border-green-300/80 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-green-200/30 gap-2 py-4"
+                className="flex-1 bg-linear-to-r from-green-50/90 to-emerald-50/90 border-green-200/70 text-green-700 hover:from-green-100/95 hover:to-emerald-100/95 hover:border-green-300/80 rounded-xl backdrop-blur-xs transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ring-1 ring-green-200/30 gap-2 py-4"
               >
                 Fácil
               </Button>
             </div>
 
-            <div className="text-xs text-center text-slate-600/80 space-y-1 bg-gradient-to-r from-slate-50/50 to-gray-50/50 rounded-lg p-3 backdrop-blur-sm border border-slate-200/30 max-w-4xl mx-auto">
+            <div className="text-xs text-center text-slate-600/80 space-y-1 bg-linear-to-r from-slate-50/50 to-gray-50/50 rounded-lg p-3 backdrop-blur-xs border border-slate-200/30 max-w-4xl mx-auto">
               <p><strong className="text-red-600">Novamente:</strong> Não lembrei • <strong className="text-orange-600">Difícil:</strong> Lembrei com dificuldade</p>
               <p><strong className="text-blue-600">Médio:</strong> Lembrei bem • <strong className="text-green-600">Fácil:</strong> Muito fácil</p>
             </div>

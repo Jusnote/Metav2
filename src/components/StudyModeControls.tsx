@@ -31,7 +31,7 @@ export function StudyModeControls() {
   }
 
   return (
-    <Card className="fixed top-4 right-4 w-80 shadow-lg border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 z-50">
+    <Card className="fixed top-4 right-4 w-80 shadow-lg border-2 border-blue-200 bg-linear-to-br from-blue-50 to-indigo-50 z-50">
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-3">
           <BookOpen className="h-5 w-5 text-blue-600" />
@@ -149,7 +149,7 @@ export function StudyModeControls() {
                 /* Última seção SEM perguntas - mostrar "Concluir Estudo" */
                 <Button
                   onClick={completeStudy}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white flex items-center gap-2"
+                  className="flex-1 bg-linear-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white flex items-center gap-2"
                   size="sm"
                 >
                   <CheckCircle className="h-4 w-4" />

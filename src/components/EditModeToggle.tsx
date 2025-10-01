@@ -16,7 +16,7 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({
   return (
     <Button
       onClick={onToggle}
-      variant={isEditMode ? 'default' : 'outline'}
+      variant={isEditMode ? 'default' : 'outline-solid'}
       size="sm"
       className={`flex items-center gap-2 transition-all duration-200 ${className}`}
     >

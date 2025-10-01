@@ -144,7 +144,7 @@ export default function QuestionEditorPlugin(): JSX.Element | null {
       return createPortal(
         <Button
           size="sm"
-          variant={hasQuestions ? "default" : "outline"}
+          variant={hasQuestions ? "default" : "outline-solid"}
           onClick={() => handleOpenQuestionEditor(index, title)}
           className={`flex items-center gap-1 text-xs ${
             hasQuestions 

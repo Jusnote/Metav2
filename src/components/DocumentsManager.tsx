@@ -118,7 +118,7 @@ export const DocumentsManager: React.FC = () => {
                 type="text"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
-                className="text-lg font-medium bg-transparent border-none outline-none focus:bg-gray-50 px-2 py-1 rounded"
+                className="text-lg font-medium bg-transparent border-none outline-hidden focus:bg-gray-50 px-2 py-1 rounded"
                 placeholder="Título do documento"
               />
             </div>

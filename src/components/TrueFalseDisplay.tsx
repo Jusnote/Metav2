@@ -58,9 +58,9 @@ export function TrueFalseDisplay({
     <div className="space-y-6">
       {/* Statement Box - Same style as traditional flashcard */}
       {showStatement && (
-        <div className="relative bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-emerald-500 shadow-sm hover:shadow-lg hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center">
+        <div className="relative bg-gradient-to-45deg from-slate-50 via-blue-50 to-slate-100 p-6 rounded-xl border-l-4 border-l-emerald-500 shadow-xs hover:shadow-lg hover:scale-[1.002] transition-all duration-700 min-h-[100px] flex items-center">
           <div className="absolute top-2 right-3">
-            <span className="bg-slate-100/80 backdrop-blur-sm px-2 py-1 rounded-full font-mono text-[10px] tracking-[0.1em] uppercase text-slate-500">
+            <span className="bg-slate-100/80 backdrop-blur-xs px-2 py-1 rounded-full font-mono text-[10px] tracking-widest uppercase text-slate-500">
               C/E?
             </span>
           </div>
@@ -76,7 +76,7 @@ export function TrueFalseDisplay({
           variant="outline"
           size="lg"
           className={cn(
-            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-sm hover:shadow-md",
+            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-xs hover:shadow-md",
             hasAnswered && userAnswer === 'true' && isCorrect && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-200 shadow-emerald-100",
             hasAnswered && userAnswer === 'true' && !isCorrect && "bg-red-50 border-red-400 text-red-700 ring-2 ring-red-200 shadow-red-100",
             hasAnswered && userAnswer !== 'true' && correctIsTrue && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-300 shadow-emerald-100",
@@ -98,7 +98,7 @@ export function TrueFalseDisplay({
           variant="outline"
           size="lg"
           className={cn(
-            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-sm hover:shadow-md",
+            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-xs hover:shadow-md",
             hasAnswered && userAnswer === 'false' && isCorrect && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-200 shadow-emerald-100",
             hasAnswered && userAnswer === 'false' && !isCorrect && "bg-red-50 border-red-400 text-red-700 ring-2 ring-red-200 shadow-red-100",
             hasAnswered && userAnswer !== 'false' && !correctIsTrue && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-300 shadow-emerald-100",
@@ -124,7 +124,7 @@ export function TrueFalseDisplay({
         )}>
           <div className="flex items-start gap-3">
             <Lightbulb className={cn(
-              "h-5 w-5 mt-0.5 flex-shrink-0",
+              "h-5 w-5 mt-0.5 shrink-0",
               explanationData.type === 'success' && "text-success",
               explanationData.type === 'error' && "text-destructive"
             )} />

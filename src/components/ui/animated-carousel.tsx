@@ -146,7 +146,7 @@ export const AnimatedCarousel = forwardRef<HTMLDivElement, AnimatedCarouselProps
                   contentEditable
                   suppressContentEditableWarning
                   onBlur={(e) => handleContentChange(e.currentTarget.innerHTML)}
-                  className="min-h-[200px] p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full break-words"
+                  className="min-h-[200px] p-4 border border-border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-transparent w-full break-words"
                   dangerouslySetInnerHTML={{ __html: slides[active]?.content || "Escreva aqui..." }}
                 />
               ) : (

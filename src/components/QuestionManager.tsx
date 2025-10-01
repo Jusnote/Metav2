@@ -142,7 +142,7 @@ export function QuestionManager({ isOpen, onClose }: QuestionManagerProps) {
   const stats = getStats();
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
       <Card className="w-full max-w-4xl max-h-[90vh] mx-4 overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
           <div className="flex items-center gap-3">
@@ -264,7 +264,7 @@ export function QuestionManager({ isOpen, onClose }: QuestionManagerProps) {
                               )}
                               
                               <Button
-                                variant={hasQuestions ? "default" : "outline"}
+                                variant={hasQuestions ? "default" : "outline-solid"}
                                 size="sm"
                                 onClick={() => handleOpenQuestionEditor(section.index, section.title)}
                                 className="flex items-center gap-2"

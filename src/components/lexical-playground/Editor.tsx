@@ -245,7 +245,7 @@ export default function Editor({ debouncedSave }: EditorProps = {}): JSX.Element
       
       {/* TableOfContents entre Toolbar e Editor - Fixo e Compacto */}
       {showTableOfContents && (
-        <div className="table-of-contents-bar sticky top-9 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-3 py-1.5 shadow-sm">
+        <div className="table-of-contents-bar sticky top-9 z-20 bg-white/95 backdrop-blur-xs border-b border-gray-200 px-3 py-1.5 shadow-xs">
           <TableOfContentsPluginWithStudyMode />
         </div>
       )}

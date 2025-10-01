@@ -67,7 +67,7 @@ export function TrueFalseDialogDisplay({
           variant="outline"
           size="lg"
           className={cn(
-            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-sm hover:shadow-md",
+            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-xs hover:shadow-md",
             hasAnswered && userAnswer === 'true' && isCorrect && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-200 shadow-emerald-100",
             hasAnswered && userAnswer === 'true' && !isCorrect && "bg-red-50 border-red-400 text-red-700 ring-2 ring-red-200 shadow-red-100",
             hasAnswered && userAnswer !== 'true' && correctIsTrue && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-300 shadow-emerald-100",
@@ -89,7 +89,7 @@ export function TrueFalseDialogDisplay({
           variant="outline"
           size="lg"
           className={cn(
-            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-sm hover:shadow-md",
+            "flex-1 flex items-center justify-center gap-3 h-9 text-base font-semibold transition-all duration-300 rounded-full shadow-xs hover:shadow-md",
             hasAnswered && userAnswer === 'false' && isCorrect && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-200 shadow-emerald-100",
             hasAnswered && userAnswer === 'false' && !isCorrect && "bg-red-50 border-red-400 text-red-700 ring-2 ring-red-200 shadow-red-100",
             hasAnswered && userAnswer !== 'false' && !correctIsTrue && "bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-300 shadow-emerald-100",
@@ -115,7 +115,7 @@ export function TrueFalseDialogDisplay({
         )}>
           <div className="flex items-start gap-3">
             <Lightbulb className={cn(
-              "h-5 w-5 mt-0.5 flex-shrink-0",
+              "h-5 w-5 mt-0.5 shrink-0",
               explanationData.type === 'success' && "text-success",
               explanationData.type === 'error' && "text-destructive"
             )} />

@@ -60,10 +60,10 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
     <div className={`flex items-center gap-2.5 py-1 px-3 rounded-lg transition-all duration-200 ${
       variant === 'mobile' 
         ? 'cursor-pointer hover:bg-white/10 border-0 bg-transparent shadow-none' 
-        : 'border border-slate-900 bg-slate-900 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-slate-800'
+        : 'border border-slate-900 bg-slate-900 backdrop-blur-xs shadow-xs hover:shadow-md hover:bg-slate-800'
     } ${variant === 'desktop' ? 'min-w-[490px]' : ''}`}>
       {/* Avatar com nível */}
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <div className="w-32 h-25 rounded-lg overflow-hidden">
           <img 
             src="/avatar1.png" 
@@ -186,7 +186,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
       <DialogHeader>
         <DialogTitle className="flex items-center gap-3">
           <div className="relative">
-            <div className={`w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold border-2 ${
+            <div className={`w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold border-2 ${
               getLevelColor(progress.level)
             }`}>
               <User className="w-8 h-8" />
@@ -239,14 +239,14 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             Estatísticas de Estudo
           </h4>
           <div className="grid grid-cols-2 gap-3">
-            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+            <div className="text-center p-4 bg-linear-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
               <div className="flex items-center justify-center gap-1 mb-2">
                 <Flame className="w-5 h-5 text-orange-500" />
                 <span className="text-2xl font-bold text-orange-700">{progress.studyStreak || progress.streak || 0}</span>
               </div>
               <p className="text-sm font-medium text-orange-600">Dias Consecutivos</p>
             </div>
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+            <div className="text-center p-4 bg-linear-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
               <div className="flex items-center justify-center gap-1 mb-2">
                 <Target className="w-5 h-5 text-blue-500" />
                 <span className="text-2xl font-bold text-blue-700">{progress.cardsStudied || 0}</span>
@@ -281,9 +281,9 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             </h4>
             <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto">
               {progress.medals.map((medal) => (
-                <div key={medal.id} className={`p-3 rounded-lg border-2 ${getMedalBorder(medal.rarity)} bg-gradient-to-r from-white to-gray-50 hover:shadow-md transition-shadow`}>
+                <div key={medal.id} className={`p-3 rounded-lg border-2 ${getMedalBorder(medal.rarity)} bg-linear-to-r from-white to-gray-50 hover:shadow-md transition-shadow`}>
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                       <span className="text-2xl">{medal.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">

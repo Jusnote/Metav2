@@ -187,7 +187,7 @@ export function FlashcardStatistics({ card, className }: FlashcardStatisticsProp
       <div className="p-6 space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3 pb-4 border-b border-slate-200/50">
-          <div className="p-2 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-lg">
+          <div className="p-2 bg-linear-to-br from-blue-500/10 to-purple-500/10 rounded-lg">
             <BarChart3 className="h-5 w-5 text-blue-600" />
           </div>
           <div>

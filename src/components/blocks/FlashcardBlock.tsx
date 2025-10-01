@@ -76,9 +76,9 @@ export const FlashcardBlock = createReactBlockSpec(
 
       if (isEditing) {
         return (
-          <div className="relative w-full max-w-6xl bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 animate-in fade-in-0 slide-in-from-top-2">
+          <div className="relative w-full max-w-6xl bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 animate-in fade-in-0 slide-in-from-top-2">
             {/* Header do modo de edição */}
-            <div className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10 backdrop-blur-sm border-b border-white/10 px-3 py-1.5">
+            <div className="bg-linear-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10 backdrop-blur-xs border-b border-white/10 px-3 py-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                 </div>
@@ -117,7 +117,7 @@ export const FlashcardBlock = createReactBlockSpec(
                      <Textarea
                        value={editFront}
                        onChange={(e) => setEditFront(e.target.value)}
-                       className="w-full min-w-0 px-3 py-2 text-sm border border-white/20 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-200 bg-white/80 backdrop-blur-sm min-h-[4rem]"
+                       className="w-full min-w-0 px-3 py-2 text-sm border border-white/20 rounded-xl resize-none focus:outline-hidden focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-200 bg-white/80 backdrop-blur-xs min-h-16"
                        rows={3}
                        placeholder="Digite a pergunta ou frente do flashcard..."
                        autoFocus
@@ -126,7 +126,7 @@ export const FlashcardBlock = createReactBlockSpec(
                    
                    {/* Seta elegante entre as text areas */}
                    <div className="flex justify-center items-center">
-                     <div className="bg-gradient-to-r from-purple-400 to-green-400 p-1.5 rounded-md transform md:rotate-0 rotate-90">
+                     <div className="bg-linear-to-r from-purple-400 to-green-400 p-1.5 rounded-md transform md:rotate-0 rotate-90">
                        <ArrowRight className="w-4 h-4 text-white" />
                      </div>
                    </div>
@@ -135,7 +135,7 @@ export const FlashcardBlock = createReactBlockSpec(
                      <Textarea
                        value={editBack}
                        onChange={(e) => setEditBack(e.target.value)}
-                       className="w-full min-w-0 px-3 py-2 text-sm border border-white/20 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400 transition-all duration-200 bg-white/80 backdrop-blur-sm min-h-[4rem]"
+                       className="w-full min-w-0 px-3 py-2 text-sm border border-white/20 rounded-xl resize-none focus:outline-hidden focus:ring-2 focus:ring-green-400/50 focus:border-green-400 transition-all duration-200 bg-white/80 backdrop-blur-xs min-h-16"
                        rows={3}
                        placeholder="Digite a resposta ou verso do flashcard..."
                      />
@@ -150,10 +150,10 @@ export const FlashcardBlock = createReactBlockSpec(
       }
 
       return (
-        <div className="relative w-full max-w-md bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 backdrop-blur-sm shadow-lg hover:shadow-xl border border-white/10 hover:border-white/20 transition-all duration-500 rounded-2xl overflow-hidden group">
+        <div className="relative w-full max-w-md bg-linear-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 backdrop-blur-xs shadow-lg hover:shadow-xl border border-white/10 hover:border-white/20 transition-all duration-500 rounded-2xl overflow-hidden group">
           {/* Efeito de shine no hover */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-50 transition-opacity duration-700 pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
           </div>
           
           {/* Gradiente radial no hover */}
@@ -162,14 +162,14 @@ export const FlashcardBlock = createReactBlockSpec(
           </div>
           
           {/* Header fixo */}
-          <div className="relative z-10 pb-1 backdrop-blur-sm border-b border-white/5 px-3 py-2">
+          <div className="relative z-10 pb-1 backdrop-blur-xs border-b border-white/5 px-3 py-2">
             <div className="flex items-center justify-end">
               <div className="flex gap-0.5">
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => setIsEditing(true)}
-                  className="h-7 w-7 p-0 hover:bg-white/10 rounded-md transition-all duration-300 backdrop-blur-sm"
+                  className="h-7 w-7 p-0 hover:bg-white/10 rounded-md transition-all duration-300 backdrop-blur-xs"
                 >
                   <Edit className="h-3.5 w-3.5 text-gray-600" />
                 </Button>
@@ -177,7 +177,7 @@ export const FlashcardBlock = createReactBlockSpec(
                   size="sm"
                   variant="ghost"
                   onClick={toggleShowBack}
-                  className="h-7 w-7 p-0 hover:bg-white/10 rounded-md transition-all duration-300 backdrop-blur-sm"
+                  className="h-7 w-7 p-0 hover:bg-white/10 rounded-md transition-all duration-300 backdrop-blur-xs"
                 >
                   {showBack ? <EyeOff className="h-3.5 w-3.5 text-gray-600" /> : <Eye className="h-3.5 w-3.5 text-gray-600" />}
                 </Button>
@@ -199,7 +199,7 @@ export const FlashcardBlock = createReactBlockSpec(
             >
               {/* Frente do card */}
               <div 
-                className={`absolute inset-0 w-full h-full rounded-xl p-4 bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 backdrop-blur-lg border border-white/20 shadow-inner flex flex-col justify-center transition-transform duration-700 ${
+                className={`absolute inset-0 w-full h-full rounded-xl p-4 bg-linear-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 backdrop-blur-lg border border-white/20 shadow-inner flex flex-col justify-center transition-transform duration-700 ${
                   isFlipped ? 'rotate-y-180' : 'rotate-y-0'
                 }`}
                 style={{
@@ -212,7 +212,7 @@ export const FlashcardBlock = createReactBlockSpec(
               
               {/* Verso do card */}
               <div 
-                className={`absolute inset-0 w-full h-full rounded-xl p-4 bg-gradient-to-br from-green-500/5 via-emerald-500/3 to-teal-500/5 backdrop-blur-lg border border-white/20 shadow-inner flex flex-col justify-center transition-transform duration-700 ${
+                className={`absolute inset-0 w-full h-full rounded-xl p-4 bg-linear-to-br from-green-500/5 via-emerald-500/3 to-teal-500/5 backdrop-blur-lg border border-white/20 shadow-inner flex flex-col justify-center transition-transform duration-700 ${
                   isFlipped ? 'rotate-y-0' : 'rotate-y-180'
                 }`}
                 style={{

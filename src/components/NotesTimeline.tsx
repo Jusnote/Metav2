@@ -83,7 +83,7 @@ export const NotesTimeline: React.FC<NotesTimelineProps> = ({
           
           <div className="flex gap-3">
             {/* Ponto da timeline */}
-            <div className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2 relative z-10"></div>
+            <div className="shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2 relative z-10"></div>
             
             {/* Conteúdo da anotação */}
             <div className="flex-1 bg-gray-50 rounded-lg p-3 border border-gray-200">

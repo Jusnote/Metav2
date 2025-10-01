@@ -132,7 +132,7 @@ export default function NotesPage() {
 
         {/* Card em Edição - CONTAINER BRANCO ESPECÍFICO */}
         <div className="px-6 pb-6">
-          <div className="bg-white border-2 border-gray-200 rounded-2xl shadow-sm">
+          <div className="bg-white border-2 border-gray-200 rounded-2xl shadow-xs">
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -200,7 +200,7 @@ export default function NotesPage() {
                                `${Math.floor(timeAgo/1440)} days ago`;
             
             return (
-              <div key={card.id} className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-sm">
+              <div key={card.id} className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-xs">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     {/* BlockNote Document */}

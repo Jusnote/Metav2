@@ -117,7 +117,7 @@ export function AppSidebar() {
                           end={item.url === "/"}
                           className={`${getNavClassName(item.url)} flex items-center py-2 rounded-lg transition-colors group/item w-full group-hover:gap-3 group-hover:px-3 group-hover:justify-start justify-center`}
                         >
-                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          <item.icon className="h-5 w-5 shrink-0" />
                           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden whitespace-nowrap">{item.title}</span>
                         </NavLink>
                       </TooltipTrigger>
@@ -144,7 +144,7 @@ export function AppSidebar() {
                           to={item.url}
                           className={`${getNavClassName(item.url)} flex items-center py-2 rounded-lg transition-colors group/item w-full group-hover:gap-3 group-hover:px-3 group-hover:justify-start justify-center`}
                         >
-                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          <item.icon className="h-5 w-5 shrink-0" />
                           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden whitespace-nowrap">{item.title}</span>
                         </NavLink>
                       </TooltipTrigger>
@@ -162,7 +162,7 @@ export function AppSidebar() {
           {user && (
             <div className="p-2 border-t border-sidebar-border mt-auto">
               <div className="flex items-center justify-center group-hover:justify-start gap-3 px-3 py-2 rounded-lg text-sidebar-foreground">
-                <UserCircle className="h-5 w-5 flex-shrink-0" />
+                <UserCircle className="h-5 w-5 shrink-0" />
                 <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden whitespace-nowrap">
                   {user.email}
                 </span>
@@ -172,7 +172,7 @@ export function AppSidebar() {
                 className="w-full flex items-center justify-center group-hover:justify-start gap-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50"
                 onClick={handleLogout}
               >
-                <LogOut className="h-5 w-5 flex-shrink-0" />
+                <LogOut className="h-5 w-5 shrink-0" />
                 <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden whitespace-nowrap">Sair</span>
               </Button>
             </div>

@@ -278,12 +278,12 @@ const StudyPage = () => {
           
           {/* Expanded sidebar header */}
           {isSidebarExpanded && (
-            <div className="p-3 border-b border-border flex-shrink-0 flex items-center justify-between py-[22px]">
+            <div className="p-3 border-b border-border shrink-0 flex items-center justify-between py-[22px]">
               <div>
                 <h2 className="font-semibold text-foreground text-sm">Código de Trânsito Brasileiro</h2>
                 <p className="text-xs text-muted-foreground">{currentResumo?.title || 'Disposições Preliminares'}</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setIsSidebarExpanded(false)} className="text-muted-foreground hover:text-foreground flex-shrink-0">
+              <Button variant="ghost" size="sm" onClick={() => setIsSidebarExpanded(false)} className="text-muted-foreground hover:text-foreground shrink-0">
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -349,7 +349,7 @@ const StudyPage = () => {
           )}
 
           {/* Botão de voltar */}
-          <div className="p-3 border-t border-border flex-shrink-0">
+          <div className="p-3 border-t border-border shrink-0">
             {isSidebarExpanded ? (
               <Button onClick={() => navigate('/resumos-list')} variant="outline" className="w-full" size="sm">
                 ← Voltar à Lista
@@ -365,7 +365,7 @@ const StudyPage = () => {
         {/* Center content area - Conteúdo do Resumo */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Header */}
-          <div className="p-4 border-b border-border flex-shrink-0 bg-background">
+          <div className="p-4 border-b border-border shrink-0 bg-background">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-lg font-semibold text-foreground">Código de Trânsito Brasileiro - CTB</h1>

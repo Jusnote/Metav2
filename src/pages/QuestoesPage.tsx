@@ -137,13 +137,13 @@ export default function QuestoesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
+    <div className="min-h-screen bg-linear-to-br from-background via-background to-accent/10">
       {/* Header da Página */}
-      <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+      <div className="border-b border-border/50 bg-card/50 backdrop-blur-xs sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 Sistema de Questões
               </h1>
               <div className="text-sm text-muted-foreground">
@@ -204,8 +204,8 @@ export default function QuestoesPage() {
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Seção de Filtros Aprimorada */}
         {mostrarFiltros && (
-          <Card className="mb-8 shadow-lg bg-card/60 backdrop-blur-sm border-border/50 overflow-hidden">
-            <CardHeader className="pb-4 bg-gradient-to-r from-muted/20 to-accent/10">
+          <Card className="mb-8 shadow-lg bg-card/60 backdrop-blur-xs border-border/50 overflow-hidden">
+            <CardHeader className="pb-4 bg-linear-to-r from-muted/20 to-accent/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Filter className="h-5 w-5 text-primary" />
@@ -225,13 +225,13 @@ export default function QuestoesPage() {
                   {filtrosDisponiveis.status.map((status) => (
                     <Button
                       key={status}
-                      variant={statusSelecionado === status ? "default" : "outline"}
+                      variant={statusSelecionado === status ? "default" : "outline-solid"}
                       size="sm"
                       onClick={() => setStatusSelecionado(status)}
                       className={`transition-all duration-200 ${
                         statusSelecionado === status 
                           ? "shadow-md scale-105" 
-                          : "hover:scale-102 hover:shadow-sm"
+                          : "hover:scale-102 hover:shadow-xs"
                       }`}
                     >
                       {status}
@@ -362,7 +362,7 @@ export default function QuestoesPage() {
         {/* Seção das Questões com Layout Moderno */}
         <div className="space-y-6">
           {/* Barra de Resultados */}
-          <div className="flex items-center justify-between py-4 px-6 bg-card/40 rounded-lg border border-border/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between py-4 px-6 bg-card/40 rounded-lg border border-border/50 backdrop-blur-xs">
             <div className="flex items-center gap-4">
               <div className="text-sm font-medium">
                 <span className="text-primary font-semibold">{todasQuestoes.length}</span>
@@ -397,9 +397,9 @@ export default function QuestoesPage() {
               <div className="text-center py-8 text-muted-foreground">Nenhuma questão encontrada. Crie sua primeira questão!</div>
             ) : (
               todasQuestoes.map((questao) => (
-              <Card key={questao.id} className="group hover:shadow-xl transition-all duration-300 bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/30 overflow-hidden">
+              <Card key={questao.id} className="group hover:shadow-xl transition-all duration-300 bg-card/60 backdrop-blur-xs border-border/50 hover:border-primary/30 overflow-hidden">
                 <CardHeader className="pb-3 relative">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/60 to-primary/30"></div>
+                  <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-primary via-primary/60 to-primary/30"></div>
                   
                   <div className="flex justify-between items-start pt-2">
                     <div className="space-y-2">
@@ -455,7 +455,7 @@ export default function QuestoesPage() {
                         key={alternativa.letra} 
                         className={`group/alt p-3 rounded-lg border border-border/50 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 ${
                           respostasSelecionadas[questao.id] === alternativa.letra 
-                            ? "border-primary bg-primary/10 shadow-sm" 
+                            ? "border-primary bg-primary/10 shadow-xs" 
                             : ""
                         }`}
                         onClick={() => selecionarResposta(questao.id, alternativa.letra)}
@@ -464,7 +464,7 @@ export default function QuestoesPage() {
                           htmlFor={`${questao.id}-${alternativa.letra}`}
                           className="flex items-start gap-3 cursor-pointer w-full"
                         >
-                          <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="flex items-center gap-3 shrink-0">
                             <Checkbox
                               id={`${questao.id}-${alternativa.letra}`}
                               checked={respostasSelecionadas[questao.id] === alternativa.letra}

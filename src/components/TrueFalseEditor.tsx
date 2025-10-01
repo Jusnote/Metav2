@@ -74,7 +74,7 @@ export function TrueFalseEditor({ onSave, onCancel, initialStatement = '' }: Tru
       {/* Botões de resposta - mais compactos */}
       <div className="grid grid-cols-2 gap-2">
         <Button
-          variant={answer === 'true' ? 'default' : 'outline'}
+          variant={answer === 'true' ? 'default' : 'outline-solid'}
           onClick={() => setAnswer('true')}
           className={cn(
             "flex items-center justify-center gap-1 h-8 text-sm", // Reduzido de h-12 para h-8
@@ -85,7 +85,7 @@ export function TrueFalseEditor({ onSave, onCancel, initialStatement = '' }: Tru
           Certo
         </Button>
         <Button
-          variant={answer === 'false' ? 'default' : 'outline'}
+          variant={answer === 'false' ? 'default' : 'outline-solid'}
           onClick={() => setAnswer('false')}
           className={cn(
             "flex items-center justify-center gap-1 h-8 text-sm", // Reduzido de h-12 para h-8

@@ -57,7 +57,7 @@ export const InteractiveExplanation = ({
       </HoverCardPrimitive.Trigger>
 
       <HoverCardPrimitive.Content
-        className="[transform-origin:var(--radix-hover-card-content-transform-origin)]"
+        className="origin-(--radix-hover-card-content-transform-origin)"
         side="top"
         align="center"
         sideOffset={10}

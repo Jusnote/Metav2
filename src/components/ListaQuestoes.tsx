@@ -40,9 +40,9 @@ export const ListaQuestoes: React.FC = () => {
   return (
     <div className="space-y-6">
       {questoes.map((questao) => (
-        <Card key={questao.id} className="group hover:shadow-xl transition-all duration-300 bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/30 overflow-hidden">
+        <Card key={questao.id} className="group hover:shadow-xl transition-all duration-300 bg-card/60 backdrop-blur-xs border-border/50 hover:border-primary/30 overflow-hidden">
           <CardHeader className="pb-3 relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/60 to-primary/30"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-primary via-primary/60 to-primary/30"></div>
             
             <div className="flex justify-between items-start pt-2">
               <div className="space-y-2">
@@ -95,7 +95,7 @@ export const ListaQuestoes: React.FC = () => {
                     key={alternativa.id} 
                     className={`group/alt p-3 rounded-lg border border-border/50 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 ${
                       respostasSelecionadas[questao.id] === alternativa.letra 
-                        ? "border-primary bg-primary/10 shadow-sm" 
+                        ? "border-primary bg-primary/10 shadow-xs" 
                         : ""
                     }`}
                     onClick={() => selecionarResposta(questao.id, alternativa.letra)}
@@ -104,7 +104,7 @@ export const ListaQuestoes: React.FC = () => {
                       htmlFor={`${questao.id}-${alternativa.letra}`}
                       className="flex items-start gap-3 cursor-pointer w-full"
                     >
-                      <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="flex items-center gap-3 shrink-0">
                         <Checkbox
                           id={`${questao.id}-${alternativa.letra}`}
                           checked={respostasSelecionadas[questao.id] === alternativa.letra}

@@ -163,7 +163,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
     },
     editorProps: {
       attributes: {
-        class: 'focus:outline-none min-h-[400px] p-4',
+        class: 'focus:outline-hidden min-h-[400px] p-4',
         style: 'font-size: 16px; line-height: 1.8; color: hsl(var(--foreground));',
       },
       handleKeyDown: (view, event) => {
@@ -835,7 +835,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
                       !editor.state.selection.empty && [
                         "bg-primary/10 border border-primary/30",
                         "hover:bg-primary/20 hover:border-primary/50",
-                        "shadow-sm"
+                        "shadow-xs"
                       ]
                     )}
                     disabled={editor.state.selection.empty}
@@ -1127,7 +1127,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
         </style>
         <EditorContent 
           editor={editor} 
-          className="[&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:p-4"
+          className="[&_.ProseMirror]:outline-hidden [&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:p-4"
         />
         {!editor.getText() && (
           <div className="absolute top-8 left-8 text-muted-foreground pointer-events-none">

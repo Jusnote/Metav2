@@ -13,9 +13,9 @@ export function StudyModeToggle() {
   const getButtonClassName = (mode: StudyMode) => {
     const baseClasses = "flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98] rounded-lg border";
     if (studyMode === mode) {
-      return cn(baseClasses, "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg border-orange-500 hover:from-orange-600 hover:to-orange-700 hover:shadow-xl");
+      return cn(baseClasses, "bg-linear-to-r from-orange-500 to-orange-600 text-white shadow-lg border-orange-500 hover:from-orange-600 hover:to-orange-700 hover:shadow-xl");
     }
-    return cn(baseClasses, "text-slate-300 hover:text-white hover:bg-slate-700/50 border-slate-600 hover:border-slate-500 bg-slate-800/30 backdrop-blur-sm");
+    return cn(baseClasses, "text-slate-300 hover:text-white hover:bg-slate-700/50 border-slate-600 hover:border-slate-500 bg-slate-800/30 backdrop-blur-xs");
   };
 
   return (

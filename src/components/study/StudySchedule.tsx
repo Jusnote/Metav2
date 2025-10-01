@@ -437,7 +437,7 @@ export function StudySchedule() {
               <Calendar className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 Cronograma de Estudos
               </h1>
               <p className="text-muted-foreground">

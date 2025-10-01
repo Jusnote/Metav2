@@ -68,9 +68,9 @@ const CalloutComponent = ({ node, updateAttributes, deleteNode }: CalloutCompone
         'callout border-l-4 p-4 my-4 rounded-r-lg flex items-start gap-3',
         styles[type as keyof typeof styles]
       )} data-type={type}>
-        <IconComponent className="h-5 w-5 mt-0.5 flex-shrink-0" />
+        <IconComponent className="h-5 w-5 mt-0.5 shrink-0" />
         <NodeViewContent 
-          className="flex-1 min-w-0 focus:outline-none prose prose-sm max-w-none"
+          className="flex-1 min-w-0 focus:outline-hidden prose prose-sm max-w-none"
           as="div"
         />
         <button

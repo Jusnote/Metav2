@@ -168,7 +168,7 @@ const ResumosListPage = () => {
   const visibleThumbnails = needsNavigation ? thumbnails.slice(currentThumbnailIndex, currentThumbnailIndex + thumbnailsPerView) : thumbnails;
   return <div className="h-full w-full bg-background overflow-hidden flex">
       {/* Left thumbnails bar */}
-      <div className="w-24 border-r border-border bg-muted/30 flex-shrink-0 flex flex-col">
+      <div className="w-24 border-r border-border bg-muted/30 shrink-0 flex flex-col">
         <div className="flex flex-col items-center h-full py-[60px]">
           {needsNavigation && <Button variant="ghost" size="sm" onClick={handlePrevious} disabled={currentThumbnailIndex === 0} className="h-8 w-8 p-0 mb-2">
               <ChevronUp className="h-4 w-4" />
@@ -176,7 +176,7 @@ const ResumosListPage = () => {
           
           <div className="flex-1 overflow-hidden">
             <div className="flex flex-col gap-2 items-center">
-              {visibleThumbnails.map((thumb: string, index: number) => <div key={needsNavigation ? currentThumbnailIndex + index : index} className="flex-shrink-0 w-20 h-16 bg-muted border border-border rounded-lg flex items-center justify-center text-xs font-medium text-center leading-tight p-2">
+              {visibleThumbnails.map((thumb: string, index: number) => <div key={needsNavigation ? currentThumbnailIndex + index : index} className="shrink-0 w-20 h-16 bg-muted border border-border rounded-lg flex items-center justify-center text-xs font-medium text-center leading-tight p-2">
                   {thumb}
                 </div>)}
             </div>
@@ -191,7 +191,7 @@ const ResumosListPage = () => {
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left sidebar - Disciplinas */}
         <div className="w-96 bg-muted/50 border-r border-border flex flex-col min-h-0">
-          <div className="p-3 border-b border-border flex-shrink-0 py-[2px]">
+          <div className="p-3 border-b border-border shrink-0 py-[2px]">
             <div className="flex items-center justify-between mb-2">
               <h2 className="font-semibold text-foreground text-sm">Disciplinas</h2>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -262,7 +262,7 @@ const ResumosListPage = () => {
         {/* Right content area */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Search bar */}
-          <div className="p-3 border-b border-border flex-shrink-0 py-[8px]">
+          <div className="p-3 border-b border-border shrink-0 py-[8px]">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Digite para pesquisar" value={searchTerm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)} className="pl-10 h-8" />

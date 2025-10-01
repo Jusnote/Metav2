@@ -100,7 +100,7 @@ export function StudyCard({ card, onAnswer, showAnswer: initialShowAnswer = fals
             {/* Card interno com bordas arredondadas */}
             <div className="pt-2 px-2 pb-6">
                <div className={cn(
-                 "bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-xl p-3 border border-slate-200/30",
+                 "bg-linear-to-br from-slate-50 to-blue-50/30 rounded-xl p-3 border border-slate-200/30",
                  "transition-transform duration-300 transform-gpu",
                  isFlipping && "rotate-y-180"
                )} style={{

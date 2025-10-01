@@ -475,7 +475,7 @@ const DocumentsOrganizationPage = () => {
                                         }`} 
                                       />
                                     )}
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></div>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></div>
                                     <div className="flex-1 min-w-0">
                                       {editingTopic === topic.id ? (
                                      <InlineEditor
@@ -539,7 +539,7 @@ const DocumentsOrganizationPage = () => {
                                             selectedSubtopic?.subtopic.id === subtopic.id ? 'bg-blue-50' : ''
                                           }`}
                                         >
-                                          <div className="w-1 h-1 rounded-full bg-gray-400 flex-shrink-0"></div>
+                                          <div className="w-1 h-1 rounded-full bg-gray-400 shrink-0"></div>
                                           <div className="flex-1 min-w-0">
                                             {editingSubtopic === subtopic.id ? (
                                               <InlineEditor
@@ -562,7 +562,7 @@ const DocumentsOrganizationPage = () => {
                                               </>
                                             )}
                     </div>
-                                          <div className="flex-shrink-0">
+                                          <div className="shrink-0">
                                             {getStatusIcon(subtopic.status)}
                   </div>
                                         </button>

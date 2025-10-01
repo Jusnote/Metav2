@@ -40,7 +40,7 @@ export function StudyCompletionToast({ show, onHide }: StudyCompletionToastProps
       isVisible ? 'opacity-100' : 'opacity-0'
     }`}>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-xs" />
       
       {/* Toast */}
       <div className={`relative bg-white rounded-lg shadow-2xl border-2 border-green-200 p-6 mx-4 max-w-md transform transition-all duration-300 ${
@@ -50,7 +50,7 @@ export function StudyCompletionToast({ show, onHide }: StudyCompletionToastProps
         <div className="flex items-center justify-center mb-4">
           <div className="relative">
             <div className="absolute -inset-2 bg-green-100 rounded-full animate-ping opacity-75"></div>
-            <div className="relative bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-3">
+            <div className="relative bg-linear-to-r from-green-500 to-blue-500 rounded-full p-3">
               <Trophy className="h-8 w-8 text-white" />
             </div>
           </div>

@@ -114,7 +114,7 @@ export function DeckCard({ deck, dueCount, totalCards, onStudy, onEdit, onDelete
             e.stopPropagation();
             onStudy();
           }}
-          variant={dueCount > 0 ? "study" : "outline"}
+          variant={dueCount > 0 ? "study" : "outline-solid"}
           size="study"
           className="w-full gap-2"
           disabled={totalCards === 0}

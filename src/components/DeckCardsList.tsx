@@ -241,11 +241,11 @@ export function DeckCardsList({
                             <div>
                               <label className="text-sm font-medium">Resposta correta</label>
                               <div className="flex gap-3 mt-2">
-                                <Button variant={editAnswer === 'true' ? 'default' : 'outline'} onClick={() => setEditAnswer('true')} className={cn("flex items-center gap-2", editAnswer === 'true' && "bg-success text-success-foreground hover:bg-success/90")}>
+                                <Button variant={editAnswer === 'true' ? 'default' : 'outline-solid'} onClick={() => setEditAnswer('true')} className={cn("flex items-center gap-2", editAnswer === 'true' && "bg-success text-success-foreground hover:bg-success/90")}>
                                   <Check className="h-4 w-4" />
                                   Certo
                                 </Button>
-                                <Button variant={editAnswer === 'false' ? 'default' : 'outline'} onClick={() => setEditAnswer('false')} className={cn("flex items-center gap-2", editAnswer === 'false' && "bg-destructive text-destructive-foreground hover:bg-destructive/90")}>
+                                <Button variant={editAnswer === 'false' ? 'default' : 'outline-solid'} onClick={() => setEditAnswer('false')} className={cn("flex items-center gap-2", editAnswer === 'false' && "bg-destructive text-destructive-foreground hover:bg-destructive/90")}>
                                   <X className="h-4 w-4" />
                                   Errado
                                 </Button>

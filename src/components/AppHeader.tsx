@@ -116,7 +116,7 @@ export function AppHeader() {
   const getNavClassName = (path: string) => {
     const baseClasses = "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95";
     if (isActive(path)) {
-      return `${baseClasses} bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md hover:from-blue-700 hover:to-purple-700`;
+      return `${baseClasses} bg-linear-to-r from-blue-600 to-purple-600 text-white shadow-md hover:from-blue-700 hover:to-purple-700`;
     }
     return `${baseClasses} text-slate-600 hover:text-slate-800 hover:bg-slate-200/80`;
   };
@@ -142,7 +142,7 @@ export function AppHeader() {
           
           {/* Logo Centralizada - Desktop apenas */}
           <div className="hidden md:flex items-center gap-2 justify-center">
-            <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 shadow-md">
+            <div className="p-1.5 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 shadow-md">
               <Skull className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-white">Meta 01</span>
@@ -184,7 +184,7 @@ export function AppHeader() {
             </div>
 
             {/* Barrinha antes do Avatar Mobile */}
-            <div className="md:hidden w-0.5 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+            <div className="md:hidden w-0.5 h-8 bg-linear-to-b from-blue-500 to-purple-600 rounded-full"></div>
             
             {/* Avatar Mobile */}
             <div className="md:hidden">
@@ -192,7 +192,7 @@ export function AppHeader() {
             </div>
             
             {/* Barrinha depois do Avatar Mobile */}
-            <div className="md:hidden w-0.5 h-8 bg-gradient-to-b from-purple-600 to-blue-500 rounded-full"></div>
+            <div className="md:hidden w-0.5 h-8 bg-linear-to-b from-purple-600 to-blue-500 rounded-full"></div>
 
             {/* Menu Mobile */}
             <div className="md:hidden">
@@ -285,7 +285,7 @@ export function AppHeader() {
 
         {/* Linha Inferior: Avatar + Toggle de Modo de Estudo (Desktop apenas) */}
         {!isHeaderCollapsed && (
-          <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-slate-900 backdrop-blur-sm border-t border-slate-700/50 rounded-t-xl transition-all duration-300 ease-in-out">
+          <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-3 bg-slate-900 backdrop-blur-xs border-t border-slate-700/50 rounded-t-xl transition-all duration-300 ease-in-out">
             {/* Avatar do Usuário */}
             <div className="flex items-center">
               <UserAvatar variant="desktop" />
@@ -329,7 +329,7 @@ export function AppHeader() {
       </div>
       
       {/* Barra Laranja Divisória - Fora do container para ocupar toda a largura */}
-      <div className="w-full h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 shadow-sm"></div>
+      <div className="w-full h-1 bg-linear-to-r from-orange-400 via-orange-500 to-orange-600 shadow-xs"></div>
     </header>
   );
 }

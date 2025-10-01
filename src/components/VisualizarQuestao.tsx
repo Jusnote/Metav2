@@ -47,7 +47,7 @@ export const VisualizarQuestao: React.FC<VisualizarQuestaoProps> = ({
                 {questao.cargo}
               </Badge>
             )}
-            <Badge variant={questao.nivel === 'Fácil' ? 'outline' : questao.nivel === 'Médio' ? 'secondary' : 'destructive'}>
+            <Badge variant={questao.nivel === 'Fácil' ? 'outline-solid' : questao.nivel === 'Médio' ? 'secondary' : 'destructive'}>
               {questao.nivel}
             </Badge>
             <Badge variant="outline">
@@ -78,9 +78,9 @@ export const VisualizarQuestao: React.FC<VisualizarQuestaoProps> = ({
                     }`}
                   >
                     {alternativa.correta ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
                     ) : (
-                      <XCircle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <XCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                     )}
                     <div>
                       <span className="font-semibold mr-2">{alternativa.letra})</span>

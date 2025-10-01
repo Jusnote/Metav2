@@ -80,7 +80,7 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
           placeholder={placeholder}
           maxLength={maxLength}
           className={cn(
-            "px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white",
+            "px-2 py-1 text-sm border border-blue-300 rounded focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white",
             className
           )}
         />

@@ -124,7 +124,7 @@ O `BlockComponent` foi modificado para gerenciar seu próprio estado de edição
 +                  value={editingFront}
 +                  onChange={(e) => setEditingFront(e.target.value)}
 +                  onKeyDown={handleEditKeyDown}
-+                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
++                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-hidden focus:ring-2 focus:ring-primary/20"
 +                  rows={2}
 +                  autoFocus
 +                />
@@ -135,7 +135,7 @@ O `BlockComponent` foi modificado para gerenciar seu próprio estado de edição
 +                  value={editingBack}
 +                  onChange={(e) => setEditingBack(e.target.value)}
 +                  onKeyDown={handleEditKeyDown}
-+                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
++                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-hidden focus:ring-2 focus:ring-primary/20"
 +                  rows={2}
 +                />
 +              </div>
@@ -147,7 +147,7 @@ O `BlockComponent` foi modificado para gerenciar seu próprio estado de edição
 +                    value={editingHiddenWords.join(\'\', \' \')}
 +                    onChange={(e) => setEditingHiddenWords(e.target.value.split(\'\',\').map(w => w.trim()).filter(w => w))}
 +                    onKeyDown={handleEditKeyDown}
-+                    className="w-full mt-1 p-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary/20"
++                    className="w-full mt-1 p-2 text-sm border rounded focus:outline-hidden focus:ring-2 focus:ring-primary/20"
 +                  />
 +                </div>
 +              )}

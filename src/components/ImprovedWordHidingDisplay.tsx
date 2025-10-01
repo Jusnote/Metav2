@@ -106,7 +106,7 @@ export function ImprovedWordHidingDisplay({
           shouldBeHidden && (revealedWords.has(wordWithoutPunctuation) || showAnswer) && [
             "bg-success/20 text-success border border-success/30 rounded-md px-1",
             "animate-[scale-in_0.4s_ease-out]",
-            "shadow-sm"
+            "shadow-xs"
           ]
         )}
         title={isCurrentlyHidden ? "Clique para revelar a palavra" : undefined}

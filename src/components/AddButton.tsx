@@ -31,7 +31,7 @@ export const AddButton: React.FC<AddButtonProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1",
+        "inline-flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-1",
         sizeClasses[size],
         variantClasses[variant],
         className

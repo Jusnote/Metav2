@@ -23,7 +23,7 @@ export function StudyProgressIndicator({
   const progressPercentage = (completedSections.length / totalSections) * 100;
 
   return (
-    <div className="mb-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 w-full">
+    <div className="mb-3 p-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 w-full">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-semibold text-blue-800">Progresso do Estudo</h4>
         <span className="text-xs text-blue-600">

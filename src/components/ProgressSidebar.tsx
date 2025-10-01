@@ -131,7 +131,7 @@ export function ProgressSidebar({ disciplina, resumo, onMarkerClick }: ProgressS
       {isExpanded && (
         <>
           {/* Header */}
-          <div className="p-3 border-b border-border flex-shrink-0 flex items-center justify-between py-[22px]">
+          <div className="p-3 border-b border-border shrink-0 flex items-center justify-between py-[22px]">
             <div className="flex items-center gap-2">
               <Bookmark className="h-4 w-4 text-primary" />
               <div>
@@ -143,14 +143,14 @@ export function ProgressSidebar({ disciplina, resumo, onMarkerClick }: ProgressS
               variant="ghost" 
               size="sm" 
               onClick={() => setIsExpanded(false)} 
-              className="text-muted-foreground hover:text-foreground flex-shrink-0"
+              className="text-muted-foreground hover:text-foreground shrink-0"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Add marker button */}
-          <div className="p-3 border-b border-border flex-shrink-0">
+          <div className="p-3 border-b border-border shrink-0">
             <Button 
               onClick={handleAddMarker}
               className="w-full"
@@ -216,7 +216,7 @@ export function ProgressSidebar({ disciplina, resumo, onMarkerClick }: ProgressS
 
           {/* Actions */}
           {markers.length > 0 && (
-            <div className="p-3 border-t border-border flex-shrink-0">
+            <div className="p-3 border-t border-border shrink-0">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button 

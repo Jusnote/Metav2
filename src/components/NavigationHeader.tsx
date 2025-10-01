@@ -34,13 +34,13 @@ export function NavigationHeader() {
   const getNavClassName = (path: string) => {
     const baseClasses = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95";
     if (isActive(path)) {
-      return `${baseClasses} bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md hover:from-orange-600 hover:to-orange-700`;
+      return `${baseClasses} bg-linear-to-r from-orange-500 to-orange-600 text-white shadow-md hover:from-orange-600 hover:to-orange-700`;
     }
     return `${baseClasses} text-slate-600 hover:text-slate-800 hover:bg-slate-100 border border-slate-200/50`;
   };
 
   return (
-    <div className="w-full bg-white border-b border-slate-200 shadow-sm">
+    <div className="w-full bg-white border-b border-slate-200 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-2">
         <nav className="flex items-center justify-center gap-2">
           {navigationItems.map((item) => (

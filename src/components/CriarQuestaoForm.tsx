@@ -270,7 +270,7 @@ export const CriarQuestaoForm: React.FC = () => {
                 <Card key={index} className={`border ${alternativa.correta ? 'border-green-500' : ''}`}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 pt-1">
+                      <div className="shrink-0 pt-1">
                         <RadioGroup
                           value={alternativa.correta ? index.toString() : undefined}
                           onValueChange={() => handleAlternativaCorretaChange(index)}
@@ -283,7 +283,7 @@ export const CriarQuestaoForm: React.FC = () => {
                           </div>
                         </RadioGroup>
                       </div>
-                      <div className="flex-grow">
+                      <div className="grow">
                         <Textarea
                           value={alternativa.texto}
                           onChange={(e) => handleAlternativaChange(index, e.target.value)}
@@ -291,7 +291,7 @@ export const CriarQuestaoForm: React.FC = () => {
                           className="min-h-[80px]"
                         />
                       </div>
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         <Button
                           type="button"
                           variant="ghost"

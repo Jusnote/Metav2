@@ -175,7 +175,7 @@ export function QuestionModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
       <Card className="w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between mb-2">
@@ -244,7 +244,7 @@ export function QuestionModal({
                 {currentQuestion.explanation && (
                   <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
                     <div className="flex items-start gap-2">
-                      <Lightbulb className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                      <Lightbulb className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
                       <div>
                         <span className="font-medium text-yellow-800">Explicação: </span>
                         <span className="text-yellow-700">{currentQuestion.explanation}</span>

@@ -104,7 +104,7 @@ export function CarouselInsertDialog({ onInsertCarousel, children }: CarouselIns
                     >
                       <X className="h-3 w-3" />
                     </button>
-                    <div className="absolute bottom-1 left-1 bg-background/80 backdrop-blur-sm rounded px-1.5 py-0.5">
+                    <div className="absolute bottom-1 left-1 bg-background/80 backdrop-blur-xs rounded px-1.5 py-0.5">
                       <span className="text-xs font-medium">{index + 1}</span>
                     </div>
                   </div>

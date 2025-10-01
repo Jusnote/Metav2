@@ -224,7 +224,7 @@ function BlockComponent({
                   value={editingFront}
                   onChange={(e) => setEditingFront(e.target.value)}
                   onKeyDown={handleEditKeyDown}
-                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-hidden focus:ring-2 focus:ring-primary/20"
                   rows={2}
                   autoFocus
                 />
@@ -235,7 +235,7 @@ function BlockComponent({
                   value={editingBack}
                   onChange={(e) => setEditingBack(e.target.value)}
                   onKeyDown={handleEditKeyDown}
-                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full mt-1 p-2 text-sm border rounded resize-none focus:outline-hidden focus:ring-2 focus:ring-primary/20"
                   rows={2}
                 />
               </div>
@@ -247,7 +247,7 @@ function BlockComponent({
                     value={editingHiddenWords.join(', ')}
                     onChange={(e) => setEditingHiddenWords(e.target.value.split(',').map(w => w.trim()).filter(w => w))}
                     onKeyDown={handleEditKeyDown}
-                    className="w-full mt-1 p-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full mt-1 p-2 text-sm border rounded focus:outline-hidden focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               )}
@@ -326,7 +326,7 @@ function BlockComponent({
     >
       {/* Bolinha azul indicadora de sub-flashcard */}
       {block.isSubCard && (
-        <div className="absolute -left-6 top-2 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-sm">
+        <div className="absolute -left-6 top-2 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-xs">
           <div className="w-2 h-2 bg-white rounded-full"></div>
         </div>
       )}
@@ -363,7 +363,7 @@ function BlockComponent({
             variant="outline"
             size="sm"
             onClick={() => onConvertToFlashcard(block.id, 'traditional')}
-            className="h-8 w-8 p-0 bg-background shadow-sm hover:bg-blue-50 hover:border-blue-300"
+            className="h-8 w-8 p-0 bg-background shadow-xs hover:bg-blue-50 hover:border-blue-300"
             title="Converter para Flashcard Tradicional"
           >
             <FileText className="h-4 w-4" />
@@ -374,7 +374,7 @@ function BlockComponent({
             onClick={() => hasTextSelection ? onMarkSelectedWords(block.id) : undefined}
             disabled={!hasTextSelection}
             className={cn(
-              "h-8 w-8 p-0 bg-background shadow-sm transition-all",
+              "h-8 w-8 p-0 bg-background shadow-xs transition-all",
               hasTextSelection 
                 ? "hover:bg-amber-50 hover:border-amber-300 cursor-pointer" 
                 : "opacity-50 cursor-not-allowed"
@@ -387,7 +387,7 @@ function BlockComponent({
             variant="outline"
             size="sm"
             onClick={() => onConvertToFlashcard(block.id, 'true-false')}
-            className="h-8 w-8 p-0 bg-background shadow-sm hover:bg-green-50 hover:border-green-300"
+            className="h-8 w-8 p-0 bg-background shadow-xs hover:bg-green-50 hover:border-green-300"
             title="Converter para Verdadeiro/Falso"
           >
             <Check className="h-4 w-4" />
@@ -405,7 +405,7 @@ function BlockComponent({
             variant="outline"
             size="sm"
             onClick={() => onCreateSubFlashcard(block.id)}
-            className="h-8 w-8 p-0 bg-background shadow-sm hover:bg-blue-50 hover:border-blue-300"
+            className="h-8 w-8 p-0 bg-background shadow-xs hover:bg-blue-50 hover:border-blue-300"
             title="Criar Sub-Flashcard"
           >
             <Link2 className="h-4 w-4" />
@@ -436,7 +436,7 @@ function BlockComponent({
           placeholder="Digite seu texto aqui..."
           className={cn(
             "w-full border-none bg-transparent resize-none overflow-hidden",
-            "focus:outline-none focus:ring-0",
+            "focus:outline-hidden focus:ring-0",
             "placeholder:text-muted-foreground/50",
             isActive && "ring-2 ring-primary/20 rounded-md",
             "p-0 m-0 leading-tight block",
@@ -1463,7 +1463,7 @@ export function BlockBasedFlashcardEditor({
       
       {/* Editor de Flashcard Verdadeiro/Falso - versão ultra compacta */}
       {pendingTrueFalse && (
-        <div className="p-3 border border-gray-200 rounded-lg shadow-sm bg-blue-50/30">
+        <div className="p-3 border border-gray-200 rounded-lg shadow-xs bg-blue-50/30">
           <TrueFalseEditor
             initialStatement={pendingTrueFalse.statement}
             onSave={(front, back, type, explanation) => {

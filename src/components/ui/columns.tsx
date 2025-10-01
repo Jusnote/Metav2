@@ -27,7 +27,7 @@ const ColumnEditor = ({ content, onUpdate, index }: { content: string; onUpdate:
     },
     editorProps: {
       attributes: {
-        class: 'focus:outline-none',
+        class: 'focus:outline-hidden',
       },
     },
   });
@@ -37,7 +37,7 @@ const ColumnEditor = ({ content, onUpdate, index }: { content: string; onUpdate:
       <div className="text-xs text-muted-foreground mb-1">Coluna {index + 1}</div>
       <EditorContent 
         editor={editor} 
-        className="[&_.ProseMirror]:min-h-[30px] [&_.ProseMirror]:p-1 [&_.ProseMirror]:focus:outline-none" 
+        className="[&_.ProseMirror]:min-h-[30px] [&_.ProseMirror]:p-1 focus:[&_.ProseMirror]:outline-hidden" 
       />
     </div>
   );

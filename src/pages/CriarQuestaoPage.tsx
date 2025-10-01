@@ -18,7 +18,7 @@ export default function CriarQuestaoPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow-sm p-6">
         <CriarQuestaoForm />
       </div>
     </div>

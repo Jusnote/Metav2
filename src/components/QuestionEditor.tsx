@@ -355,7 +355,7 @@ export function QuestionEditor({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
       <Card className="w-full max-w-4xl max-h-[90vh] mx-4 overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
           <CardTitle className="text-xl text-blue-700">
