@@ -1,199 +1,92 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import EditorSelector from '@/components/EditorSelector';
-import { StudyCard } from '@/components/StudyCard';
+import SavedCardBlockNote from '@/components/SavedCardBlockNote';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import OrbitCircles from '@/components/OrbitCircles';
 
-
-import { DeckCard } from '@/components/DeckCard';
-import { DeckCardsList } from '@/components/DeckCardsList';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
-import { useSupabaseFlashcards } from '@/hooks/useSupabaseFlashcards';
-import { DataMigrationDialog } from '@/components/DataMigrationDialog';
-import { DeleteDeckDialog } from '@/components/DeleteDeckDialog';
-import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Edit3, Trash2, Eye, EyeOff } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Flashcard, StudyDifficulty } from '@/types/flashcard';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
+import { useBlockNoteFlashcards } from '@/hooks/useBlockNoteFlashcards';
+import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Eye, EyeOff } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { decks, cards, loading, isCreatingDeck, isCreatingCard, syncStatus, createDeck, createCard, updateCardContent, deleteCard, deleteDeck, getCardsByDeck, getDueCards, getDeckStats, updateCard } = useSupabaseFlashcards();
   
-  const [newDeckName, setNewDeckName] = useState('');
-  const [newDeckDescription, setNewDeckDescription] = useState('');
-  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
-  const [isCreateDeckOpen, setIsCreateDeckOpen] = useState(false);
-  const [showCardBacks, setShowCardBacks] = useState<{[key: string]: boolean}>({});
-  
-  // Estados para exclusão de deck
-  const [deleteDeckDialog, setDeleteDeckDialog] = useState<{
-    isOpen: boolean;
-    deck: { id: string; name: string; cardCount: number } | null;
-  }>({ isOpen: false, deck: null });
+  // Hook para flashcards BlockNote
+  const { 
+    flashcards, 
+    stats,
+    isLoading,
+    fetchFlashcards,
+    fetchDueFlashcards, 
+    updateFlashcardReview
+  } = useBlockNoteFlashcards();
   
   // Verificar se está em modo de estudo
-  const studyDeckId = searchParams.get('study');
-  const isStudyMode = !!studyDeckId;
+  const isStudyMode = searchParams.get('study') === 'true';
   
   // Estados para o modo de estudo
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [studyCards, setStudyCards] = useState<Flashcard[]>([]);
+  const [studyCards, setStudyCards] = useState<any[]>([]);
   const [completedCards, setCompletedCards] = useState<string[]>([]);
   const [isStudyComplete, setIsStudyComplete] = useState(false);
-  
+  const [showBack, setShowBack] = useState(false);
 
-  
-
-
-  const totalCards = cards.length;
-  const totalDueCards = getDueCards().length;
-  const studiedToday = cards.filter(card => {
-    if (!card.lastReviewed) return false;
-    const today = new Date();
-    const reviewDate = new Date(card.lastReviewed);
-    return reviewDate.toDateString() === today.toDateString();
-  }).length;
-
-  const handleCreateDeck = async () => {
-    if (!newDeckName.trim()) return;
-
-    const deck = await createDeck(newDeckName.trim(), newDeckDescription.trim() || undefined);
-    if (deck) {
-      setSelectedDeckId(deck.id);
-      setNewDeckName('');
-      setNewDeckDescription('');
-      setIsCreateDeckOpen(false);
-    }
-  };
-
-  const handleCreateCard = async (front: string, back: string, type: 'traditional' | 'word-hiding' | 'true-false' = 'traditional', hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string): Promise<string | null> => {
-    console.log("handleCreateCard - FUNCTION CALLED with params:", { front, back, type, hiddenWordIndices, hiddenWords, explanation, parentId, deckId });
-    const targetDeckId = deckId || selectedDeckId;
-    
-    if (!targetDeckId) {
-      toast({
-        title: "Selecione um deck",
-        description: "Primeiro você precisa selecionar ou criar um deck.",
-        variant: "destructive",
-      });
-      return null;
-    }
-
-    console.log("handleCreateCard - calling createCard with:", { targetDeckId, front, back, parentId, type, hiddenWordIndices, hiddenWords, explanation });
-    const cardId = await createCard(targetDeckId, front, back, parentId, type, hiddenWordIndices, hiddenWords, explanation);
-    console.log("handleCreateCard - received cardId:", cardId);
-    
-    if (cardId) {
-      console.log("handleCreateCard - returning cardId:", cardId);
-    } else {
-      console.log("handleCreateCard - cardId is null/undefined");
-    }
-    
-    if (cardId) {
-      toast({
-        title: "Card criado!",
-        description: "Seu flashcard foi adicionado ao deck.",
-      });
-    }
-    
-    return cardId;
-  };
-
-  // Funções para exclusão de deck
-  const handleDeleteDeck = (deck: { id: string; name: string }) => {
-    const deckCards = getCardsByDeck(deck.id);
-    setDeleteDeckDialog({
-      isOpen: true,
-      deck: {
-        id: deck.id,
-        name: deck.name,
-        cardCount: deckCards.length
-      }
-    });
-  };
-
-  const handleConfirmDeleteDeck = async () => {
-    if (!deleteDeckDialog.deck) return;
-    
-    try {
-      await deleteDeck(deleteDeckDialog.deck.id);
-      
-      // Se o deck excluído era o selecionado, limpar seleção
-      if (selectedDeckId === deleteDeckDialog.deck.id) {
-        setSelectedDeckId(null);
-      }
-      
-      setDeleteDeckDialog({ isOpen: false, deck: null });
-      
-      toast({
-        title: "Sucesso!",
-        description: `Deck "${deleteDeckDialog.deck.name}" excluído com sucesso.`,
-      });
-    } catch (error) {
-      console.error('Erro ao excluir deck:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir deck. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleCancelDeleteDeck = () => {
-    setDeleteDeckDialog({ isOpen: false, deck: null });
-  };
-
-  const handleStudyDeck = (deckId: string) => {
-    console.log('Navegando para estudar deck:', deckId);
-    navigate(`/flashcards?study=${deckId}`);
-  };
-
-  const selectedDeck = decks.find(deck => deck.id === selectedDeckId);
-  const studyDeck = decks.find(deck => deck.id === studyDeckId);
 
   // Efeito para carregar cards para estudo
   useEffect(() => {
-    if (isStudyMode && studyDeckId && studyDeck && !loading) {
-      const dueCards = getDueCards().filter(card => card.deckId === studyDeckId);
-      const allCards = getCardsByDeck(studyDeckId);
-      
-      const cardsToStudy = dueCards.length > 0 ? dueCards : allCards;
-      
-      if (cardsToStudy.length === 0) {
-        toast({
-          title: "Nenhum card para estudar",
-          description: "Este deck não possui cards ou todos já foram revisados.",
-        });
-        navigate('/flashcards');
-        return;
-      }
-
-      setStudyCards(cardsToStudy);
-      setCurrentCardIndex(0);
-      setCompletedCards([]);
-      setIsStudyComplete(false);
+    if (isStudyMode && !isLoading) {
+      loadStudySession();
     }
-  }, [isStudyMode, studyDeckId, loading]);
+  }, [isStudyMode, isLoading]);
+
+  const loadStudySession = async () => {
+    let cardsToStudy = await fetchDueFlashcards(20);
+    
+    // Se não há cards vencidos, pegar todos os flashcards
+    if (cardsToStudy.length === 0 && flashcards.length > 0) {
+      cardsToStudy = flashcards.slice(0, 20); // Limitar a 20 cards
+      toast({
+        title: "Revisão geral",
+        description: "Não há cards vencidos. Iniciando revisão geral dos flashcards.",
+      });
+    } else if (cardsToStudy.length === 0) {
+      toast({
+        title: "Nenhum flashcard encontrado",
+        description: "Crie alguns flashcards primeiro para poder estudar.",
+      });
+      navigate('/flashcards');
+      return;
+    }
+    
+    setStudyCards(cardsToStudy);
+    setCurrentCardIndex(0);
+    setCompletedCards([]);
+    setIsStudyComplete(false);
+    setShowBack(false);
+  };
+
+  const handleStartStudy = () => {
+    navigate('/flashcards?study=true');
+  };
+
+  const handleCreateFlashcard = () => {
+    navigate('/notes');
+  };
 
   // Função para lidar com respostas do estudo
-  const handleStudyAnswer = async (difficulty: StudyDifficulty) => {
+  const handleStudyAnswer = async (difficulty: 'again' | 'hard' | 'medium' | 'easy') => {
     const currentCard = studyCards[currentCardIndex];
     if (!currentCard) return;
 
-    // Atualizar o card com a resposta
-    await updateCard(currentCard.id, difficulty);
+    // Atualizar flashcard BlockNote
+    await updateFlashcardReview(currentCard.id, difficulty);
 
     // Marcar card como completo
     setCompletedCards(prev => [...prev, currentCard.id]);
@@ -203,10 +96,11 @@ const Index = () => {
       setIsStudyComplete(true);
       toast({
         title: "Estudo concluído! 🎉",
-        description: `Você revisou ${studyCards.length} cards do deck "${studyDeck?.name}".`,
+        description: `Você revisou ${studyCards.length} flashcards.`,
       });
     } else {
       setCurrentCardIndex(prev => prev + 1);
+      setShowBack(false);
     }
   };
 
@@ -214,24 +108,18 @@ const Index = () => {
     setCurrentCardIndex(0);
     setCompletedCards([]);
     setIsStudyComplete(false);
-  };
-
-
-
-  // Função para obter cards filhos
-  const getChildCards = (parentId: string): Flashcard[] => {
-    return cards.filter(card => card.parentId === parentId);
+    setShowBack(false);
   };
 
   const studyProgress = studyCards.length > 0 ? (currentCardIndex / studyCards.length) * 100 : 0;
-  const currentStudyCard = studyCards[currentCardIndex];
+  const currentCard = studyCards[currentCardIndex];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-          <p className="text-muted-foreground">Carregando...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando flashcards...</p>
         </div>
       </div>
     );
@@ -251,7 +139,7 @@ const Index = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-center">
               <p className="text-muted-foreground">
-                Você revisou <strong>{studyCards.length} cards</strong> do deck <strong>"{studyDeck?.name}"</strong>
+                Você revisou <strong>{studyCards.length} flashcards</strong>
               </p>
               <div className="flex gap-3">
                 <Button 
@@ -267,7 +155,7 @@ const Index = () => {
                   className="flex-1 gap-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Voltar aos Decks
+                  Voltar
                 </Button>
               </div>
             </CardContent>
@@ -292,10 +180,10 @@ const Index = () => {
               className="gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Voltar aos Decks
+              Voltar
             </Button>
             <div className="text-center">
-              <h2 className="text-xl font-semibold">{studyDeck?.name}</h2>
+              <h2 className="text-xl font-semibold">Flashcards</h2>
               <p className="text-sm text-muted-foreground">
                 Card {currentCardIndex + 1} de {studyCards.length}
               </p>
@@ -303,14 +191,106 @@ const Index = () => {
             <div className="w-24"> {/* Spacer */}</div>
           </div>
           
-          {currentStudyCard && (
+          {currentCard && (
             <div className="relative">
               <OrbitCircles />
-              <StudyCard
-                card={currentStudyCard}
-                onAnswer={handleStudyAnswer}
-                showAnswer={false}
-              />
+              <div className="max-w-3xl mx-auto">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-lg">
+                  <CardContent className="p-8">
+                    {/* Título do Card */}
+                    <div className="mb-6 text-center">
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        {currentCard.title}
+                      </h3>
+                      <Badge variant="outline" className="text-xs">
+                        {currentCard.deck_name}
+                      </Badge>
+                    </div>
+
+                    {/* Conteúdo do Card */}
+                    <div className="mb-6">
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {showBack ? 'Resposta:' : 'Pergunta:'}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowBack(!showBack)}
+                            className="flex items-center gap-1 text-xs"
+                          >
+                            {showBack ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                            {showBack ? 'Ocultar' : 'Mostrar'} Resposta
+                          </Button>
+                        </div>
+                        
+                        <SavedCardBlockNote
+                          content={showBack ? currentCard.back : currentCard.front}
+                          isEditing={false}
+                          onSave={() => {}}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Botões de Resposta */}
+                    {showBack && (
+                      <div className="flex flex-col gap-3">
+                        <p className="text-sm text-muted-foreground text-center mb-2">
+                          Como foi sua resposta?
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleStudyAnswer('again')}
+                            className="flex flex-col gap-1 h-auto py-3"
+                          >
+                            <span className="font-medium">Errei</span>
+                            <span className="text-xs opacity-90">Revisar novamente</span>
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            onClick={() => handleStudyAnswer('hard')}
+                            className="flex flex-col gap-1 h-auto py-3 border-orange-300 text-orange-700 hover:bg-orange-50"
+                          >
+                            <span className="font-medium">Difícil</span>
+                            <span className="text-xs opacity-70">Revisar em breve</span>
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            onClick={() => handleStudyAnswer('medium')}
+                            className="flex flex-col gap-1 h-auto py-3 border-blue-300 text-blue-700 hover:bg-blue-50"
+                          >
+                            <span className="font-medium">Médio</span>
+                            <span className="text-xs opacity-70">Revisar em alguns dias</span>
+                          </Button>
+                          
+                          <Button
+                            variant="default"
+                            onClick={() => handleStudyAnswer('easy')}
+                            className="flex flex-col gap-1 h-auto py-3 bg-green-600 hover:bg-green-700"
+                          >
+                            <span className="font-medium">Fácil</span>
+                            <span className="text-xs opacity-90">Revisar mais tarde</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botão para mostrar resposta */}
+                    {!showBack && (
+                      <div className="text-center">
+                        <Button onClick={() => setShowBack(true)} size="lg" className="px-8">
+                          Mostrar Resposta
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
            )}
          </div>
@@ -325,62 +305,8 @@ const Index = () => {
      );
   }
 
-  const toggleCardBack = (cardId: string) => {
-    setShowCardBacks(prev => ({
-      ...prev,
-      [cardId]: !prev[cardId]
-    }));
-  };
-
-  const formatDate = (date: Date | string) => {
-    const d = new Date(date);
-    return d.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit'
-    });
-  };
-
-  const getCardTypeLabel = (type: string) => {
-    switch (type) {
-      case 'true-false':
-        return 'V/F';
-      case 'word-hiding':
-        return 'Ocultação';
-      default:
-        return 'Tradicional';
-    }
-  };
-
-  const getCardStatusColor = (card: Flashcard) => {
-    if (!card.lastReviewed) return 'bg-blue-500/10 text-blue-700 border-blue-200';
-    const now = new Date();
-    const nextReview = new Date(card.nextReview);
-    if (nextReview <= now) return 'bg-red-500/10 text-red-700 border-red-200';
-    return 'bg-green-500/10 text-green-700 border-green-200';
-  };
-
-  const getCardStatusText = (card: Flashcard) => {
-    if (!card.lastReviewed) return 'Novo';
-    const now = new Date();
-    const nextReview = new Date(card.nextReview);
-    if (nextReview <= now) return 'Para revisar';
-    return 'Revisado';
-  };
-
   return (
     <div className="bg-background">
-      {/* Diálogo de Migração de Dados */}
-      <DataMigrationDialog />
-      
-      {/* Diálogo de exclusão de deck */}
-      <DeleteDeckDialog
-        isOpen={deleteDeckDialog.isOpen}
-        onCancel={handleCancelDeleteDeck}
-        onConfirm={handleConfirmDeleteDeck}
-        deckName={deleteDeckDialog.deck?.name || ''}
-        cardCount={deleteDeckDialog.deck?.cardCount || 0}
-      />
-      
       {/* Header */}
       <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -396,294 +322,165 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Indicador de Status de Sincronização */}
-              {syncStatus !== 'idle' && (
-                <div className="flex items-center gap-2 text-sm">
-                  {syncStatus === 'syncing' && (
-                    <>
-                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
-                      <span className="text-muted-foreground">Sincronizando...</span>
-                    </>
-                  )}
-                  {syncStatus === 'success' && (
-                    <>
-                      <CheckCircle className="h-3 w-3 text-green-500" />
-                      <span className="text-green-600">Sincronizado</span>
-                    </>
-                  )}
-                  {syncStatus === 'error' && (
-                    <>
-                      <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                      <span className="text-red-600">Erro na sincronização</span>
-                    </>
-                  )}
-                </div>
-              )}
+              <Button 
+                onClick={handleCreateFlashcard}
+                variant="outline" 
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Criar Flashcard
+              </Button>
               
-              <Dialog open={isCreateDeckOpen} onOpenChange={setIsCreateDeckOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="default" className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Novo Deck
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Criar Novo Deck</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">Nome do Deck</label>
-                      <Input
-                        value={newDeckName}
-                        onChange={(e) => setNewDeckName(e.target.value)}
-                        placeholder="Ex: Vocabulário em Inglês"
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Descrição (opcional)</label>
-                      <Textarea
-                        value={newDeckDescription}
-                        onChange={(e) => setNewDeckDescription(e.target.value)}
-                        placeholder="Descreva o conteúdo do seu deck..."
-                        className="mt-1"
-                      />
-                    </div>
-                    <Button 
-                      onClick={handleCreateDeck}
-                      disabled={!newDeckName.trim() || isCreatingDeck}
-                      className="w-full"
-                    >
-                      {isCreatingDeck ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Criando...
-                        </>
-                      ) : (
-                        'Criar Deck'
-                      )}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button 
+                onClick={handleStartStudy}
+                className="gap-2"
+                disabled={stats.total === 0}
+              >
+                <Play className="h-4 w-4" />
+                {stats.dueForReview > 0 
+                  ? `Estudar (${stats.dueForReview})` 
+                  : stats.total > 0 
+                    ? "Estudar Novamente" 
+                    : "Sem Flashcards"
+                }
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {selectedDeckId ? (
-          // Modo de criação - foco no editor com seleção de deck
-          <div className="space-y-6">
-            {/* Botão para voltar */}
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setSelectedDeckId(null)}
-                className="gap-2"
-              >
-                ← Voltar para Dashboard
-              </Button>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold">Criar Flashcards</h2>
-                <p className="text-sm text-muted-foreground">Selecione um deck e crie seus flashcards</p>
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-gradient-card border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-8 w-8 text-primary" />
+                <div>
+                  <p className="text-2xl font-bold">{stats.total}</p>
+                  <p className="text-sm text-muted-foreground">Total de Cards</p>
+                </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-card border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <Target className="h-8 w-8 text-orange-500" />
+                <div>
+                  <p className="text-2xl font-bold">{stats.dueForReview}</p>
+                  <p className="text-sm text-muted-foreground">Para Revisar</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-card border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <Plus className="h-8 w-8 text-green-500" />
+                <div>
+                  <p className="text-2xl font-bold">{stats.newCards}</p>
+                  <p className="text-sm text-muted-foreground">Novos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-card border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <TrendingUp className="h-8 w-8 text-purple-500" />
+                <div>
+                  <p className="text-2xl font-bold">{stats.learning}</p>
+                  <p className="text-sm text-muted-foreground">Aprendendo</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Tabs de Seleção de Deck */}
-            {decks.length > 0 && (
-              <Card className="bg-gradient-card border-border/50">
-                <CardContent className="p-3">
-                  <Tabs value={selectedDeckId} onValueChange={setSelectedDeckId}>
-                    <TabsList className="grid w-full grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 bg-muted p-1">
-                      {decks.map((deck) => (
-                        <div key={deck.id} className="relative group">
-                          <TabsTrigger 
-                            value={deck.id}
-                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm px-3 py-2 pr-8 w-full"
+        {/* Lista de Flashcards */}
+        {flashcards.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="mb-6">
+                <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Nenhum flashcard encontrado
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Comece criando seu primeiro flashcard a partir de uma nota.
+                </p>
+                <Button onClick={handleCreateFlashcard} className="flex items-center gap-2 mx-auto">
+                  <Plus className="h-4 w-4" />
+                  Criar Primeiro Flashcard
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6">
+            {flashcards.slice(0, 10).map((flashcard) => {
+              const isOverdue = new Date(flashcard.next_review) <= new Date();
+              const nextReview = new Date(flashcard.next_review);
+              const isToday = nextReview.toDateString() === new Date().toDateString();
+              
+              return (
+                <Card key={flashcard.id} className="overflow-hidden">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2">{flashcard.title}</CardTitle>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant="outline">{flashcard.deck_name}</Badge>
+                          <Badge 
+                            variant={isOverdue ? 'destructive' : isToday ? 'default' : 'secondary'}
                           >
-                            {deck.name}
-                          </TabsTrigger>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteDeck({ id: deck.id, name: deck.name });
-                            }}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                            {isOverdue 
+                              ? 'Atrasado' 
+                              : isToday 
+                                ? 'Hoje' 
+                                : `${Math.ceil((nextReview.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias`
+                            }
+                          </Badge>
+                          <Badge variant="outline">
+                            Repetições: {flashcard.repetitions}
+                          </Badge>
                         </div>
-                      ))}
-                    </TabsList>
-                  </Tabs>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <SavedCardBlockNote
+                        content={flashcard.front}
+                        isEditing={false}
+                        onSave={() => {}}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+            
+            {flashcards.length > 10 && (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p className="text-muted-foreground mb-4">
+                    Mostrando 10 de {flashcards.length} flashcards
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/flashcards-new')}
+                    variant="outline"
+                  >
+                    Ver Todos
+                  </Button>
                 </CardContent>
               </Card>
             )}
-
-            {/* Editor Selector - permite escolher entre FlashcardEditor e BlockNoteEditor */}
-            {selectedDeck && (
-               <div className="animate-slide-down-in">
-                 <EditorSelector
-                   selectedDeck={selectedDeck}
-                   onSave={handleCreateCard}
-                   onUpdateCard={updateCardContent}
-                   onDeleteCard={deleteCard}
-                   onClose={() => setSelectedDeckId(null)}
-                 />
-               </div>
-            )}
-          </div>
-        ) : (
-          // Modo dashboard - visão completa
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Stats */}
-            <div className="lg:col-span-3">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <Card className="bg-gradient-card border-border/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3">
-                      <BookOpen className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="text-2xl font-bold">{totalCards}</p>
-                        <p className="text-sm text-muted-foreground">Total de Cards</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-card border-border/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3">
-                      <Target className="h-8 w-8 text-destructive" />
-                      <div>
-                        <p className="text-2xl font-bold">{totalDueCards}</p>
-                        <p className="text-sm text-muted-foreground">Para Revisar</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-card border-border/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="h-8 w-8 text-success" />
-                      <div>
-                        <p className="text-2xl font-bold">{studiedToday}</p>
-                        <p className="text-sm text-muted-foreground">Estudados Hoje</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-card border-border/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3">
-                      <Brain className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="text-2xl font-bold">{decks.length}</p>
-                        <p className="text-sm text-muted-foreground">Decks Ativos</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Deck Selection & Editor */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Deck Selector */}
-              {decks.length > 0 && (
-                <Card className="p-6 bg-gradient-card border-border/50">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Plus className="h-5 w-5 text-primary" />
-                    Selecionar Deck para Adicionar Cards
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {decks.map((deck) => (
-                      <div key={deck.id} className="relative group">
-                        <Button
-                          variant={selectedDeckId === deck.id ? "default" : "outline-solid"}
-                          onClick={() => setSelectedDeckId(deck.id)}
-                          className="justify-start h-auto p-3 w-full pr-12"
-                        >
-                          <div className="text-left">
-                            <div className="font-medium">{deck.name}</div>
-                            <div className="text-xs opacity-75">{deck.cardCount} cards</div>
-                          </div>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteDeck({ id: deck.id, name: deck.name });
-                          }}
-                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              )}
-
-              {/* Card Editor or Welcome */}
-              {!selectedDeckId && (
-                <Card className="p-8 text-center bg-gradient-card border-border/50">
-                  <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Comece criando um deck</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Organize seus flashcards em decks temáticos para um estudo mais eficiente.
-                  </p>
-                  <Button 
-                    onClick={() => setIsCreateDeckOpen(true)}
-                    variant="default"
-                    className="gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Criar Primeiro Deck
-                  </Button>
-                </Card>
-              )}
-            </div>
-
-            {/* Decks List */}
-            <div className="lg:col-span-1">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                Meus Decks
-              </h3>
-              
-              {decks.length === 0 ? (
-                <Card className="p-6 text-center bg-gradient-card border-border/50">
-                  <p className="text-muted-foreground">
-                    Nenhum deck criado ainda
-                  </p>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {decks.map((deck) => {
-                    const stats = getDeckStats(deck.id);
-                    return (
-                      <DeckCard
-                        key={deck.id}
-                        deck={deck}
-                        dueCount={stats.due}
-                        totalCards={stats.total}
-                        onStudy={() => handleStudyDeck(deck.id)}
-                        onEdit={() => setSelectedDeckId(deck.id)}
-                        onDelete={() => handleDeleteDeck({ id: deck.id, name: deck.name })}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
           </div>
         )}
       </div>

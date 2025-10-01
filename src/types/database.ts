@@ -245,6 +245,56 @@ export type Database = {
           updated_at?: string;
         };
       };
+      flashcards: {
+        Row: {
+          id: string;
+          user_id: string;
+          deck_name: string;
+          title: string;
+          front: any; // BlockNote JSON structure
+          back: any; // BlockNote JSON structure
+          last_reviewed: string | null;
+          next_review: string;
+          interval_days: number;
+          ease_factor: number;
+          repetitions: number;
+          difficulty: 'easy' | 'medium' | 'hard' | 'again';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          deck_name?: string;
+          title?: string;
+          front: any;
+          back: any;
+          last_reviewed?: string | null;
+          next_review?: string;
+          interval_days?: number;
+          ease_factor?: number;
+          repetitions?: number;
+          difficulty?: 'easy' | 'medium' | 'hard' | 'again';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          deck_name?: string;
+          title?: string;
+          front?: any;
+          back?: any;
+          last_reviewed?: string | null;
+          next_review?: string;
+          interval_days?: number;
+          ease_factor?: number;
+          repetitions?: number;
+          difficulty?: 'easy' | 'medium' | 'hard' | 'again';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -290,4 +340,8 @@ export type DocumentUpdate = Database['public']['Tables']['documents']['Update']
 export type QuickNote = Database['public']['Tables']['quick_notes']['Row'];
 export type QuickNoteInsert = Database['public']['Tables']['quick_notes']['Insert'];
 export type QuickNoteUpdate = Database['public']['Tables']['quick_notes']['Update'];
+
+export type BlockNoteFlashcard = Database['public']['Tables']['flashcards']['Row'];
+export type BlockNoteFlashcardInsert = Database['public']['Tables']['flashcards']['Insert'];
+export type BlockNoteFlashcardUpdate = Database['public']['Tables']['flashcards']['Update'];
 

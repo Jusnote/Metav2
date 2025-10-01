@@ -54,7 +54,7 @@ import { StudyModeToggle } from "@/components/StudyModeToggle";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "Flashcards", url: "/flashcards", icon: Play },
+    { title: "Flashcards", url: "/flashcards", icon: Play },
   { title: "Conteúdos", url: "/documents-organization", icon: BookOpen },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
 ];

@@ -41,7 +41,7 @@ import { toast } from "sonner";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "Flashcards", url: "/flashcards", icon: Play },
+    { title: "Flashcards", url: "/flashcards", icon: Play },
   { title: "Resumos", url: "/resumos-list", icon: FileText },
   { title: "Questões", url: "/questoes", icon: HelpCircle },
   { title: "Criar Questão", url: "/criar-questao", icon: Plus },

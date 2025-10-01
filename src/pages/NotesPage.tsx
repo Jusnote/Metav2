@@ -5,6 +5,7 @@ import NotesBlockEditor from '@/components/NotesBlockEditor';
 import SavedCardBlockNote from '@/components/SavedCardBlockNote';
 import { useQuickNotes } from '@/hooks/useQuickNotes';
 import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
+import { useBlockNoteFlashcards } from '@/hooks/useBlockNoteFlashcards';
 
 interface SavedCard {
   id: string;
@@ -27,6 +28,9 @@ export default function NotesPage() {
     deleteNote,
     forcSync
   } = useQuickNotes();
+
+  // Hook para flashcards
+  const { createFlashcardFromNote } = useBlockNoteFlashcards();
 
   // Estados locais
   const [currentContent, setCurrentContent] = useState<any>(null);
@@ -97,6 +101,18 @@ export default function NotesPage() {
   // Função para deletar uma nota
   const handleDeleteNote = async (cardId: string) => {
     await deleteNote(cardId);
+  };
+
+  // Função para converter nota em flashcard
+  const handleConvertToFlashcard = async (cardId: string) => {
+    const note = localNotes.find(n => n.id === cardId);
+    if (!note) return;
+
+    const flashcard = await createFlashcardFromNote(note.title, note.content);
+    if (flashcard) {
+      // Opcional: remover a nota após converter
+      // await deleteNote(cardId);
+    }
   };
 
   // Função para cancelar
@@ -265,6 +281,13 @@ export default function NotesPage() {
                       className="text-gray-400 hover:text-gray-600 text-sm"
                     >
                       {card.isEditing ? 'Save' : 'Edit'}
+                    </button>
+                    <button 
+                      onClick={() => handleConvertToFlashcard(card.id)}
+                      className="text-blue-400 hover:text-blue-600 text-sm"
+                      title="Converter para flashcard"
+                    >
+                      🃏
                     </button>
                     <button 
                       onClick={() => handleDeleteNote(card.id)}
