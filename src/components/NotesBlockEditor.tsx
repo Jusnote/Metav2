@@ -85,7 +85,7 @@ export default function NotesBlockEditor({
         />
       </BlockNoteView>
       
-      <style jsx global>{`
+      <style jsx="true" global="true">{`
         .notes-block-editor .bn-container {
           border: none !important;
           background: transparent !important;

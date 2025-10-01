@@ -219,6 +219,32 @@ export type Database = {
           subtopic_id?: string | null;
         };
       };
+      quick_notes: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          content: any; // BlockNote JSON structure
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title?: string;
+          content: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          content?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -260,4 +286,8 @@ export type SubtopicUpdate = Database['public']['Tables']['subtopics']['Update']
 export type Document = Database['public']['Tables']['documents']['Row'];
 export type DocumentInsert = Database['public']['Tables']['documents']['Insert'];
 export type DocumentUpdate = Database['public']['Tables']['documents']['Update'];
+
+export type QuickNote = Database['public']['Tables']['quick_notes']['Row'];
+export type QuickNoteInsert = Database['public']['Tables']['quick_notes']['Insert'];
+export type QuickNoteUpdate = Database['public']['Tables']['quick_notes']['Update'];
 

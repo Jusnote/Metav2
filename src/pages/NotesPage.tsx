@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NotesBlockEditor from '@/components/NotesBlockEditor';
 import SavedCardBlockNote from '@/components/SavedCardBlockNote';
+import { useQuickNotes } from '@/hooks/useQuickNotes';
+import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
 
 interface SavedCard {
   id: string;
@@ -10,11 +12,23 @@ interface SavedCard {
   content: any[]; // Estrutura JSON do BlockNote
   createdAt: Date;
   isEditing?: boolean;
+  syncStatus?: 'pending' | 'synced' | 'error';
+  needsSync?: boolean;
 }
 
 export default function NotesPage() {
-  // Estados
-  const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
+  // Hook para gerenciamento de notas rápidas
+  const {
+    localNotes,
+    setLocalNotes,
+    syncStatus,
+    saveNoteInstantly,
+    saveNoteEdit,
+    deleteNote,
+    forcSync
+  } = useQuickNotes();
+
+  // Estados locais
   const [currentContent, setCurrentContent] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(true);
   const [shouldReset, setShouldReset] = useState(false);
@@ -26,7 +40,7 @@ export default function NotesPage() {
   const monthName = today.toLocaleDateString('en-US', { month: 'long' });
   const year = today.getFullYear();
 
-  // Função para salvar o card
+  // Função para salvar o card (agora com salvamento assíncrono)
   const handleFinish = async () => {
     if (!currentContent) return;
 
@@ -34,22 +48,17 @@ export default function NotesPage() {
     const firstBlock = currentContent[0];
     const title = firstBlock?.content?.[0]?.text || 'Untitled';
     
-    const newCard: SavedCard = {
-      id: crypto.randomUUID(),
-      title: title,
-      content: currentContent, // Salvar estrutura completa do BlockNote
-      createdAt: new Date(),
-      isEditing: false
-    };
-
-    setSavedCards(prev => [newCard, ...prev]);
+    // Salvamento instantâneo + queue assíncrona
+    saveNoteInstantly(title, currentContent);
+    
+    // Limpar editor imediatamente
     setCurrentContent(null);
     setShouldReset(true); // Trigger reset do editor
   };
 
   // Função para alternar modo de edição de um card
   const toggleCardEdit = (cardId: string) => {
-    setSavedCards(prev => prev.map(card => 
+    setLocalNotes(prev => prev.map(card => 
       card.id === cardId 
         ? { ...card, isEditing: !card.isEditing }
         : { ...card, isEditing: false } // Fechar outros em edição
@@ -58,25 +67,36 @@ export default function NotesPage() {
 
   // Função para salvar alterações de um card
   const saveCardChanges = (cardId: string, newContent: any[]) => {
-    setSavedCards(prev => prev.map(card => 
+    const title = newContent[0]?.content?.[0]?.text || 'Untitled';
+    
+    // Atualizar localmente e marcar para edição
+    setLocalNotes(prev => prev.map(card => 
       card.id === cardId 
         ? { 
             ...card, 
             content: newContent,
-            title: newContent[0]?.content?.[0]?.text || 'Untitled',
+            title,
             isEditing: false 
           }
         : card
     ));
+
+    // Adicionar à queue para sincronização
+    saveNoteEdit(cardId, title, newContent);
   };
 
   // Função para atualizar conteúdo temporário sem salvar
   const updateCardContent = (cardId: string, newContent: any[]) => {
-    setSavedCards(prev => prev.map(card => 
+    setLocalNotes(prev => prev.map(card => 
       card.id === cardId 
         ? { ...card, content: newContent }
         : card
     ));
+  };
+
+  // Função para deletar uma nota
+  const handleDeleteNote = async (cardId: string) => {
+    await deleteNote(cardId);
   };
 
   // Função para cancelar
@@ -121,11 +141,17 @@ export default function NotesPage() {
         {/* Seção de Cards - Header - NA ÁREA CINZA */}
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center justify-between">
-            <span className="text-gray-900 font-medium">{savedCards.length} Cards</span>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-orange-400"></div>
-              <span className="text-gray-600 text-sm">Recent</span>
-              <ChevronRight className="h-3 w-3 text-gray-400" />
+            <span className="text-gray-900 font-medium">{localNotes.length} Cards</span>
+            <div className="flex items-center space-x-4">
+              <SyncStatusIndicator 
+                syncStatus={syncStatus}
+                onForceSync={forcSync}
+              />
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-orange-400"></div>
+                <span className="text-gray-600 text-sm">Recent</span>
+                <ChevronRight className="h-3 w-3 text-gray-400" />
+              </div>
             </div>
           </div>
         </div>
@@ -192,7 +218,7 @@ export default function NotesPage() {
 
         {/* Cards Finalizados - CONTAINERS BRANCOS ESPECÍFICOS */}
         <div className="px-6 pt-2">
-          {savedCards.map((card) => {
+          {localNotes.map((card) => {
             const timeAgo = Math.floor((new Date().getTime() - card.createdAt.getTime()) / 60000);
             const displayTime = timeAgo < 1 ? 'just now' : 
                                timeAgo < 60 ? `${timeAgo} minutes ago` : 
@@ -200,7 +226,20 @@ export default function NotesPage() {
                                `${Math.floor(timeAgo/1440)} days ago`;
             
             return (
-              <div key={card.id} className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-xs">
+              <div key={card.id} className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-xs relative">
+                {/* Indicador de status de sincronização */}
+                <div className="absolute top-2 right-2">
+                  {card.syncStatus === 'pending' && (
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full" title="Aguardando sincronização" />
+                  )}
+                  {card.syncStatus === 'synced' && (
+                    <div className="w-2 h-2 bg-green-400 rounded-full" title="Sincronizado" />
+                  )}
+                  {card.syncStatus === 'error' && (
+                    <div className="w-2 h-2 bg-red-400 rounded-full" title="Erro de sincronização" />
+                  )}
+                </div>
+
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     {/* BlockNote Document */}
@@ -227,6 +266,13 @@ export default function NotesPage() {
                     >
                       {card.isEditing ? 'Save' : 'Edit'}
                     </button>
+                    <button 
+                      onClick={() => handleDeleteNote(card.id)}
+                      className="text-red-400 hover:text-red-600 text-sm"
+                      title="Deletar nota"
+                    >
+                      🗑️
+                    </button>
                     <button className="text-gray-400 hover:text-gray-600">
                       <span className="text-lg">⋯</span>
                     </button>
@@ -245,7 +291,7 @@ export default function NotesPage() {
           })}
           
           {/* Mensagem quando não há cards */}
-          {savedCards.length === 0 && (
+          {localNotes.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <p className="text-sm">Nenhum card salvo ainda.</p>
               <p className="text-xs mt-1">Escreva algo acima e clique em "Finish" para salvar.</p>

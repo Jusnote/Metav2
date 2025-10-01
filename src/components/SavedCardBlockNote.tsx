@@ -73,7 +73,7 @@ export default function SavedCardBlockNote({
         )}
       </BlockNoteView>
       
-      <style jsx global>{`
+      <style jsx="true" global="true">{`
         .saved-card-block-editor .bn-container {
           border: none !important;
           background: transparent !important;
