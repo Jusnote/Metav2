@@ -99,8 +99,8 @@ export function useQuickNotes() {
   const saveNoteInstantly = useCallback(async (title: string, content: any[]) => {
     try {
       const noteData: QuickNoteInsert = {
-        title,
-        content,
+      title,
+      content,
         type: 'note'
       };
 
@@ -129,8 +129,8 @@ export function useQuickNotes() {
   const saveNoteEdit = useCallback(async (noteId: string, title: string, content: any[]) => {
     try {
       const updates: QuickNoteUpdate = {
-        title,
-        content,
+      title,
+      content,
         updated_at: new Date().toISOString()
       };
 
@@ -142,17 +142,17 @@ export function useQuickNotes() {
           // Usar Supabase diretamente para atualizar o flashcard
           const { supabase } = await import('@/integrations/supabase/client');
           
-          const { error: flashcardError } = await supabase
-            .from('flashcards')
-            .update({
+            const { error: flashcardError } = await supabase
+              .from('flashcards')
+              .update({
               title,
               front: content,
               back: content,
-              updated_at: new Date().toISOString()
-            })
+                updated_at: new Date().toISOString()
+              })
             .eq('id', updatedNote.flashcard_id);
 
-          if (flashcardError) {
+            if (flashcardError) {
             console.error('Erro ao atualizar flashcard vinculado:', flashcardError);
           }
         } catch (flashcardError) {
@@ -162,7 +162,7 @@ export function useQuickNotes() {
       }
       
       if (updatedNote) {
-        toast({
+      toast({
           title: 'Nota atualizada',
           description: 'Suas alterações foram salvas!',
         });
@@ -184,7 +184,7 @@ export function useQuickNotes() {
   const deleteNote = useCallback(async (noteId: string) => {
     try {
       await remove(noteId);
-      
+
       toast({
         title: 'Nota excluída',
         description: 'Nota excluída com sucesso!',
