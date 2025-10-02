@@ -41,28 +41,31 @@ const Index = () => {
 
   // Efeito para carregar cards para estudo
   useEffect(() => {
-    if (isStudyMode && !isLoading) {
+    if (isStudyMode && !isLoading && flashcards.length > 0) {
       loadStudySession();
     }
-  }, [isStudyMode, isLoading]);
+  }, [isStudyMode, isLoading, flashcards.length]);
 
   const loadStudySession = async () => {
-    let cardsToStudy = await fetchDueFlashcards(20);
-    
-    // Se não há cards vencidos, pegar todos os flashcards
-    if (cardsToStudy.length === 0 && flashcards.length > 0) {
-      cardsToStudy = flashcards.slice(0, 20); // Limitar a 20 cards
-      toast({
-        title: "Revisão geral",
-        description: "Não há cards vencidos. Iniciando revisão geral dos flashcards.",
-      });
-    } else if (cardsToStudy.length === 0) {
+    // Garantir que temos flashcards antes de continuar
+    if (flashcards.length === 0) {
       toast({
         title: "Nenhum flashcard encontrado",
         description: "Crie alguns flashcards primeiro para poder estudar.",
       });
       navigate('/flashcards');
       return;
+    }
+    
+    let cardsToStudy = await fetchDueFlashcards(20);
+    
+    // Se não há cards vencidos, pegar todos os flashcards
+    if (cardsToStudy.length === 0) {
+      cardsToStudy = flashcards.slice(0, 20); // Limitar a 20 cards
+      toast({
+        title: "Revisão geral",
+        description: "Não há cards vencidos. Iniciando revisão geral dos flashcards.",
+      });
     }
     
     setStudyCards(cardsToStudy);

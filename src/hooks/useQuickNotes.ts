@@ -419,20 +419,24 @@ export function useQuickNotes() {
 
   // Função para marcar nota como convertida para flashcard
   const markNoteAsFlashcard = useCallback((noteId: string, flashcardId: string) => {
-    // Atualizar nota local
-    setLocalNotes(prev => prev.map(note => 
-      note.id === noteId 
-        ? { ...note, flashcardId, syncStatus: 'pending' as const, needsSync: true }
-        : note
-    ));
-
-    // Encontrar a nota atual para preservar dados
-    const currentNote = localNotes.find(note => note.id === noteId);
-    if (currentNote) {
-      // Adicionar à queue para atualizar o tipo no servidor
-      addToQueue(noteId, currentNote.title, currentNote.content, true, flashcardId);
-    }
-  }, [localNotes]);
+    // Atualizar nota local e obter dados atuais
+    setLocalNotes(prev => {
+      const updatedNotes = prev.map(note => 
+        note.id === noteId 
+          ? { ...note, flashcardId, syncStatus: 'pending' as const, needsSync: true }
+          : note
+      );
+      
+      // Encontrar a nota atual para preservar dados
+      const currentNote = updatedNotes.find(note => note.id === noteId);
+      if (currentNote) {
+        // Adicionar à queue para atualizar o tipo no servidor
+        addToQueue(noteId, currentNote.title, currentNote.content, true, flashcardId);
+      }
+      
+      return updatedNotes;
+    });
+  }, []);
 
   return {
     // Notas locais (para exibição imediata)

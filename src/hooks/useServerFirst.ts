@@ -61,7 +61,7 @@ export function useServerFirst<T extends BaseEntity>(
   // Estados principais
   const [data, setData] = useState<T[]>([]);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
-    status: 'idle',
+    status: 'loading', // ✅ Iniciar como loading
     pendingOperations: 0
   });
 
@@ -94,9 +94,14 @@ export function useServerFirst<T extends BaseEntity>(
     try {
       setSyncStatus(prev => ({ ...prev, status: 'loading' }));
 
+      // Obter user_id atual
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('Usuário não autenticado');
+
       const { data: serverData, error } = await supabase
         .from(tableName)
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -166,9 +171,18 @@ export function useServerFirst<T extends BaseEntity>(
         
         switch (operation.type) {
           case 'create':
+            // Obter user_id atual para operações offline
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            if (userError || !user) throw new Error('Usuário não autenticado');
+
+            const dataWithUserId = {
+              ...operation.data!,
+              user_id: user.id
+            };
+
             result = await supabase
               .from(tableName)
-              .insert(operation.data!)
+              .insert(dataWithUserId)
               .select()
               .single();
             break;
@@ -231,7 +245,7 @@ export function useServerFirst<T extends BaseEntity>(
   }, [tableName, fetchFromServer, toast]);
 
   // Operações CRUD com updates otimistas
-  const create = useCallback(async (newItem: Omit<T, 'id' | 'created_at' | 'updated_at'>): Promise<T | null> => {
+  const create = useCallback(async (newItem: Partial<T>): Promise<T | null> => {
     const tempId = generateTempId();
     const optimisticItem: T = {
       ...newItem,
@@ -245,9 +259,19 @@ export function useServerFirst<T extends BaseEntity>(
 
     if (isOnlineRef.current) {
       try {
+        // Obter user_id atual
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) throw new Error('Usuário não autenticado');
+
+        // Adicionar user_id aos dados
+        const dataWithUserId = {
+          ...newItem,
+          user_id: user.id
+        };
+
         const { data: serverItem, error } = await supabase
           .from(tableName)
-          .insert(newItem)
+          .insert(dataWithUserId)
           .select()
           .single();
 
@@ -266,7 +290,7 @@ export function useServerFirst<T extends BaseEntity>(
         setData(prev => prev.filter(item => item.id !== tempId));
         
         if (enableOfflineQueue) {
-          // Adicionar à queue offline
+          // Adicionar à queue offline (sem user_id pois será adicionado na hora do processamento)
           offlineQueueRef.current.push({
             id: tempId,
             type: 'create',

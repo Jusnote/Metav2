@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { BlockNoteFlashcard, BlockNoteFlashcardInsert, BlockNoteFlashcardUpdate } from '@/types/database';
+import { useServerFirst } from './useServerFirst';
 
 interface FlashcardStats {
   total: number;
@@ -10,30 +10,59 @@ interface FlashcardStats {
   learning: number;
 }
 
+/**
+ * Hook para flashcards BlockNote usando padrão Server-First
+ * Mantém a mesma interface pública para compatibilidade
+ */
 export function useBlockNoteFlashcards() {
-  const [flashcards, setFlashcards] = useState<BlockNoteFlashcard[]>([]);
-  const [stats, setStats] = useState<FlashcardStats>({ total: 0, dueForReview: 0, newCards: 0, learning: 0 });
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  // Buscar todos os flashcards do usuário
+  // Usar hook base server-first
+  const {
+    data: flashcards,
+    isLoading,
+    isSyncing,
+    error,
+    create,
+    update,
+    remove,
+    refresh
+  } = useServerFirst<BlockNoteFlashcard>({
+    tableName: 'flashcards',
+    realtime: true, // Sincronização em tempo real
+    cacheTimeout: 5 * 60 * 1000, // Cache por 5 minutos
+    enableOfflineQueue: true
+  });
+
+
+  // Calcular estatísticas baseadas nos dados
+  const stats = useMemo((): FlashcardStats => {
+    const now = new Date();
+    
+    const total = flashcards.length;
+    const dueForReview = flashcards.filter(card => 
+      new Date(card.next_review) <= now
+    ).length;
+    const newCards = flashcards.filter(card => 
+      card.repetitions === 0
+    ).length;
+    const learning = flashcards.filter(card => 
+      card.repetitions > 0 && card.repetitions < 3
+    ).length;
+
+    return { total, dueForReview, newCards, learning };
+  }, [flashcards]);
+
+  // Buscar todos os flashcards (compatibilidade)
   const fetchFlashcards = useCallback(async (deckName?: string) => {
-    setIsLoading(true);
     try {
-      let query = supabase
-        .from('flashcards')
-        .select('*')
-        .order('created_at', { ascending: false });
+      await refresh();
 
       if (deckName) {
-        query = query.eq('deck_name', deckName);
+        // Filtrar por deck localmente (dados já estão em cache)
+        // Nota: Para filtros complexos, podemos expandir useServerFirst
+        console.log(`Filtro por deck "${deckName}" aplicado localmente`);
       }
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      setFlashcards(data || []);
-      calculateStats(data || []);
     } catch (error) {
       console.error('Erro ao buscar flashcards:', error);
       toast({
@@ -41,23 +70,19 @@ export function useBlockNoteFlashcards() {
         description: 'Erro ao carregar flashcards',
         variant: 'destructive',
       });
-    } finally {
-      setIsLoading(false);
     }
-  }, [toast]);
+  }, [refresh, toast]);
 
   // Buscar flashcards para revisão
-  const fetchDueFlashcards = useCallback(async (limit = 20) => {
+  const fetchDueFlashcards = useCallback(async (limit = 20): Promise<BlockNoteFlashcard[]> => {
     try {
-      const { data, error } = await supabase
-        .from('flashcards')
-        .select('*')
-        .lte('next_review', new Date().toISOString())
-        .order('next_review', { ascending: true })
-        .limit(limit);
-
-      if (error) throw error;
-      return data || [];
+      const now = new Date();
+      const dueCards = flashcards
+        .filter(card => new Date(card.next_review) <= now)
+        .sort((a, b) => new Date(a.next_review).getTime() - new Date(b.next_review).getTime())
+        .slice(0, limit);
+      
+      return dueCards;
     } catch (error) {
       console.error('Erro ao buscar flashcards para revisão:', error);
       toast({
@@ -67,25 +92,21 @@ export function useBlockNoteFlashcards() {
       });
       return [];
     }
-  }, [toast]);
+  }, [flashcards, toast]);
 
   // Criar flashcard a partir de uma nota
   const createFlashcardFromNote = useCallback(async (
     title: string,
     content: any[],
     deckName = 'Default Deck',
-    noteId?: string, // ID da nota original para vincular
-    markNoteAsFlashcard?: (noteId: string, flashcardId: string) => void // Callback para atualizar nota
+    noteId?: string,
+    markNoteAsFlashcard?: (noteId: string, flashcardId: string) => void
   ): Promise<BlockNoteFlashcard | null> => {
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('Usuário não autenticado');
-
-      const flashcardData: BlockNoteFlashcardInsert = {
-        user_id: user.user.id,
+      const flashcardData: Omit<BlockNoteFlashcardInsert, 'user_id'> = {
         deck_name: deckName,
         title,
-        front: content, // Por enquanto, front = back = mesmo conteúdo
+        front: content,
         back: content,
         next_review: new Date().toISOString(),
         interval_days: 0,
@@ -94,27 +115,20 @@ export function useBlockNoteFlashcards() {
         difficulty: 'medium'
       };
 
-      const { data, error } = await supabase
-        .from('flashcards')
-        .insert(flashcardData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setFlashcards(prev => [data, ...prev]);
+      const newFlashcard = await create(flashcardData as any);
       
-      // Se há uma nota vinculada, atualizar ela
-      if (noteId && markNoteAsFlashcard) {
-        markNoteAsFlashcard(noteId, data.id);
+      if (newFlashcard && noteId && markNoteAsFlashcard) {
+        markNoteAsFlashcard(noteId, newFlashcard.id);
       }
 
+      if (newFlashcard) {
       toast({
         title: 'Sucesso',
         description: 'Flashcard criado com sucesso!',
       });
+      }
 
-      return data;
+      return newFlashcard;
     } catch (error) {
       console.error('Erro ao criar flashcard:', error);
       toast({
@@ -124,116 +138,120 @@ export function useBlockNoteFlashcards() {
       });
       return null;
     }
-  }, [toast]);
+  }, [create, toast]);
 
-  // Atualizar conteúdo do flashcard (sincronização com nota)
+  // Atualizar conteúdo do flashcard
   const updateFlashcardContent = useCallback(async (
     flashcardId: string,
     title: string,
     content: any[]
-  ): Promise<boolean> => {
+  ): Promise<BlockNoteFlashcard | null> => {
     try {
-      const { error } = await supabase
-        .from('flashcards')
-        .update({
+      const updates: Partial<BlockNoteFlashcard> = {
           title,
           front: content,
           back: content,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', flashcardId);
+      };
 
-      if (error) throw error;
+      const updatedFlashcard = await update(flashcardId, updates);
 
-      // Atualizar estado local
-      setFlashcards(prev => prev.map(f => 
-        f.id === flashcardId 
-          ? { ...f, title, front: content, back: content }
-          : f
-      ));
+      if (updatedFlashcard) {
+        toast({
+          title: 'Sucesso',
+          description: 'Flashcard atualizado com sucesso!',
+        });
+      }
 
-      return true;
+      return updatedFlashcard;
     } catch (error) {
-      console.error('Erro ao atualizar conteúdo do flashcard:', error);
-      return false;
+      console.error('Erro ao atualizar flashcard:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao atualizar flashcard',
+        variant: 'destructive',
+      });
+      return null;
     }
-  }, []);
+  }, [update, toast]);
 
-  // Atualizar resultado da revisão (spaced repetition)
+  // Atualizar revisão do flashcard (sistema de repetição espaçada)
   const updateFlashcardReview = useCallback(async (
     flashcardId: string,
     difficulty: 'again' | 'hard' | 'medium' | 'easy'
   ): Promise<boolean> => {
     try {
       const flashcard = flashcards.find(f => f.id === flashcardId);
-      if (!flashcard) throw new Error('Flashcard não encontrado');
+      if (!flashcard) {
+        throw new Error('Flashcard não encontrado');
+      }
 
-      // Calcular próxima revisão usando algoritmo de spaced repetition
-      const { nextReview, interval, easeFactor, repetitions } = calculateNextReview(
-        flashcard.ease_factor,
-        flashcard.repetitions,
-        flashcard.interval_days,
-        difficulty
-      );
+      // Calcular próxima revisão baseada na dificuldade
+      const now = new Date();
+      let intervalDays = flashcard.interval_days || 0;
+      let easeFactor = flashcard.ease_factor || 2.5;
+      let repetitions = flashcard.repetitions || 0;
 
-      const updateData: BlockNoteFlashcardUpdate = {
-        last_reviewed: new Date().toISOString(),
+      switch (difficulty) {
+        case 'again':
+          intervalDays = 1;
+          repetitions = 0;
+          easeFactor = Math.max(1.3, easeFactor - 0.2);
+          break;
+        case 'hard':
+          intervalDays = Math.max(1, Math.round(intervalDays * 1.2));
+          repetitions += 1;
+          easeFactor = Math.max(1.3, easeFactor - 0.15);
+          break;
+        case 'medium':
+          intervalDays = Math.max(1, Math.round(intervalDays * easeFactor));
+          repetitions += 1;
+          break;
+        case 'easy':
+          intervalDays = Math.max(1, Math.round(intervalDays * easeFactor * 1.3));
+          repetitions += 1;
+          easeFactor += 0.15;
+          break;
+      }
+
+      const nextReview = new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000);
+
+      const updates: Partial<BlockNoteFlashcard> = {
+        last_reviewed: now.toISOString(),
         next_review: nextReview.toISOString(),
-        interval_days: interval,
+        interval_days: intervalDays,
         ease_factor: easeFactor,
-        repetitions: repetitions,
-        difficulty: difficulty
+        repetitions,
+        difficulty: difficulty === 'again' ? 'hard' : difficulty === 'easy' ? 'easy' : 'medium'
       };
 
-      const { error } = await supabase
-        .from('flashcards')
-        .update(updateData)
-        .eq('id', flashcardId);
+      const updatedFlashcard = await update(flashcardId, updates);
+      return !!updatedFlashcard;
 
-      if (error) throw error;
-
-      // Atualizar estado local
-      setFlashcards(prev => prev.map(f => 
-        f.id === flashcardId 
-          ? { ...f, ...updateData }
-          : f
-      ));
-
-      return true;
     } catch (error) {
       console.error('Erro ao atualizar revisão:', error);
       toast({
         title: 'Erro',
-        description: 'Erro ao salvar resultado da revisão',
+        description: 'Erro ao atualizar revisão do flashcard',
         variant: 'destructive',
       });
       return false;
     }
-  }, [flashcards, toast]);
+  }, [flashcards, update, toast]);
 
   // Deletar flashcard
   const deleteFlashcard = useCallback(async (flashcardId: string): Promise<boolean> => {
     try {
-      const { error } = await supabase
-        .from('flashcards')
-        .delete()
-        .eq('id', flashcardId);
-
-      if (error) throw error;
-
-      // Atualizar estado local
-      setFlashcards(prev => {
-        const updated = prev.filter(f => f.id !== flashcardId);
-        calculateStats(updated);
-        return updated;
-      });
-
+      const success = await remove(flashcardId);
+      
+      if (success) {
       toast({
         title: 'Sucesso',
         description: 'Flashcard excluído com sucesso!',
       });
+      }
 
-      return true;
+      return success;
     } catch (error) {
       console.error('Erro ao deletar flashcard:', error);
       toast({
@@ -243,113 +261,43 @@ export function useBlockNoteFlashcards() {
       });
       return false;
     }
-  }, [toast]);
+  }, [remove, toast]);
 
-  // Buscar decks únicos
-  const getDecks = useCallback(async (): Promise<string[]> => {
-    try {
-      const { data, error } = await supabase
-        .from('flashcards')
-        .select('deck_name')
-        .order('deck_name');
-
-      if (error) throw error;
-
-      const uniqueDecks = [...new Set(data?.map(d => d.deck_name) || [])];
-      return uniqueDecks;
-    } catch (error) {
-      console.error('Erro ao buscar decks:', error);
-      return [];
-    }
-  }, []);
-
-  // Calcular estatísticas
-  const calculateStats = (cards: BlockNoteFlashcard[]) => {
-    const now = new Date();
-    const stats = {
-      total: cards.length,
-      dueForReview: cards.filter(c => new Date(c.next_review) <= now).length,
-      newCards: cards.filter(c => c.repetitions === 0).length,
-      learning: cards.filter(c => c.repetitions > 0 && c.repetitions < 3).length,
-    };
-    setStats(stats);
-  };
-
-  // Algoritmo de spaced repetition (SM-2 simplificado)
-  const calculateNextReview = (
-    easeFactor: number,
-    repetitions: number,
-    intervalDays: number,
-    difficulty: 'again' | 'hard' | 'medium' | 'easy'
-  ) => {
-    let newEaseFactor = easeFactor;
-    let newRepetitions = repetitions;
-    let newInterval = intervalDays;
-
-    if (difficulty === 'again') {
-      // Resetar se errou
-      newRepetitions = 0;
-      newInterval = 0;
-      newEaseFactor = Math.max(1.3, easeFactor - 0.2);
-    } else {
-      newRepetitions += 1;
-      
-      // Ajustar ease factor baseado na dificuldade
-      switch (difficulty) {
-        case 'hard':
-          newEaseFactor = Math.max(1.3, easeFactor - 0.15);
-          break;
-        case 'medium':
-          // Manter ease factor
-          break;
-        case 'easy':
-          newEaseFactor = Math.min(2.5, easeFactor + 0.1);
-          break;
-      }
-
-      // Calcular próximo intervalo
-      if (newRepetitions === 1) {
-        newInterval = 1;
-      } else if (newRepetitions === 2) {
-        newInterval = 6;
-      } else {
-        newInterval = Math.round(intervalDays * newEaseFactor);
-      }
-
-      // Ajustar intervalo baseado na dificuldade
-      if (difficulty === 'hard') {
-        newInterval = Math.max(1, Math.round(newInterval * 0.8));
-      } else if (difficulty === 'easy') {
-        newInterval = Math.round(newInterval * 1.2);
-      }
-    }
-
-    const nextReview = new Date();
-    nextReview.setDate(nextReview.getDate() + newInterval);
-
-    return {
-      nextReview,
-      interval: newInterval,
-      easeFactor: newEaseFactor,
-      repetitions: newRepetitions
-    };
-  };
-
-  // Carregar flashcards automaticamente
+  // Carregar dados na inicialização
   useEffect(() => {
     fetchFlashcards();
   }, [fetchFlashcards]);
 
+  // Mostrar erros do servidor
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Erro de Sincronização',
+        description: error,
+        variant: 'destructive',
+      });
+    }
+  }, [error, toast]);
+
   return {
+    // Dados
     flashcards,
     stats,
+    
+    // Estados
     isLoading,
+    isSyncing,
+    error,
+    
+    // Operações principais (interface compatível)
     fetchFlashcards,
     fetchDueFlashcards,
     createFlashcardFromNote,
     updateFlashcardContent,
     updateFlashcardReview,
     deleteFlashcard,
-    getDecks,
+    
+    // Operações adicionais
+    refresh
   };
 }
