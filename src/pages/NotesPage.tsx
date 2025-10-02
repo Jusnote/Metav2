@@ -26,7 +26,8 @@ export default function NotesPage() {
     saveNoteInstantly,
     saveNoteEdit,
     deleteNote,
-    forcSync
+    forcSync,
+    markNoteAsFlashcard
   } = useQuickNotes();
 
   // Hook para flashcards
@@ -108,22 +109,17 @@ export default function NotesPage() {
     const note = localNotes.find(n => n.id === cardId);
     if (!note) return;
 
-    const flashcard = await createFlashcardFromNote(note.title, note.content);
+    const flashcard = await createFlashcardFromNote(
+      note.title, 
+      note.content, 
+      'Default Deck',
+      cardId, // ID da nota para vincular
+      markNoteAsFlashcard // Callback para atualizar a nota
+    );
+    
     if (flashcard) {
-      // Atualizar a nota local com o flashcard_id
-      setLocalNotes(prev => prev.map(n => 
-        n.id === cardId 
-          ? { ...n, flashcardId: flashcard.id }
-          : n
-      ));
-
-      // Salvar a vinculação no banco
-      saveNoteEdit(cardId, note.title, note.content);
-
-      toast({
-        title: "Sucesso!",
-        description: "Nota convertida para flashcard com sucesso!",
-      });
+      // A vinculação já foi feita pelo callback markNoteAsFlashcard
+      // Não precisa fazer mais nada aqui
     }
   };
 

@@ -73,7 +73,9 @@ export function useBlockNoteFlashcards() {
   const createFlashcardFromNote = useCallback(async (
     title: string,
     content: any[],
-    deckName = 'Default Deck'
+    deckName = 'Default Deck',
+    noteId?: string, // ID da nota original para vincular
+    markNoteAsFlashcard?: (noteId: string, flashcardId: string) => void // Callback para atualizar nota
   ): Promise<BlockNoteFlashcard | null> => {
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -101,6 +103,12 @@ export function useBlockNoteFlashcards() {
       if (error) throw error;
 
       setFlashcards(prev => [data, ...prev]);
+      
+      // Se há uma nota vinculada, atualizar ela
+      if (noteId && markNoteAsFlashcard) {
+        markNoteAsFlashcard(noteId, data.id);
+      }
+
       toast({
         title: 'Sucesso',
         description: 'Flashcard criado com sucesso!',

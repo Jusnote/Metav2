@@ -43,13 +43,22 @@ export function useQuickNotes() {
   const debounceTimerRef = useRef<NodeJS.Timeout>();
   const queueRef = useRef<QueueItem[]>([]);
 
-  // Carregar notas locais na inicialização
+  // Carregar notas locais e do servidor na inicialização
   useEffect(() => {
+    initializeNotes();
+  }, []);
+
+  const initializeNotes = async () => {
+    // Carregar dados locais primeiro (para exibição imediata)
     loadLocalNotes();
     loadQueue();
-    // Processar queue pendente na inicialização
+    
+    // Carregar dados do servidor e mesclar
+    await loadAndMergeServerNotes();
+    
+    // Processar queue pendente após carregamento
     processQueue();
-  }, []);
+  };
 
   // Salvar notas locais sempre que mudarem
   useEffect(() => {
@@ -185,7 +194,8 @@ export function useQuickNotes() {
           user_id: user.user.id,
           title: item.title,
           content: item.content,
-          flashcard_id: item.flashcardId
+          flashcard_id: item.flashcardId,
+          type: item.flashcardId ? 'both' : 'note'
         }));
 
         const { error: insertError } = await supabase
@@ -197,13 +207,17 @@ export function useQuickNotes() {
 
       // Processar atualizações (uma por vez)
       for (const item of updateItems) {
+        // Determinar o tipo correto baseado no flashcard_id
+        const noteType = item.flashcardId ? 'both' : 'note';
+        
         const { error: updateError } = await supabase
           .from('quick_notes')
           .update({
             title: item.title,
             content: item.content,
             updated_at: new Date().toISOString(),
-            flashcard_id: item.flashcardId
+            flashcard_id: item.flashcardId,
+            type: noteType
           })
           .eq('id', item.id);
 
@@ -281,27 +295,62 @@ export function useQuickNotes() {
     }
   };
 
-  // Buscar notas do servidor
-  const fetchServerNotes = useCallback(async () => {
+  // Carregar e mesclar notas do servidor com dados locais
+  const loadAndMergeServerNotes = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data: serverNotes, error } = await supabase
         .from('quick_notes')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setNotes(data || []);
+      
+      if (serverNotes && serverNotes.length > 0) {
+        // Converter notas do servidor para formato local
+        const serverNotesFormatted = serverNotes.map((note: QuickNote) => ({
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          createdAt: new Date(note.created_at),
+          isEditing: false,
+          syncStatus: 'synced' as const,
+          needsSync: false,
+          flashcardId: (note as any).flashcard_id
+        }));
+
+        // Mesclar com notas locais (priorizar notas locais não sincronizadas)
+        setLocalNotes(prev => {
+          const localIds = new Set(prev.map(note => note.id));
+          const newServerNotes = serverNotesFormatted.filter(note => !localIds.has(note.id));
+          
+          // Combinar: notas locais + novas notas do servidor
+          const merged = [...prev, ...newServerNotes];
+          
+          // Ordenar por data de criação (mais recentes primeiro)
+          return merged.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        });
+      }
+      
+      setNotes(serverNotes || []);
     } catch (error) {
-      console.error('Erro ao buscar notas do servidor:', error);
-      toast({
-        title: 'Erro',
-        description: 'Erro ao carregar notas do servidor',
-        variant: 'destructive',
-      });
+      console.error('Erro ao carregar notas do servidor:', error);
+      // Não mostrar toast de erro na inicialização para não incomodar o usuário
+      if (process.env.NODE_ENV === 'development') {
+        toast({
+          title: 'Aviso',
+          description: 'Algumas notas podem não estar sincronizadas',
+          variant: 'default',
+        });
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Buscar notas do servidor (função mantida para compatibilidade)
+  const fetchServerNotes = useCallback(async () => {
+    await loadAndMergeServerNotes();
   }, [toast]);
 
   // Forçar sincronização manual
@@ -368,6 +417,23 @@ export function useQuickNotes() {
     }
   }, [localNotes, toast]);
 
+  // Função para marcar nota como convertida para flashcard
+  const markNoteAsFlashcard = useCallback((noteId: string, flashcardId: string) => {
+    // Atualizar nota local
+    setLocalNotes(prev => prev.map(note => 
+      note.id === noteId 
+        ? { ...note, flashcardId, syncStatus: 'pending' as const, needsSync: true }
+        : note
+    ));
+
+    // Encontrar a nota atual para preservar dados
+    const currentNote = localNotes.find(note => note.id === noteId);
+    if (currentNote) {
+      // Adicionar à queue para atualizar o tipo no servidor
+      addToQueue(noteId, currentNote.title, currentNote.content, true, flashcardId);
+    }
+  }, [localNotes]);
+
   return {
     // Notas locais (para exibição imediata)
     localNotes,
@@ -383,5 +449,6 @@ export function useQuickNotes() {
     deleteNote,
     fetchServerNotes,
     forcSync,
+    markNoteAsFlashcard,
   };
 }
