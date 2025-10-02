@@ -136,31 +136,6 @@ export function useQuickNotes() {
 
       const updatedNote = await update(noteId, updates as any);
       
-      // Se a nota tem flashcard vinculado, atualizar o flashcard também
-      if (updatedNote && updatedNote.flashcard_id) {
-        try {
-          // Usar Supabase diretamente para atualizar o flashcard
-          const { supabase } = await import('@/integrations/supabase/client');
-          
-          const { error: flashcardError } = await supabase
-            .from('flashcards')
-            .update({
-              title,
-              front: content,
-              back: content,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', updatedNote.flashcard_id);
-
-          if (flashcardError) {
-            console.error('Erro ao atualizar flashcard vinculado:', flashcardError);
-          }
-        } catch (flashcardError) {
-          console.error('Erro ao atualizar flashcard vinculado:', flashcardError);
-          // Não mostrar erro para o usuário, pois a nota foi salva com sucesso
-        }
-      }
-      
       if (updatedNote) {
         toast({
           title: 'Nota atualizada',
