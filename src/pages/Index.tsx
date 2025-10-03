@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import SavedCardBlockNote from '@/components/SavedCardBlockNote';
+import StudyCardBlockNote from '@/components/StudyCardBlockNote';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import OrbitCircles from '@/components/OrbitCircles';
 
@@ -186,7 +187,17 @@ const Index = () => {
               Voltar
             </Button>
             <div className="text-center">
-              <h2 className="text-xl font-semibold">Flashcards</h2>
+              <h2 className="text-xl font-semibold">
+                Flashcards
+                {currentCard && (
+                  <>
+                    <span className="mx-3 text-gray-400">|</span>
+                    <span className="text-base font-normal">
+                      {currentCard.title} - {currentCard.deck_name}
+                    </span>
+                  </>
+                )}
+              </h2>
               <p className="text-sm text-muted-foreground">
                 Card {currentCardIndex + 1} de {studyCards.length}
               </p>
@@ -197,105 +208,64 @@ const Index = () => {
           {currentCard && (
             <div className="relative">
               <OrbitCircles />
-              <div className="max-w-3xl mx-auto">
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-lg">
-                  <CardContent className="p-8">
-                    {/* Título do Card */}
-                    <div className="mb-6 text-center">
-                      <h3 className="text-lg font-semibold text-foreground mb-2">
-                        {currentCard.title}
-                      </h3>
-                      <Badge variant="outline" className="text-xs">
-                        {currentCard.deck_name}
-                      </Badge>
+              <div className="px-6 max-w-2xl mx-auto">
+                <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-xs relative">
+                  {/* Conteúdo do Card */}
+                  <div className="mb-4">
+                    <StudyCardBlockNote
+                      content={currentCard.content || currentCard.front}
+                      showAnswer={showBack}
+                      onToggleAnswer={() => setShowBack(!showBack)}
+                    />
+                  </div>
+
+                </div>
+
+                {/* Botões de Resposta - Fora do card */}
+                {showBack && (
+                  <div className="mt-4">
+                    <p className="text-sm text-muted-foreground text-center mb-3">
+                      Como foi sua resposta?
+                    </p>
+                    
+                    <div className="grid grid-cols-4 gap-2">
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleStudyAnswer('again')}
+                        className="text-xs py-2"
+                      >
+                        😫 - Errei
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={() => handleStudyAnswer('hard')}
+                        className="text-xs py-2 border-orange-300 text-orange-700 hover:bg-orange-50"
+                      >
+                        😰 - Difícil
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={() => handleStudyAnswer('medium')}
+                        className="text-xs py-2 border-blue-300 text-blue-700 hover:bg-blue-50"
+                      >
+                        🤔 - Médio
+                      </Button>
+                      
+                      <Button
+                        variant="default"
+                        onClick={() => handleStudyAnswer('easy')}
+                        className="text-xs py-2 bg-green-600 hover:bg-green-700"
+                      >
+                        😊 - Fácil
+                      </Button>
                     </div>
-
-                    {/* Conteúdo do Card */}
-                    <div className="mb-6">
-                      <div className="mb-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-sm font-medium text-muted-foreground">
-                            {showBack ? 'Resposta:' : 'Pergunta:'}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowBack(!showBack)}
-                            className="flex items-center gap-1 text-xs"
-                          >
-                            {showBack ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                            {showBack ? 'Ocultar' : 'Mostrar'} Resposta
-                          </Button>
-                        </div>
-                        
-                        <SavedCardBlockNote
-                          content={showBack ? currentCard.back : currentCard.front}
-                          isEditing={false}
-                          onSave={() => {}}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Botões de Resposta */}
-                    {showBack && (
-                      <div className="flex flex-col gap-3">
-                        <p className="text-sm text-muted-foreground text-center mb-2">
-                          Como foi sua resposta?
-                        </p>
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                          <Button
-                            variant="destructive"
-                            onClick={() => handleStudyAnswer('again')}
-                            className="flex flex-col gap-1 h-auto py-3"
-                          >
-                            <span className="font-medium">Errei</span>
-                            <span className="text-xs opacity-90">Revisar novamente</span>
-                          </Button>
-                          
-                          <Button
-                            variant="outline"
-                            onClick={() => handleStudyAnswer('hard')}
-                            className="flex flex-col gap-1 h-auto py-3 border-orange-300 text-orange-700 hover:bg-orange-50"
-                          >
-                            <span className="font-medium">Difícil</span>
-                            <span className="text-xs opacity-70">Revisar em breve</span>
-                          </Button>
-                          
-                          <Button
-                            variant="outline"
-                            onClick={() => handleStudyAnswer('medium')}
-                            className="flex flex-col gap-1 h-auto py-3 border-blue-300 text-blue-700 hover:bg-blue-50"
-                          >
-                            <span className="font-medium">Médio</span>
-                            <span className="text-xs opacity-70">Revisar em alguns dias</span>
-                          </Button>
-                          
-                          <Button
-                            variant="default"
-                            onClick={() => handleStudyAnswer('easy')}
-                            className="flex flex-col gap-1 h-auto py-3 bg-green-600 hover:bg-green-700"
-                          >
-                            <span className="font-medium">Fácil</span>
-                            <span className="text-xs opacity-90">Revisar mais tarde</span>
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Botão para mostrar resposta */}
-                    {!showBack && (
-                      <div className="text-center">
-                        <Button onClick={() => setShowBack(true)} size="lg" className="px-8">
-                          Mostrar Resposta
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  </div>
+                )}
               </div>
             </div>
-           )}
+          )}
          </div>
          
          {/* Barra de progresso no final da página */}
