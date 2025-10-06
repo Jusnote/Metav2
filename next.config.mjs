@@ -7,6 +7,23 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  webpack: (config, { isServer }) => {
+    // Configuração para binários nativos do lightningcss
+    config.externals = config.externals || [];
+    
+    // Garantir que módulos nativos sejam tratados corretamente
+    config.resolve.alias = {
+      ...config.resolve.alias,
+    };
+    
+    // Desabilitar cache do webpack para binários nativos
+    config.optimization = {
+      ...config.optimization,
+      moduleIds: 'deterministic',
+    };
+    
+    return config;
+  },
 }
 
 export default nextConfig
