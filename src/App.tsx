@@ -20,6 +20,7 @@ import CronogramaPage from "./pages/CronogramaPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import EditorPage from "./pages/EditorPage";
+import PlateEditorPage from "./components/pages/PlateEditorPage";
 
 import DocumentsOrganizationPage from "./pages/DocumentsOrganizationPage";
 import NotesPage from "./pages/NotesPage";
@@ -138,6 +139,7 @@ const App = () => {
                     <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
                     <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
                     <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
+                    <Route path="plate-editor" element={<PrivateRoute><PlateEditorPage /></PrivateRoute>} />
 
                     <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
                     <Route path="notes" element={<PrivateRoute><NotesPage /></PrivateRoute>} />

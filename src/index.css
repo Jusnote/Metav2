@@ -2,6 +2,12 @@
 
 @plugin 'tailwindcss-animate';
 
+/*
+  ---break---
+*/
+
+@plugin 'tailwind-scrollbar-hide';
+
 @custom-variant dark (&:is(.dark *));
 
 @utility container {
@@ -309,10 +315,10 @@ All colors MUST be HSL.
 
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    
+
     --warning: 38 92% 60%;
     --warning-foreground: 26 83% 14%;
-    
+
     --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
 
@@ -325,11 +331,11 @@ All colors MUST be HSL.
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
     --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--accent)));
-    
+
     /* Shadows */
     --shadow-card: 0 4px 6px -1px hsl(var(--primary) / 0.1), 0 2px 4px -1px hsl(var(--primary) / 0.06);
     --shadow-study: 0 10px 25px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.05);
-    
+
     /* Animations */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -352,12 +358,12 @@ All colors MUST be HSL.
     --schedule-border: 220 13% 91%;
     --schedule-background: 0 0% 100%;
     --schedule-foreground: 215 25% 27%;
-    
+
     --task-pending: 38 92% 50%;
     --task-in-progress: 199 89% 48%;
     --task-completed: 142 76% 36%;
     --task-overdue: 0 84% 60%;
-    
+
     --priority-low: 142 76% 36%;
     --priority-medium: 38 92% 50%;
     --priority-high: 25 95% 53%;
@@ -391,10 +397,10 @@ All colors MUST be HSL.
 
     --success: 142 76% 45%;
     --success-foreground: 355 20% 99%;
-    
+
     --warning: 38 92% 60%;
     --warning-foreground: 26 83% 14%;
-    
+
     --info: 199 89% 58%;
     --info-foreground: 0 0% 100%;
 
@@ -441,7 +447,7 @@ All colors MUST be HSL.
     line-height: 1.8;
     color: hsl(var(--foreground));
   }
-  
+
   .rich-content-display h1 {
     font-size: 2rem;
     font-weight: bold;
@@ -450,7 +456,7 @@ All colors MUST be HSL.
     margin-top: 1.5rem;
     line-height: 1.2;
   }
-  
+
   .rich-content-display h2 {
     font-size: 1.5rem;
     font-weight: 600;
@@ -459,7 +465,7 @@ All colors MUST be HSL.
     margin-top: 1.25rem;
     line-height: 1.3;
   }
-  
+
   .rich-content-display h3 {
     font-size: 1.25rem;
     font-weight: 500;
@@ -468,7 +474,7 @@ All colors MUST be HSL.
     margin-top: 1rem;
     line-height: 1.4;
   }
-  
+
   .rich-content-display h4 {
     font-size: 1.125rem;
     font-weight: 500;
@@ -477,7 +483,7 @@ All colors MUST be HSL.
     margin-top: 1rem;
     line-height: 1.4;
   }
-  
+
   .rich-content-display h5 {
     font-size: 1rem;
     font-weight: 500;
@@ -486,7 +492,7 @@ All colors MUST be HSL.
     margin-top: 0.75rem;
     line-height: 1.5;
   }
-  
+
   .rich-content-display h6 {
     font-size: 0.875rem;
     font-weight: 500;
@@ -497,22 +503,22 @@ All colors MUST be HSL.
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-  
+
   .rich-content-display p {
     margin-bottom: 0.75rem;
     color: hsl(var(--foreground));
     line-height: 1.75;
   }
-  
+
   .rich-content-display strong {
     font-weight: 600;
     color: hsl(var(--foreground));
   }
-  
+
   .rich-content-display em {
     font-style: italic;
   }
-  
+
   .rich-content-display code,
   .rich-content-display .inline-code {
     background-color: hsl(var(--muted));
@@ -523,7 +529,7 @@ All colors MUST be HSL.
     font-size: 0.875em;
     font-weight: inherit;
   }
-  
+
   .rich-content-display pre,
   .rich-content-display .code-block {
     background-color: hsl(var(--muted));
@@ -537,18 +543,18 @@ All colors MUST be HSL.
     overflow-x: auto;
     border: 1px solid hsl(var(--border));
   }
-  
+
   .rich-content-display ul, .rich-content-display ol {
     margin-bottom: 0.75rem;
     color: hsl(var(--foreground));
     padding-left: 1.5rem;
   }
-  
+
   .rich-content-display li {
     margin-bottom: 0.25rem;
     line-height: 1.75;
   }
-  
+
   .rich-content-display blockquote {
     color: hsl(var(--muted-foreground));
     border-left: 4px solid hsl(var(--primary));
@@ -559,39 +565,39 @@ All colors MUST be HSL.
     padding: 1rem;
     border-radius: 0.5rem;
   }
-  
+
   .rich-content-display mark,
   .rich-content-display .highlight {
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
     font-weight: inherit;
   }
-  
+
   .rich-content-display hr {
     border: none;
     border-top: 2px solid hsl(var(--border));
     margin: 2rem 0;
   }
-  
+
   .rich-content-display table {
     border-collapse: collapse;
     margin: 1rem 0;
     width: 100%;
     border: 1px solid hsl(var(--border));
   }
-  
+
   .rich-content-display table td, .rich-content-display table th {
     border: 1px solid hsl(var(--border));
     padding: 0.5rem;
     text-align: left;
     vertical-align: top;
   }
-  
+
   .rich-content-display table th {
     background-color: hsl(var(--muted));
     font-weight: 600;
   }
-  
+
   .rich-content-display table tr:nth-child(even) {
     background-color: hsl(var(--muted)/0.5);
   }
@@ -651,152 +657,152 @@ All colors MUST be HSL.
   .rich-content-display [data-callout][data-type="note"]::before {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='m12 8 .01 0'/%3E%3C/svg%3E");
   }
-  
+
   .rich-content-display .callout[data-type="info"],
   .rich-content-display [data-callout][data-type="info"] {
     background-color: rgb(239 246 255);
     border-left-color: rgb(59 130 246);
   }
-  
+
   .rich-content-display .callout[data-type="info"] *:not([style*="color"]),
   .rich-content-display [data-callout][data-type="info"] *:not([style*="color"]) {
     color: rgb(30 58 138);
   }
-  
+
   .rich-content-display .callout[data-type="warning"],
   .rich-content-display [data-callout][data-type="warning"] {
     background-color: rgb(255 251 235);
     border-left-color: rgb(245 158 11);
   }
-  
+
   .rich-content-display .callout[data-type="warning"] *:not([style*="color"]),
   .rich-content-display [data-callout][data-type="warning"] *:not([style*="color"]) {
     color: rgb(146 64 14);
   }
-  
+
   .rich-content-display .callout[data-type="success"],
   .rich-content-display [data-callout][data-type="success"] {
     background-color: rgb(236 253 245);
     border-left-color: rgb(34 197 94);
   }
-  
+
   .rich-content-display .callout[data-type="success"] *:not([style*="color"]),
   .rich-content-display [data-callout][data-type="success"] *:not([style*="color"]) {
     color: rgb(20 83 45);
   }
-  
+
   .rich-content-display .callout[data-type="error"],
   .rich-content-display [data-callout][data-type="error"] {
     background-color: rgb(254 242 242);
     border-left-color: rgb(239 68 68);
   }
-  
+
   .rich-content-display .callout[data-type="error"] *:not([style*="color"]),
   .rich-content-display [data-callout][data-type="error"] *:not([style*="color"]) {
     color: rgb(127 29 29);
   }
-  
+
   .rich-content-display .callout[data-type="tip"],
   .rich-content-display [data-callout][data-type="tip"] {
     background-color: rgb(250 245 255);
     border-left-color: rgb(147 51 234);
   }
-  
+
   .rich-content-display .callout[data-type="tip"] *:not([style*="color"]),
   .rich-content-display [data-callout][data-type="tip"] *:not([style*="color"]) {
     color: rgb(88 28 135);
   }
-  
+
   .rich-content-display .callout[data-type="note"],
   .rich-content-display [data-callout][data-type="note"] {
     background-color: rgb(249 250 251);
     border-left-color: rgb(107 114 128);
   }
-  
+
   .rich-content-display .callout[data-type="note"] *:not([style*="color"]),
   .rich-content-display [data-callout][data-type="note"] *:not([style*="color"]) {
     color: rgb(55 65 81);
   }
-  
+
   /* Dark mode para callouts */
   .dark .rich-content-display .callout[data-type="info"],
   .dark .rich-content-display [data-callout][data-type="info"] {
     background-color: rgb(30 58 138 / 0.1);
   }
-  
+
   .dark .rich-content-display .callout[data-type="info"] *:not([style*="color"]),
   .dark .rich-content-display [data-callout][data-type="info"] *:not([style*="color"]) {
     color: rgb(147 197 253);
   }
-  
+
   .dark .rich-content-display .callout[data-type="warning"],
   .dark .rich-content-display [data-callout][data-type="warning"] {
     background-color: rgb(146 64 14 / 0.1);
   }
-  
+
   .dark .rich-content-display .callout[data-type="warning"] *:not([style*="color"]),
   .dark .rich-content-display [data-callout][data-type="warning"] *:not([style*="color"]) {
     color: rgb(253 186 116);
   }
-  
+
   .dark .rich-content-display .callout[data-type="success"],
   .dark .rich-content-display [data-callout][data-type="success"] {
     background-color: rgb(20 83 45 / 0.1);
   }
-  
+
   .dark .rich-content-display .callout[data-type="success"] *:not([style*="color"]),
   .dark .rich-content-display [data-callout][data-type="success"] *:not([style*="color"]) {
     color: rgb(134 239 172);
   }
-  
+
   .dark .rich-content-display .callout[data-type="error"],
   .dark .rich-content-display [data-callout][data-type="error"] {
     background-color: rgb(127 29 29 / 0.1);
   }
-  
+
   .dark .rich-content-display .callout[data-type="error"] *:not([style*="color"]),
   .dark .rich-content-display [data-callout][data-type="error"] *:not([style*="color"]) {
     color: rgb(252 165 165);
   }
-  
+
   .dark .rich-content-display .callout[data-type="tip"],
   .dark .rich-content-display [data-callout][data-type="tip"] {
     background-color: rgb(88 28 135 / 0.1);
   }
-  
+
   .dark .rich-content-display .callout[data-type="tip"] *:not([style*="color"]),
   .dark .rich-content-display [data-callout][data-type="tip"] *:not([style*="color"]) {
     color: rgb(196 181 253);
   }
-  
+
   .dark .rich-content-display .callout[data-type="note"],
   .dark .rich-content-display [data-callout][data-type="note"] {
     background-color: rgb(55 65 81 / 0.1);
   }
-  
+
   .dark .rich-content-display .callout[data-type="note"] *:not([style*="color"]),
   .dark .rich-content-display [data-callout][data-type="note"] *:not([style*="color"]) {
     color: rgb(209 213 219);
   }
-  
+
   /* Colunas */
   .rich-content-display .columns-wrapper {
     margin: 1rem 0;
   }
-  
+
   .rich-content-display .columns-container {
     display: grid;
     gap: 1rem;
   }
-  
+
   .rich-content-display .columns-container[data-columns="2"] {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .rich-content-display .columns-container[data-columns="3"] {
     grid-template-columns: 1fr 1fr 1fr;
   }
-  
+
   .rich-content-display .column-content {
     min-height: 60px;
     padding: 0.5rem;
@@ -915,7 +921,7 @@ All colors MUST be HSL.
 .bubble {
   --r: 1em;  /* the radius */
   --t: 1.5em; /* the size of the tail */
-  
+
   max-width: 600px;
   padding: 1em;
   border-inline: var(--t) solid #0000;
@@ -1121,4 +1127,44 @@ All colors MUST be HSL.
 
 .flip-in {
   animation: flipIn 0.3s ease-in-out;
+}
+
+/*
+  ---break---
+*/
+
+:root {
+  --highlight: oklch(0.852 0.199 91.936);
+  --brand: oklch(0.623 0.214 259.815);
+}
+
+/*
+  ---break---
+*/
+
+.dark {
+  --highlight: oklch(0.852 0.199 91.936);
+  --brand: oklch(0.707 0.165 254.624);
+}
+
+/*
+  ---break---
+*/
+
+@theme inline {
+  --color-highlight: var(--highlight);
+  --color-brand: var(--brand);
+}
+
+/*
+  ---break---
+*/
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

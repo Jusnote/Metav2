@@ -4,7 +4,6 @@ import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Input } from "../components/ui/input";
 import { ChevronRight, ChevronDown, Menu, X, Hash, FileText, Save, Edit3, Eye, Plus } from "lucide-react";
-import { RichTextEditor } from "../components/RichTextEditor";
 import { CarouselRenderer } from "../components/CarouselRenderer";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../components/ui/collapsible";
 import { ProgressSidebar } from "../components/ProgressSidebar";
@@ -558,17 +557,17 @@ const EditResumoPage = () => {
                   {currentResumo ? (
                     isEditing ? (
                       <div className="relative">
-                        {/* Editor de texto rico WYSIWYG */}
-                        <RichTextEditor
-                          content={currentResumo.content}
-                          onChange={updateResumoContent}
-                          placeholder="Digite seu resumo aqui... Use a barra de ferramentas para formatação."
-                          className="min-h-[calc(100vh-300px)]"
+                        {/* Editor de texto simples (substituindo TipTap) */}
+                        <textarea
+                          value={currentResumo.content}
+                          onChange={(e) => updateResumoContent(e.target.value)}
+                          placeholder="Digite seu resumo aqui... (Editor simples temporário)"
+                          className="w-full min-h-[calc(100vh-300px)] p-4 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         
                         {/* Overlay para indicar modo de edição */}
                         <div className="absolute top-2 right-2 px-2 py-1 bg-primary/10 text-primary text-xs rounded border border-primary/20">
-                          Editor Visual
+                          Editor Simples
                         </div>
                       </div>
                      ) : (

@@ -21,7 +21,8 @@ import {
   LogOut,
   UserCircle,
   Code2,
-  StickyNote
+  StickyNote,
+  Edit3
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "./ui/button";
@@ -40,6 +41,7 @@ const navigationItems = [
 const toolsItems = [
   { title: "Cronograma", url: "/cronograma", icon: Calendar },
   { title: "Notas", url: "/notes", icon: StickyNote },
+  { title: "Editor Plate", url: "/plate-editor", icon: Edit3 },
   { title: "Filtros", url: "/filters", icon: Filter },
   { title: "Insights", url: "/insights", icon: Lightbulb },
   { title: "Analytics", url: "/analytics", icon: TrendingUp },
