@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Outputs a Single-Page Application (SPA).
-  distDir: './dist', // Changes the build output directory to `./dist/`.
+  // Removido 'output: export' para permitir SSR/ISR com Supabase
+  // distDir: './dist', - usando default (.next)
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
