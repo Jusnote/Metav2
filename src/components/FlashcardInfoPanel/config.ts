@@ -15,7 +15,6 @@ import {
   GitBranch,
   LucideIcon
 } from 'lucide-react';
-import { State } from 'ts-fsrs';
 
 // Configuração de cores para diferentes métricas FSRS
 export const FSRS_COLOR_CONFIGS = {
@@ -177,7 +176,7 @@ export const TAG_CONFIGS: TagConfig[] = [
     icon: Layers,
     getColor: () => 'text-indigo-600 bg-indigo-50',
     getTooltip: (card) => `Nível hierárquico: ${card.level}`,
-    shouldShow: (card, props) => props.hasParents || props.hasChildren,
+    shouldShow: (_card, props) => props.hasParents || props.hasChildren,
     priority: 6
   },
   {
@@ -185,7 +184,7 @@ export const TAG_CONFIGS: TagConfig[] = [
     icon: GitBranch,
     getColor: () => 'text-purple-600 bg-purple-50',
     getTooltip: (card) => `Sub-flashcards: ${card.childIds.length}`,
-    shouldShow: (card, props) => props.hasChildren,
+    shouldShow: (_card, props) => props.hasChildren,
     priority: 7
   },
   {
@@ -207,7 +206,7 @@ export const TAG_CONFIGS: TagConfig[] = [
     icon: Eye,
     getColor: () => 'text-emerald-600 bg-emerald-50',
     getTooltip: () => 'Resposta visível',
-    shouldShow: (card, props) => props.showAnswer,
+    shouldShow: (_card, props) => props.showAnswer,
     priority: 9
   }
 ];

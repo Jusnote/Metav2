@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Questao, Alternativa } from '@/types/database';
+import { Questao, Alternativa } from '../types/database';
 
 type AlternativaForm = Omit<Alternativa, 'id' | 'questao_id' | 'created_at'>;
 
@@ -121,7 +121,6 @@ export const useQuestaoForm = () => {
   const validarFormulario = (): boolean => {
     const questaoErrors: Partial<Record<keyof QuestaoForm, string>> = {};
     let alternativasError: string | undefined;
-    let geralError: string | undefined;
 
     // Validar campos da questão
     if (!questao.titulo.trim()) {

@@ -1,41 +1,39 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import SavedCardBlockNote from '@/components/SavedCardBlockNote';
-import StudyCardBlockNote from '@/components/StudyCardBlockNote';
-import AnimatedBackground from '@/components/AnimatedBackground';
-import OrbitCircles from '@/components/OrbitCircles';
+import SavedCardBlockNote from '../components/SavedCardBlockNote';
+import StudyCardBlockNote from '../components/StudyCardBlockNote';
+import AnimatedBackground from '../components/AnimatedBackground';
+import OrbitCircles from '../components/OrbitCircles';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { useBlockNoteFlashcards } from '@/hooks/useBlockNoteFlashcards';
-import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play, Eye, EyeOff } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Progress } from '../components/ui/progress';
+import { useBlockNoteFlashcards } from '../hooks/useBlockNoteFlashcards';
+import { Brain, Plus, BookOpen, Target, TrendingUp, ArrowLeft, CheckCircle, RotateCcw, Play } from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
 
 const Index = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const navigate = typeof window !== 'undefined' ? useNavigate() : () => {};
+  const [searchParams] = typeof window !== 'undefined' ? useSearchParams() : [null];
   const { toast } = useToast();
   
   // Hook para flashcards BlockNote
-  const { 
-    flashcards, 
+  const {
+    flashcards,
     stats,
     isLoading,
-    fetchFlashcards,
     fetchDueFlashcards, 
     updateFlashcardReview
   } = useBlockNoteFlashcards();
   
   // Verificar se está em modo de estudo
-  const isStudyMode = searchParams.get('study') === 'true';
+  const isStudyMode = searchParams?.get('study') === 'true';
   
   // Estados para o modo de estudo
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [studyCards, setStudyCards] = useState<any[]>([]);
-  const [completedCards, setCompletedCards] = useState<string[]>([]);
   const [isStudyComplete, setIsStudyComplete] = useState(false);
   const [showBack, setShowBack] = useState(false);
 
@@ -71,17 +69,16 @@ const Index = () => {
     
     setStudyCards(cardsToStudy);
     setCurrentCardIndex(0);
-    setCompletedCards([]);
     setIsStudyComplete(false);
     setShowBack(false);
   };
 
   const handleStartStudy = () => {
-    navigate('/flashcards?study=true');
+    navigate?.('/flashcards?study=true');
   };
 
   const handleCreateFlashcard = () => {
-    navigate('/notes');
+    navigate?.('/notes');
   };
 
   // Função para lidar com respostas do estudo
@@ -91,9 +88,6 @@ const Index = () => {
 
     // Atualizar flashcard BlockNote
     await updateFlashcardReview(currentCard.id, difficulty);
-
-    // Marcar card como completo
-    setCompletedCards(prev => [...prev, currentCard.id]);
 
     // Verificar se terminou o estudo
     if (currentCardIndex >= studyCards.length - 1) {
@@ -110,7 +104,6 @@ const Index = () => {
 
   const handleRestartStudy = () => {
     setCurrentCardIndex(0);
-    setCompletedCards([]);
     setIsStudyComplete(false);
     setShowBack(false);
   };
@@ -155,7 +148,7 @@ const Index = () => {
                   Estudar Novamente
                 </Button>
                 <Button 
-                  onClick={() => navigate('/flashcards')}
+                  onClick={() => navigate('/home')}
                   className="flex-1 gap-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -179,7 +172,7 @@ const Index = () => {
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex items-center justify-between mb-6">
             <Button 
-              onClick={() => navigate('/flashcards')}
+              onClick={() => navigate?.('/flashcards')}
               variant="outline"
               className="gap-2"
             >
@@ -446,7 +439,7 @@ const Index = () => {
                     Mostrando 10 de {flashcards.length} flashcards
                   </p>
                   <Button 
-                    onClick={() => navigate('/flashcards-new')}
+                    onClick={() => navigate?.('/flashcards-new')}
                     variant="outline"
                   >
                     Ver Todos

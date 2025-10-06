@@ -12,7 +12,7 @@ export const CarouselRenderer = forwardRef<HTMLDivElement, CarouselRendererProps
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || typeof document === 'undefined') return;
 
     // Renderizar o conteúdo HTML
     containerRef.current.innerHTML = content;
@@ -24,6 +24,9 @@ export const CarouselRenderer = forwardRef<HTMLDivElement, CarouselRendererProps
       const slidesData = element.getAttribute('data-slides');
       if (slidesData) {
         try {
+          // SSR protection
+          if (typeof document === 'undefined') return;
+          
           const slides = JSON.parse(slidesData);
           
           // Criar um container React para o carrossel
@@ -59,6 +62,9 @@ export const CarouselRenderer = forwardRef<HTMLDivElement, CarouselRendererProps
       console.log(`Processando explicação ${index}:`, { explanation, textContent });
       
       if (explanation) {
+        // SSR protection
+        if (typeof document === 'undefined') return;
+        
         // Criar um container React para a explicação
         const explanationContainer = document.createElement('span');
         explanationContainer.className = 'interactive-explanation-container';
@@ -79,7 +85,7 @@ export const CarouselRenderer = forwardRef<HTMLDivElement, CarouselRendererProps
 
     // Cleanup function
     return () => {
-      carouselElements.forEach((element) => {
+      carouselElements.forEach((_element) => {
         const container = containerRef.current?.querySelector('.carousel-container');
         if (container) {
           // O React vai limpar automaticamente quando o componente for desmontado
@@ -91,11 +97,22 @@ export const CarouselRenderer = forwardRef<HTMLDivElement, CarouselRendererProps
   return (
     <div 
       ref={(node) => {
-        containerRef.current = node;
+        // Safely assign to containerRef
+        if (containerRef && 'current' in containerRef) {
+          (containerRef as any).current = node;
+        }
+        
+        // Handle forwarded ref
         if (typeof ref === 'function') {
           ref(node);
-        } else if (ref) {
-          ref.current = node;
+        } else if (ref && typeof ref === 'object' && 'current' in ref) {
+          // Use Object.defineProperty to safely assign to potentially read-only ref
+          try {
+            (ref as any).current = node;
+          } catch (error) {
+            // If assignment fails, the ref is read-only, which is fine
+            console.warn('Could not assign to ref.current - ref may be read-only');
+          }
         }
       }}
       className={className}

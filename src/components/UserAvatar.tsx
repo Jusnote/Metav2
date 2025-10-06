@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User, Trophy, Star, Flame, Target, TrendingUp } from 'lucide-react';
 import { useUserProgress, Medal } from '../hooks/useUserProgress';
 import { useAuth } from '../hooks/useAuth';
@@ -66,7 +66,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
       <div className="relative shrink-0">
         <div className="w-32 h-25 rounded-lg overflow-hidden">
           <img 
-            src="/avatar1.png" 
+            src="../../public/avatar1.png" 
             alt="Avatar" 
             className="w-full h-full rounded-lg object-cover"
           />
@@ -97,7 +97,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             </div>
             <div className="flex items-center gap-1">
               <Flame className="w-3 h-3 text-orange-500" />
-              <span>{progress.streak || 0} dias</span>
+              <span>{progress.studyStreak || 0} dias</span>
             </div>
             {progress.medals.length > 0 && (
               <div className="flex items-center gap-1">
@@ -140,7 +140,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             <div className="flex items-center gap-2">
               <Flame className="w-4 h-4 text-orange-500" />
               <span className="text-xs font-medium text-slate-300">
-                {progress.streak || 0} dias consecutivos
+                {progress.studyStreak || 0} dias consecutivos
               </span>
             </div>
           </div>
@@ -242,7 +242,7 @@ export function UserAvatar({ variant = 'desktop', showExpanded = false }: UserAv
             <div className="text-center p-4 bg-linear-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
               <div className="flex items-center justify-center gap-1 mb-2">
                 <Flame className="w-5 h-5 text-orange-500" />
-                <span className="text-2xl font-bold text-orange-700">{progress.studyStreak || progress.streak || 0}</span>
+                <span className="text-2xl font-bold text-orange-700">{progress.studyStreak || 0}</span>
               </div>
               <p className="text-sm font-medium text-orange-600">Dias Consecutivos</p>
             </div>

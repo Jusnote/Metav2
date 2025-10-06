@@ -1,0 +1,518 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Authentication with Valid Credentials",
+    "description": "Verify that a user can successfully log in using valid credentials through the Supabase authentication system and that the session persists across page reloads.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Enter valid username/email and password."
+      },
+      {
+        "type": "action",
+        "description": "Click the login button."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is logged in successfully and redirected to the dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Refresh the page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the session persists and user remains logged in."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Authentication with Invalid Credentials",
+    "description": "Verify that the system correctly handles login attempts with incorrect username/email or password and prevents access.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid username/email or password."
+      },
+      {
+        "type": "action",
+        "description": "Click the login button."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an error message is displayed indicating invalid credentials."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user remains on login page and is not authenticated."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Create Traditional Front/Back Flashcard",
+    "description": "Verify user can create a traditional flashcard with distinct front and back content using the rich text editor with advanced formatting.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the flashcard creation page."
+      },
+      {
+        "type": "action",
+        "description": "Select 'Traditional Front/Back' flashcard type."
+      },
+      {
+        "type": "action",
+        "description": "Input formatted text with images on front side using BlockNote editor."
+      },
+      {
+        "type": "action",
+        "description": "Input formatted text with images on back side using BlockNote editor."
+      },
+      {
+        "type": "action",
+        "description": "Save the flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the flashcard is created and stored correctly with all formatting and images preserved."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Create Quote-Based Flashcard with Automatic Front/Back Separation",
+    "description": "Verify the system automatically separates front and back content when creating a flashcard using quote blocks in the rich text editor.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open flashcard creation and select 'Quote-Based' type."
+      },
+      {
+        "type": "action",
+        "description": "Enter rich text containing at least two quote blocks, representing front and back."
+      },
+      {
+        "type": "action",
+        "description": "Save the flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the system automatically separates content into front and back using the quote blocks."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the flashcard renders correctly displaying front content first and back content on flip."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Create Word-Hiding Flashcard with Syntax Highlighting",
+    "description": "Verify creation of word-hiding flashcards where specific words are hidden based on syntax, and that hidden words toggle visibility during study.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to flashcard creation and select 'Word-Hiding' type."
+      },
+      {
+        "type": "action",
+        "description": "Input sentence with words marked using the required syntax for hiding."
+      },
+      {
+        "type": "action",
+        "description": "Save the flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the flashcard hides marked words during study."
+      },
+      {
+        "type": "action",
+        "description": "During study, toggle visibility of hidden words."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the hidden words are shown and hidden correctly when toggled."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Create True/False Flashcard with Optional Explanation",
+    "description": "Verify user can create a true/false flashcard and add an optional explanation that is displayed after answer submission.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to flashcard creation and select 'True/False' flashcard type."
+      },
+      {
+        "type": "action",
+        "description": "Enter a statement and select correct answer true or false."
+      },
+      {
+        "type": "action",
+        "description": "Optionally add a detailed explanation."
+      },
+      {
+        "type": "action",
+        "description": "Save the flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the flashcard is saved with statement, correct answer, and explanation present."
+      },
+      {
+        "type": "action",
+        "description": "During study, answer the flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify feedback is given and explanation is shown after answer submission."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Hierarchical Flashcard Parent-Child Creation and Navigation",
+    "description": "Verify the creation of hierarchical flashcards supporting parent-child relationships and that navigation between parent and child flashcards works as expected.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create a parent flashcard with appropriate content."
+      },
+      {
+        "type": "action",
+        "description": "Create one or more child flashcards linked to the parent."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify child flashcards are correctly associated in hierarchy."
+      },
+      {
+        "type": "action",
+        "description": "From parent flashcard view, navigate to child flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify navigation displays the correct child flashcard content."
+      },
+      {
+        "type": "action",
+        "description": "Navigate back to parent flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify parent flashcard content is displayed correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Deck Creation with Custom Colors and Statistics",
+    "description": "Verify user can create thematic decks with custom colors and that each deck displays correct per-deck statistics.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to deck management page."
+      },
+      {
+        "type": "action",
+        "description": "Create a new deck, selecting a custom color."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify deck is created with chosen color."
+      },
+      {
+        "type": "action",
+        "description": "Add flashcards to this deck."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify deck statistics update correctly reflecting flashcard count and study progress."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Rich Text Note Creation and Automatic Flashcard Conversion",
+    "description": "Verify users can create rich text notes including images and formatting, and can convert notes into appropriate flashcard types automatically.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to notes creation page."
+      },
+      {
+        "type": "action",
+        "description": "Create a note containing rich text, images, and multiple paragraphs."
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Convert to Flashcards' option."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the system converts note content into flashcards with correct types based on detected content."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify generated flashcards preserve formatting and images appropriately."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "FSRS Algorithm Scheduling and Review State Updates",
+    "description": "Verify that flashcards are scheduled correctly for review according to the FSRS algorithm including automatic updating of review states and due dates after study response and difficulty rating.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Initiate a study session with flashcards due for review."
+      },
+      {
+        "type": "action",
+        "description": "Respond to flashcard answering."
+      },
+      {
+        "type": "action",
+        "description": "Rate difficulty level of the flashcard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify FSRS algorithm updates flashcard's next review date and difficulty level accordingly."
+      },
+      {
+        "type": "action",
+        "description": "Complete multiple sessions and verify scheduling changes."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify flashcards appear again according to updated due dates."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Real-Time Study Interface with Timer and Feedback",
+    "description": "Verify that the study interface displays a timer, supports focused study mode, provides instant correctness feedback, and correctly tracks study session timing.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Start a study session."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the timer starts counting immediately."
+      },
+      {
+        "type": "action",
+        "description": "Answer several flashcards."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify feedback is displayed instantly showing whether answer was correct or incorrect."
+      },
+      {
+        "type": "action",
+        "description": "Toggle focused study mode on."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI changes reflecting focused mode with minimal distractions."
+      },
+      {
+        "type": "action",
+        "description": "Complete session and check recorded session time."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the study session time reflects the actual duration accurately."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Study Progress Analytics and Interactive Dashboard",
+    "description": "Verify that the analytics dashboard correctly displays accuracy rates, response times, progress per deck, study calendar with streaks, and FSRS metrics charts updating in real-time with user activity.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Complete multiple study sessions with varying flashcards across different decks."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the analytics dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify accuracy rate statistics reflect user answers."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response time charts show average answer times."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify progress by individual deck is shown correctly."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify study calendar displays correct streaks and session dates."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify FSRS metrics charts are updated according to study data."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Notes Timeline View and Flashcard Synchronization",
+    "description": "Verify that the notes system timeline view correctly displays note history and that edits synchronize properly with linked flashcards.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create and save multiple rich text notes."
+      },
+      {
+        "type": "action",
+        "description": "Convert some notes into flashcards."
+      },
+      {
+        "type": "action",
+        "description": "Open notes timeline view."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify timeline correctly reflects note creation and edit history."
+      },
+      {
+        "type": "action",
+        "description": "Edit note content that has linked flashcards."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify linked flashcards update to reflect note changes."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Role-Level Security and Input Validation",
+    "description": "Verify that database row-level security (RLS) prevents unauthorized data access and that all user inputs in flashcards, notes, and profile are validated and sanitized to prevent injection and errors.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to access or modify flashcards or notes of another user through the UI and API."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied and no unauthorized data is exposed."
+      },
+      {
+        "type": "action",
+        "description": "Input invalid or malicious content (scripts, overly large text, malformed data) into flashcard and note creation forms."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify inputs are sanitized, errors are shown, and no security breach or crash occurs."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Responsive UI Across Browsers and Devices",
+    "description": "Verify that the application UI is fully responsive and accessible on supported desktop browsers and mobile devices, maintaining usability and appearance.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open the application in various desktop browsers (Chrome, Firefox, Safari, Edge) and different screen resolutions."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI components render correctly without layout issues."
+      },
+      {
+        "type": "action",
+        "description": "Open the application on different mobile devices and browsers."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all interactive elements are accessible, screens scale properly, and no content is truncated or overlaps."
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Performance Testing with Lazy Loading and Caching",
+    "description": "Validate performance optimizations by testing the system behavior when loading large numbers of flashcards and notes, ensuring smooth scrolling, lazy loading, and effective caching without UI freezes.",
+    "category": "functional",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Populate user account with large number (>1000) of flashcards and notes."
+      },
+      {
+        "type": "action",
+        "description": "Navigate through flashcard lists, notes timeline, and dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify lazy loading triggers appropriately, only loading visible items initially."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI remains responsive with no lag or freezes."
+      },
+      {
+        "type": "action",
+        "description": "Repeat accesses to data and measure caching effect."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify subsequent loads are faster due to caching and memoization."
+      }
+    ]
+  }
+]

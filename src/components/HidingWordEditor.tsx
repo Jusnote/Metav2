@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
+import { Label } from './ui/label';
 import { Plus, Eye, EyeOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface HidingWordEditorProps {
   onSave: (front: string, back: string, type: 'word-hiding', hiddenWords: string[]) => void;
@@ -18,7 +17,7 @@ export function HidingWordEditor({ onSave, placeholder }: HidingWordEditorProps)
   // Extrair palavras marcadas com {{ }}
   const parseHiddenWords = (text: string): { text: string; hiddenWords: string[] } => {
     const hiddenWords: string[] = [];
-    const cleanText = text.replace(/\{\{([^}]+)\}\}/g, (match, word) => {
+    const cleanText = text.replace(/\{\{([^}]+)\}\}/g, (_, word) => {
       hiddenWords.push(word.trim());
       return word.trim();
     });
@@ -165,8 +164,8 @@ export function HidingWordEditor({ onSave, placeholder }: HidingWordEditorProps)
           <Button
             onClick={handleSave}
             disabled={!canSave}
-            variant="study"
-            size="study"
+            variant="default"
+            size="default"
             className="gap-2"
           >
             <Plus className="h-4 w-4" />

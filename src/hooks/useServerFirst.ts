@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { supabase } from '../integrations/supabase/client';
+import { useToast } from './use-toast';
 
 // Tipos base
 export interface BaseEntity {
@@ -40,7 +40,6 @@ interface CacheEntry<T> {
 
 const MAX_RETRIES = 3;
 const DEFAULT_CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutos
-const RETRY_DELAY_BASE = 1000; // 1 segundo
 
 /**
  * Hook genérico para padrão Server-First com cache inteligente
@@ -479,6 +478,8 @@ export function useServerFirst<T extends BaseEntity>(
 
   // Monitorar status online/offline
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleOnline = () => {
       isOnlineRef.current = true;
       processOfflineQueue();

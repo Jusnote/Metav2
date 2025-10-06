@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "project": "Flashcard Scribe Flow",
+    "date": "2025-10-04",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "Flashcard Scribe Flow is a modern web application designed to create, manage, and study flashcards integrated with a scientific spaced repetition system (FSRS). It supports multiple flashcard types, rich text editing, hierarchical organization, and detailed study progress analytics, aiming to optimize learning efficiency.",
+  "core_goals": [
+    "Provide an intuitive, comprehensive platform for creating and studying flashcards using the FSRS algorithm to maximize learning retention.",
+    "Simplify flashcard creation with rich text editors and support multiple flashcard types suited for diverse study content.",
+    "Offer detailed progress tracking and analytics to empower users’ study performance insights.",
+    "Enable hierarchical organization of flashcards and thematic deck management for structured learning.",
+    "Integrate a note-taking system that can convert notes automatically into flashcards for seamless content generation."
+  ],
+  "key_features": [
+    "User Authentication with Supabase, supporting persistent sessions and personalized user profiles.",
+    "Multiple flashcard types including traditional front/back, quote-based automatic separation, word-hiding with syntax, and true/false format with optional explanations.",
+    "Rich text editing using BlockNote and Lexical editors with support for images and advanced formatting.",
+    "Spaced Repetition Study System powered by FSRS algorithm featuring difficulty levels, automatic scheduling, and learning state tracking.",
+    "Hierarchical flashcards supporting parent-child relationships enabling complex topic decomposition and focused navigation.",
+    "Deck system for thematic organization with customizable colors and per-deck statistics.",
+    "Comprehensive notes system integrated with the flashcards, featuring timeline, history, and automatic flashcard conversion.",
+    "Real-time study interface with timers, focused study modes, and instant feedback.",
+    "Detailed analytics including accuracy rate, response times, progress by deck, study calendar with streaks, and FSRS metrics charts."
+  ],
+  "user_flow_summary": [
+    "User logs in or registers via the authentication system and accesses their dashboard.",
+    "User creates or edits notes using the rich text editor and can convert notes into flashcards with a single click.",
+    "User manages flashcards by creating/editing various types and organizing them into decks with customizable colors and hierarchical structures.",
+    "User initiates a study session where due flashcards are presented according to the FSRS scheduling algorithm.",
+    "During study, the user responds to flashcards, rates difficulty, and receives visual feedback; the system automatically schedules next reviews.",
+    "User monitors study progress and statistics via interactive dashboards and analytics visualizations.",
+    "User can browse, review, and edit notes with timeline views linked to relevant flashcards, maintaining content synchronization."
+  ],
+  "validation_criteria": [
+    "Successful user authentication flow with session persistence and profile management.",
+    "Creation and editing of all supported flashcard types with correct rendering and behavior.",
+    "Accurate FSRS-based scheduling and updating of flashcard review states and due dates.",
+    "Seamless rich text editing capabilities supporting embedded images and multiple formatting styles.",
+    "Correct implementation of hierarchical flashcard organization with parent-child navigation.",
+    "Reliable conversion of notes into flashcards with detection of appropriate flashcard types.",
+    "Comprehensive and accurate display of study progress and statistical data corresponding to user activity.",
+    "Responsive and accessible UI across supported browsers and devices, including desktop and mobile.",
+    "Security measures including RLS in database, validation of inputs, and secure token handling.",
+    "Performance optimizations such as lazy loading, memoization, and effective caching to maintain smooth user experience."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "Next.js 14",
+      "React 18",
+      "Supabase",
+      "Tailwind CSS",
+      "Radix UI",
+      "Lexical",
+      "BlockNote",
+      "FSRS",
+      "React Router DOM"
+    ],
+    "features": [
+      {
+        "name": "Flashcard Management",
+        "description": "Create, edit, and organize flashcards with rich text content using BlockNote editor",
+        "files": [
+          "src/components/StudyCard.tsx",
+          "src/components/FlashcardDisplay.tsx",
+          "src/components/FlashcardEditor.tsx",
+          "src/hooks/useBlockNoteFlashcards.ts"
+        ]
+      },
+      {
+        "name": "Spaced Repetition Study System",
+        "description": "FSRS-based intelligent scheduling for optimal learning retention",
+        "files": [
+          "src/pages/StudyPage.tsx",
+          "src/lib/fsrs.ts",
+          "src/lib/spaced-repetition.ts",
+          "src/components/FlashcardStatistics.tsx"
+        ]
+      },
+      {
+        "name": "Multiple Flashcard Types",
+        "description": "Support for traditional, word-hiding, and true-false flashcards",
+        "files": [
+          "src/components/TrueFalseEditor.tsx",
+          "src/components/WordSelector.tsx",
+          "src/components/ImprovedWordHidingDisplay.tsx"
+        ]
+      },
+      {
+        "name": "Rich Text Editor",
+        "description": "Advanced text editing with Lexical and BlockNote integration",
+        "files": [
+          "src/components/RichTextEditor.tsx",
+          "src/components/BlockNoteEditor.tsx",
+          "src/components/lexical-playground/"
+        ]
+      },
+      {
+        "name": "Question Management",
+        "description": "Create and manage study questions with different types and difficulty levels",
+        "files": [
+          "src/components/QuestionEditor.tsx",
+          "src/components/QuestionManager.tsx",
+          "src/components/QuestionModal.tsx",
+          "src/hooks/useQuestions.ts"
+        ]
+      },
+      {
+        "name": "Notes System",
+        "description": "Comprehensive note-taking with timeline and organization features",
+        "files": [
+          "src/components/NotesModal.tsx",
+          "src/components/NotesTimeline.tsx",
+          "src/pages/NotesPage.tsx",
+          "src/hooks/useNotes.ts"
+        ]
+      },
+      {
+        "name": "Study Progress Tracking",
+        "description": "Track study sessions, progress, and performance analytics",
+        "files": [
+          "src/components/ProgressSidebar.tsx",
+          "src/components/GlobalTimer.tsx",
+          "src/components/StudyModeToggle.tsx"
+        ]
+      },
+      {
+        "name": "Authentication System",
+        "description": "User authentication and protected routes",
+        "files": [
+          "src/components/AuthForm.tsx",
+          "src/components/ProtectedRoute.tsx",
+          "src/components/UserAvatar.tsx"
+        ]
+      },
+      {
+        "name": "Hierarchical Flashcards",
+        "description": "Support for parent-child relationships between flashcards for complex topics",
+        "files": [
+          "src/components/FlashcardDisplay.tsx",
+          "src/components/DialogFlashcardDisplay.tsx"
+        ]
+      },
+      {
+        "name": "Quote-Based Flashcards",
+        "description": "Automatic separation of front/back content using quote blocks in rich text",
+        "files": [
+          "src/components/StudyCardBlockNote.tsx",
+          "src/components/BlockNoteRenderer.tsx"
+        ]
+      }
+    ]
+  }
+}

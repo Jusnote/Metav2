@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { StudyTask } from '@/types/study';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { StudyTask } from '../../types/study';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { BookOpen, FlaskConical, MessageCircle, Scroll } from 'lucide-react';
 
 interface TaskDialogProps {
@@ -29,7 +29,7 @@ const priorityOptions = [
   { value: 'high', label: 'Alta', color: 'text-destructive' },
 ];
 
-export function TaskDialog({ open, onOpenChange, onSave, editingTask, dayId }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, onSave, editingTask, dayId: _dayId }: TaskDialogProps) {
   const [formData, setFormData] = useState({
     title: '',
     subject: 'math' as StudyTask['subject'],

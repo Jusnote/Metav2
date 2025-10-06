@@ -24,8 +24,8 @@ export function extractTextFromBlock(block: any): string {
   
   if (Array.isArray(block.content)) {
     return block.content
-      .filter(item => item.type === 'text')
-      .map(item => item.text || '')
+      .filter((item: any) => item.type === 'text')
+      .map((item: any) => item.text || '')
       .join('');
   }
   

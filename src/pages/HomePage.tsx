@@ -1,7 +1,7 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { 
   Brain, 
   TrendingUp, 
@@ -10,11 +10,10 @@ import {
   Play,
   Calendar,
   FileText,
-  Users,
   Zap,
   Award
 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { SSRSafeNavLink } from '../components/SSRSafeNavLink';
 
 export default function HomePage() {
   return (
@@ -98,16 +97,16 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button asChild className="flex-1">
-                <NavLink to="/flashcards" className="flex items-center gap-2">
+                <SSRSafeNavLink to="/flashcards" className="flex items-center gap-2">
                   <Brain className="h-4 w-4" />
                   Abrir Flashcards
-                </NavLink>
+                </SSRSafeNavLink>
               </Button>
               <Button variant="outline" asChild>
-                <NavLink to="/flashcards?mode=study">
+                <SSRSafeNavLink to="/flashcards?mode=study">
                   <Target className="h-4 w-4 mr-2" />
                   Modo Estudo
-                </NavLink>
+                </SSRSafeNavLink>
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">

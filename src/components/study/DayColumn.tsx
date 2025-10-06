@@ -1,9 +1,9 @@
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Plus, Calendar } from 'lucide-react';
-import { DaySchedule, StudyTask } from '@/types/study';
+import { DaySchedule, StudyTask } from '../../types/study';
 import { StudyCard } from './StudyCard';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 interface DayColumnProps {
   day: DaySchedule;

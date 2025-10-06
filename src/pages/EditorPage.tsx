@@ -1,6 +1,3 @@
-import React from 'react';
-import LexicalPlaygroundComponent from '../components/LexicalPlaygroundComponent';
-
 export default function EditorPage() {
   const handleSave = (content: string) => {
     console.log('Conteúdo salvo:', content);
@@ -36,9 +33,8 @@ export default function EditorPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-xs border">
-          {/* Lexical Playground Component */}
-          <div className="rounded-lg overflow-auto">
-            <LexicalPlaygroundComponent />
+          <div className="rounded-lg overflow-auto p-8 text-center">
+            <p className="text-gray-500">Editor em desenvolvimento</p>
           </div>
         </div>
       </main>

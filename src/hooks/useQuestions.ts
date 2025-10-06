@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SectionQuestions, Question } from '@/types/questions';
+import { SectionQuestions, Question } from '../types/questions';
 
 // Mock data para testes - depois será integrado com Supabase
 const MOCK_QUESTIONS: SectionQuestions[] = [

@@ -1,27 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, Clock, FileText, Zap, HelpCircle, Play, CreditCard, ArrowLeft, Save, Edit3, Trash2, MoreHorizontal } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useUnitsManager, Unit, Topic, Subtopic } from '@/hooks/useUnitsManager';
-import { InlineEditor } from '@/components/InlineEditor';
-import { AddUnitButton, AddTopicButton, AddSubtopicButton } from '@/components/AddButton';
-import { ContextMenu, ContextMenuIcons } from '@/components/ContextMenu';
-import { EditModeToggle } from '@/components/EditModeToggle';
-import PlaygroundApp from '@/components/lexical-playground/App';
-import { useAutoSave, useDocuments } from '@/hooks/useDocuments';
-import { useAuth } from '@/hooks/useAuth';
-import { NotesModal } from '@/components/NotesModal';
+import { useState, useEffect } from 'react';
+import { Button } from '../components/ui/button';
+import { ChevronRight, Clock, FileText, HelpCircle, Play, CreditCard, ArrowLeft, Save, Edit3, Trash2 } from 'lucide-react';
+import { useUnitsManager } from '../hooks/useUnitsManager';
+import { InlineEditor } from '../components/InlineEditor';
+import { EditModeToggle } from '../components/EditModeToggle';
+
+import { useAutoSave, useDocuments } from '../hooks/useDocuments';
+import { useAuth } from '../hooks/useAuth';
+import { NotesModal } from '../components/NotesModal';
 
 const DocumentsOrganizationPage = () => {
-  const navigate = useNavigate();
-  const [openTopic, setOpenTopic] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [currentSubtopic, setCurrentSubtopic] = useState<{id: string, title: string} | null>(null);
   const [documentTitle, setDocumentTitle] = useState('Documento sem título');
-  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [expandedUnits, setExpandedUnits] = useState<Set<string>>(new Set());
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [selectedSubtopic, setSelectedSubtopic] = useState<{unitId: string, topicId: string, subtopic: any} | null>(null);
@@ -55,7 +47,7 @@ const DocumentsOrganizationPage = () => {
   });
   
   const { user } = useAuth();
-  const { debouncedSave, isSaving, lastSaved, currentDocumentId, setCurrentDocumentId, currentDocument: loadedDocument, isLoading } = useAutoSave(user);
+  const { isSaving, lastSaved, setCurrentDocumentId, isLoading } = useAutoSave(user);
   const { documents, createDocument, updateDocument, refetch: fetchDocuments } = useDocuments(user);
 
   // Recarregar documentos quando o usuário muda
@@ -153,9 +145,6 @@ const DocumentsOrganizationPage = () => {
     addSubtopic,
     updateSubtopic,
     deleteSubtopic,
-    startEditing,
-    stopEditing,
-    isEditing,
     updateLastAccess
   } = useUnitsManager();
 
@@ -227,7 +216,7 @@ const DocumentsOrganizationPage = () => {
         observacoes: 'Melhor desempenho em teoria, precisa revisar jurisprudência.'
       }
     };
-    return mockData[reviewId] || null;
+    return (mockData as any)[reviewId] || null;
   };
 
   const handleReviewClick = (reviewId: string, date: string) => {
@@ -299,7 +288,7 @@ const DocumentsOrganizationPage = () => {
           </div>
         </div>
 
-        {/* Editor Lexical */}
+        {/* Editor Placeholder */}
         <div className="flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -307,47 +296,9 @@ const DocumentsOrganizationPage = () => {
               <span className="ml-2 text-gray-600">Carregando documento...</span>
             </div>
           ) : (
-            <PlaygroundApp
-              key={`editor-${currentDocumentId}-${loadedDocument?.updated_at || 'new'}`}
-              initialDocument={(() => {
-                if (currentDocumentId && loadedDocument && loadedDocument.id === currentDocumentId) {
-                  return {
-                    id: currentDocumentId,
-                    content: loadedDocument.content,
-                    title: loadedDocument.title || currentSubtopic?.title || 'Novo Documento'
-                  };
-                } else {
-                  return {
-                    id: currentDocumentId || 'new-document',
-                    content: {
-                      "root": {
-                        "children": [
-                          {
-                            "children": [],
-                            "direction": null,
-                            "format": "",
-                            "indent": 0,
-                            "type": "paragraph",
-                            "version": 1
-                          }
-                        ],
-                        "direction": null,
-                        "format": "",
-                        "indent": 0,
-                        "type": "root",
-                        "version": 1
-                      }
-                    },
-                    title: currentSubtopic?.title || 'Novo Documento'
-                  };
-                }
-              })()}
-              debouncedSave={(data) => debouncedSave({
-                ...data,
-                title: documentTitle,
-                subtopic_id: currentSubtopic?.id
-              })}
-            />
+            <div className="flex items-center justify-center h-64">
+              <p className="text-gray-500">Editor em desenvolvimento</p>
+            </div>
           )}
         </div>
       </div>
@@ -449,7 +400,7 @@ const DocumentsOrganizationPage = () => {
                       {/* Topics List */}
                       {isUnitExpanded && (
                         <div className="ml-3 mt-0.5 space-y-0.5 border-l border-gray-200/40 pl-2">
-                          {unit.topics.map((topic, topicIndex) => {
+                          {unit.topics.map((topic) => {
                             const isTopicExpanded = expandedTopics.has(topic.id);
                             
                               return (
@@ -1067,8 +1018,8 @@ const DocumentsOrganizationPage = () => {
       <NotesModal
         isOpen={notesModal.isOpen}
         onClose={() => setNotesModal({ isOpen: false, subtopicId: null, topicId: null, title: null })}
-        subtopicId={notesModal.subtopicId}
-        topicId={notesModal.topicId}
+        subtopicId={notesModal.subtopicId || undefined}
+        topicId={notesModal.topicId || undefined}
         title={notesModal.title || ''}
       />
     </div>

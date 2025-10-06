@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
-import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
-import { TrueFalseDialogDisplay } from '@/components/TrueFalseDialogDisplay';
-import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { Brain, User, Eye, RotateCcw, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { ImprovedWordHidingDisplay } from './ImprovedWordHidingDisplay';
+import { TrueFalseDisplay } from './TrueFalseDisplay';
+import { TrueFalseDialogDisplay } from './TrueFalseDialogDisplay';
+import { Flashcard, StudyDifficulty } from '../types/flashcard';
+import { User, Eye, RotateCcw, ArrowLeft } from 'lucide-react';
+import { cn } from '../lib/utils';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface DialogMessage {
@@ -157,16 +156,6 @@ export function DialogFlashcardDisplay({
       case 'medium': return 'Consegui responder bem 😊';
       case 'easy': return 'Foi muito fácil! 😎';
       default: return 'Respondido';
-    }
-  };
-
-  const getDifficultyColor = (difficulty: StudyDifficulty): string => {
-    switch (difficulty) {
-      case 'again': return 'bg-red-500';
-      case 'hard': return 'bg-orange-500';
-      case 'medium': return 'bg-blue-500';
-      case 'easy': return 'bg-green-500';
-      default: return 'bg-gray-500';
     }
   };
 

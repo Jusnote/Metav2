@@ -1,23 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import NotesBlockEditor from '@/components/NotesBlockEditor';
-import SavedCardBlockNote from '@/components/SavedCardBlockNote';
-import { useQuickNotes } from '@/hooks/useQuickNotes';
-import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
-import { useBlockNoteFlashcards } from '@/hooks/useBlockNoteFlashcards';
-
-interface SavedCard {
-  id: string;
-  title: string;
-  content: any[]; // Estrutura JSON do BlockNote
-  createdAt: Date;
-  isEditing?: boolean;
-  syncStatus?: 'pending' | 'synced' | 'error';
-  needsSync?: boolean;
-}
+import { Button } from '../components/ui/button';
+import NotesBlockEditor from '../components/NotesBlockEditor';
+import SavedCardBlockNote from '../components/SavedCardBlockNote';
+import { useQuickNotes } from '../hooks/useQuickNotes';
+import { SyncStatusIndicator } from '../components/SyncStatusIndicator';
+import { useBlockNoteFlashcards } from '../hooks/useBlockNoteFlashcards';
 
 export default function NotesPage() {
+  // SSR protection - return early if not in browser
+  if (typeof window === 'undefined') {
+    return <div>Loading...</div>;
+  }
+
   // Hook para gerenciamento de notas rápidas
   const {
     localNotes,
@@ -35,7 +30,6 @@ export default function NotesPage() {
 
   // Estados locais
   const [currentContent, setCurrentContent] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(true);
   const [shouldReset, setShouldReset] = useState(false);
 
   // Data atual formatada
@@ -43,7 +37,6 @@ export default function NotesPage() {
   const dayName = today.toLocaleDateString('en-US', { weekday: 'short' });
   const dayNumber = today.getDate();
   const monthName = today.toLocaleDateString('en-US', { month: 'long' });
-  const year = today.getFullYear();
 
   // Função para salvar o card (agora com salvamento assíncrono)
   const handleFinish = async () => {

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Loader2, Mail, Lock, User } from 'lucide-react';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const AuthForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +14,7 @@ export const AuthForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
-  const navigate = useNavigate();
+  const navigate = typeof window !== 'undefined' ? useNavigate() : () => {};
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +35,7 @@ export const AuthForm: React.FC = () => {
         throw error;
       }
 
+      console.log('Login successful:', data);
       toast.success('Login realizado com sucesso!');
       navigate('/');
     } catch (error: unknown) {
@@ -66,12 +67,12 @@ export const AuthForm: React.FC = () => {
 
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name: name,
+            full_name: name,
           },
         },
       });

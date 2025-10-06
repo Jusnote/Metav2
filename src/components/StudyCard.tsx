@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { Clock, Eye, EyeOff, CheckCircle, XCircle, RotateCcw, MapPin, Calendar } from 'lucide-react';
-import { FlashcardStatistics } from '@/components/FlashcardStatistics';
-import { BlockNoteRenderer } from '@/components/BlockNoteRenderer';
-import { parseFlashcardContent, extractTextFromBlock } from '@/lib/flashcard-parser';
-import { cn } from '@/lib/utils';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Flashcard, StudyDifficulty } from '../types/flashcard';
+import { Eye, EyeOff, CheckCircle, XCircle, RotateCcw, MapPin, Calendar } from 'lucide-react';
+import { BlockNoteRenderer } from './BlockNoteRenderer';
+import { parseFlashcardContent } from '../lib/flashcard-parser';
+import { cn } from '../lib/utils';
 
 interface StudyCardProps {
   card: Flashcard;
@@ -23,8 +22,8 @@ export function StudyCard({ card, onAnswer, showAnswer: initialShowAnswer = fals
 
   // 🎯 PARSING DO CONTEÚDO BLOCKNOTE
   const parsedContent = React.useMemo(() => {
-    // Tentar diferentes campos onde o conteúdo pode estar
-    const content = card.front || card.content || card.front_content;
+    // Usar apenas o campo front que existe na interface Flashcard
+    const content = card.front;
     
     // Se tem conteúdo BlockNote (array), usar o parser
     if (content && Array.isArray(content)) {
@@ -38,7 +37,7 @@ export function StudyCard({ card, onAnswer, showAnswer: initialShowAnswer = fals
       hasQuote: false,
       strategy: 'legacy' as const
     };
-  }, [card.front, card.content, card.front_content]);
+  }, [card.front]);
 
   // Determinar se deve usar BlockNote ou texto simples
   const useBlockNoteRendering = parsedContent.strategy !== 'legacy';
@@ -105,12 +104,6 @@ export function StudyCard({ card, onAnswer, showAnswer: initialShowAnswer = fals
       default:
         return 'Tradicional';
     }
-  };
-
-  const getDifficultyColor = (difficulty: number) => {
-    if (difficulty <= 2) return 'bg-red-100 text-red-700 border-red-200';
-    if (difficulty <= 4) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-    return 'bg-green-100 text-green-700 border-green-200';
   };
 
   return (

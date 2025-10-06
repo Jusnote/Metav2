@@ -4,7 +4,6 @@ import {
   Home,
   Calendar,
   Play,
-  Shield,
   FileText,
   Settings,
   Filter,
@@ -18,39 +17,34 @@ import {
   UserCircle,
   ChevronDown,
   Menu,
-  X,
-  ChevronRight,
   Bell,
   AlertCircle,
   CheckCircle,
   Wrench,
   Code2,
   BookOpen,
-  GraduationCap,
-  User,
   ChevronUp,
   StickyNote
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { UserAvatar } from "@/components/UserAvatar";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "../hooks/useAuth";
+import { UserAvatar } from "./UserAvatar";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "./ui/sheet";
 import { toast } from "sonner";
-import { useStudyMode, StudyMode } from "@/contexts/StudyModeContext";
-import { StudyModeToggle } from "@/components/StudyModeToggle";
+import { StudyModeToggle } from "./StudyModeToggle";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -76,8 +70,8 @@ export function AppHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const location = typeof window !== 'undefined' ? useLocation() : null;
+  const currentPath = location?.pathname;
   const { user, signOut } = useAuth();
 
   // Mock notifications data - replace with actual notifications context
@@ -87,26 +81,8 @@ export function AppHeader() {
     hasSuccess: false
   };
 
-  const getBreadcrumbs = () => {
-    const pathSegments = currentPath.split('/').filter(Boolean);
-    const breadcrumbs = [{ title: 'Dashboard', url: '/', icon: Home }];
-    
-    if (pathSegments.length > 0) {
-      const currentItem = navigationItems.find(item => 
-        item.url === currentPath || (item.url !== '/' && currentPath.startsWith(item.url))
-      ) || toolsItems.find(item => 
-        item.url === currentPath || (item.url !== '/' && currentPath.startsWith(item.url))
-      );
-      
-      if (currentItem && currentItem.url !== '/') {
-        breadcrumbs.push(currentItem);
-      }
-    }
-    
-    return breadcrumbs;
-  };
-
   const isActive = (path: string) => {
+    if (!currentPath) return false;
     if (path === "/") {
       return currentPath === "/";
     }

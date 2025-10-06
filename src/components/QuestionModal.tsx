@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Question, QuestionResponse, SectionQuestions } from '@/types/questions';
+import { QuestionResponse, SectionQuestions } from '../types/questions';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
@@ -20,7 +20,7 @@ interface QuestionModalProps {
 export function QuestionModal({ 
   sectionQuestions, 
   isOpen, 
-  onClose, 
+  onClose: _onClose, 
   onComplete, 
   onSkip 
 }: QuestionModalProps) {
@@ -55,7 +55,7 @@ export function QuestionModal({
 
   console.log('🎮 QuestionModal render - isOpen:', isOpen, 'sectionQuestions:', sectionQuestions);
   
-  if (!isOpen || !sectionQuestions || sectionQuestions.questions.length === 0) {
+  if (!isOpen || !sectionQuestions || sectionQuestions.questions.length === 0 || typeof document === 'undefined') {
     console.log('🚫 QuestionModal não renderizado - isOpen:', isOpen, 'sectionQuestions:', !!sectionQuestions, 'questionsLength:', sectionQuestions?.questions.length);
     return null;
   }

@@ -88,7 +88,7 @@ export const TimerProvider: React.FC<TimerProviderProps> = ({ children }) => {
           documento: prev[timerState.currentSubtopicKey]?.documento || 0,
           flashcards: prev[timerState.currentSubtopicKey]?.flashcards || 0,
           questoes: prev[timerState.currentSubtopicKey]?.questoes || 0,
-          [timerState.currentActivityType]: (prev[timerState.currentSubtopicKey]?.[timerState.currentActivityType] || 0) + sessionTime
+          [timerState.currentActivityType!]: (prev[timerState.currentSubtopicKey]?.[timerState.currentActivityType!] || 0) + sessionTime
         }
       }));
     }

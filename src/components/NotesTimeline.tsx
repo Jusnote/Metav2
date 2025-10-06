@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Note } from '@/types/notes';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Note } from '../types/notes';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 import { Edit3, Trash2, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -41,6 +41,8 @@ export const NotesTimeline: React.FC<NotesTimelineProps> = ({
   };
 
   const handleDelete = async (id: string) => {
+    if (typeof window === 'undefined') return;
+    
     if (window.confirm('Tem certeza que deseja excluir esta anotação?')) {
       await onDeleteNote(id);
     }

@@ -1,16 +1,15 @@
 import { useState, useCallback, useMemo } from 'react';
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors, DragOverlay, closestCorners, closestCenter } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors, DragOverlay, closestCenter } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { Calendar, Plus, TrendingUp, Clock, BookOpen, Target } from 'lucide-react';
-import { StudyTask, DaySchedule } from '@/types/study';
+import { Calendar, Clock, BookOpen, Target } from 'lucide-react';
+import { StudyTask, DaySchedule } from '../../types/study';
 import { DayColumn } from './DayColumn';
 import { TaskDialog } from './TaskDialog';
 import { StudyCard } from './StudyCard';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { toast } from '@/hooks/use-toast';
-import { ButtonIcon } from '@/components/ui/button-icon';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Progress } from '../ui/progress';
+import { toast } from '../../hooks/use-toast';
+import { ButtonIcon } from '../ui/button-icon';
 
 // Função para calcular as datas da semana atual
 const getCurrentWeekDates = () => {

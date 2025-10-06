@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "flashcard-scribe-flow-27-25",
+    "projectPath": "d:\\Nova pasta (18)\\flashcard-scribe-flow-27-25",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-nT5I-U6Rv99zWDgbFdeNE57b2H4dj_Qf2cDNkprFd9i1F1-K-ga275n5ryAhHVqWtBmEkOr9nIBmcyc4EhO2kXKPj0oIiDAZe-6VGQ_P11y7S8hOGMOiRgV-lmpI-Wo_fXU"
+    }
+  },
+  "proxy": "http://0f16fd6e-cdff-4b5c-ae41-56526cde1a93:mJI4we5vsButR3SwsBlD5OKUo61RiewC@tun.testsprite.com:8080"
+}

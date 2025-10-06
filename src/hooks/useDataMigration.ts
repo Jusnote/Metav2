@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Deck, Flashcard } from '@/types/flashcard';
+import { supabase } from '../integrations/supabase/client';
+import { useToast } from './use-toast';
+import { Deck, Flashcard } from '../types/flashcard';
 
 const DECKS_KEY = 'flashcards_decks';
 const CARDS_KEY = 'flashcards_cards';
@@ -121,10 +121,12 @@ export function useDataMigration() {
               back: card.back,
               last_reviewed: card.lastReviewed?.toISOString(),
               next_review: card.nextReview.toISOString(),
-              interval_days: card.interval,
-              ease_factor: card.easeFactor,
-              repetitions: card.repetitions,
               difficulty: card.difficulty,
+              stability: card.stability,
+              state: card.state,
+              due: card.due.toISOString(),
+              last_review: card.last_review?.toISOString(),
+              review_count: card.review_count,
               parent_id: card.parentId ? deckMapping[card.parentId] : null,
               child_ids: card.childIds || [],
               level: card.level || 0,

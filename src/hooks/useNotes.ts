@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Note, CreateNoteRequest, UpdateNoteRequest, UseNotesReturn } from '@/types/notes';
-import { useToast } from '@/hooks/use-toast';
+import { supabase } from '../integrations/supabase/client';
+import { Note, CreateNoteRequest, UpdateNoteRequest, UseNotesReturn } from '../types/notes';
+import { useToast } from './use-toast';
 
 export const useNotes = (): UseNotesReturn => {
   const [notes, setNotes] = useState<Note[]>([]);

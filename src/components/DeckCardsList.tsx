@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Flashcard } from '@/types/flashcard';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Textarea } from './ui/textarea';
+import { Flashcard } from '../types/flashcard';
 import { ChevronDown, ChevronRight, Edit3, Trash2, Calendar, Clock, Eye, EyeOff, Check, X, HelpCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
+import { cn } from '../lib/utils';
+import { useToast } from '../hooks/use-toast';
 interface DeckCardsListProps {
-  deckId: string;
   deckName: string;
   cards: Flashcard[];
   onUpdateCard: (cardId: string, front: string, back: string, explanation?: string, hiddenWords?: string[]) => void;
@@ -18,7 +17,6 @@ interface DeckCardsListProps {
   shouldOpenOnMount?: boolean;
 }
 export function DeckCardsList({
-  deckId,
   deckName,
   cards,
   onUpdateCard,
@@ -66,7 +64,7 @@ export function DeckCardsList({
     } else if (editingCard.type === 'word-hiding') {
       // Parse hidden words from text with {{}}
       const hiddenWords: string[] = [];
-      const cleanText = editHidingText.replace(/\{\{([^}]+)\}\}/g, (match, word) => {
+      const cleanText = editHidingText.replace(/\{\{([^}]+)\}\}/g, (_, word) => {
         hiddenWords.push(word.trim());
         return word.trim();
       });
@@ -241,11 +239,11 @@ export function DeckCardsList({
                             <div>
                               <label className="text-sm font-medium">Resposta correta</label>
                               <div className="flex gap-3 mt-2">
-                                <Button variant={editAnswer === 'true' ? 'default' : 'outline-solid'} onClick={() => setEditAnswer('true')} className={cn("flex items-center gap-2", editAnswer === 'true' && "bg-success text-success-foreground hover:bg-success/90")}>
+                                <Button variant={editAnswer === 'true' ? 'default' : 'outline'} onClick={() => setEditAnswer('true')} className={cn("flex items-center gap-2", editAnswer === 'true' && "bg-success text-success-foreground hover:bg-success/90")}>
                                   <Check className="h-4 w-4" />
                                   Certo
                                 </Button>
-                                <Button variant={editAnswer === 'false' ? 'default' : 'outline-solid'} onClick={() => setEditAnswer('false')} className={cn("flex items-center gap-2", editAnswer === 'false' && "bg-destructive text-destructive-foreground hover:bg-destructive/90")}>
+                                <Button variant={editAnswer === 'false' ? 'default' : 'outline'} onClick={() => setEditAnswer('false')} className={cn("flex items-center gap-2", editAnswer === 'false' && "bg-destructive text-destructive-foreground hover:bg-destructive/90")}>
                                   <X className="h-4 w-4" />
                                   Errado
                                 </Button>

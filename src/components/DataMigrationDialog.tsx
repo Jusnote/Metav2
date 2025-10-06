@@ -1,15 +1,14 @@
-import React from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { Progress } from './ui/progress';
 import { AlertTriangle, Database, Trash2, X } from 'lucide-react';
-import { useDataMigration } from '@/hooks/useDataMigration';
+import { useDataMigration } from '../hooks/useDataMigration';
 
 export function DataMigrationDialog() {
   const {
@@ -26,7 +25,9 @@ export function DataMigrationDialog() {
     const success = await migrateData();
     if (success) {
       // Recarregar a página para atualizar os dados
-      window.location.reload();
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
     }
   };
 

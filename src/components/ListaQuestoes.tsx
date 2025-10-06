@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import { useQuestoes, QuestaoCompleta } from "@/hooks/useQuestoes";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, AlertCircle, Clock, Bookmark } from "lucide-react";
-import { VisualizarQuestao } from "@/components/VisualizarQuestao";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { useQuestoes, QuestaoCompleta } from "../hooks/useQuestoes";
+import { Card, CardContent, CardHeader } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { CheckCircle, AlertCircle, Bookmark } from "lucide-react";
+import { VisualizarQuestao } from "./VisualizarQuestao";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 export const ListaQuestoes: React.FC = () => {
   const { questoes, loading, error, deleteQuestao } = useQuestoes();
   const [selectedQuestao, setSelectedQuestao] = useState<QuestaoCompleta | null>(null);
   const [respostasSelecionadas, setRespostasSelecionadas] = useState<{[key: string]: string}>({});
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (_status: string) => {
     // Implementar lógica de status se houver
     return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
   };

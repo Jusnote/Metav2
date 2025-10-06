@@ -1,7 +1,7 @@
 import { GraduationCap, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useStudyMode, StudyMode } from "@/contexts/StudyModeContext";
-import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { useStudyMode, StudyMode } from "../contexts/StudyModeContext";
+import { cn } from "../lib/utils";
 
 export function StudyModeToggle() {
   const { studyMode, setStudyMode } = useStudyMode();

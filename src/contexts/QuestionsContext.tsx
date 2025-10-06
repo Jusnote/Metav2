@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { SectionQuestions, Question } from '@/types/questions';
-import * as studyQuestionsService from '@/services/studyQuestionsService';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { SectionQuestions, Question } from '../types/questions';
+import * as studyQuestionsService from '../services/studyQuestionsService';
 
 // Mock data para testes - depois será integrado com Supabase
 const INITIAL_MOCK_QUESTIONS: SectionQuestions[] = [

@@ -16,16 +16,15 @@ import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
 import { Image } from '@tiptap/extension-image';
 import { Superscript } from '@tiptap/extension-superscript';
 import { Subscript } from '@tiptap/extension-subscript';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import EmojiPicker from 'emoji-picker-react';
-import { CalloutExtension } from '@/components/ui/callout';
-import { ColumnsExtension } from '@/components/ui/columns';
-import { CarouselExtension } from '@/components/ui/carousel-extension';
-import { InteractiveExplanationExtension } from '@/components/ui/interactive-explanation-extension';
+import { CalloutExtension } from './ui/callout';
+import { ColumnsExtension } from './ui/columns';
+import { CarouselExtension } from './ui/carousel-extension';
+import { InteractiveExplanationExtension } from './ui/interactive-explanation-extension';
 import { 
   Bold, 
   Italic, 
@@ -48,12 +47,10 @@ import {
   Smile,
   Hash,
   Minus,
-  Table as TableIcon,
   Code2,
   Highlighter,
   IndentIncrease,
   IndentDecrease,
-  MoreHorizontal,
   Terminal,
   Upload,
   Lightbulb,
@@ -66,13 +63,12 @@ import {
   Columns3,
   Superscript as SuperscriptIcon,
   Subscript as SubscriptIcon,
-  RemoveFormatting,
   Eraser,
   Images,
   HelpCircle
 } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { cn } from '../lib/utils';
 import { useState, useRef } from 'react';
 import { TableInsertDialog } from './TableInsertDialog';
 import { CarouselInsertDialog } from './CarouselInsertDialog';
@@ -152,13 +148,15 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
       
       // Reaplicar cores das tabelas após atualização
       setTimeout(() => {
-        const tables = document.querySelectorAll('.ProseMirror table[data-table-color]');
-        tables.forEach(table => {
-          const color = (table as HTMLElement).getAttribute('data-table-color');
-          if (color) {
-            applyTableColor(table as HTMLElement, color);
-          }
-        });
+        if (typeof document !== 'undefined') {
+          const tables = document.querySelectorAll('.ProseMirror table[data-table-color]');
+          tables.forEach(table => {
+            const color = (table as HTMLElement).getAttribute('data-table-color');
+            if (color) {
+              applyTableColor(table as HTMLElement, color);
+            }
+          });
+        }
       }, 50);
     },
     editorProps: {
@@ -261,11 +259,13 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
     
     // Aplicar cor personalizada à tabela
     setTimeout(() => {
-      const tables = document.querySelectorAll('.ProseMirror table');
-      const lastTable = tables[tables.length - 1] as HTMLElement;
-      if (lastTable) {
-        lastTable.setAttribute('data-table-color', color);
-        applyTableColor(lastTable, color);
+      if (typeof document !== 'undefined') {
+        const tables = document.querySelectorAll('.ProseMirror table');
+        const lastTable = tables[tables.length - 1] as HTMLElement;
+        if (lastTable) {
+          lastTable.setAttribute('data-table-color', color);
+          applyTableColor(lastTable, color);
+        }
       }
     }, 100);
   };

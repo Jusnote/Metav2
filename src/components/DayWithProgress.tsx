@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface DayWithProgressProps {
   day: number;
   progress: number; // 0-100

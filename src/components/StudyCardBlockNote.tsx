@@ -6,11 +6,11 @@
  */
 
 import React, { useState } from 'react';
-import SavedCardBlockNote from '@/components/SavedCardBlockNote';
-import { parseFlashcardContent } from '@/lib/flashcard-parser';
-import { Button } from '@/components/ui/button';
+import SavedCardBlockNote from './SavedCardBlockNote';
+import { parseFlashcardContent } from '../lib/flashcard-parser';
+import { Button } from './ui/button';
 import { Eye, EyeOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface StudyCardBlockNoteProps {
   content: any[];

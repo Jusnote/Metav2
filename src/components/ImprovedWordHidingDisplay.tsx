@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Eye, EyeOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface ImprovedWordHidingDisplayProps {
   text: string;
@@ -45,36 +43,6 @@ export function ImprovedWordHidingDisplay({
     }
   };
 
-  const toggleAnswer = () => {
-    if (showAnswer) {
-      setRevealedWords(new Set());
-      setShowAnswer(false);
-    } else {
-      const wordsWithoutPunctuation = hiddenWords.map(w => w.toLowerCase().replace(/[.,!?;:()]/g, ''));
-      setRevealedWords(new Set(wordsWithoutPunctuation));
-      setShowAnswer(true);
-      // Chamar callback quando revelar todas via botão
-      if (onAllWordsRevealed) {
-        onAllWordsRevealed();
-      }
-    }
-  };
-
-  const revealAllWords = () => {
-    const wordsWithoutPunctuation = hiddenWords.map(w => w.toLowerCase().replace(/[.,!?;:()]/g, ''));
-    setRevealedWords(new Set(wordsWithoutPunctuation));
-    setShowAnswer(true);
-    // Chamar callback quando revelar todas
-    if (onAllWordsRevealed) {
-      onAllWordsRevealed();
-    }
-  };
-
-  const hideAllWords = () => {
-    setRevealedWords(new Set());
-    setShowAnswer(false);
-  };
-
   const getWordDisplay = (word: string, index: number) => {
     const cleanWord = word.trim().toLowerCase();
     // Remove pontuação para comparação
@@ -115,11 +83,6 @@ export function ImprovedWordHidingDisplay({
       </span>
     );
   };
-
-  const remainingHiddenCount = hiddenWords.filter(word => {
-    const wordWithoutPunctuation = word.toLowerCase().replace(/[.,!?;:()]/g, '');
-    return !revealedWords.has(wordWithoutPunctuation);
-  }).length;
 
   return (
     <div className="text-lg leading-relaxed">

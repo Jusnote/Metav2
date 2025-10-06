@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { FileText, Blocks } from "lucide-react";
 import { FlashcardEditor } from "./FlashcardEditor";
-import BlockNoteEditor from "@/components/BlockNoteEditor";
-import { Deck } from "@/types/flashcard";
+import BlockNoteEditor from "./BlockNoteEditor";
+import { Deck } from "../types/flashcard";
 
 interface EditorSelectorProps {
   selectedDeck: Deck;

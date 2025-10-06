@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface ContextMenuOption {
   id: string;
@@ -37,7 +37,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       setIsOpen(false);
     };
 
-    if (isOpen) {
+    if (isOpen && typeof document !== 'undefined') {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('scroll', handleScroll, true);
       return () => {

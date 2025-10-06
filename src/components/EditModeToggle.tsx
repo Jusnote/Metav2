@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import { Edit3, Eye } from 'lucide-react';
 
 interface EditModeToggleProps {
@@ -16,7 +16,7 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({
   return (
     <Button
       onClick={onToggle}
-      variant={isEditMode ? 'default' : 'outline-solid'}
+      variant={isEditMode ? 'default' : 'outline'}
       size="sm"
       className={`flex items-center gap-2 transition-all duration-200 ${className}`}
     >

@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ImprovedWordHidingDisplay } from '@/components/ImprovedWordHidingDisplay';
-import { TrueFalseDisplay } from '@/components/TrueFalseDisplay';
-import { Flashcard, StudyDifficulty } from '@/types/flashcard';
-import { RotateCcw, Eye, EyeOff, Plus, Link2, ArrowDown, GitBranch, Zap, Brain, Clock, MoreHorizontal, Layers, Timer } from 'lucide-react';
-import { FlashcardInfoPanel } from '@/components/FlashcardInfoPanel';
-import { FlashcardStatistics } from '@/components/FlashcardStatistics';
-import { cn } from '@/lib/utils';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { ImprovedWordHidingDisplay } from './ImprovedWordHidingDisplay';
+import { TrueFalseDisplay } from './TrueFalseDisplay';
+import { Flashcard, StudyDifficulty } from '../types/flashcard';
+import { RotateCcw, Eye, EyeOff, Link2, GitBranch, Brain, Clock, MoreHorizontal, Layers, Timer } from 'lucide-react';
+import { FlashcardStatistics } from './FlashcardStatistics';
+import { cn } from '../lib/utils';
 
 
 interface FlashcardDisplayProps {
@@ -30,9 +29,6 @@ export function FlashcardDisplay({
   const [subCardAnswers, setSubCardAnswers] = useState<Record<string, boolean>>({});
   const [currentHighlightedSub, setCurrentHighlightedSub] = useState<number | null>(null);
   const [mainCardAnswered, setMainCardAnswered] = useState(false);
-  const [userGotItRight, setUserGotItRight] = useState<boolean | null>(null);
-  const [subCardResults, setSubCardResults] = useState<Record<string, boolean | null>>({});
-  const [isLoadingAnimationActive, setIsLoadingAnimationActive] = useState(true);
   const [showSubFlashcardSection, setShowSubFlashcardSection] = useState(false);
   const [questionPulseTriggered, setQuestionPulseTriggered] = useState(false);
   const [answerPulseTriggered, setAnswerPulseTriggered] = useState(false);
@@ -111,7 +107,6 @@ export function FlashcardDisplay({
     setTrueFalseAnswer(userAnswer);
     setTrueFalseIsCorrect(isCorrect);
     setMainCardAnswered(true);
-    setUserGotItRight(isCorrect);
 
     if (isCorrect && hasChildren && !hasParents) {
       setTimeout(() => {
@@ -126,7 +121,6 @@ export function FlashcardDisplay({
     onAnswer(difficulty);
     setShowAnswer(false);
     setMainCardAnswered(false);
-    setUserGotItRight(null);
     setShowSubFlashcardSection(false); // Reset sub-flashcard section visibility
     setWordHidingAllRevealed(false); // Reset word-hiding state
     setQuestionPulseTriggered(false); // Reset question pulse for next card
@@ -138,7 +132,6 @@ export function FlashcardDisplay({
 
   const handleMainCardResponse = (gotItRight: boolean) => {
     setMainCardAnswered(true);
-    setUserGotItRight(gotItRight);
 
     if (gotItRight && hasChildren && !hasParents) {
       setTimeout(() => {
@@ -149,10 +142,8 @@ export function FlashcardDisplay({
     // Removed automatic 'again' handling - user should choose difficulty manually
   };
 
-  const handleSubCardResponse = (cardId: string, cardIndex: number, gotItRight: boolean) => {
-    setSubCardResults(prev => ({ ...prev, [cardId]: gotItRight }));
+  const handleSubCardResponse = (_cardId: string, cardIndex: number, gotItRight: boolean) => {
     setMainCardAnswered(true);
-    setUserGotItRight(gotItRight);
 
     if (gotItRight && cardIndex + 1 < childCards.length) {
       setTimeout(() => {
@@ -165,7 +156,6 @@ export function FlashcardDisplay({
   const toggleAnswer = () => {
     setShowAnswer(!showAnswer);
     if (!showAnswer) {
-      setIsLoadingAnimationActive(false);
       setShowSubFlashcardSection(false); // Hide sub-flashcards when hiding main answer
     }
   };
@@ -262,7 +252,7 @@ export function FlashcardDisplay({
                 <div className="relative">
                   <div className="absolute inset-0 bg-linear-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-md" />
                   <Avatar className="h-12 w-12 relative border-2 border-white/50 shadow-lg">
-                    <AvatarImage src="/brain-icon.png" alt="Flashcard" className="object-cover" />
+                    <AvatarImage src="../../public/brain-icon.png" alt="Flashcard" className="object-cover" />
                     <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white">
                       <Brain className="h-6 w-6" />
                     </AvatarFallback>
@@ -442,7 +432,7 @@ export function FlashcardDisplay({
                           {/* Professor Question */}
                           <div className="flex items-start gap-3 animate-fade-in">
                             <Avatar className="h-8 w-8 border-2 border-blue-200">
-                              <AvatarImage src="/brain-icon.png" alt="Professor" />
+                              <AvatarImage src="../../public/brain-icon.png" alt="Professor" />
                               <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
                                 <Brain className="h-4 w-4" />
                               </AvatarFallback>
@@ -489,7 +479,7 @@ export function FlashcardDisplay({
                                    </div>
                                  </div>
                                  <Avatar className="h-8 w-8 border-2 border-blue-200">
-                                   <AvatarImage src="/brain-icon.png" alt="Professor" />
+                                   <AvatarImage src="../../public/brain-icon.png" alt="Professor" />
                                    <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
                                      <Brain className="h-4 w-4" />
                                    </AvatarFallback>

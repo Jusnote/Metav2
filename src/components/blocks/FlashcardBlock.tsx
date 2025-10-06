@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { createReactBlockSpec } from "@blocknote/react";
-import { defaultProps } from "@blocknote/core";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Eye, EyeOff, Edit, Save, X, ArrowRight } from "lucide-react";
+import { CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { Eye, EyeOff, Edit, ArrowRight } from "lucide-react";
 
 // Definir o bloco customizado de flashcard
 export const FlashcardBlock = createReactBlockSpec(

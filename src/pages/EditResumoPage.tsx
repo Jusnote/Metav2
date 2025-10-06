@@ -1,16 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ChevronRight, ChevronDown, Menu, X, Hash, FileText, Save, Edit3, Eye, Bold, Italic, Underline, Heading1, Heading2, ZoomIn, ZoomOut, Plus } from "lucide-react";
-import { RichTextEditor } from "@/components/RichTextEditor";
-import { CarouselRenderer } from "@/components/CarouselRenderer";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ProgressSidebar } from "@/components/ProgressSidebar";
-import { ProgressMarker } from "@/hooks/useProgressMarkers";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "../components/ui/button";
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Input } from "../components/ui/input";
+import { ChevronRight, ChevronDown, Menu, X, Hash, FileText, Save, Edit3, Eye, Plus } from "lucide-react";
+import { RichTextEditor } from "../components/RichTextEditor";
+import { CarouselRenderer } from "../components/CarouselRenderer";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../components/ui/collapsible";
+import { ProgressSidebar } from "../components/ProgressSidebar";
+import { ProgressMarker } from "../hooks/useProgressMarkers";
+import { useToast } from "../hooks/use-toast";
 
 interface Topic {
   id: string;
@@ -30,8 +29,8 @@ interface Resumo {
 }
 
 const EditResumoPage = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const navigate = typeof window !== 'undefined' ? useNavigate() : () => {};
+  const [searchParams] = typeof window !== 'undefined' ? useSearchParams() : [null];
   const { toast } = useToast();
   
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -39,19 +38,15 @@ const EditResumoPage = () => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [contentRef, setContentRef] = useState<HTMLDivElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [fontSize, setFontSize] = useState(16);
   const [newResumoTitle, setNewResumoTitle] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   
   // State para resumos
-  const [resumos, setResumos] = useState<Resumo[]>([]);
   const [currentResumo, setCurrentResumo] = useState<Resumo | null>(null);
-  
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Mock data - disciplina e resumo baseado nos parâmetros da URL
-  const disciplinaId = searchParams.get('disciplina') || 'ctb';
-  const resumoId = searchParams.get('resumo') || 'disposicoes-preliminares';
+  const disciplinaId = searchParams?.get('disciplina') || 'ctb';
+  const resumoId = searchParams?.get('resumo') || 'disposicoes-preliminares';
 
   // Mock content para demonstração - agora em HTML para o editor rico
   const resumoContent = `<h1>Disposições Preliminares</h1>
@@ -121,8 +116,8 @@ const EditResumoPage = () => {
 
   // Estado inicial do resumo
   useEffect(() => {
-    const nomeFromUrl = searchParams.get('nome');
-    const resumoIdFromUrl = searchParams.get('resumo');
+    const nomeFromUrl = searchParams?.get('nome');
+    const resumoIdFromUrl = searchParams?.get('resumo');
     
     if (nomeFromUrl) {
       // Criar novo resumo com nome da URL
@@ -135,12 +130,11 @@ const EditResumoPage = () => {
         lastModified: new Date()
       };
       
-      setResumos([newResumo]);
       setCurrentResumo(newResumo);
       setIsEditing(true); // Iniciar em modo de edição para novos resumos
     } else if (resumoIdFromUrl) {
       // Carregar resumo salvo pelo ID
-      const savedResumos = JSON.parse(localStorage.getItem('savedResumos') || '{}');
+      const savedResumos = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('savedResumos') || '{}') : {};
       const allSavedResumos = Object.values(savedResumos).flat() as Resumo[];
       const resumoSalvo = allSavedResumos.find((r: Resumo) => r.id === resumoIdFromUrl);
       
@@ -151,7 +145,6 @@ const EditResumoPage = () => {
           lastModified: new Date(resumoSalvo.lastModified)
         };
         
-        setResumos([loadedResumo]);
         setCurrentResumo(loadedResumo);
       }
     } else {
@@ -165,7 +158,6 @@ const EditResumoPage = () => {
         lastModified: new Date()
       };
       
-      setResumos([mockResumo]);
       setCurrentResumo(mockResumo);
     }
   }, [searchParams]);
@@ -232,14 +224,12 @@ const EditResumoPage = () => {
     }));
   };
 
-  const formatContent = (content: string) => {
-    return content.replace(/^# (.+$)/gm, '<h1 class="text-2xl font-bold text-foreground mb-4 mt-6">$1</h1>').replace(/^## (.+$)/gm, '<h2 class="text-xl font-semibold text-foreground mb-3 mt-5">$1</h2>').replace(/^### (.+$)/gm, '<h3 class="text-lg font-medium text-foreground mb-2 mt-4">$1</h3>').replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>').replace(/\*(.+?)\*/g, '<em class="italic">$1</em>').replace(/^• (.+$)/gm, '<li class="ml-6 mb-1">$1</li>').replace(/^(\d+\.) (.+$)/gm, '<li class="ml-6 mb-1 list-decimal">$2</li>').replace(/⚠️ \*\*(.+?)\*\*/g, '<div class="bg-destructive/10 border border-destructive/20 rounded-lg p-4 my-4"><div class="flex items-start gap-2"><span class="text-lg">⚠️</span><div><strong class="text-destructive font-semibold">$1</strong>').replace(/💡 \*\*(.+?)\*\*/g, '<div class="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-4"><div class="flex items-start gap-2"><span class="text-lg">💡</span><div><strong class="text-blue-700 dark:text-blue-300 font-semibold">$1</strong>').replace(/\n\n/g, '</p><p class="mb-3 text-foreground leading-relaxed">').replace(/^(.+)$/gm, '<p class="mb-3 text-foreground leading-relaxed">$1</p>');
-  };
-
   const handleMarkerClick = (marker: ProgressMarker) => {
     if (!contentRef) return;
     
-    // Buscar pelo texto na página e fazer scroll
+    // Buscar pelo texto na página e fazer scroll (apenas no cliente)
+    if (typeof window === 'undefined') return;
+    
     const textNodes: Text[] = [];
     const walker = document.createTreeWalker(
       contentRef,
@@ -285,74 +275,16 @@ const EditResumoPage = () => {
     };
     
     setCurrentResumo(updatedResumo);
-    setResumos(prev => prev.map(r => r.id === updatedResumo.id ? updatedResumo : r));
-  };
-
-  const insertText = (text: string) => {
-    if (!textareaRef.current) return;
-    
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const currentContent = currentResumo?.content || "";
-    
-    const newContent = currentContent.substring(0, start) + text + currentContent.substring(end);
-    updateResumoContent(newContent);
-
-    // Restore cursor position
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + text.length, start + text.length);
-    }, 0);
-  };
-
-  const formatText = (type: 'heading1' | 'heading2' | 'bold' | 'italic' | 'underline') => {
-    if (!textareaRef.current) return;
-    
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    
-    let formattedText = selectedText;
-    
-    switch (type) {
-      case 'heading1':
-        formattedText = `# ${selectedText}`;
-        break;
-      case 'heading2':
-        formattedText = `## ${selectedText}`;
-        break;
-      case 'bold':
-        formattedText = `**${selectedText}**`;
-        break;
-      case 'italic':
-        formattedText = `*${selectedText}*`;
-        break;
-      case 'underline':
-        formattedText = `__${selectedText}__`;
-        break;
-    }
-    
-    if (selectedText) {
-      insertText(formattedText);
-    }
   };
 
   // Funções de inserção rápida
-  const insertTitleWithEmoji = () => insertText("\n📋 Título Principal\n\n");
-  const insertSubtitleWithEmoji = () => insertText("\n📌 Subtítulo\n\n");
-  const insertSectionWithEmoji = () => insertText("\n🔹 Seção\n\n");
-  const insertListWithEmoji = () => insertText("\n📝 Lista:\n• Item 1\n• Item 2\n• Item 3\n\n");
-  const insertImportantWithEmoji = () => insertText("\n⚠️ **Importante**: \n\n");
-  const insertNoteWithEmoji = () => insertText("\n💡 **Nota**: \n\n");
 
   const saveResumo = () => {
-    if (!currentResumo) return;
+    if (!currentResumo || typeof window === 'undefined') return;
     
     // Salvar no localStorage para que apareça na lista de resumos
     const savedResumos = JSON.parse(localStorage.getItem('savedResumos') || '{}');
-    const disciplinaId = searchParams.get('disciplina') || currentResumo.disciplina;
+    const disciplinaId = searchParams?.get('disciplina') || currentResumo.disciplina;
     
     if (!savedResumos[disciplinaId]) {
       savedResumos[disciplinaId] = [];
@@ -405,7 +337,6 @@ const EditResumoPage = () => {
       lastModified: new Date()
     };
 
-    setResumos(prev => [...prev, newResumo]);
     setCurrentResumo(newResumo);
     setNewResumoTitle("");
     setShowCreateForm(false);
@@ -469,7 +400,7 @@ const EditResumoPage = () => {
                     <Button 
                       onClick={() => setIsEditing(!isEditing)} 
                       className={`w-full ${isEditing ? 'bg-accent' : ''}`}
-                      variant={isEditing ? 'default' : 'outline-solid'}
+                      variant={isEditing ? 'default' : 'outline'}
                       size="sm"
                     >
                       {isEditing ? <Edit3 className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
