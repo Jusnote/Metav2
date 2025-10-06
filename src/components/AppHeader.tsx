@@ -24,7 +24,8 @@ import {
   Code2,
   BookOpen,
   ChevronUp,
-  StickyNote
+  StickyNote,
+  Edit3
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { UserAvatar } from "./UserAvatar";
@@ -58,6 +59,7 @@ const toolsItems = [
   { title: "Resumos", url: "/resumos-list", icon: FileText },
   { title: "Notas", url: "/notes", icon: StickyNote },
   { title: "Criar Questão", url: "/criar-questao", icon: Plus },
+  { title: "Editor Plate", url: "/plate-editor", icon: Edit3 },
   { title: "Configurações", url: "/settings", icon: Settings },
   { title: "Filtros", url: "/filters", icon: Filter },
   { title: "Insights", url: "/insights", icon: Lightbulb },
