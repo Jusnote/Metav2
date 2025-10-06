@@ -1,7 +1,7 @@
-import { Flashcard } from '@/types/flashcard';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Flashcard } from '../types/flashcard';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
+import { Progress } from './ui/progress';
 import { 
   Clock, 
   Target, 
@@ -14,7 +14,7 @@ import {
   Activity,
   Zap
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface FlashcardStatisticsProps {
   card: Flashcard;

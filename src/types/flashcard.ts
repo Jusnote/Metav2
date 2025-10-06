@@ -22,6 +22,9 @@ export interface Flashcard {
   hiddenWords?: string[]; // Palavras ocultadas (novo método com sintaxe {{ }})
   explanation?: string; // Explicação opcional (para flashcards true-false)
   
+  // Statistics fields
+  average_response_time?: number; // Average response time in milliseconds
+  
   // Hierarchy fields
   parentId?: string; // ID of parent flashcard
   childIds: string[]; // IDs of child flashcards

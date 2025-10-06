@@ -1,27 +1,15 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./ui/tooltip";
 import {
   Home,
   Calendar,
   Play,
-  Shield,
   FileText,
-  Menu,
   Settings,
   Filter,
   Lightbulb,
@@ -35,8 +23,8 @@ import {
   Code2,
   StickyNote
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "../hooks/useAuth";
+import { Button } from "./ui/button";
 import { toast } from "sonner";
 
 const navigationItems = [
@@ -60,11 +48,12 @@ const toolsItems = [
 ];
 
 export function AppSidebar() {
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const location = typeof window !== 'undefined' ? useLocation() : null;
+  const currentPath = location?.pathname;
   const { user, signOut } = useAuth();
 
   const isActive = (path: string) => {
+    if (!currentPath) return false;
     if (path === "/") {
       return currentPath === "/";
     }

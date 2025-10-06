@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 import { Check, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface TrueFalseEditorProps {
   onSave: (front: string, back: string, type: 'true-false', explanation?: string) => void;
@@ -74,7 +74,7 @@ export function TrueFalseEditor({ onSave, onCancel, initialStatement = '' }: Tru
       {/* Botões de resposta - mais compactos */}
       <div className="grid grid-cols-2 gap-2">
         <Button
-          variant={answer === 'true' ? 'default' : 'outline-solid'}
+          variant={answer === 'true' ? 'default' : 'outline'}
           onClick={() => setAnswer('true')}
           className={cn(
             "flex items-center justify-center gap-1 h-8 text-sm", // Reduzido de h-12 para h-8
@@ -85,7 +85,7 @@ export function TrueFalseEditor({ onSave, onCancel, initialStatement = '' }: Tru
           Certo
         </Button>
         <Button
-          variant={answer === 'false' ? 'default' : 'outline-solid'}
+          variant={answer === 'false' ? 'default' : 'outline'}
           onClick={() => setAnswer('false')}
           className={cn(
             "flex items-center justify-center gap-1 h-8 text-sm", // Reduzido de h-12 para h-8

@@ -1,7 +1,8 @@
-import { FSRS, Rating, State, Card } from 'ts-fsrs';
-import { Flashcard } from '@/types/flashcard';
+import { FSRS, Rating, State, Card, generatorParameters, RecordLogItem } from 'ts-fsrs';
+import { Flashcard } from '../types/flashcard';
 
-const fsrs = new FSRS();
+const params = generatorParameters();
+const fsrs = new FSRS(params);
 
 export class FSRSSpacedRepetition {
   static calculateNextReview(
@@ -17,34 +18,34 @@ export class FSRSSpacedRepetition {
   } {
     const now = new Date();
     
-    // Create FSRS Card object from our Flashcard
+    // Convert Flashcard to FSRS Card format
     const fsrsCard: Card = {
       due: card.due || now,
       stability: card.stability || 0,
       difficulty: card.difficulty || 0,
-      elapsed_days: card.last_review ? Math.floor((now.getTime() - card.last_review.getTime()) / (1000 * 60 * 60 * 24)) : 0,
+      elapsed_days: 0,
       scheduled_days: 0,
       reps: card.review_count || 0,
       lapses: 0,
       state: card.state || State.New,
-      last_review: card.last_review || now
+      last_review: card.last_review || now,
+      learning_steps: 0
     };
 
-    let scheduling_cards;
+    const scheduling_cards = fsrs.repeat(fsrsCard, now);
 
-    if (fsrsCard.state === State.New) {
-      scheduling_cards = fsrs.repeat(fsrsCard, now);
-    } else {
-      scheduling_cards = fsrs.repeat(fsrsCard, now);
+    // Get the scheduled card for the given rating
+    const recordLogItem = scheduling_cards[rating as keyof typeof scheduling_cards] as RecordLogItem;
+    
+    if (!recordLogItem || !recordLogItem.card) {
+      throw new Error(`No scheduled card found for rating: ${rating}`);
     }
 
-    const scheduledCard = scheduling_cards[rating];
-
     return {
-      difficulty: scheduledCard.card.difficulty,
-      stability: scheduledCard.card.stability,
-      state: scheduledCard.card.state,
-      due: scheduledCard.card.due,
+      difficulty: recordLogItem.card.difficulty,
+      stability: recordLogItem.card.stability,
+      state: recordLogItem.card.state,
+      due: recordLogItem.card.due,
       last_review: now,
       review_count: (card.review_count || 0) + 1,
     };

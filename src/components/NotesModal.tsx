@@ -4,12 +4,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 import { Plus, FileText } from 'lucide-react';
-import { useNotes } from '@/hooks/useNotes';
-import { NotesTimeline } from '@/components/NotesTimeline';
+import { useNotes } from '../hooks/useNotes';
+import { NotesTimeline } from './NotesTimeline';
 
 interface NotesModalProps {
   isOpen: boolean;
@@ -35,8 +35,7 @@ export const NotesModal: React.FC<NotesModalProps> = ({
     createNote,
     updateNote,
     deleteNote,
-    fetchNotes,
-    clearNotes
+    fetchNotes
   } = useNotes();
 
   // Carregar anotações quando o modal abrir

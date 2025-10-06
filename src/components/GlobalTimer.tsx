@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Square, Minimize2, Maximize2, CheckCircle } from 'lucide-react';
 
 interface GlobalTimerProps {
   isVisible: boolean;
-  onTimeUpdate?: (seconds: number) => void;
-  onActivityComplete?: () => void;
+  onActivityComplete?: (activity: string, duration: number) => void;
 }
 
 export const GlobalTimer: React.FC<GlobalTimerProps> = ({ 
   isVisible, 
-  onTimeUpdate,
   onActivityComplete 
 }) => {
   const [isActive, setIsActive] = useState(false);
@@ -72,7 +71,7 @@ export const GlobalTimer: React.FC<GlobalTimerProps> = ({
   // Concluir atividade
   const completeActivity = () => {
     // Notificar conclusão antes de parar
-    onActivityComplete?.();
+    onActivityComplete?.(currentActivity, time);
     
     // Parar timer e resetar
     setIsActive(false);

@@ -1,22 +1,18 @@
-import { NodeViewWrapper } from '@tiptap/react';
+import { NodeViewWrapper, ReactNodeViewProps } from '@tiptap/react';
 import { AnimatedCarousel } from './animated-carousel';
 import { useState, useEffect } from 'react';
 
-interface CarouselNodeViewProps {
-  node: {
-    attrs: {
-      slides: Array<{ content: string; image: string }>;
-    };
-  };
-  updateAttributes: (attrs: any) => void;
+interface CarouselAttrs {
+  slides: Array<{ content: string; image: string }>;
 }
 
-export function CarouselNodeView({ node, updateAttributes }: CarouselNodeViewProps) {
-  const [slides, setSlides] = useState(node.attrs.slides || []);
+export function CarouselNodeView({ node, updateAttributes }: ReactNodeViewProps) {
+  const attrs = node.attrs as CarouselAttrs;
+  const [slides, setSlides] = useState(attrs.slides || []);
 
   useEffect(() => {
-    setSlides(node.attrs.slides || []);
-  }, [node.attrs.slides]);
+    setSlides(attrs.slides || []);
+  }, [attrs.slides]);
 
   const handleSlideContentChange = (slideIndex: number, content: string) => {
     const updatedSlides = slides.map((slide: { content: string; image: string }, index: number) => 

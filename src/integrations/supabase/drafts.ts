@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Block } from '@/components/BlockBasedFlashcardEditor';
-import type { Database } from '@/types/database';
+import type { Block } from '../../components/BlockBasedFlashcardEditor';
+import type { Database } from '../../types/database';
 
 // Cliente específico para drafts com tipos corretos
 const SUPABASE_URL = "https://xmtleqquivcukwgdexhc.supabase.co";
@@ -8,7 +8,7 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 
 const supabaseDrafts = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
     persistSession: true,
     autoRefreshToken: true,
   }

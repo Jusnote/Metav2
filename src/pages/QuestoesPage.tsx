@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { ChevronDown, ChevronUp, Search, X, Bookmark, Clock, CheckCircle, XCircle, AlertCircle, Filter, SlidersHorizontal, Grid3X3, List, Plus, Trash2 } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Badge } from "../components/ui/badge";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { Checkbox } from "../components/ui/checkbox";
+import { Label } from "../components/ui/label";
+import { Search, X, Bookmark, Clock, CheckCircle, XCircle, AlertCircle, Filter, SlidersHorizontal, Grid3X3, List, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useQuestoes } from "@/hooks/useQuestoes";
+import { useQuestoes } from "../hooks/useQuestoes";
 
 // Dados estáticos para demonstração
 const questoesEstaticas = [
@@ -18,6 +18,7 @@ const questoesEstaticas = [
     assunto: "MPF 2025",
     nivel: "Médio",
     prova: "MPF - Procurador da República",
+    banca: "MPF",
     cargo: "Procurador",
     ano: 2025,
     pergunta: "O art. 4º do Código Penal estabelece: \"Considera-se praticado o crime no momento da ação ou omissão, ainda que outro seja o momento do resultado\". A partir daí, correto afirmar:",
@@ -36,6 +37,7 @@ const questoesEstaticas = [
     assunto: "Direitos Fundamentais",
     nivel: "Fácil",
     prova: "TRF - Juiz Federal",
+    banca: "TRF",
     cargo: "Juiz",
     ano: 2024,
     pergunta: "Sobre os direitos fundamentais, é correto afirmar:",
@@ -62,6 +64,11 @@ const filtrosDisponiveis = {
 };
 
 export default function QuestoesPage() {
+  // SSR protection - return early if not in browser
+  if (typeof window === 'undefined') {
+    return <div>Loading...</div>;
+  }
+
   const [filtrosAtivos, setFiltrosAtivos] = useState<string[]>([]);
   const [mostrarFiltros, setMostrarFiltros] = useState(true);
   const [statusSelecionado, setStatusSelecionado] = useState("Todas");
@@ -105,12 +112,6 @@ export default function QuestoesPage() {
   const [cargo, setCargo] = useState("");
   const [modalidade, setModalidade] = useState("");
   const [dificuldade, setDificuldade] = useState("");
-
-  const adicionarFiltro = (filtro: string) => {
-    if (!filtrosAtivos.includes(filtro)) {
-      setFiltrosAtivos([...filtrosAtivos, filtro]);
-    }
-  };
 
   const removerFiltro = (filtro: string) => {
     setFiltrosAtivos(filtrosAtivos.filter(f => f !== filtro));
@@ -225,7 +226,7 @@ export default function QuestoesPage() {
                   {filtrosDisponiveis.status.map((status) => (
                     <Button
                       key={status}
-                      variant={statusSelecionado === status ? "default" : "outline-solid"}
+                      variant={statusSelecionado === status ? "default" : "outline"}
                       size="sm"
                       onClick={() => setStatusSelecionado(status)}
                       className={`transition-all duration-200 ${
@@ -429,9 +430,9 @@ export default function QuestoesPage() {
                       <div className="text-xs text-muted-foreground space-y-1">
                         <div className="text-xs text-muted-foreground">
                           {(questao.banca || questao.cargo) && (
-                            <p className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground">
                               {questao.banca}{questao.banca && questao.cargo && " - "}{questao.cargo}
-                            </p>
+                            </div>
                           )}
                           {questao.ano && (
                             <p className="text-xs text-muted-foreground">{questao.ano}</p>

@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import { Check, X, Lightbulb } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface TrueFalseDialogDisplayProps {
   statement: string;

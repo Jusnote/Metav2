@@ -3,7 +3,7 @@ import { ReactNodeViewRenderer } from '@tiptap/react';
 import { NodeViewWrapper } from '@tiptap/react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 export interface ColumnsOptions {
   HTMLAttributes: Record<string, any>;

@@ -1,0 +1,55 @@
+{
+  "tech_stack": ["TypeScript", "Next.js 14", "React 18", "Supabase", "Tailwind CSS", "Radix UI", "Lexical", "BlockNote", "FSRS", "React Router DOM"],
+  "features": [
+    {
+      "name": "Flashcard Management",
+      "description": "Create, edit, and organize flashcards with rich text content using BlockNote editor",
+      "files": ["src/components/StudyCard.tsx", "src/components/FlashcardDisplay.tsx", "src/components/FlashcardEditor.tsx", "src/hooks/useBlockNoteFlashcards.ts"]
+    },
+    {
+      "name": "Spaced Repetition Study System",
+      "description": "FSRS-based intelligent scheduling for optimal learning retention",
+      "files": ["src/pages/StudyPage.tsx", "src/lib/fsrs.ts", "src/lib/spaced-repetition.ts", "src/components/FlashcardStatistics.tsx"]
+    },
+    {
+      "name": "Multiple Flashcard Types",
+      "description": "Support for traditional, word-hiding, and true-false flashcards",
+      "files": ["src/components/TrueFalseEditor.tsx", "src/components/WordSelector.tsx", "src/components/ImprovedWordHidingDisplay.tsx"]
+    },
+    {
+      "name": "Rich Text Editor",
+      "description": "Advanced text editing with Lexical and BlockNote integration",
+      "files": ["src/components/RichTextEditor.tsx", "src/components/BlockNoteEditor.tsx", "src/components/lexical-playground/"]
+    },
+    {
+      "name": "Question Management",
+      "description": "Create and manage study questions with different types and difficulty levels",
+      "files": ["src/components/QuestionEditor.tsx", "src/components/QuestionManager.tsx", "src/components/QuestionModal.tsx", "src/hooks/useQuestions.ts"]
+    },
+    {
+      "name": "Notes System",
+      "description": "Comprehensive note-taking with timeline and organization features",
+      "files": ["src/components/NotesModal.tsx", "src/components/NotesTimeline.tsx", "src/pages/NotesPage.tsx", "src/hooks/useNotes.ts"]
+    },
+    {
+      "name": "Study Progress Tracking",
+      "description": "Track study sessions, progress, and performance analytics",
+      "files": ["src/components/ProgressSidebar.tsx", "src/components/GlobalTimer.tsx", "src/components/StudyModeToggle.tsx"]
+    },
+    {
+      "name": "Authentication System",
+      "description": "User authentication and protected routes",
+      "files": ["src/components/AuthForm.tsx", "src/components/ProtectedRoute.tsx", "src/components/UserAvatar.tsx"]
+    },
+    {
+      "name": "Hierarchical Flashcards",
+      "description": "Support for parent-child relationships between flashcards for complex topics",
+      "files": ["src/components/FlashcardDisplay.tsx", "src/components/DialogFlashcardDisplay.tsx"]
+    },
+    {
+      "name": "Quote-Based Flashcards",
+      "description": "Automatic separation of front/back content using quote blocks in rich text",
+      "files": ["src/components/StudyCardBlockNote.tsx", "src/components/BlockNoteRenderer.tsx"]
+    }
+  ]
+}

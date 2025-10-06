@@ -1,5 +1,3 @@
-import React from 'react';
-
 const OrbitCircles = () => {
   return (
     <div className="orbit-base absolute inset-0 pointer-events-none -z-10 flex items-center justify-center" style={{ top: '120px' }}>

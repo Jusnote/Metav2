@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuestaoForm } from '@/hooks/useQuestaoForm';
-import { useQuestoes } from '@/hooks/useQuestoes';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useQuestaoForm } from '../hooks/useQuestaoForm';
+import { useQuestoes } from '../hooks/useQuestoes';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Label } from './ui/label';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+} from './ui/select';
+import { Card, CardContent } from './ui/card';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const CriarQuestaoForm: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = typeof window !== 'undefined' ? useNavigate() : () => {};
   const { createQuestao } = useQuestoes();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -174,7 +174,7 @@ export const CriarQuestaoForm: React.FC = () => {
               Modalidade
             </Label>
             <Select
-              value={questao.modalidade}
+              value={questao.modalidade || undefined}
               onValueChange={(value) => handleQuestaoChange('modalidade', value)}
             >
               <SelectTrigger>
@@ -193,7 +193,7 @@ export const CriarQuestaoForm: React.FC = () => {
               Dificuldade
             </Label>
             <Select
-              value={questao.dificuldade}
+              value={questao.dificuldade || undefined}
               onValueChange={(value) => handleQuestaoChange('dificuldade', value)}
             >
               <SelectTrigger>
@@ -315,7 +315,7 @@ export const CriarQuestaoForm: React.FC = () => {
         <Button
           type="button"
           variant="outline"
-          onClick={() => navigate('/questoes')}
+          onClick={() => navigate?.('/questoes')}
           disabled={isSubmitting}
         >
           Cancelar

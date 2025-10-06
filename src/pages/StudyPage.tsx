@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "../components/ui/button";
+import { ScrollArea } from "../components/ui/scroll-area";
 import { ChevronRight, ChevronDown, Menu, X, Hash, FileText } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { CarouselRenderer } from "@/components/CarouselRenderer";
-import { ProgressSidebar } from "@/components/ProgressSidebar";
-import { ProgressMarker } from "@/hooks/useProgressMarkers";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../components/ui/collapsible";
+import { CarouselRenderer } from "../components/CarouselRenderer";
+import { ProgressSidebar } from "../components/ProgressSidebar";
+import { ProgressMarker } from "../hooks/useProgressMarkers";
 
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "../components/ui/toaster";
 
 interface Topic {
   id: string;
@@ -28,8 +28,8 @@ interface Resumo {
 }
 
 const StudyPage = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const navigate = typeof window !== 'undefined' ? useNavigate() : () => {};
+  const [searchParams] = typeof window !== 'undefined' ? useSearchParams() : [null];
   
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [openTopics, setOpenTopics] = useState<Record<string, boolean>>({});
@@ -37,12 +37,11 @@ const StudyPage = () => {
   const [contentRef, setContentRef] = useState<HTMLDivElement | null>(null);
   
   // State para resumos
-  const [resumos, setResumos] = useState<Resumo[]>([]);
   const [currentResumo, setCurrentResumo] = useState<Resumo | null>(null);
 
   // Mock data - disciplina e resumo baseado nos parâmetros da URL
-  const disciplinaId = searchParams.get('disciplina') || 'ctb';
-  const resumoId = searchParams.get('resumo') || 'disposicoes-preliminares';
+  const disciplinaId = searchParams?.get('disciplina') || 'ctb';
+  const resumoId = searchParams?.get('resumo') || 'disposicoes-preliminares';
 
   // Mock content para demonstração - agora em HTML para renderização idêntica
   const resumoContent = `<h1>Disposições Preliminares</h1>
@@ -112,12 +111,11 @@ const StudyPage = () => {
 
   // Estado inicial do resumo
   useEffect(() => {
-    const nomeFromUrl = searchParams.get('nome');
-    const resumoIdFromUrl = searchParams.get('resumo');
+    const resumoIdFromUrl = searchParams?.get('resumo');
     
     if (resumoIdFromUrl) {
       // Carregar resumo salvo pelo ID
-      const savedResumos = JSON.parse(localStorage.getItem('savedResumos') || '{}');
+      const savedResumos = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('savedResumos') || '{}') : {};
       const allSavedResumos = Object.values(savedResumos).flat() as Resumo[];
       const resumoSalvo = allSavedResumos.find((r: Resumo) => r.id === resumoIdFromUrl);
       
@@ -128,7 +126,6 @@ const StudyPage = () => {
           lastModified: new Date(resumoSalvo.lastModified)
         };
         
-        setResumos([loadedResumo]);
         setCurrentResumo(loadedResumo);
       }
     } else {
@@ -142,7 +139,6 @@ const StudyPage = () => {
         lastModified: new Date()
       };
       
-      setResumos([mockResumo]);
       setCurrentResumo(mockResumo);
     }
   }, [searchParams]);
@@ -212,7 +208,9 @@ const StudyPage = () => {
   const handleMarkerClick = (marker: ProgressMarker) => {
     if (!contentRef) return;
     
-    // Buscar pelo texto na página e fazer scroll
+    // Buscar pelo texto na página e fazer scroll (apenas no cliente)
+    if (typeof window === 'undefined') return;
+    
     const textNodes: Text[] = [];
     const walker = document.createTreeWalker(
       contentRef,

@@ -5,8 +5,7 @@
  * de forma estática (sem editor).
  */
 
-import React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface BlockNoteRendererProps {
   content: any[];
@@ -32,7 +31,7 @@ function BlockRenderer({ block }: { block: any }) {
   if (!text.trim()) return null;
 
   switch (block.type) {
-    case 'heading':
+    case 'heading': {
       const level = block.props?.level || 2;
       const HeadingTag = `h${Math.min(Math.max(level, 1), 6)}` as keyof JSX.IntrinsicElements;
       
@@ -47,6 +46,7 @@ function BlockRenderer({ block }: { block: any }) {
           {text}
         </HeadingTag>
       );
+    }
 
     case 'paragraph':
       return (
@@ -78,7 +78,7 @@ function BlockRenderer({ block }: { block: any }) {
         </li>
       );
 
-    case 'checkListItem':
+    case 'checkListItem': {
       const isChecked = block.props?.checked || false;
       return (
         <div className="flex items-center gap-2 mb-1">
@@ -96,6 +96,7 @@ function BlockRenderer({ block }: { block: any }) {
           </span>
         </div>
       );
+    }
 
     default:
       // Fallback para tipos não reconhecidos

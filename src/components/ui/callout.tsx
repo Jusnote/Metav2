@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { 
   Lightbulb, 
   AlertTriangle, 
@@ -35,7 +35,7 @@ interface CalloutComponentProps {
   deleteNode: () => void;
 }
 
-const CalloutComponent = ({ node, updateAttributes, deleteNode }: CalloutComponentProps) => {
+const CalloutComponent = ({ node, updateAttributes: _updateAttributes, deleteNode }: CalloutComponentProps) => {
   const type = node.attrs.type || 'info';
   
   const icons = {

@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import * as React from "react";
 import { useEffect, useState, forwardRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "./button";
+
 
 type CarouselSlide = {
   image: string;
@@ -48,9 +49,14 @@ export const AnimatedCarousel = forwardRef<HTMLDivElement, AnimatedCarouselProps
     }
   }, [autoplay]);
 
-  const randomRotateY = () => {
-    return Math.floor(Math.random() * 21) - 10;
-  };
+  const randomRotateY = React.useMemo(() => {
+    // Use a deterministic approach to avoid hydration mismatch
+    const hash = Math.abs(active.toString().split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0));
+    return (hash % 21) - 10;
+  }, [active]);
 
   const handleContentChange = (content: string) => {
     if (onSlideContentChange) {
@@ -82,13 +88,13 @@ export const AnimatedCarousel = forwardRef<HTMLDivElement, AnimatedCarouselProps
                     opacity: 0,
                     scale: 0.9,
                     z: -100,
-                    rotate: randomRotateY(),
+                    rotate: randomRotateY,
                   }}
                   animate={{
                     opacity: isActive(index) ? 1 : 0.7,
                     scale: isActive(index) ? 1 : 0.95,
                     z: isActive(index) ? 0 : -100,
-                    rotate: isActive(index) ? 0 : randomRotateY(),
+                    rotate: isActive(index) ? 0 : randomRotateY,
                     zIndex: isActive(index)
                       ? 999
                       : slides.length + 2 - index,
@@ -98,7 +104,7 @@ export const AnimatedCarousel = forwardRef<HTMLDivElement, AnimatedCarouselProps
                     opacity: 0,
                     scale: 0.9,
                     z: 100,
-                    rotate: randomRotateY(),
+                    rotate: randomRotateY,
                   }}
                   transition={{
                     duration: 0.4,

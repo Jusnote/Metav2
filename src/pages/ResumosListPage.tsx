@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { Button } from "../components/ui/button";
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Input } from "../components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "../components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Label } from "../components/ui/label";
 import { Search, Star, ChevronUp, ChevronDown } from "lucide-react";
 
 interface ResumoSalvo {
@@ -24,7 +24,7 @@ interface Disciplina {
   resumos: string[];
 }
 const ResumosListPage = () => {
-  const navigate = useNavigate();
+  const navigate = typeof window !== 'undefined' ? useNavigate() : () => {};
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDisciplina, setSelectedDisciplina] = useState<string | null>(null);
   const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
@@ -109,9 +109,11 @@ const ResumosListPage = () => {
   
   // Carregar resumos salvos do localStorage
   useEffect(() => {
-    const savedResumos = localStorage.getItem('savedResumos');
-    if (savedResumos) {
-      setResumosSalvos(JSON.parse(savedResumos) as Record<string, ResumoSalvo[]>);
+    if (typeof window !== 'undefined') {
+      const savedResumos = localStorage.getItem('savedResumos');
+      if (savedResumos) {
+        setResumosSalvos(JSON.parse(savedResumos) as Record<string, ResumoSalvo[]>);
+      }
     }
   }, []);
 
@@ -156,7 +158,7 @@ const ResumosListPage = () => {
   };
 
   // Calcula quantos thumbnails cabem na tela verticalmente (considerando altura de 64px + gap de 8px cada)
-  const thumbnailsPerView = Math.floor((window.innerHeight - 200) / 72); // 200px para headers/margins, 72px por thumbnail
+  const thumbnailsPerView = typeof window !== 'undefined' ? Math.floor((window.innerHeight - 200) / 72) : 5; // 200px para headers/margins, 72px por thumbnail
   const maxIndex = Math.max(0, thumbnails.length - thumbnailsPerView);
   const needsNavigation = thumbnails.length > thumbnailsPerView;
   const handlePrevious = () => {

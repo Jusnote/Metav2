@@ -1,15 +1,13 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
+import { Badge } from "./ui/badge";
 import { 
   Bookmark, 
   BookmarkPlus, 
   Clock, 
   Trash2, 
-  X, 
-  Menu,
-  AlertCircle
+  X
 } from "lucide-react";
 import {
   AlertDialog,
@@ -21,9 +19,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useProgressMarkers, ProgressMarker } from "@/hooks/useProgressMarkers";
-import { useToast } from "@/hooks/use-toast";
+} from "./ui/alert-dialog";
+import { useProgressMarkers, ProgressMarker } from "../hooks/useProgressMarkers";
+import { useToast } from "../hooks/use-toast";
 
 interface ProgressSidebarProps {
   disciplina: string;
@@ -37,6 +35,8 @@ export function ProgressSidebar({ disciplina, resumo, onMarkerClick }: ProgressS
   const { toast } = useToast();
 
   const handleAddMarker = () => {
+    if (typeof window === 'undefined') return;
+    
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
       toast({

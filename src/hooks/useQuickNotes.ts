@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from './use-toast';
 import { useServerFirst } from './useServerFirst';
 
 // Tipos para Quick Notes

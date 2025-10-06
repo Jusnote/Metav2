@@ -4,7 +4,7 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/shadcn/style.css";
 import { BlockNoteSchema, defaultBlockSpecs, filterSuggestionItems } from "@blocknote/core";
-import { SuggestionMenuController, getDefaultReactSlashMenuItems } from "@blocknote/react";
+import { getDefaultReactSlashMenuItems, SuggestionMenuController } from "@blocknote/react";
 import { FlashcardBlock } from "./blocks/FlashcardBlock";
 import { useEffect } from "react";
 
@@ -38,14 +38,14 @@ export default function NotesBlockEditor({
 }: NotesBlockEditorProps) {
   const initialContent = [
     {
-      type: "heading",
+      type: "heading" as const,
       props: {
-        level: 2,
+        level: 2 as const,
       },
       content: "",
     },
     {
-      type: "paragraph",
+      type: "paragraph" as const,
       content: "",
     },
   ];
@@ -79,13 +79,13 @@ export default function NotesBlockEditor({
       >
         <SuggestionMenuController
           triggerCharacter="/"
-          getItems={async (query) =>
+          getItems={async (query: string) =>
             filterSuggestionItems(getCustomSlashMenuItems(editor), query)
           }
         />
       </BlockNoteView>
       
-      <style jsx="true" global="true">{`
+      <style jsx global>{`
         .notes-block-editor .bn-container {
           border: none !important;
           background: transparent !important;

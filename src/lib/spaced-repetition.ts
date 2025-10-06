@@ -1,4 +1,4 @@
-import { Flashcard, StudyDifficulty } from '@/types/flashcard';
+import { Flashcard, StudyDifficulty } from '../types/flashcard';
 
 /**
  * SuperMemo 2 algorithm implementation for spaced repetition
@@ -8,7 +8,10 @@ export class SpacedRepetition {
     card: Flashcard,
     difficulty: StudyDifficulty
   ): { interval: number; easeFactor: number; repetitions: number } {
-    let { interval, easeFactor, repetitions } = card;
+    // Use FSRS properties instead of legacy SM2 properties
+    let interval = Math.max(1, Math.round(card.stability)); // Use stability as interval
+    let easeFactor = Math.max(1.3, 2.5 - (card.difficulty / 10)); // Convert difficulty to ease factor
+    let repetitions = card.review_count;
     
     // Map difficulty to quality factor (0-5 scale)
     const qualityMap: Record<StudyDifficulty, number> = {

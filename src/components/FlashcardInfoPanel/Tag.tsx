@@ -1,11 +1,11 @@
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '../ui/tooltip';
 import { TagConfig, getDynamicIcon } from './config';
-import { Flashcard } from '@/types/flashcard';
+import { Flashcard } from '../../types/flashcard';
 
 interface TagProps {
   config: TagConfig;

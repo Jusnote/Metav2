@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Questao, Alternativa } from '@/types/database';
-import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '../integrations/supabase/client';
+import { Questao, Alternativa } from '../types/database';
+import { useAuth } from './useAuth';
 
 export interface QuestaoCompleta extends Questao {
   alternativas: Alternativa[];
-  banca?: string;
-  cargo?: string;
 }
 
 export const useQuestoes = () => {

@@ -1,10 +1,9 @@
-import { Flashcard } from '@/types/flashcard';
-import { Card } from '@/components/ui/card';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { Flashcard } from '../types/flashcard';
+import { TooltipProvider } from './ui/tooltip';
 import { TAG_CONFIGS } from './FlashcardInfoPanel/config';
 import { Tag } from './FlashcardInfoPanel/Tag';
-import { Flame, Eye } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Flame } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 interface FlashcardInfoPanelProps {
   card: Flashcard;

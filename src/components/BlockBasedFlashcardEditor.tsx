@@ -1,8 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { FileText, EyeOff, Check, Plus, X, Link2, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useCallback, useRef, useEffect, useId } from 'react';
+import { Button } from './ui/button';
+import { FileText, EyeOff, Check, Link2, Trash2 } from 'lucide-react';
+import { cn } from '../lib/utils';
 import { DeleteCardDialog } from './DeleteCardDialog';
 import { TrueFalseEditor } from './TrueFalseEditor';
 
@@ -86,7 +85,6 @@ function BlockComponent({
   onRemoveSelectedWord,
   onDeleteFlashcard
 }: BlockComponentProps) {
-  const [isHovered, setIsHovered] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Adicionar esta função wrapper:
@@ -100,26 +98,6 @@ function BlockComponent({
       onTextSelect(block.id, start, end, selectedText.trim());
     }
   }, [onTextSelect, block.id]);
-
-  // Adicionar esta função para renderizar texto com highlights:
-  const renderTextWithHighlights = useCallback(() => {
-    if (selectedWords.length === 0) {
-      return block.content;
-    }
-
-    let highlightedText = block.content;
-    selectedWords.forEach(word => {
-      const regex = new RegExp(`\\b(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi');
-      highlightedText = highlightedText.replace(regex, '<mark style="background-color: #fef08a; padding: 1px 2px; border-radius: 2px;">$1</mark>');
-    });
-
-    return highlightedText;
-  }, [block.content, selectedWords]);
-
-  // Função para normalizar texto removendo acentos
-  const normalizeText = (text: string): string => {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  };
 
   // Função para renderizar texto de word-hiding com palavras destacadas
   const renderWordHidingText = useCallback((text: string, hiddenWords: string[]) => {
@@ -160,7 +138,6 @@ function BlockComponent({
   const [editingBack, setEditingBack] = useState('');
   const [editingHiddenWords, setEditingHiddenWords] = useState<string[]>([]);
   const [editingExplanation, setEditingExplanation] = useState('');
-  const [originalData, setOriginalData] = useState<Block['flashcardData'] | null>(null);
 
   // Inicializar dados de edição quando entrar em modo de edição
   useEffect(() => {
@@ -170,9 +147,8 @@ function BlockComponent({
       setEditingBack(block.flashcardData.back || '');
       setEditingHiddenWords(block.flashcardData.hiddenWords || []);
       setEditingExplanation(block.flashcardData.explanation || '');
-      setOriginalData(block.flashcardData);
     }
-  }, [isEditing, block.flashcardData]);
+  }, [isEditing, block.flashcardData, block.id]);
 
   // Resetar estados de edição quando sair do modo de edição
   useEffect(() => {
@@ -181,7 +157,6 @@ function BlockComponent({
       setEditingBack('');
       setEditingHiddenWords([]);
       setEditingExplanation('');
-      setOriginalData(null);
     }
   }, [isEditing]);
 
@@ -321,8 +296,6 @@ function BlockComponent({
         // Visual para sub-flashcards
         block.isSubCard && "ml-8 pl-4 relative"
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Bolinha azul indicadora de sub-flashcard */}
       {block.isSubCard && (
@@ -485,11 +458,15 @@ export function BlockBasedFlashcardEditor({
   onDeleteCard,
   onSaveDraft, 
   onLoadDraft, 
-  placeholder, 
   deckId 
 }: BlockBasedFlashcardEditorProps) {
-  const generateBlockId = () => `block-${Date.now()}-${Math.random()}`;
-  const getStorageKey = () => `flashcard-editor-blocks-${deckId || 'default'}`;
+  const componentId = useId();
+  const blockIdCounter = useRef(0);
+  const generateBlockId = useCallback(() => {
+    blockIdCounter.current += 1;
+    return `block-${componentId}-${blockIdCounter.current}`;
+  }, [componentId]);
+  const getStorageKey = useCallback(() => `flashcard-editor-blocks-${deckId || 'default'}`, [deckId]);
   
 
   
@@ -556,7 +533,7 @@ export function BlockBasedFlashcardEditor({
       content: '', 
       order: 0 
     }];
-  }, [deckId, onLoadDraft]);
+  }, [deckId, onLoadDraft, generateBlockId, getStorageKey]);
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [activeBlockId, setActiveBlockId] = useState<string>('');
@@ -574,15 +551,13 @@ export function BlockBasedFlashcardEditor({
       // Se encontrou um bloco vazio, focar nele; senão, focar no último bloco
       setActiveBlockId(emptyBlock?.id || initialBlocks[initialBlocks.length - 1]?.id || generateBlockId());
     });
-  }, [loadSavedState]);
-  const [selectedText, setSelectedText] = useState('');
+  }, [loadSavedState, generateBlockId]);
   const [pendingFlashcardType, setPendingFlashcardType] = useState<{blockId: string, type: FlashcardType} | null>(null);
   const [pendingWordHiding, setPendingWordHiding] = useState<{blockId: string, words: string[]} | null>(null);
   const [pendingTrueFalse, setPendingTrueFalse] = useState<{blockId: string, statement: string} | null>(null);
   
   // Novos estados para sub-flashcards
   const [flashcardsWithSubOption, setFlashcardsWithSubOption] = useState<string[]>([]);
-  const [activeParentForSub, setActiveParentForSub] = useState<string | null>(null);
 
   // Estados para edição inline
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
@@ -614,7 +589,7 @@ export function BlockBasedFlashcardEditor({
       // Fallback para localStorage em caso de erro
       localStorage.setItem(getStorageKey(), JSON.stringify(blocksToSave));
     }
-  }, [deckId, onSaveDraft]);
+  }, [deckId, onSaveDraft, getStorageKey]);
 
   // Adicionar estas novas funções:
   const handleTextSelect = useCallback((blockId: string, start: number, end: number, text: string) => {
@@ -713,7 +688,7 @@ export function BlockBasedFlashcardEditor({
           const currentBlock = blocks.find(b => b.id === blockId);
           if (!currentBlock) return;
 
-          const newBlockId = Date.now().toString();
+          const newBlockId = generateBlockId();
           const newBlock: Block = {
             id: newBlockId,
             type: 'paragraph',
@@ -776,7 +751,7 @@ export function BlockBasedFlashcardEditor({
       setActiveBlockId(newBlock.id);
       console.log("BlockBasedFlashcardEditor - setActiveBlockId to:", newBlock.id);
     }, 0);
-  }, [blocks]);
+  }, [blocks, generateBlockId]);
 
   const convertToFlashcard = useCallback((blockId: string, flashcardType: FlashcardType) => {
     const block = blocks.find(b => b.id === blockId);
@@ -803,10 +778,12 @@ export function BlockBasedFlashcardEditor({
       
       // Focar no textarea após inserir o símbolo
       setTimeout(() => {
-        const textarea = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLTextAreaElement;
-        if (textarea) {
-          textarea.focus();
-          textarea.setSelectionRange(newContent.length, newContent.length);
+        if (typeof document !== 'undefined') {
+          const textarea = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLTextAreaElement;
+          if (textarea) {
+            textarea.focus();
+            textarea.setSelectionRange(newContent.length, newContent.length);
+          }
         }
       }, 0);
       
@@ -815,10 +792,12 @@ export function BlockBasedFlashcardEditor({
       const newContent = currentContent + ' {{palavra}}';
       updateBlock(blockId, newContent);
       setTimeout(() => {
-        const textarea = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLTextAreaElement;
-        if (textarea) {
-          textarea.focus();
-          textarea.setSelectionRange(newContent.length, newContent.length);
+        if (typeof document !== 'undefined') {
+          const textarea = document.querySelector(`[data-block-id="${blockId}"]`) as HTMLTextAreaElement;
+          if (textarea) {
+            textarea.focus();
+            textarea.setSelectionRange(newContent.length, newContent.length);
+          }
         }
       }, 0);
       setPendingWordHiding({ blockId, words: [] });
@@ -899,7 +878,7 @@ export function BlockBasedFlashcardEditor({
   
   // Função para criar sub-flashcard
   // Sempre salvar o pai antes de criar sub-flashcards
-  const ensureParentIsSaved = async (parentBlock: Block): Promise<string | null> => {
+  const ensureParentIsSaved = useCallback(async (parentBlock: Block): Promise<string | null> => {
     if (parentBlock.flashcardData?.id) {
       return parentBlock.flashcardData.id; // Já salvo
     }
@@ -928,7 +907,7 @@ export function BlockBasedFlashcardEditor({
     }
     
     return null;
-  };
+  }, [onSave, deckId]);
   
   const createSubFlashcard = useCallback(async (parentBlockId: string) => {
     const parentBlock = validateParentBlock(parentBlockId);
@@ -946,36 +925,6 @@ export function BlockBasedFlashcardEditor({
     addBlock(subBlock);
     setActiveBlockId(subBlock.id);
   }, [blocks, onSave, deckId, validateParentBlock, createSubBlock, addBlock]);
-
-  // Função para garantir bloco vazio após finalizar flashcard
-  const ensureEmptyBlock = useCallback(() => {
-    const hasEmptyBlock = blocks.some(block => 
-      block.type === 'paragraph' && 
-      block.content.trim() === '' && 
-      !block.isSubCard
-    );
-    
-    if (!hasEmptyBlock && blocks.length > 0) {
-      const lastBlock = blocks[blocks.length - 1];
-      const newBlock: Block = {
-        id: generateBlockId(),
-        type: 'paragraph',
-        content: '',
-        order: lastBlock.order + 1,
-        indentLevel: 0
-      };
-      
-      setBlocks(prev => {
-        const updated = [...prev, newBlock];
-        saveState(updated);
-        return updated;
-      });
-      
-      setTimeout(() => {
-        setActiveBlockId(newBlock.id);
-      }, 50);
-    }
-  }, [blocks, generateBlockId, saveState]);
 
   // Nova função para finalizar flashcard tradicional quando pressionar Enter
   const finalizeTraditionalFlashcard = useCallback(async (blockId: string, content: string) => {
@@ -1090,7 +1039,7 @@ export function BlockBasedFlashcardEditor({
     
     // Parse das palavras ocultas
     const hiddenWords: string[] = [];
-    const cleanText = content.replace(/\{\{([^}]+)\}\}/g, (match, word) => {
+    const cleanText = content.replace(/\{\{([^}]+)\}\}/g, (_, word) => {
       hiddenWords.push(word.trim());
       return word.trim();
     });
@@ -1163,7 +1112,7 @@ export function BlockBasedFlashcardEditor({
     return false;
   }, [onSave, deckId, updateFlashcardBlock, addNewBlock]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent, blockId: string) => {
+  const handleKeyDown = useCallback(async (e: React.KeyboardEvent, blockId: string) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       
@@ -1181,7 +1130,7 @@ export function BlockBasedFlashcardEditor({
       
       // Verificar se é um flashcard de word-hiding pendente
       if (pendingWordHiding?.blockId === blockId && /\{\{[^}]+\}\}/.test(block.content)) {
-        if (finalizeWordHidingFlashcard(blockId, block.content)) {
+        if (await finalizeWordHidingFlashcard(blockId, block.content)) {
           return;
         }
       }
@@ -1208,7 +1157,7 @@ export function BlockBasedFlashcardEditor({
         // Verificar se é um sub-flashcard - se sim, não processar o pai
         if (block.isSubCard) {
           console.log("BlockBasedFlashcardEditor - processing sub-flashcard, skipping parent");
-          if (finalizeTraditionalFlashcard(blockId, block.content)) {
+          if (await finalizeTraditionalFlashcard(blockId, block.content)) {
             return;
           }
         } else {
@@ -1228,7 +1177,7 @@ export function BlockBasedFlashcardEditor({
             return;
           }
           
-          if (finalizeTraditionalFlashcard(blockId, block.content)) {
+          if (await finalizeTraditionalFlashcard(blockId, block.content)) {
             return;
           }
         }
@@ -1305,7 +1254,7 @@ export function BlockBasedFlashcardEditor({
     }
   }, [blocks, onUpdateCard]);
 
-  const handleCancelEdit = useCallback((blockId: string) => {
+  const handleCancelEdit = useCallback((_: string) => {
     // Simplesmente sair do modo de edição sem salvar
     // Os dados originais serão restaurados automaticamente pelo estado local
     setEditingBlockId(null);
@@ -1342,6 +1291,8 @@ export function BlockBasedFlashcardEditor({
     }
 
     // Se não há sub-flashcards, usar confirmação simples
+    if (typeof window === 'undefined') return;
+    
     const confirmDelete = window.confirm(
       `Tem certeza que deseja deletar este flashcard?\n\nFrente: ${block.flashcardData.front}\nVerso: ${block.flashcardData.back}`
     );
@@ -1466,7 +1417,7 @@ export function BlockBasedFlashcardEditor({
         <div className="p-3 border border-gray-200 rounded-lg shadow-xs bg-blue-50/30">
           <TrueFalseEditor
             initialStatement={pendingTrueFalse.statement}
-            onSave={(front, back, type, explanation) => {
+            onSave={(front, back, _, explanation) => {
               finalizeTrueFalseFlashcard(pendingTrueFalse.blockId, front, back, explanation);
             }}
             onCancel={() => {
@@ -1503,28 +1454,5 @@ const reorderBlocks = (blocks: Block[]): Block[] => {
       return a.order - b.order;
     })
     .map((block, index) => ({ ...block, order: index * 10 })); // Usar múltiplos de 10
-};
-
-// Usar uma máquina de estados para gerenciar o ciclo de vida dos flashcards
-type FlashcardState = 'draft' | 'pending' | 'saved' | 'editing';
-
-interface BlockWithState extends Block {
-  state: FlashcardState;
-  parentState?: FlashcardState;
-}
-
-const getNextState = (currentState: FlashcardState, action: string): FlashcardState => {
-  switch (currentState) {
-    case 'draft':
-      return action === 'convert' ? 'pending' : 'draft';
-    case 'pending':
-      return action === 'save' ? 'saved' : action === 'cancel' ? 'draft' : 'pending';
-    case 'saved':
-      return action === 'edit' ? 'editing' : 'saved';
-    case 'editing':
-      return action === 'save' ? 'saved' : action === 'cancel' ? 'saved' : 'editing';
-    default:
-      return currentState;
-  }
 };
 

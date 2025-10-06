@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '../integrations/supabase/client';
+import { useAuth } from './useAuth';
 
 export interface Unit {
   id: string;
@@ -33,8 +33,6 @@ export interface Subtopic {
   lastAccess?: string;
   tempoInvestido?: string;
 }
-
-const generateId = () => crypto.randomUUID();
 
 const getCurrentDate = () => {
   const now = new Date();

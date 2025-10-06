@@ -1,8 +1,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Clock, CheckCircle2, Circle, BookOpen, FlaskConical, MessageCircle, Scroll } from 'lucide-react';
-import { StudyTask } from '@/types/study';
-import { cn } from '@/lib/utils';
+import { StudyTask } from '../../types/study';
+import { cn } from '../../lib/utils';
 
 interface StudyCardProps {
   task: StudyTask;

@@ -1,6 +1,5 @@
-import React from 'react';
 import { Progress } from './ui/progress';
-import { CheckCircle, Circle, Lock } from 'lucide-react';
+import { CheckCircle, Lock } from 'lucide-react';
 
 interface StudyProgressIndicatorProps {
   totalSections: number;

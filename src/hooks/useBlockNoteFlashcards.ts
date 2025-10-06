@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { BlockNoteFlashcard, BlockNoteFlashcardInsert, BlockNoteFlashcardUpdate } from '@/types/database';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useToast } from './use-toast';
+import { BlockNoteFlashcard, BlockNoteFlashcardInsert } from '../types/database';
 import { useServerFirst } from './useServerFirst';
 
 interface FlashcardStats {

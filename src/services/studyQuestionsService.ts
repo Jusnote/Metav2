@@ -2,8 +2,8 @@
  * Serviço para gerenciar perguntas do estudo dirigido no Supabase
  */
 
-import { supabase } from '@/integrations/supabase/client';
-import { Question, SectionQuestions } from '@/types/questions';
+import { supabase } from '../integrations/supabase/client';
+import { Question, SectionQuestions } from '../types/questions';
 
 // Tipo para a tabela study_questions no Supabase
 export interface StudyQuestionRow {

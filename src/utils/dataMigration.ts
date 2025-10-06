@@ -3,7 +3,7 @@
  * Para uso durante a transição para padrão Server-First
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../integrations/supabase/client';
 import { auditLocalStorage, exportLocalStorageData } from './localStorageAudit';
 
 export interface MigrationResult {

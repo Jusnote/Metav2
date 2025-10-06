@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestaoCompleta } from '@/hooks/useQuestoes';
+import { QuestaoCompleta } from '../hooks/useQuestoes';
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 interface VisualizarQuestaoProps {
@@ -47,7 +47,7 @@ export const VisualizarQuestao: React.FC<VisualizarQuestaoProps> = ({
                 {questao.cargo}
               </Badge>
             )}
-            <Badge variant={questao.nivel === 'Fácil' ? 'outline-solid' : questao.nivel === 'Médio' ? 'secondary' : 'destructive'}>
+            <Badge variant={questao.nivel === 'Fácil' ? 'outline' : questao.nivel === 'Médio' ? 'secondary' : 'destructive'}>
               {questao.nivel}
             </Badge>
             <Badge variant="outline">

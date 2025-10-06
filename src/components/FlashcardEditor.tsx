@@ -1,6 +1,6 @@
 
-import { BlockBasedFlashcardEditor, type FlashcardType } from '@/components/BlockBasedFlashcardEditor';
-import { saveDraftToDatabase, loadDraftFromDatabase } from '@/integrations/supabase/drafts';
+import { BlockBasedFlashcardEditor, type FlashcardType } from './BlockBasedFlashcardEditor';
+import { saveDraftToDatabase, loadDraftFromDatabase } from '../integrations/supabase/drafts';
 
 interface FlashcardEditorProps {
   onSave: (front: string, back: string, type?: FlashcardType, hiddenWordIndices?: number[], hiddenWords?: string[], explanation?: string, parentId?: string, deckId?: string) => Promise<string | null>;

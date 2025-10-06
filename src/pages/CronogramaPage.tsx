@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square, Settings, X, FileText, HelpCircle } from 'lucide-react';
 import { DayWithProgress } from '../components/DayWithProgress';
 import { useTimer } from '../contexts/TimerContext';
@@ -250,7 +250,6 @@ const convertMockToScheduledTopics = (): ScheduledTopic[] => {
 };
 
 export default function CronogramaPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(() => new Date().getDate());
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set(['1-2', '28-2'])); // Alguns tópicos já completos para demo
@@ -264,8 +263,31 @@ export default function CronogramaPage() {
     topic: null
   });
   
-  // Hook do Timer Context
-  const { getTotalTimeForSubtopic, getActivityTime, startActivity, getCurrentSessionTime, timerState, activityTimers } = useTimer();
+  // Hook do Timer Context - conditional to avoid SSR issues
+  const [timerContext, setTimerContext] = useState<{
+    getTotalTimeForSubtopic: (key: string) => number;
+    getActivityTime: (key: string, activity: 'documento' | 'flashcards' | 'questoes') => number;
+    startActivity: (key: string, type: 'documento' | 'flashcards' | 'questoes', name: string) => void;
+    timerState: any;
+  } | null>(null);
+
+  useEffect(() => {
+    // Only initialize timer context on client side
+    if (typeof window !== 'undefined') {
+      try {
+        const timer = useTimer();
+        setTimerContext(timer);
+      } catch (error) {
+        // Fallback if TimerProvider is not available
+        setTimerContext({
+          getTotalTimeForSubtopic: () => 0,
+          getActivityTime: () => 0,
+          startActivity: () => {},
+          timerState: { isActive: false, currentActivity: '', currentSubtopicKey: '', currentActivityType: null, savedTime: 0 }
+        });
+      }
+    }
+  }, []);
 
   // Removido re-render em tempo real - subtópicos mostram apenas tempo salvo
   
@@ -410,7 +432,7 @@ export default function CronogramaPage() {
   const getTopicTotalTime = (topicId: string, subtopics: string[]) => {
     return subtopics.reduce((total, _, index) => {
       const subtopicKey = `${topicId}-${index}`;
-      const totalActivityTime = getTotalTimeForSubtopic(subtopicKey);
+      const totalActivityTime = timerContext?.getTotalTimeForSubtopic(subtopicKey) || 0;
       return total + totalActivityTime + (timeSpent[subtopicKey] || 0);
     }, 0);
   };
@@ -876,7 +898,7 @@ export default function CronogramaPage() {
                                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <button
                                           onClick={() => {
-                                            startActivity(subtopicKey, 'documento', `📄 ${subtopic} - Documento`);
+                                            timerContext?.startActivity(subtopicKey, 'documento', `📄 ${subtopic} - Documento`);
                                             // TODO: Navegar para página do documento
                                             console.log(`Abrindo documento do subtópico: ${subtopicKey}`);
                                           }}
@@ -887,7 +909,7 @@ export default function CronogramaPage() {
                                         </button>
                                         <button
                                           onClick={() => {
-                                            startActivity(subtopicKey, 'flashcards', `🃏 ${subtopic} - Flashcards`);
+                                            timerContext?.startActivity(subtopicKey, 'flashcards', `🃏 ${subtopic} - Flashcards`);
                                             // TODO: Navegar para página de flashcards
                                             console.log(`Abrindo flashcards do subtópico: ${subtopicKey}`);
                                           }}
@@ -898,7 +920,7 @@ export default function CronogramaPage() {
                                         </button>
                                         <button
                                           onClick={() => {
-                                            startActivity(subtopicKey, 'questoes', `❓ ${subtopic} - Questões`);
+                                            timerContext?.startActivity(subtopicKey, 'questoes', `❓ ${subtopic} - Questões`);
                                             // TODO: Navegar para página de questões
                                             console.log(`Abrindo questões do subtópico: ${subtopicKey}`);
                                           }}
@@ -914,16 +936,16 @@ export default function CronogramaPage() {
                                         <button
                                           onClick={() => openTimeBreakdown(subtopicKey, subtopic)}
                                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono hover:ring-2 hover:ring-blue-200 transition-all ${
-                                            timerState.isActive && timerState.currentSubtopicKey === subtopicKey
+                                            timerContext?.timerState?.isActive && timerContext?.timerState?.currentSubtopicKey === subtopicKey
                                             ? 'bg-green-100 text-green-700' 
-                                              : (timeSpent[subtopicKey] > 0 || getTotalTimeForSubtopic(subtopicKey) > 0)
+                                              : (timeSpent[subtopicKey] > 0 || (timerContext?.getTotalTimeForSubtopic(subtopicKey) || 0) > 0)
                                               ? 'bg-blue-100 text-blue-700'
                                               : 'bg-gray-100 text-gray-500'
                                           }`}
                                           title="Ver detalhamento do tempo"
                                         >
                                      <span>{formatTime(
-                                       (timeSpent[subtopicKey] || 0) + getTotalTimeForSubtopic(subtopicKey)
+                                       (timeSpent[subtopicKey] || 0) + (timerContext?.getTotalTimeForSubtopic(subtopicKey) || 0)
                                      )}</span>
                                         </button>
                                         
@@ -1116,7 +1138,7 @@ export default function CronogramaPage() {
                   <span className="text-sm font-medium text-blue-900">Documento</span>
                 </div>
                 <span className="text-sm font-mono text-blue-700">
-                  {formatTime(getActivityTime(timeBreakdownModal.subtopicKey, 'documento'))}
+                  {formatTime(timerContext?.getActivityTime(timeBreakdownModal.subtopicKey, 'documento') || 0)}
                 </span>
               </div>
               
@@ -1126,7 +1148,7 @@ export default function CronogramaPage() {
                   <span className="text-sm font-medium text-green-900">Flashcards</span>
                 </div>
                 <span className="text-sm font-mono text-green-700">
-                  {formatTime(getActivityTime(timeBreakdownModal.subtopicKey, 'flashcards'))}
+                  {formatTime(timerContext?.getActivityTime(timeBreakdownModal.subtopicKey, 'flashcards') || 0)}
                 </span>
               </div>
               
@@ -1136,7 +1158,7 @@ export default function CronogramaPage() {
                   <span className="text-sm font-medium text-purple-900">Questões</span>
                 </div>
                 <span className="text-sm font-mono text-purple-700">
-                  {formatTime(getActivityTime(timeBreakdownModal.subtopicKey, 'questoes'))}
+                  {formatTime(timerContext?.getActivityTime(timeBreakdownModal.subtopicKey, 'questoes') || 0)}
                 </span>
               </div>
               
@@ -1162,7 +1184,7 @@ export default function CronogramaPage() {
                   <span className="font-semibold text-indigo-900">Total</span>
                 </div>
                 <span className="text-lg font-mono font-bold text-indigo-700">
-                  {formatTime((timeSpent[timeBreakdownModal.subtopicKey] || 0) + getTotalTimeForSubtopic(timeBreakdownModal.subtopicKey))}
+                  {formatTime((timeSpent[timeBreakdownModal.subtopicKey] || 0) + (timerContext?.getTotalTimeForSubtopic(timeBreakdownModal.subtopicKey) || 0))}
                 </span>
               </div>
             </div>

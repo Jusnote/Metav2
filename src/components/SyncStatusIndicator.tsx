@@ -1,13 +1,12 @@
-import React from 'react';
 import { CheckCircle, Clock, AlertCircle, Wifi, WifiOff } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from './ui/tooltip';
 
 interface SyncStatus {
   pending: number;

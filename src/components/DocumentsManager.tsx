@@ -1,22 +1,27 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import PlaygroundApp from './lexical-playground/App';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from './ui/button';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useAutoSave, Document, useDocuments } from '../hooks/useDocuments';
 import { useAuth } from '../hooks/useAuth';
+import { useAutoSave, useDocuments } from '../hooks/useDocuments';
+
 
 type ViewMode = 'list' | 'editor';
 
 export const DocumentsManager: React.FC = () => {
+  // SSR protection - return early if not in browser
+  if (typeof window === 'undefined') {
+    return <div>Loading...</div>;
+  }
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [documentTitle, setDocumentTitle] = useState('Documento sem título');
   const { user } = useAuth();
   
-  const { debouncedSave, isSaving, lastSaved, currentDocumentId, setCurrentDocumentId, currentDocument: loadedDocument, isLoading } = useAutoSave();
-  const { documents, createDocument, searchDocuments } = useDocuments(user);
+  const { isSaving, lastSaved, setCurrentDocumentId } = useAutoSave();
+  const { documents, createDocument } = useDocuments(user);
   
   // Verificar se há parâmetros de subtópico na URL
   const subtopicId = searchParams.get('subtopic');
@@ -52,18 +57,6 @@ export const DocumentsManager: React.FC = () => {
       }
     }
   }, [subtopicId, subtopicTitle, documents, setCurrentDocumentId, createDocument]);
-
-  const handleSelectDocument = useCallback((document: Document) => {
-    setCurrentDocumentId(document.id);
-    setDocumentTitle(document.title);
-    setViewMode('editor');
-  }, [setCurrentDocumentId]);
-
-  const handleCreateNew = useCallback(() => {
-    setCurrentDocumentId(null);
-    setDocumentTitle('Documento sem título');
-    setViewMode('editor');
-  }, [setCurrentDocumentId]);
 
   const handleBackToList = useCallback(() => {
     if (subtopicId) {
@@ -147,16 +140,10 @@ export const DocumentsManager: React.FC = () => {
 
       {/* Editor */}
       <div className="max-w-7xl mx-auto">
-
-          <PlaygroundApp 
-            initialDocument={currentDocumentId ? loadedDocument : null} 
-            debouncedSave={(data) => debouncedSave({ 
-              ...data, 
-              title: documentTitle,
-              subtopic_id: subtopicId || undefined
-            })}
-          />
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500">Editor em desenvolvimento</p>
         </div>
+      </div>
     </div>
   );
 };

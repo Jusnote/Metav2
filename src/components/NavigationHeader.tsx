@@ -5,7 +5,7 @@ import {
   BookOpen,
   HelpCircle
 } from "lucide-react";
-import { useStudyMode } from "@/contexts/StudyModeContext";
+import { useStudyMode } from "../contexts/StudyModeContext";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -16,8 +16,8 @@ const navigationItems = [
 
 export function NavigationHeader() {
   const { isGuidedMode } = useStudyMode();
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const location = typeof window !== 'undefined' ? useLocation() : null;
+  const currentPath = location?.pathname;
 
   // Só renderiza se estiver no modo dirigido
   if (!isGuidedMode) {
@@ -25,6 +25,7 @@ export function NavigationHeader() {
   }
 
   const isActive = (path: string) => {
+    if (!currentPath) return false;
     if (path === "/") {
       return currentPath === "/";
     }

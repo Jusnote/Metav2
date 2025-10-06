@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Question, QuestionType, SectionQuestions } from '@/types/questions';
+import { Question, QuestionType } from '../types/questions';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
@@ -12,7 +12,6 @@ import { X, Plus, Trash2, Save, Eye, EyeOff } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface QuestionEditorProps {
-  sectionIndex: number;
   sectionTitle: string;
   existingQuestions: Question[];
   isOpen: boolean;
@@ -21,7 +20,6 @@ interface QuestionEditorProps {
 }
 
 export function QuestionEditor({
-  sectionIndex,
   sectionTitle,
   existingQuestions,
   isOpen,
@@ -56,7 +54,7 @@ export function QuestionEditor({
     }
   }, [isOpen, existingQuestions]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
   
   // Aguardar até que as perguntas sejam carregadas
   if (questions.length === 0) {
@@ -132,7 +130,7 @@ export function QuestionEditor({
   };
 
   const handleTypeChange = (newType: QuestionType) => {
-    let updates: Partial<Question> = { type: newType };
+    const updates: Partial<Question> = { type: newType };
     
     // Ajustar estrutura baseada no tipo
     switch (newType) {

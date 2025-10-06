@@ -1,15 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Deck } from '@/types/flashcard';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Deck } from '../types/flashcard';
 import { BookOpen, Calendar, MoreVertical, Play, Edit3, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from './ui/dropdown-menu';
 
 interface DeckCardProps {
   deck: Deck;
@@ -114,8 +114,8 @@ export function DeckCard({ deck, dueCount, totalCards, onStudy, onEdit, onDelete
             e.stopPropagation();
             onStudy();
           }}
-          variant={dueCount > 0 ? "study" : "outline-solid"}
-          size="study"
+          variant={dueCount > 0 ? "default" : "outline"}
+          size="default"
           className="w-full gap-2"
           disabled={totalCards === 0}
         >
