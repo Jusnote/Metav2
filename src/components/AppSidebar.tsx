@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -25,8 +25,10 @@ import {
   Edit3
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { usePlateDocuments } from "../hooks/usePlateDocuments";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { useMemo } from "react";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -50,9 +52,18 @@ const toolsItems = [
 ];
 
 export function AppSidebar() {
+  const navigate = useNavigate();
   const location = typeof window !== 'undefined' ? useLocation() : null;
   const currentPath = location?.pathname;
   const { user, signOut } = useAuth();
+  const { documents } = usePlateDocuments();
+
+  // Pegar os 5 documentos mais recentes
+  const recentDocuments = useMemo(() => {
+    return [...documents]
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 5);
+  }, [documents]);
 
   const isActive = (path: string) => {
     if (!currentPath) return false;
@@ -147,6 +158,40 @@ export function AppSidebar() {
                 ))}
               </div>
             </div>
+
+            {/* Recent Documents */}
+            {recentDocuments.length > 0 && (
+              <div className="p-2">
+                <div className="text-sidebar-foreground/60 text-xs font-medium mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3">
+                  Recentes
+                </div>
+                <div className="space-y-1 px-2">
+                  {recentDocuments.map((doc) => (
+                    <div key={doc.id}>
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => navigate(`/plate-editor?doc=${doc.id}`)}
+                            className="hover:bg-sidebar-accent/50 text-sidebar-foreground flex items-center py-2 rounded-lg transition-colors group/item w-full group-hover:gap-3 group-hover:px-3 group-hover:justify-start justify-center"
+                          >
+                            <FileText className="h-4 w-4 shrink-0 text-sidebar-foreground/70" />
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden whitespace-nowrap text-ellipsis text-sm">
+                              {doc.title}
+                            </span>
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="group-hover:hidden max-w-xs">
+                          <p className="font-medium">{doc.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(doc.updated_at).toLocaleDateString('pt-BR')}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* User Info and Logout */}
