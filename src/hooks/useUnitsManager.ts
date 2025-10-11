@@ -68,6 +68,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
             subtopics (*)
           )
         `)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: true })
         .order('created_at', { foreignTable: 'topics', ascending: true })
         .order('created_at', { foreignTable: 'topics.subtopics', ascending: true });
@@ -132,6 +133,11 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
 
   // Unit operations
   const addUnit = useCallback(async (title: string, subject: string = 'Biologia e Bioquímica') => {
+    if (!user) {
+      console.error('User not authenticated');
+      return null;
+    }
+
     try {
       // First, save the unit to the database
       const { data: unitData, error: unitError } = await supabase
@@ -139,7 +145,8 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         .insert({
           title: title,
           subject: subject,
-          total_chapters: 0
+          total_chapters: 0,
+          user_id: user.id
         })
         .select()
         .single();
@@ -163,7 +170,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
       console.error('Error in addUnit:', error);
       return null;
     }
-  }, []);
+  }, [user]);
 
   const updateUnit = useCallback(async (unitId: string, updates: Partial<Unit>) => {
     try {
@@ -213,6 +220,11 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
 
   // Topic operations
   const addTopic = useCallback(async (unitId: string, title: string) => {
+    if (!user) {
+      console.error('User not authenticated');
+      return null;
+    }
+
     try {
       // First, save the topic to the database
       const { data: topicData, error: topicError } = await supabase
@@ -220,7 +232,8 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         .insert({
           unit_id: unitId,
           title: title,
-          total_aulas: 0
+          total_aulas: 0,
+          user_id: user.id
         })
         .select()
         .single();
@@ -238,9 +251,9 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         totalAulas: 0,
         subtopics: []
       };
-      
-      setUnits(prev => prev.map(unit => 
-        unit.id === unitId 
+
+      setUnits(prev => prev.map(unit =>
+        unit.id === unitId
           ? { ...unit, topics: [...unit.topics, newTopic] }
           : unit
       ));
@@ -249,7 +262,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
       console.error('Error in addTopic:', error);
       return null;
     }
-  }, []);
+  }, [user]);
 
   const updateTopic = useCallback(async (unitId: string, topicId: string, updates: Partial<Topic>) => {
     try {
@@ -309,6 +322,11 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
 
   // Subtopic operations
   const addSubtopic = useCallback(async (unitId: string, topicId: string, title: string) => {
+    if (!user) {
+      console.error('User not authenticated');
+      return null;
+    }
+
     try {
       // First, save the subtopic to the database
       const { data: subtopicData, error: subtopicError } = await supabase
@@ -321,7 +339,8 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
           tempo: '0min',
           resumos_vinculados: 0,
           flashcards_vinculados: 0,
-          questoes_vinculadas: 0
+          questoes_vinculadas: 0,
+          user_id: user.id
         })
         .select()
         .single();
@@ -343,29 +362,29 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         flashcardsVinculados: 0,
         questoesVinculadas: 0
       };
-      
-      setUnits(prev => prev.map(unit => 
-        unit.id === unitId 
+
+      setUnits(prev => prev.map(unit =>
+        unit.id === unitId
           ? {
               ...unit,
-              topics: unit.topics.map(topic => 
-                topic.id === topicId 
-                  ? { 
-                      ...topic, 
-                      subtopics: [...(topic.subtopics || []), newSubtopic] 
+              topics: unit.topics.map(topic =>
+                topic.id === topicId
+                  ? {
+                      ...topic,
+                      subtopics: [...(topic.subtopics || []), newSubtopic]
                     }
                   : topic
               )
             }
           : unit
       ));
-      
+
       return subtopicData.id;
     } catch (error) {
       console.error('Error in addSubtopic:', error);
       return null;
     }
-  }, []);
+  }, [user]);
 
   const updateSubtopic = useCallback(async (unitId: string, topicId: string, subtopicId: string, updates: Partial<Subtopic>) => {
     try {

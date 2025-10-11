@@ -277,11 +277,12 @@ export function useServerFirst<T extends BaseEntity>(
         if (error) throw error;
 
         // Substituir item temporário pelo real
-        setData(prev => prev.map(item => 
+        const updatedData = data.map(item =>
           item.id === tempId ? serverItem as T : item
-        ));
+        );
+        setData(updatedData);
+        updateCache(updatedData);
 
-        updateCache(data);
         return serverItem as T;
 
       } catch (error) {
@@ -353,11 +354,13 @@ export function useServerFirst<T extends BaseEntity>(
 
         if (error) throw error;
 
-        setData(prev => prev.map(item => 
+        // Atualizar estado com dados do servidor
+        const updatedData = data.map(item =>
           item.id === id ? serverItem as T : item
-        ));
+        );
+        setData(updatedData);
+        updateCache(updatedData);
 
-        updateCache(data);
         return serverItem as T;
 
       } catch (error) {
@@ -419,7 +422,8 @@ export function useServerFirst<T extends BaseEntity>(
 
         if (error) throw error;
 
-        updateCache(data);
+        const updatedData = data.filter(item => item.id !== id);
+        updateCache(updatedData);
         return true;
 
       } catch (error) {
