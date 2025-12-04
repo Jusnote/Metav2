@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Edit3, Trash2, Package } from 'lucide-react';
+import { ChevronRight, Edit3, Trash2, Package, Clock } from 'lucide-react';
 import { InlineEditor } from './InlineEditor';
 import type { Unit } from '../hooks/useUnitsManager';
 
@@ -29,6 +29,22 @@ export const UnitItem: React.FC<UnitItemProps> = ({
   children
 }) => {
   const hasTopics = unit.topics.length > 0;
+
+  // Calculate total duration for the unit
+  const calculateUnitDuration = (): number => {
+    return unit.topics.reduce((total, topic) => {
+      // If topic has subtopics, sum their durations
+      if (topic.subtopics && topic.subtopics.length > 0) {
+        return total + topic.subtopics.reduce((subtotal, subtopic) => {
+          return subtotal + (subtopic.estimated_duration_minutes || 90);
+        }, 0);
+      }
+      // If topic has no subtopics, use its manual duration
+      return total + (topic.estimated_duration_minutes || 120);
+    }, 0);
+  };
+
+  const totalDuration = calculateUnitDuration();
 
   return (
     <div className="mb-4">
@@ -72,6 +88,13 @@ export const UnitItem: React.FC<UnitItemProps> = ({
                   <span className="font-semibold text-gray-900 text-sm truncate">
                     {unit.title}
                   </span>
+                  {/* Tempo total estimado (discreto) */}
+                  {totalDuration > 0 && (
+                    <span className="text-xs text-blue-500 flex items-center gap-0.5 font-medium">
+                      <Clock className="w-3 h-3" />
+                      {Math.floor(totalDuration / 60)}h{totalDuration % 60 > 0 ? ` ${totalDuration % 60}m` : ''}
+                    </span>
+                  )}
                 </div>
               </>
             )}

@@ -194,37 +194,34 @@ async function migrateDataKey(key: string, userId: string): Promise<number> {
 
 /**
  * Migra decks de flashcards antigos
+ * DESABILITADO: Tabela 'decks' não existe no banco
  */
 async function migrateFlashcardDecks(decks: any[], userId: string): Promise<number> {
-  if (!Array.isArray(decks) || decks.length === 0) return 0;
+  console.log('Migração de decks desabilitada - tabela não existe');
+  return 0;
 
-  // Verificar se já existem decks no Supabase
-  const { data: existingDecks } = await supabase
-    .from('decks')
-    .select('id')
-    .eq('user_id', userId);
-
-  if (existingDecks && existingDecks.length > 0) {
-    console.log('Decks já existem no Supabase, pulando migração');
-    return 0;
-  }
-
-  const migrationData = decks.map(deck => ({
-    user_id: userId,
-    name: deck.name || 'Deck Migrado',
-    description: deck.description || '',
-    color: deck.color || '#3B82F6',
-    created_at: deck.created ? new Date(deck.created).toISOString() : new Date().toISOString()
-  }));
-
-  const { data, error } = await supabase
-    .from('decks')
-    .insert(migrationData)
-    .select();
-
-  if (error) throw error;
-
-  return data?.length || 0;
+  // if (!Array.isArray(decks) || decks.length === 0) return 0;
+  // const { data: existingDecks } = await supabase
+  //   .from('decks')
+  //   .select('id')
+  //   .eq('user_id', userId);
+  // if (existingDecks && existingDecks.length > 0) {
+  //   console.log('Decks já existem no Supabase, pulando migração');
+  //   return 0;
+  // }
+  // const migrationData = decks.map(deck => ({
+  //   user_id: userId,
+  //   name: deck.name || 'Deck Migrado',
+  //   description: deck.description || '',
+  //   color: deck.color || '#3B82F6',
+  //   created_at: deck.created ? new Date(deck.created).toISOString() : new Date().toISOString()
+  // }));
+  // const { data, error } = await supabase
+  //   .from('decks')
+  //   .insert(migrationData)
+  //   .select();
+  // if (error) throw error;
+  // return data?.length || 0;
 }
 
 /**

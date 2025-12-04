@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square, Settings, X, FileText, HelpCircle } from 'lucide-react';
 import { DayWithProgress } from '../components/DayWithProgress';
+import { DayExceptionModal } from '../components/DayExceptionModal';
+import { ConflictAlert } from '../components/ConflictAlert';
 import { useTimer } from '../contexts/TimerContext';
+import { useScheduleItems } from '../hooks/useScheduleItems';
+import { useStudyConfig } from '../contexts/StudyConfigContext';
+import { useConflictDetection } from '../hooks/useConflictDetection';
+import { format, isSameDay, startOfMonth, getDaysInMonth, getDay } from 'date-fns';
 
 
 // Interface para tópicos agendados
@@ -254,7 +260,7 @@ export default function CronogramaPage() {
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set(['1-2', '28-2'])); // Alguns tópicos já completos para demo
   const [completedSubtopics, setCompletedSubtopics] = useState<Set<string>>(new Set(['21-2-0', '21-2-1', '28-1-0', '28-1-2'])); // Formato: topicId-subtopicIndex
-  
+
   // Estados para reagendamento
   const [scheduledTopics, setScheduledTopics] = useState<ScheduledTopic[]>(() => convertMockToScheduledTopics());
   const [rescheduleMode, setRescheduleMode] = useState(false);
@@ -262,7 +268,32 @@ export default function CronogramaPage() {
     isOpen: false,
     topic: null
   });
-  
+  const [rescheduleConflict, setRescheduleConflict] = useState<any>(null);
+  const [selectedRescheduleDay, setSelectedRescheduleDay] = useState<number | null>(null);
+  const [showRescheduleException, setShowRescheduleException] = useState(false);
+
+  // Estados para exceções de disponibilidade
+  const [exceptionModal, setExceptionModal] = useState<{ isOpen: boolean; date: Date | null }>({
+    isOpen: false,
+    date: null,
+  });
+
+  // Hook para buscar schedule_items das metas FSRS
+  const { items: scheduleItems, completeItem } = useScheduleItems();
+
+  // Hook para config de estudo (exceções de disponibilidade)
+  const {
+    config,
+    getDailyHours,
+    setDayException,
+    removeDayException,
+    hasDayException,
+    getDayException,
+  } = useStudyConfig();
+
+  // Hook para detecção de conflitos
+  const { checkConflict } = useConflictDetection();
+
   // Hook do Timer Context - conditional to avoid SSR issues
   const [timerContext, setTimerContext] = useState<{
     getTotalTimeForSubtopic: (key: string) => number;
@@ -539,9 +570,30 @@ export default function CronogramaPage() {
     });
   };
 
+  const handleRescheduleDayClick = (topicId: string, topic: TopicData, newDay: number) => {
+    // Converter estimatedTime string para minutos (ex: "25 min" → 25)
+    const minutesMatch = topic.estimatedTime.match(/(\d+)\s*min/);
+    const durationMinutes = minutesMatch ? parseInt(minutesMatch[1]) : 90;
+
+    // Construir a data do novo dia
+    const newDate = new Date(currentYear, currentMonth, newDay);
+
+    // Verificar conflito no novo dia (excluindo o próprio item sendo movido)
+    const conflict = checkConflict(newDate, durationMinutes);
+
+    if (conflict.hasConflict) {
+      // Tem conflito - mostrar alerta e aguardar usuário resolver
+      setRescheduleConflict({ ...conflict, newDay, topicId, durationMinutes });
+      setSelectedRescheduleDay(newDay);
+    } else {
+      // Sem conflito - reagendar diretamente
+      rescheduleTopicToDay(topicId, newDay);
+    }
+  };
+
   const rescheduleTopicToDay = (topicId: string, newDay: number) => {
-    setScheduledTopics(prev => 
-      prev.map(scheduledTopic => 
+    setScheduledTopics(prev =>
+      prev.map(scheduledTopic =>
         scheduledTopic.topicId === topicId
           ? {
               ...scheduledTopic,
@@ -551,7 +603,32 @@ export default function CronogramaPage() {
           : scheduledTopic
       )
     );
+    setRescheduleConflict(null);
+    setSelectedRescheduleDay(null);
     closeRescheduleModal();
+  };
+
+  const handleIncreaseRescheduleAvailability = () => {
+    setShowRescheduleException(true);
+  };
+
+  const handleSaveRescheduleException = async (hours: number, reason?: string) => {
+    if (!selectedRescheduleDay || !rescheduleConflict) return;
+
+    const date = new Date(currentYear, currentMonth, selectedRescheduleDay);
+    await setDayException(date, hours, reason);
+    setShowRescheduleException(false);
+
+    // Re-verificar conflito
+    const newConflict = checkConflict(date, rescheduleConflict.durationMinutes);
+
+    if (!newConflict.hasConflict) {
+      // Resolveu o conflito - reagendar
+      rescheduleTopicToDay(rescheduleConflict.topicId, selectedRescheduleDay);
+    } else {
+      // Ainda tem conflito - atualizar estado
+      setRescheduleConflict({ ...newConflict, ...rescheduleConflict });
+    }
   };
   
   // Cleanup dos intervals quando componente desmonta
@@ -563,11 +640,60 @@ export default function CronogramaPage() {
     };
   }, []);
   
-  // Função para obter tópicos do dia selecionado usando a nova estrutura
+  // Função para converter schedule_items em TopicData
+  const convertScheduleItemsToTopics = (day: number): TopicData[] => {
+    if (!scheduleItems || scheduleItems.length === 0) {
+      return [];
+    }
+
+    const selectedDate = new Date(currentYear, currentMonth, day);
+
+    const filtered = scheduleItems.filter(item => {
+      // IMPORTANTE: Parse de data local sem conversão UTC
+      const [year, month, dayNum] = item.scheduled_date.split('-').map(Number);
+      const itemDate = new Date(year, month - 1, dayNum); // month é 0-indexed
+
+      return isSameDay(itemDate, selectedDate);
+    });
+
+    return filtered.map(item => ({
+      id: `fsrs-${item.id}`,
+      title: item.title,
+      estimatedTime: `${item.estimated_duration || 20} min`,
+      cardsCount: 0, // TODO: vincular com flashcards reais
+      status: item.completed ? 'Concluído' : null,
+      completed: item.completed || false,
+      description: item.notes || `Revisão agendada - ${item.revision_type}`,
+      subtopics: [item.title], // Por enquanto, um subtópico com o mesmo nome
+    }));
+  };
+
+  // Função para obter tópicos do dia selecionado (manuais + FSRS)
   const getTopicsForDay = (day: number): TopicData[] => {
-    return scheduledTopics
+    const manualTopics = scheduledTopics
       .filter(scheduledTopic => scheduledTopic.currentDay === day)
       .map(scheduledTopic => scheduledTopic.topic);
+
+    const fsrsTopics = convertScheduleItemsToTopics(day);
+
+    return [...manualTopics, ...fsrsTopics];
+  };
+
+  // Calcular porcentagem de carga do dia (horas agendadas / horas disponíveis)
+  const calculateDayLoad = (day: number): number => {
+    const date = new Date(currentYear, currentMonth, day);
+    const availableHours = getDailyHours(date);
+
+    if (availableHours === 0) return 0; // Dia indisponível
+
+    const topics = getTopicsForDay(day);
+    const scheduledMinutes = topics.reduce((sum, topic) => {
+      const time = parseInt(topic.estimatedTime) || 0;
+      return sum + time;
+    }, 0);
+
+    const scheduledHours = scheduledMinutes / 60;
+    return (scheduledHours / availableHours) * 100;
   };
   
   // Obter tópicos do dia selecionado
@@ -585,6 +711,18 @@ export default function CronogramaPage() {
     return sum + time;
   }, 0);
   const totalCards = currentTopics.reduce((sum, topic) => sum + topic.cardsCount, 0);
+
+  // Handlers para exceções de disponibilidade
+  const handleChangeAvailability = (day: number) => {
+    const date = new Date(currentYear, currentMonth, day);
+    setExceptionModal({ isOpen: true, date });
+  };
+
+  const handleSaveException = async (hours: number, reason?: string) => {
+    if (exceptionModal.date) {
+      await setDayException(exceptionModal.date, hours, reason);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -643,14 +781,22 @@ export default function CronogramaPage() {
                   {/* Dias do mês atual */}
                   {Array.from({ length: daysInCurrentMonth }, (_, i) => {
                     const day = i + 1;
+                    const date = new Date(currentYear, currentMonth, day);
+                    const hasException = hasDayException(date);
+                    const exception = getDayException(date);
+                    const loadPercentage = calculateDayLoad(day);
+
                     return (
-                  <DayWithProgress 
+                      <DayWithProgress
                         key={day}
-                        day={day} 
+                        day={day}
                         progress={calculateDayProgress(day)}
                         isSelected={selectedDay === day}
                         isToday={day === currentDay}
                         onClick={() => handleDayClick(day)}
+                        hasException={hasException}
+                        exceptionHours={exception?.hours}
+                        loadPercentage={loadPercentage}
                       />
                     );
                   })}
@@ -685,10 +831,32 @@ export default function CronogramaPage() {
               
               {/* Topics Header */}
               <div className="mb-6 border-b pb-4">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Tópicos do Dia - {selectedDay} de {monthNames[currentMonth]}
-                </h2>
-                
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-3">
+                    <span>{selectedDay} de {monthNames[currentMonth]}</span>
+                    <span className="text-gray-300">|</span>
+                    <span className="text-sm font-normal text-gray-600 flex items-center gap-2">
+                      Disponibilidade: {(() => {
+                        const date = new Date(currentYear, currentMonth, selectedDay);
+                        const hours = getDailyHours(date);
+                        const hasException = hasDayException(date);
+                        return (
+                          <>
+                            {hours}h {hasException ? '(customizado)' : '(padrão)'}
+                            <button
+                              onClick={() => handleChangeAvailability(selectedDay)}
+                              className="text-gray-400 hover:text-blue-600 transition-colors"
+                              title="Personalizar disponibilidade deste dia"
+                            >
+                              <Settings className="h-4 w-4" />
+                            </button>
+                          </>
+                        );
+                      })()}
+                    </span>
+                  </h2>
+                </div>
+
                 <div className="mt-2 space-y-2">
                   {totalTopics === 0 ? (
                     <p className="text-sm text-gray-500 italic">
@@ -900,7 +1068,7 @@ export default function CronogramaPage() {
                                           onClick={() => {
                                             timerContext?.startActivity(subtopicKey, 'documento', `📄 ${subtopic} - Documento`);
                                             // TODO: Navegar para página do documento
-                                            console.log(`Abrindo documento do subtópico: ${subtopicKey}`);
+                                            // Abrindo documento do subtópico
                                           }}
                                           className="p-1 hover:bg-white hover:shadow-xs rounded transition-colors"
                                           title="Abrir documento"
@@ -911,7 +1079,7 @@ export default function CronogramaPage() {
                                           onClick={() => {
                                             timerContext?.startActivity(subtopicKey, 'flashcards', `🃏 ${subtopic} - Flashcards`);
                                             // TODO: Navegar para página de flashcards
-                                            console.log(`Abrindo flashcards do subtópico: ${subtopicKey}`);
+                                            // Abrindo flashcards do subtópico
                                           }}
                                           className="p-1 hover:bg-white hover:shadow-xs rounded transition-colors"
                                           title="Estudar flashcards"
@@ -922,7 +1090,7 @@ export default function CronogramaPage() {
                                           onClick={() => {
                                             timerContext?.startActivity(subtopicKey, 'questoes', `❓ ${subtopic} - Questões`);
                                             // TODO: Navegar para página de questões
-                                            console.log(`Abrindo questões do subtópico: ${subtopicKey}`);
+                                            // Abrindo questões do subtópico
                                           }}
                                           className="p-1 hover:bg-white hover:shadow-xs rounded transition-colors"
                                           title="Resolver questões"
@@ -1065,25 +1233,28 @@ export default function CronogramaPage() {
                   const hasTopics = getTopicsForDay(day).length > 0;
                   const currentTopicDay = scheduledTopics.find(st => st.topicId === rescheduleModal.topic?.id)?.currentDay;
                   const isCurrentDay = day === currentTopicDay;
-                  
+                  const isSelectedForReschedule = selectedRescheduleDay === day;
+
                   return (
                     <button
                       key={day}
-                      onClick={() => rescheduleModal.topic && rescheduleTopicToDay(rescheduleModal.topic.id, day)}
+                      onClick={() => rescheduleModal.topic && handleRescheduleDayClick(rescheduleModal.topic.id, rescheduleModal.topic, day)}
                       disabled={isCurrentDay}
                       className={`
                         h-8 text-xs font-medium rounded transition-colors
-                        ${isCurrentDay 
-                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                          : hasTopics
-                            ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                        ${isCurrentDay
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : isSelectedForReschedule
+                            ? 'bg-red-100 text-red-800 border-2 border-red-400'
+                            : hasTopics
+                              ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                         }
                       `}
                       title={
-                        isCurrentDay 
-                          ? 'Dia atual do tópico' 
-                          : hasTopics 
+                        isCurrentDay
+                          ? 'Dia atual do tópico'
+                          : hasTopics
                             ? `${getTopicsForDay(day).length} tópicos neste dia`
                             : 'Dia disponível'
                       }
@@ -1094,6 +1265,16 @@ export default function CronogramaPage() {
                 })}
               </div>
             </div>
+
+            {/* Conflict Alert */}
+            {rescheduleConflict && selectedRescheduleDay && (
+              <ConflictAlert
+                conflict={rescheduleConflict}
+                date={new Date(currentYear, currentMonth, selectedRescheduleDay)}
+                onIncreaseAvailability={handleIncreaseRescheduleAvailability}
+                className="mb-4"
+              />
+            )}
 
             {/* Botões de Ação */}
             <div className="flex gap-2 justify-end">
@@ -1106,6 +1287,21 @@ export default function CronogramaPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {selectedRescheduleDay && (
+        <DayExceptionModal
+          open={showRescheduleException}
+          onOpenChange={setShowRescheduleException}
+          date={new Date(currentYear, currentMonth, selectedRescheduleDay)}
+          currentHours={getDailyHours(new Date(currentYear, currentMonth, selectedRescheduleDay))}
+          defaultHours={getDailyHours(new Date(currentYear, currentMonth, selectedRescheduleDay))}
+          hasException={hasDayException(new Date(currentYear, currentMonth, selectedRescheduleDay))}
+          onSave={handleSaveRescheduleException}
+          onRemove={async () => {
+            // Não implementado aqui
+          }}
+        />
       )}
 
       {/* Modal de Detalhamento de Tempo */}
@@ -1200,6 +1396,27 @@ export default function CronogramaPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal de Exceção */}
+      {exceptionModal.isOpen && exceptionModal.date && (
+        <DayExceptionModal
+          open={exceptionModal.isOpen}
+          onOpenChange={(open) => setExceptionModal({ isOpen: open, date: null })}
+          date={exceptionModal.date}
+          currentHours={getDayException(exceptionModal.date)?.hours ?? getDailyHours(exceptionModal.date)}
+          defaultHours={(() => {
+            const dayOfWeek = exceptionModal.date.getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            if (isWeekend) {
+              return config?.weekend_hours ?? 5;
+            }
+            return config?.weekday_hours ?? 3;
+          })()}
+          onSave={handleSaveException}
+          onRemove={() => removeDayException(exceptionModal.date!)}
+          hasException={hasDayException(exceptionModal.date)}
+        />
       )}
     </div>
   );

@@ -86,7 +86,7 @@ export default function QuestoesPage() {
       nivel: q.nivel || "Médio",
       banca: q.banca || "",
       cargo: q.cargo || "",
-      ano: q.ano || new Date(q.created_at).getFullYear(),
+      ano: q.ano || new Date(q.created_at || new Date()).getFullYear(),
       pergunta: q.enunciado,
       alternativas: q.alternativas?.map(alt => ({
         letra: alt.letra,

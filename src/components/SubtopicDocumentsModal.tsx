@@ -76,7 +76,7 @@ export function SubtopicDocumentsModal({
           ) : (
             <div className="space-y-2">
               {documents
-                .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+                .sort((a, b) => new Date(b.updated_at || b.created_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime())
                 .map((doc) => (
                   <div
                     key={doc.id}
@@ -91,7 +91,7 @@ export function SubtopicDocumentsModal({
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatDate(doc.updated_at)}
+                          {formatDate(doc.updated_at || doc.created_at || '')}
                         </span>
                         {doc.is_favorite && (
                           <span className="text-yellow-500">★ Favorito</span>

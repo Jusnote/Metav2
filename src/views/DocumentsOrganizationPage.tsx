@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, HelpCircle, Play, CreditCard } from 'lucide-react';
+import { FileText, HelpCircle, Play, CreditCard, Target } from 'lucide-react';
 import { useUnitsManager, type Unit, type Topic, type Subtopic } from '../hooks/useUnitsManager';
 import { EditModeToggle } from '../components/EditModeToggle';
 import { usePlateDocuments } from '../hooks/usePlateDocuments';
 import { NotesModal } from '../components/NotesModal';
 import { SubtopicDocumentsModal } from '../components/SubtopicDocumentsModal';
 import { QuickCreateModal } from '../components/QuickCreateModal';
+import { TopicSubtopicCreateModal } from '../components/TopicSubtopicCreateModal';
 import { HierarchySearch } from '../components/HierarchySearch';
 import { HierarchyBreadcrumbs } from '../components/HierarchyBreadcrumbs';
 import { UnitItem } from '../components/UnitItem';
@@ -14,6 +15,8 @@ import { TopicItem } from '../components/TopicItem';
 import { SubtopicItem } from '../components/SubtopicItem';
 import { useMaterialCounts } from '../hooks/useMaterialCounts';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { GoalCreationDialog } from '../components/goals/GoalCreationDialog';
+import { Button } from '../components/ui/button';
 
 const DocumentsOrganizationPage = () => {
   // Proteção SSR - useNavigate só funciona no client
@@ -24,8 +27,7 @@ const DocumentsOrganizationPage = () => {
   const [selectedSubtopic, setSelectedSubtopic] = useState<{unitId: string, topicId: string, subtopic: any} | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<{unitId: string, topic: any} | null>(null);
   const [editingUnit, setEditingUnit] = useState<string | null>(null);
-  const [editingTopic, setEditingTopic] = useState<string | null>(null);
-  const [editingSubtopic, setEditingSubtopic] = useState<string | null>(null);
+  const [subtopicWithScheduleButton, setSubtopicWithScheduleButton] = useState<string | null>(null);
 
   // Modal de anotações
   const [notesModal, setNotesModal] = useState<{
@@ -64,6 +66,30 @@ const DocumentsOrganizationPage = () => {
     topicId: null
   });
 
+  // Modal de edição de tópico/subtópico
+  const [editModal, setEditModal] = useState<{
+    isOpen: boolean;
+    type: 'topic' | 'subtopic' | null;
+    unitId?: string | null;
+    topicId?: string | null;
+    itemId?: string | null;
+    itemTitle?: string;
+    itemDuration?: number;
+    hasSubtopics?: boolean;
+  }>({
+    isOpen: false,
+    type: null,
+    unitId: null,
+    topicId: null,
+    itemId: null,
+    itemTitle: '',
+    itemDuration: 0,
+    hasSubtopics: false
+  });
+
+  // Modal de criação de meta
+  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+
   const { createDocument } = usePlateDocuments();
 
   // Hook para contagens de materiais
@@ -84,6 +110,7 @@ const DocumentsOrganizationPage = () => {
     addSubtopic,
     updateSubtopic,
     deleteSubtopic,
+    calculateTopicDuration,
   } = useUnitsManager();
 
   // Handler para abrir documentos
@@ -95,31 +122,70 @@ const DocumentsOrganizationPage = () => {
     });
   };
 
-  // Handler para criação via QuickCreateModal
+  // Handler para criação via QuickCreateModal (unidades apenas)
   const handleQuickCreate = async (name: string) => {
     const { type, unitId, topicId } = quickCreateModal;
 
     if (type === 'unit') {
       const newUnit = await addUnit(name, 'Novo Assunto');
       // Expandir automaticamente a nova unidade
-      if (newUnit && newUnit.id) {
-        setExpandedUnits(prev => new Set(prev).add(newUnit.id));
+      if (newUnit) {
+        setExpandedUnits(prev => new Set(prev).add(newUnit));
       }
-    } else if (type === 'topic' && unitId) {
-      const newTopic = await addTopic(unitId, name);
+    }
+
+    setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null });
+  };
+
+  // Handler para criação de tópicos e subtópicos com tempo estimado
+  const handleTopicSubtopicCreate = async (data: { title: string; estimated_duration_minutes: number }) => {
+    const { type, unitId, topicId } = quickCreateModal;
+
+    if (type === 'topic' && unitId) {
+      const newTopic = await addTopic(unitId, data.title, data.estimated_duration_minutes);
       // Expandir automaticamente a unidade pai e o novo tópico
       setExpandedUnits(prev => new Set(prev).add(unitId));
-      if (newTopic && newTopic.id) {
-        setExpandedTopics(prev => new Set(prev).add(newTopic.id));
+      if (newTopic) {
+        setExpandedTopics(prev => new Set(prev).add(newTopic));
       }
     } else if (type === 'subtopic' && unitId && topicId) {
-      await addSubtopic(unitId, topicId, name);
+      await addSubtopic(unitId, topicId, data.title, data.estimated_duration_minutes);
       // Expandir automaticamente a unidade pai e o tópico pai
       setExpandedUnits(prev => new Set(prev).add(unitId));
       setExpandedTopics(prev => new Set(prev).add(topicId));
     }
 
     setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null });
+  };
+
+  // Handler para edição de tópicos e subtópicos via modal
+  const handleTopicSubtopicEdit = async (data: { title: string; estimated_duration_minutes: number }) => {
+    const { type, unitId, topicId, itemId } = editModal;
+
+    if (type === 'topic' && unitId && itemId) {
+      const updates: any = { title: data.title };
+      if (data.estimated_duration_minutes !== undefined) {
+        updates.estimated_duration_minutes = data.estimated_duration_minutes;
+      }
+      await updateTopic(unitId, itemId, updates);
+    } else if (type === 'subtopic' && unitId && topicId && itemId) {
+      const updates: any = { title: data.title };
+      if (data.estimated_duration_minutes !== undefined) {
+        updates.estimated_duration_minutes = data.estimated_duration_minutes;
+      }
+      await updateSubtopic(unitId, topicId, itemId, updates);
+    }
+
+    setEditModal({
+      isOpen: false,
+      type: null,
+      unitId: null,
+      topicId: null,
+      itemId: null,
+      itemTitle: '',
+      itemDuration: 0,
+      hasSubtopics: false
+    });
   };
 
   // Handler para marcar subtópico como concluído
@@ -277,6 +343,15 @@ const DocumentsOrganizationPage = () => {
                 units={units}
                 onSelect={handleSearchSelect}
               />
+
+              <Button
+                onClick={() => setGoalDialogOpen(true)}
+                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white"
+                size="sm"
+              >
+                <Target className="w-4 h-4 mr-2" />
+                Criar Nova Meta
+              </Button>
             </div>
 
             {/* Hierarquia */}
@@ -306,20 +381,29 @@ const DocumentsOrganizationPage = () => {
                       {unit.topics.map((topic) => (
                         <TopicItem
                           key={topic.id}
+                          unitId={unit.id}
                           topic={topic}
                           isExpanded={expandedTopics.has(topic.id)}
                           isSelected={selectedTopic?.topic.id === topic.id}
                           isEditMode={isEditMode}
-                          isEditing={editingTopic === topic.id}
+                          isEditing={false}
                           hasSubtopics={!!(topic.subtopics && topic.subtopics.length > 0)}
                           onToggleExpand={() => toggleTopicExpansion(topic.id)}
                           onSelect={() => handleTopicSelect(unit.id, topic)}
-                          onEdit={() => setEditingTopic(topic.id)}
-                          onCancelEdit={() => setEditingTopic(null)}
-                          onSave={async (newTitle) => {
-                            await updateTopic(unit.id, topic.id, { title: newTitle });
-                            setEditingTopic(null);
+                          onEdit={() => {
+                            setEditModal({
+                              isOpen: true,
+                              type: 'topic',
+                              unitId: unit.id,
+                              topicId: null,
+                              itemId: topic.id,
+                              itemTitle: topic.title,
+                              itemDuration: topic.estimated_duration_minutes || 120,
+                              hasSubtopics: !!(topic.subtopics && topic.subtopics.length > 0)
+                            });
                           }}
+                          onCancelEdit={() => {}}
+                          onSave={async () => {}}
                           onDelete={async () => {
                             if (confirm(`Deletar tópico "${topic.title}"?`)) {
                               await deleteTopic(unit.id, topic.id);
@@ -336,14 +420,28 @@ const DocumentsOrganizationPage = () => {
                                   topicId={topic.id}
                                   isSelected={selectedSubtopic?.subtopic.id === subtopic.id}
                                   isEditMode={isEditMode}
-                                  isEditing={editingSubtopic === subtopic.id}
-                                  onSelect={() => handleSubtopicSelect(unit.id, topic.id, subtopic)}
-                                  onEdit={() => setEditingSubtopic(subtopic.id)}
-                                  onCancelEdit={() => setEditingSubtopic(null)}
-                                  onSave={async (newTitle) => {
-                                    await updateSubtopic(unit.id, topic.id, subtopic.id, { title: newTitle });
-                                    setEditingSubtopic(null);
+                                  isEditing={false}
+                                  showScheduleButton={subtopicWithScheduleButton === subtopic.id}
+                                  onToggleScheduleButton={() => {
+                                    setSubtopicWithScheduleButton(
+                                      subtopicWithScheduleButton === subtopic.id ? null : subtopic.id
+                                    );
                                   }}
+                                  onSelect={() => handleSubtopicSelect(unit.id, topic.id, subtopic)}
+                                  onEdit={() => {
+                                    setEditModal({
+                                      isOpen: true,
+                                      type: 'subtopic',
+                                      unitId: unit.id,
+                                      topicId: topic.id,
+                                      itemId: subtopic.id,
+                                      itemTitle: subtopic.title,
+                                      itemDuration: subtopic.estimated_duration_minutes || 90,
+                                      hasSubtopics: false
+                                    });
+                                  }}
+                                  onCancelEdit={() => {}}
+                                  onSave={async () => {}}
                                   onDelete={async () => {
                                     if (confirm(`Deletar subtópico "${subtopic.title}"?`)) {
                                       await deleteSubtopic(unit.id, topic.id, subtopic.id);
@@ -786,25 +884,70 @@ const DocumentsOrganizationPage = () => {
         />
       )}
 
-      <QuickCreateModal
-        isOpen={quickCreateModal.isOpen}
-        onClose={() => setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null })}
-        onSave={handleQuickCreate}
-        title={
-          quickCreateModal.type === 'unit'
-            ? 'Nova Unidade'
-            : quickCreateModal.type === 'topic'
-            ? 'Novo Tópico'
-            : 'Novo Subtópico'
+      {/* Modal para criar unidades (sem tempo estimado) */}
+      {quickCreateModal.type === 'unit' && (
+        <QuickCreateModal
+          isOpen={quickCreateModal.isOpen}
+          onClose={() => setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null })}
+          onSave={handleQuickCreate}
+          title="Nova Unidade"
+          placeholder="Digite o nome da unidade..."
+        />
+      )}
+
+      {/* Modal para criar tópicos e subtópicos (com tempo estimado) */}
+      {(quickCreateModal.type === 'topic' || quickCreateModal.type === 'subtopic') && (() => {
+        // Find the topic if we're creating a subtopic to show calculated duration
+        let hasSubtopics = false;
+        let calculatedDuration = 0;
+
+        if (quickCreateModal.type === 'topic' && quickCreateModal.unitId) {
+          // For topics, we're creating new, so hasSubtopics is always false initially
+          hasSubtopics = false;
         }
-        placeholder={
-          quickCreateModal.type === 'unit'
-            ? 'Digite o nome da unidade...'
-            : quickCreateModal.type === 'topic'
-            ? 'Digite o nome do tópico...'
-            : 'Digite o nome do subtópico...'
-        }
+
+        return (
+          <TopicSubtopicCreateModal
+            isOpen={quickCreateModal.isOpen}
+            onClose={() => setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null })}
+            onSave={handleTopicSubtopicCreate}
+            type={quickCreateModal.type}
+            hasSubtopics={hasSubtopics}
+            calculatedDuration={calculatedDuration}
+          />
+        );
+      })()}
+
+      <GoalCreationDialog
+        open={goalDialogOpen}
+        onOpenChange={setGoalDialogOpen}
       />
+
+      {/* Modal para editar tópicos e subtópicos */}
+      {editModal.isOpen && editModal.type && (
+        <TopicSubtopicCreateModal
+          isOpen={editModal.isOpen}
+          onClose={() => setEditModal({
+            isOpen: false,
+            type: null,
+            unitId: null,
+            topicId: null,
+            itemId: null,
+            itemTitle: '',
+            itemDuration: 0,
+            hasSubtopics: false
+          })}
+          onSave={handleTopicSubtopicEdit}
+          type={editModal.type}
+          hasSubtopics={editModal.hasSubtopics || false}
+          calculatedDuration={editModal.type === 'topic' && editModal.hasSubtopics ? calculateTopicDuration(
+            units.find(u => u.id === editModal.unitId)?.topics.find(t => t.id === editModal.itemId) || {} as any
+          ) : 0}
+          mode="edit"
+          initialTitle={editModal.itemTitle}
+          initialDuration={editModal.itemDuration}
+        />
+      )}
     </div>
   );
 };

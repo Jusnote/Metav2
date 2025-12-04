@@ -38,6 +38,11 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -46,6 +51,8 @@ import {
 } from "./ui/sheet";
 import { toast } from "sonner";
 import { StudyModeToggle } from "./StudyModeToggle";
+import { StudyConfigDialog } from "./StudyConfigDialog";
+import { useStudyConfig } from "../hooks/useStudyConfig";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -72,9 +79,11 @@ export function AppHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const [showConfigDialog, setShowConfigDialog] = useState(false);
   const location = typeof window !== 'undefined' ? useLocation() : null;
   const currentPath = location?.pathname;
   const { user, signOut } = useAuth();
+  const { config } = useStudyConfig();
 
   // Mock notifications data - replace with actual notifications context
   const notifications = {
@@ -82,6 +91,28 @@ export function AppHeader() {
     hasAlerts: true,
     hasSuccess: false
   };
+
+  // Calcular status da configuração
+  const getConfigStatus = () => {
+    if (!config) return { percentage: 0, color: 'red', label: 'Não configurado' };
+
+    const completedSections = config.metadata?.completedSections || [];
+    const weights = { essential: 40, times: 20, preferences: 20, goals: 20 };
+    const sections = ['essential', 'times', 'preferences', 'goals'] as const;
+
+    let total = 0;
+    sections.forEach(section => {
+      if (completedSections.includes(section)) {
+        total += weights[section];
+      }
+    });
+
+    if (total === 0) return { percentage: 0, color: 'red', label: 'Não configurado', icon: '!' };
+    if (total < 100) return { percentage: total, color: 'yellow', label: `${total}% configurado`, icon: `${total}%` };
+    return { percentage: 100, color: 'green', label: 'Configuração completa', icon: '✓' };
+  };
+
+  const configStatus = getConfigStatus();
 
   const isActive = (path: string) => {
     if (!currentPath) return false;
@@ -143,6 +174,59 @@ export function AppHeader() {
           <div className="md:hidden"></div>
 
           <div className="flex items-center gap-1 md:gap-2 md:flex-1 md:justify-end">
+            {/* Badge de Configuração - Desktop apenas */}
+            <div className="relative hidden md:block">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 w-9 p-0 relative hover:bg-slate-800 text-slate-300 hover:text-white"
+                    onClick={() => setShowConfigDialog(true)}
+                  >
+                    <Settings className={`h-4 w-4 ${configStatus.color === 'green' ? 'text-green-400' : ''}`} />
+                    {configStatus.color === 'red' && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
+                        !
+                      </span>
+                    )}
+                    {configStatus.color === 'yellow' && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full text-white text-[9px] font-bold flex items-center justify-center">
+                        {configStatus.percentage}%
+                      </span>
+                    )}
+                    {configStatus.color === 'green' && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-3 h-3 text-white" />
+                      </span>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <div className="space-y-1">
+                    <p className="font-semibold text-sm">{configStatus.label}</p>
+                    {config && (
+                      <div className="text-xs space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          {config.metadata?.completedSections?.includes('essential') ? '✅' : '⏸️'} Essencial
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {config.metadata?.completedSections?.includes('times') ? '✅' : '⏸️'} Horários (opcional)
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {config.metadata?.completedSections?.includes('preferences') ? '✅' : '⏸️'} Preferências (opcional)
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {config.metadata?.completedSections?.includes('goals') ? '✅' : '⏸️'} Metas (opcional)
+                        </div>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">Clique para configurar</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
             {/* Notificações - Desktop apenas */}
             <div className="relative hidden md:block">
               <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative hover:bg-slate-800 text-slate-300 hover:text-white">
@@ -308,6 +392,15 @@ export function AppHeader() {
       
       {/* Barra Laranja Divisória - Fora do container para ocupar toda a largura */}
       <div className="w-full h-1 bg-linear-to-r from-orange-400 via-orange-500 to-orange-600 shadow-xs"></div>
+
+      {/* Dialog de Configuração */}
+      <StudyConfigDialog
+        open={showConfigDialog}
+        onOpenChange={setShowConfigDialog}
+        onComplete={() => {
+          toast.success("Configuração salva com sucesso!");
+        }}
+      />
     </header>
   );
 }

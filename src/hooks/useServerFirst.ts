@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { useToast } from './use-toast';
+import { Database } from '@/types/database';
 
 // Tipos base
 export interface BaseEntity {
   id: string;
   user_id: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface ServerFirstOptions {
@@ -98,14 +99,14 @@ export function useServerFirst<T extends BaseEntity>(
       if (userError || !user) throw new Error('Usuário não autenticado');
 
       const { data: serverData, error } = await supabase
-        .from(tableName)
+        .from(tableName as keyof Database['public']['Tables'])
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const typedData = (serverData || []) as T[];
+      const typedData = (serverData || []) as unknown as T[];
       updateCache(typedData);
       setData(typedData);
 
@@ -180,7 +181,7 @@ export function useServerFirst<T extends BaseEntity>(
             };
 
             result = await supabase
-              .from(tableName)
+              .from(tableName as keyof Database['public']['Tables'])
               .insert(dataWithUserId)
               .select()
               .single();
@@ -188,7 +189,7 @@ export function useServerFirst<T extends BaseEntity>(
             
           case 'update':
             result = await supabase
-              .from(tableName)
+              .from(tableName as keyof Database['public']['Tables'])
               .update(operation.data!)
               .eq('id', operation.id)
               .select()
@@ -197,7 +198,7 @@ export function useServerFirst<T extends BaseEntity>(
             
           case 'delete':
             result = await supabase
-              .from(tableName)
+              .from(tableName as keyof Database['public']['Tables'])
               .delete()
               .eq('id', operation.id);
             break;
@@ -269,7 +270,7 @@ export function useServerFirst<T extends BaseEntity>(
         };
 
         const { data: serverItem, error } = await supabase
-          .from(tableName)
+          .from(tableName as keyof Database['public']['Tables'])
           .insert(dataWithUserId)
           .select()
           .single();
@@ -278,12 +279,12 @@ export function useServerFirst<T extends BaseEntity>(
 
         // Substituir item temporário pelo real
         const updatedData = data.map(item =>
-          item.id === tempId ? serverItem as T : item
+          item.id === tempId ? serverItem as unknown as T : item
         );
         setData(updatedData);
         updateCache(updatedData);
 
-        return serverItem as T;
+        return serverItem as unknown as T;
 
       } catch (error) {
         // Reverter update otimista
@@ -346,7 +347,7 @@ export function useServerFirst<T extends BaseEntity>(
     if (isOnlineRef.current) {
       try {
         const { data: serverItem, error } = await supabase
-          .from(tableName)
+          .from(tableName as keyof Database['public']['Tables'])
           .update({ ...updates, updated_at: new Date().toISOString() })
           .eq('id', id)
           .select()
@@ -356,12 +357,12 @@ export function useServerFirst<T extends BaseEntity>(
 
         // Atualizar estado com dados do servidor
         const updatedData = data.map(item =>
-          item.id === id ? serverItem as T : item
+          item.id === id ? serverItem as unknown as T : item
         );
         setData(updatedData);
         updateCache(updatedData);
 
-        return serverItem as T;
+        return serverItem as unknown as T;
 
       } catch (error) {
         // Reverter update otimista
@@ -416,7 +417,7 @@ export function useServerFirst<T extends BaseEntity>(
     if (isOnlineRef.current) {
       try {
         const { error } = await supabase
-          .from(tableName)
+          .from(tableName as keyof Database['public']['Tables'])
           .delete()
           .eq('id', id);
 

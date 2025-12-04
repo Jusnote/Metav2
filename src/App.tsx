@@ -8,25 +8,29 @@ import { NavigationHeader } from "./components/NavigationHeader";
 import { StudyModeProvider } from "./contexts/StudyModeContext";
 import { QuestionsProvider } from "./contexts/QuestionsContext";
 import { TimerProvider } from "./contexts/TimerContext";
+import { StudyConfigProvider } from "./contexts/StudyConfigContext";
 
-import HomePage from "./pages/HomePage";
-import Index from "./pages/Index";
-import StudyPage from "./pages/StudyPage";
-import EditResumoPage from "./pages/EditResumoPage";
-import ResumosListPage from "./pages/ResumosListPage";
-import QuestoesPage from "./pages/QuestoesPage";
-import CriarQuestaoPage from "./pages/CriarQuestaoPage";
-import CronogramaPage from "./pages/CronogramaPage";
-import AuthPage from "./pages/AuthPage";
-import NotFound from "./pages/NotFound";
-import EditorPage from "./pages/EditorPage";
+import HomePage from "./views/HomePage";
+import Index from "./views/Index";
+import StudyPage from "./views/StudyPage";
+import EditResumoPage from "./views/EditResumoPage";
+import ResumosListPage from "./views/ResumosListPage";
+import QuestoesPage from "./views/QuestoesPage";
+import CriarQuestaoPage from "./views/CriarQuestaoPage";
+import CronogramaPage from "./views/CronogramaPage";
+import AuthPage from "./views/AuthPage";
+import NotFound from "./views/NotFound";
+import EditorPage from "./views/EditorPage";
 import PlateEditorPage from "./components/pages/PlateEditorPage";
 
-import DocumentsOrganizationPage from "./pages/DocumentsOrganizationPage";
-import NotesPage from "./pages/NotesPage";
+import DocumentsOrganizationPage from "./views/DocumentsOrganizationPage";
+import NotesPage from "./views/NotesPage";
+import GoalsPage from "./views/GoalsPage";
 import { useAuth } from "./hooks/useAuth";
 import GlobalTimer from "./components/GlobalTimer";
 import React, { useState } from "react";
+// import { TestScheduleHooks } from "./components/TestScheduleHooks";
+import { TimeEstimateInputTest } from "./components/goals/TimeEstimateInputTest";
 
 const queryClient = new QueryClient();
 
@@ -121,12 +125,13 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <TimerProvider>
-          <StudyModeProvider>
-            <QuestionsProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
+        <StudyConfigProvider>
+          <TimerProvider>
+            <StudyModeProvider>
+              <QuestionsProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
                 <Routes>
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/" element={<AppContent />}>
@@ -143,13 +148,17 @@ const App = () => {
 
                     <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
                     <Route path="notes" element={<PrivateRoute><NotesPage /></PrivateRoute>} />
+                    {/* <Route path="test-schedule" element={<PrivateRoute><TestScheduleHooks /></PrivateRoute>} /> */}
+                    <Route path="test-time-input" element={<PrivateRoute><TimeEstimateInputTest /></PrivateRoute>} />
+                    <Route path="goals" element={<PrivateRoute><GoalsPage /></PrivateRoute>} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
-            </QuestionsProvider>
-          </StudyModeProvider>
-        </TimerProvider>
+              </QuestionsProvider>
+            </StudyModeProvider>
+          </TimerProvider>
+        </StudyConfigProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

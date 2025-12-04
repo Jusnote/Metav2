@@ -1,23 +1,62 @@
-import { FSRS, Rating, State, Card, generatorParameters, RecordLogItem } from 'ts-fsrs';
+import { FSRS, Rating, State, Card, RecordLogItem } from 'ts-fsrs';
 import { Flashcard } from '../types/flashcard';
+import { getFSRSParameters, FSRSAggressiveness } from './fsrs-config';
+import { supabase } from '@/integrations/supabase/client';
 
-const params = generatorParameters();
-const fsrs = new FSRS(params);
-
+/**
+ * FSRS Spaced Repetition System
+ *
+ * Utiliza configuração global do usuário (user_study_config.fsrs_aggressiveness)
+ * para calcular revisões de flashcards avulsos.
+ */
 export class FSRSSpacedRepetition {
-  static calculateNextReview(
+  /**
+   * Busca configuração FSRS do usuário
+   * Se não houver, retorna 'balanced' como padrão
+   */
+  private static async getUserAggressiveness(): Promise<FSRSAggressiveness> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 'balanced';
+
+      const { data } = await supabase
+        .from('user_study_config')
+        .select('fsrs_aggressiveness')
+        .eq('user_id', user.id)
+        .single();
+
+      return (data?.fsrs_aggressiveness as FSRSAggressiveness) || 'balanced';
+    } catch (error) {
+      console.error('Error fetching FSRS aggressiveness:', error);
+      return 'balanced'; // Fallback
+    }
+  }
+
+  /**
+   * Cria instância FSRS com configuração do usuário
+   */
+  private static async createFSRSInstance(): Promise<FSRS> {
+    const aggressiveness = await this.getUserAggressiveness();
+    const params = getFSRSParameters(aggressiveness);
+    return new FSRS(params);
+  }
+
+  static async calculateNextReview(
     card: Flashcard,
     rating: Rating
-  ): {
+  ): Promise<{
     difficulty: number;
     stability: number;
     state: State;
     due: Date;
     last_review: Date;
     review_count: number;
-  } {
+  }> {
     const now = new Date();
-    
+
+    // Criar instância FSRS com configuração do usuário
+    const fsrs = await this.createFSRSInstance();
+
     // Convert Flashcard to FSRS Card format
     const fsrsCard: Card = {
       due: card.due || now,

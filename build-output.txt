@@ -1,0 +1,42 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> vite_react_shadcn_ts@0.0.0 build
+> cross-env NODE_OPTIONS=--max-old-space-size=4096 next build
+
+   ▲ Next.js 15.5.5
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 94s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/8) ...
+   Generating static pages (2/8) 
+   Generating static pages (4/8) 
+   Generating static pages (6/8) 
+ ✓ Generating static pages (8/8)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /_not-found                             1 kB         105 kB
+├ ● /[[...slug]]                         1.36 kB         105 kB
+├   └ /
+├ ƒ /api/ai/command                        175 B         104 kB
+├ ƒ /api/ai/copilot                        135 B         104 kB
+├ ƒ /api/uploadthing                       135 B         104 kB
+└ ○ /robots.txt                              0 B            0 B
++ First Load JS shared by all             104 kB
+  ├ chunks/1255-8ed6c64af9e8c6fb.js      45.5 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
+  └ other shared chunks (total)          3.84 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

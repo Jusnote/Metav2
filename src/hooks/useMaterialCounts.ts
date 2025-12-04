@@ -43,7 +43,7 @@ export const useMaterialCounts = (
       const { count: documentsCount, error: docsError } = await supabase
         .from('documents')
         .select('*', { count: 'exact', head: true })
-        .eq(subtopicId ? 'subtopic_id' : 'topic_id', subtopicId || topicId);
+        .eq(subtopicId ? 'subtopic_id' : 'topic_id', (subtopicId || topicId) as string);
 
       if (docsError) {
         console.error('Error counting documents:', docsError);

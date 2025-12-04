@@ -422,7 +422,7 @@ const Index = () => {
                   <CardContent className="pt-0">
                     <div className="bg-gray-50 rounded-lg p-4">
                       <SavedCardBlockNote
-                        content={flashcard.front}
+                        content={Array.isArray(flashcard.front) ? flashcard.front : []}
                         isEditing={false}
                         onSave={() => {}}
                       />

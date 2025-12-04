@@ -54,7 +54,7 @@ export function useDocuments(user: User | null) {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      setDocuments(data || []);
+      setDocuments((data as unknown as Document[]) || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch documents');
     } finally {
@@ -84,10 +84,10 @@ export function useDocuments(user: User | null) {
         .single();
 
       if (error) throw error;
-      
+
       // Add to local state
-      setDocuments(prev => [data, ...prev]);
-      return data;
+      setDocuments(prev => [data as unknown as Document, ...prev]);
+      return data as unknown as Document;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create document');
       return null;
@@ -111,12 +111,12 @@ export function useDocuments(user: User | null) {
         .single();
 
       if (error) throw error;
-      
+
       // Update local state
-      setDocuments(prev => 
-        prev.map(doc => doc.id === id ? data : doc)
+      setDocuments(prev =>
+        prev.map(doc => doc.id === id ? data as unknown as Document : doc)
       );
-      return data;
+      return data as unknown as Document;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update document');
       return null;
@@ -164,7 +164,7 @@ export function useDocuments(user: User | null) {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as unknown as Document;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch document');
       return null;
@@ -186,7 +186,7 @@ export function useDocuments(user: User | null) {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Document[]) || [];
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to search documents');
       return [];
@@ -262,16 +262,17 @@ export function useAutoSave(user: User | null = null) {
         console.log('❌ Error loading document:', error);
         throw error;
       }
-      
+
+
       console.log('✅ Document loaded successfully:', {
         id: data.id,
         title: data.title,
         contentType: typeof data.content,
         hasContent: !!data.content
       });
-      
-      setCurrentDocument(data);
-      return data;
+
+      setCurrentDocument(data as unknown as Document);
+      return data as unknown as Document;
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to load document');
       return null;

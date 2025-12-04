@@ -232,7 +232,7 @@ export function useAutoSavePlateDocument(documentId: string | null) {
 
         // Inicializar lastSavedContentHashRef
         if (data.content) {
-          lastSavedContentHashRef.current = hashContent(data.content);
+          lastSavedContentHashRef.current = hashContent(Array.isArray(data.content) ? data.content : []);
         }
       } catch (error) {
         // Silently fail - error handling via toast in parent

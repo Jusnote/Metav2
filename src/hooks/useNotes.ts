@@ -30,8 +30,8 @@ export const useNotes = (): UseNotesReturn => {
       const { data, error } = await query;
 
       if (error) throw error;
-      
-      setNotes(data || []);
+
+      setNotes((data as unknown as Note[]) || []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar anotações';
       setError(errorMessage);
@@ -77,15 +77,15 @@ export const useNotes = (): UseNotesReturn => {
         .single();
 
       if (error) throw error;
-      
-      setNotes(prev => [newNote, ...prev]);
-      
+
+      setNotes(prev => [newNote as unknown as Note, ...prev]);
+
       toast({
         title: 'Sucesso',
         description: 'Anotação criada com sucesso!',
       });
-      
-      return newNote;
+
+      return newNote as unknown as Note;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao criar anotação';
       setError(errorMessage);
@@ -113,17 +113,17 @@ export const useNotes = (): UseNotesReturn => {
         .single();
 
       if (error) throw error;
-      
-      setNotes(prev => prev.map(note => 
-        note.id === data.id ? updatedNote : note
+
+      setNotes(prev => prev.map(note =>
+        note.id === data.id ? updatedNote as unknown as Note : note
       ));
-      
+
       toast({
         title: 'Sucesso',
         description: 'Anotação atualizada com sucesso!',
       });
-      
-      return updatedNote;
+
+      return updatedNote as unknown as Note;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar anotação';
       setError(errorMessage);

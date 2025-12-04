@@ -92,8 +92,8 @@ export const VisualizarQuestao: React.FC<VisualizarQuestaoProps> = ({
           )}
 
           <div className="text-sm text-muted-foreground">
-            <p>Criada em: {new Date(questao.created_at).getFullYear()}</p>
-            <p>Última atualização: {new Date(questao.updated_at).toLocaleString()}</p>
+            {questao.created_at && <p>Criada em: {new Date(questao.created_at).getFullYear()}</p>}
+            {questao.updated_at && <p>Última atualização: {new Date(questao.updated_at).toLocaleString()}</p>}
           </div>
         </div>
 

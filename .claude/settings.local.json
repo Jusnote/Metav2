@@ -1,7 +1,27 @@
 {
   "permissions": {
     "allow": [
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(supabase:*)",
+      "Bash(npm info:*)",
+      "Bash(npx supabase db query:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 10 bash:*)",
+      "Bash(npx supabase db push)",
+      "Bash(npx supabase db push --include-all)",
+      "Bash(tail:*)",
+      "Bash(npx supabase:*)",
+      "Bash(ren \"supabase\\migrations\\20250123_add_goal_intensity.sql\" \"20250123_remove_hours_per_day_from_goals.sql\")",
+      "Bash(cat:*)",
+      "Bash(npx eslint:*)",
+      "Bash(git checkout:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(tee:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

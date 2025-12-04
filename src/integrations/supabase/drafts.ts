@@ -24,91 +24,88 @@ export interface DeckDraft {
 }
 
 // Salvar rascunho
+// DESABILITADO: Tabela 'deck_drafts' não existe
 export async function saveDraftToDatabase(deckId: string, blocks: Block[]): Promise<void> {
-  const { data: { user } } = await supabaseDrafts.auth.getUser();
-  
-  if (!user) {
-    throw new Error('Usuário não autenticado');
-  }
+  console.log('saveDraftToDatabase desabilitado - tabela deck_drafts não existe');
+  return;
 
-  // Verificar se já existe um rascunho para este deck
-  const { data: existingDraft } = await supabaseDrafts
-    .from('deck_drafts')
-    .select('id')
-    .eq('deck_id', deckId)
-    .eq('user_id', user.id)
-    .single();
+  // const { data: { user } } = await supabaseDrafts.auth.getUser();
+  // if (!user) {
+  //   throw new Error('Usuário não autenticado');
+  // }
+  // const { data: existingDraft } = await supabaseDrafts
+  //   .from('deck_drafts')
+  //   .select('id')
+  //   .eq('deck_id', deckId)
+  //   .eq('user_id', user.id)
+  //   .single();
+  // if (existingDraft) {
+  //   const { error } = await supabaseDrafts
+  //     .from('deck_drafts')
+  //     .update({
+  //       blocks_data: blocks,
+  //       updated_at: new Date().toISOString()
+  //     })
+  //     .eq('id', existingDraft.id);
 
-  if (existingDraft) {
-    // Atualizar rascunho existente
-    const { error } = await supabaseDrafts
-      .from('deck_drafts')
-      .update({
-        blocks_data: blocks,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', existingDraft.id);
-
-    if (error) {
-      throw new Error(`Erro ao atualizar rascunho: ${error.message}`);
-    }
-  } else {
-    // Criar novo rascunho
-    const { error } = await supabaseDrafts
-      .from('deck_drafts')
-      .insert({
-        deck_id: deckId,
-        user_id: user.id,
-        blocks_data: blocks
-      });
-
-    if (error) {
-      throw new Error(`Erro ao criar rascunho: ${error.message}`);
-    }
-  }
+  //   if (error) {
+  //     throw new Error(`Erro ao atualizar rascunho: ${error.message}`);
+  //   }
+  // } else {
+  //   const { error } = await supabaseDrafts
+  //     .from('deck_drafts')
+  //     .insert({
+  //       deck_id: deckId,
+  //       user_id: user.id,
+  //       blocks_data: blocks
+  //     });
+  //   if (error) {
+  //     throw new Error(`Erro ao criar rascunho: ${error.message}`);
+  //   }
+  // }
 }
 
 // Carregar rascunho
+// DESABILITADO: Tabela 'deck_drafts' não existe
 export async function loadDraftFromDatabase(deckId: string): Promise<Block[] | null> {
-  const { data: { user } } = await supabaseDrafts.auth.getUser();
-  
-  if (!user) {
-    return null;
-  }
+  console.log('loadDraftFromDatabase desabilitado - tabela deck_drafts não existe');
+  return null;
 
-  const { data, error } = await supabaseDrafts
-    .from('deck_drafts')
-    .select('blocks_data')
-    .eq('deck_id', deckId)
-    .eq('user_id', user.id)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      // Nenhum rascunho encontrado
-      return null;
-    }
-    throw new Error(`Erro ao carregar rascunho: ${error.message}`);
-  }
-
-  return data.blocks_data as Block[];
+  // const { data: { user } } = await supabaseDrafts.auth.getUser();
+  // if (!user) {
+  //   return null;
+  // }
+  // const { data, error } = await supabaseDrafts
+  //   .from('deck_drafts')
+  //   .select('blocks_data')
+  //   .eq('deck_id', deckId)
+  //   .eq('user_id', user.id)
+  //   .single();
+  // if (error) {
+  //   if (error.code === 'PGRST116') {
+  //     return null;
+  //   }
+  //   throw new Error(`Erro ao carregar rascunho: ${error.message}`);
+  // }
+  // return data.blocks_data as Block[];
 }
 
 // Deletar rascunho
+// DESABILITADO: Tabela 'deck_drafts' não existe
 export async function deleteDraftFromDatabase(deckId: string): Promise<void> {
-  const { data: { user } } = await supabaseDrafts.auth.getUser();
-  
-  if (!user) {
-    throw new Error('Usuário não autenticado');
-  }
+  console.log('deleteDraftFromDatabase desabilitado - tabela deck_drafts não existe');
+  return;
 
-  const { error } = await supabaseDrafts
-    .from('deck_drafts')
-    .delete()
-    .eq('deck_id', deckId)
-    .eq('user_id', user.id);
-
-  if (error) {
-    throw new Error(`Erro ao deletar rascunho: ${error.message}`);
-  }
+  // const { data: { user } } = await supabaseDrafts.auth.getUser();
+  // if (!user) {
+  //   throw new Error('Usuário não autenticado');
+  // }
+  // const { error } = await supabaseDrafts
+  //   .from('deck_drafts')
+  //   .delete()
+  //   .eq('deck_id', deckId)
+  //   .eq('user_id', user.id);
+  // if (error) {
+  //   throw new Error(`Erro ao deletar rascunho: ${error.message}`);
+  // }
 }
