@@ -5,39 +5,29 @@
 import { supabase } from '../integrations/supabase/client';
 import { Question, SectionQuestions } from '../types/questions';
 
-// Tipo para a tabela study_questions no Supabase
-export interface StudyQuestionRow {
-  id: string;
-  document_id: string;
-  section_index: number;
-  section_title: string;
-  question_type: 'multiple' | 'boolean' | 'text';
-  question_text: string;
-  options: string[] | null;
-  correct_answer: string | number | boolean;
-  explanation: string | null;
-  points: number;
-  created_at: string;
-  updated_at: string;
-}
+// Tipo para a tabela study_questions no Supabase (alinhado com database.ts)
+import { Database } from '@/types/database';
+type StudyQuestionRow = Database['public']['Tables']['study_questions']['Row'];
+type StudyQuestionInsert = Database['public']['Tables']['study_questions']['Insert'];
+type StudyQuestionUpdate = Database['public']['Tables']['study_questions']['Update'];
 
 /**
  * Converter Question para formato do Supabase
  */
 function questionToSupabaseRow(
-  question: Question, 
-  documentId: string, 
-  sectionIndex: number, 
+  question: Question,
+  documentId: string,
+  sectionIndex: number,
   sectionTitle: string
-): Omit<StudyQuestionRow, 'id' | 'created_at' | 'updated_at'> {
+): Omit<StudyQuestionInsert, 'id' | 'created_at' | 'updated_at'> {
   return {
     document_id: documentId,
     section_index: sectionIndex,
     section_title: sectionTitle,
     question_type: question.type,
     question_text: question.question,
-    options: question.options || null,
-    correct_answer: question.correctAnswer,
+    options: question.options as any || null,
+    correct_answer: question.correctAnswer as any,
     explanation: question.explanation || null,
     points: question.points || 10,
   };
@@ -46,15 +36,15 @@ function questionToSupabaseRow(
 /**
  * Converter linha do Supabase para Question
  */
-function supabaseRowToQuestion(row: StudyQuestionRow): Question {
+function supabaseRowToQuestion(row: any): Question {
   return {
     id: row.id,
-    type: row.question_type,
+    type: row.question_type as 'multiple' | 'boolean' | 'text',
     question: row.question_text,
-    options: row.options || undefined,
+    options: row.options ? (Array.isArray(row.options) ? row.options : []) : undefined,
     correctAnswer: row.correct_answer,
     explanation: row.explanation || undefined,
-    points: row.points,
+    points: row.points || 10,
   };
 }
 
@@ -90,8 +80,8 @@ export async function getQuestionsForDocument(documentId: string): Promise<Secti
         sectionTitle: row.section_title,
         sectionIndex: row.section_index,
         questions: [],
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
+        createdAt: row.created_at || undefined,
+        updatedAt: row.updated_at || undefined,
       });
     }
     
@@ -135,8 +125,8 @@ export async function getQuestionsForSection(
     sectionTitle: firstRow.section_title,
     sectionIndex: sectionIndex,
     questions: questions,
-    createdAt: firstRow.created_at,
-    updatedAt: Math.max(...data.map(row => new Date(row.updated_at).getTime())).toString(),
+    createdAt: firstRow.created_at || undefined,
+    updatedAt: Math.max(...data.map(row => new Date(row.updated_at || row.created_at || 0).getTime())).toString(),
   };
 }
 
@@ -181,8 +171,8 @@ export async function updateQuestion(
   updates: Partial<Question>
 ): Promise<Question> {
   console.log('📝 Atualizando pergunta:', questionId, updates);
-  
-  const updateData: Partial<StudyQuestionRow> = {};
+
+  const updateData: any = {};
   
   if (updates.type) updateData.question_type = updates.type;
   if (updates.question) updateData.question_text = updates.question;
@@ -274,14 +264,14 @@ export async function replaceQuestionsForSection(
 
   // Retornar as perguntas atualizadas
   const questions = data?.map(supabaseRowToQuestion) || [];
-  
+
   return {
     sectionId: `section-${sectionIndex}`,
     sectionTitle: sectionTitle,
     sectionIndex: sectionIndex,
     questions: questions,
     createdAt: data?.[0]?.created_at || new Date().toISOString(),
-    updatedAt: Math.max(...(data?.map(row => new Date(row.updated_at).getTime()) || [Date.now()])).toString(),
+    updatedAt: Math.max(...(data?.map(row => row.updated_at ? new Date(row.updated_at).getTime() : Date.now()) || [Date.now()])).toString(),
   };
 }
 

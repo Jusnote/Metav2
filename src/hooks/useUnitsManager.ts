@@ -18,6 +18,7 @@ export interface Topic {
   subtopics?: Subtopic[];
   lastAccess?: string;
   tempoInvestido?: string;
+  estimated_duration_minutes?: number;
 }
 
 export interface Subtopic {
@@ -32,6 +33,7 @@ export interface Subtopic {
   questoesVinculadas: number;
   lastAccess?: string;
   tempoInvestido?: string;
+  estimated_duration_minutes?: number;
 }
 
 const getCurrentDate = () => {
@@ -91,7 +93,8 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
             flashcardsVinculados: subtopic.flashcards_vinculados || 0,
             questoesVinculadas: subtopic.questoes_vinculadas || 0,
             lastAccess: subtopic.last_access,
-            tempoInvestido: subtopic.tempo_investido
+            tempoInvestido: subtopic.tempo_investido,
+            estimated_duration_minutes: subtopic.estimated_duration_minutes
           }));
 
           return {
@@ -101,7 +104,8 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
             totalAulas: topicData.total_aulas || 0,
             subtopics,
             lastAccess: topicData.last_access,
-            tempoInvestido: topicData.tempo_investido
+            tempoInvestido: topicData.tempo_investido,
+            estimated_duration_minutes: topicData.estimated_duration_minutes
           };
         });
 
@@ -122,6 +126,40 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
     }
   }, [user]);
 
+  // Recalculate all topic durations (useful after loading or migration)
+  const recalculateAllTopicDurations = useCallback(async () => {
+    const updatesToMake: Array<{ topicId: string; duration: number }> = [];
+
+    units.forEach(unit => {
+      unit.topics.forEach(topic => {
+        if (topic.subtopics && topic.subtopics.length > 0) {
+          const calculatedDuration = topic.subtopics.reduce((sum, sub) => {
+            return sum + (sub.estimated_duration_minutes || 90);
+          }, 0);
+
+          if (topic.estimated_duration_minutes !== calculatedDuration) {
+            updatesToMake.push({ topicId: topic.id, duration: calculatedDuration });
+          }
+        }
+      });
+    });
+
+    // Update all topics that need recalculation
+    if (updatesToMake.length > 0) {
+      console.log('🔄 Recalculando tempos de', updatesToMake.length, 'tópicos...');
+
+      for (const update of updatesToMake) {
+        await supabase
+          .from('topics')
+          .update({ estimated_duration_minutes: update.duration })
+          .eq('id', update.topicId);
+      }
+
+      // Reload data after updates
+      await loadUnitsFromDatabase();
+    }
+  }, [units, loadUnitsFromDatabase]);
+
   // Load data on mount or when user changes
   useEffect(() => {
     if (user) {
@@ -130,6 +168,13 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
       setUnits([]);
     }
   }, [user]);
+
+  // Recalculate all topic durations after initial load
+  useEffect(() => {
+    if (units.length > 0 && user) {
+      recalculateAllTopicDurations();
+    }
+  }, [units.length, user]);
 
   // Unit operations
   const addUnit = useCallback(async (title: string, subject: string = 'Biologia e Bioquímica') => {
@@ -219,7 +264,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
   }, []);
 
   // Topic operations
-  const addTopic = useCallback(async (unitId: string, title: string) => {
+  const addTopic = useCallback(async (unitId: string, title: string, estimatedDurationMinutes: number = 120) => {
     if (!user) {
       console.error('User not authenticated');
       return null;
@@ -233,6 +278,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
           unit_id: unitId,
           title: title,
           total_aulas: 0,
+          estimated_duration_minutes: estimatedDurationMinutes,
           user_id: user.id
         })
         .select()
@@ -249,7 +295,8 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         title,
         date: getCurrentDate(),
         totalAulas: 0,
-        subtopics: []
+        subtopics: [],
+        estimated_duration_minutes: estimatedDurationMinutes
       };
 
       setUnits(prev => prev.map(unit =>
@@ -267,12 +314,14 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
   const updateTopic = useCallback(async (unitId: string, topicId: string, updates: Partial<Topic>) => {
     try {
       // Update in database
+      const dbUpdates: any = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.totalAulas !== undefined) dbUpdates.total_aulas = updates.totalAulas;
+      if (updates.estimated_duration_minutes !== undefined) dbUpdates.estimated_duration_minutes = updates.estimated_duration_minutes;
+
       const { error } = await supabase
         .from('topics')
-        .update({
-          title: updates.title,
-          total_aulas: updates.totalAulas
-        })
+        .update(dbUpdates)
         .eq('id', topicId);
 
       if (error) {
@@ -281,11 +330,11 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
       }
 
       // Update local state
-      setUnits(prev => prev.map(unit => 
-        unit.id === unitId 
+      setUnits(prev => prev.map(unit =>
+        unit.id === unitId
           ? {
               ...unit,
-              topics: unit.topics.map(topic => 
+              topics: unit.topics.map(topic =>
                 topic.id === topicId ? { ...topic, ...updates } : topic
               )
             }
@@ -321,7 +370,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
   }, []);
 
   // Subtopic operations
-  const addSubtopic = useCallback(async (unitId: string, topicId: string, title: string) => {
+  const addSubtopic = useCallback(async (unitId: string, topicId: string, title: string, estimatedDurationMinutes: number = 90) => {
     if (!user) {
       console.error('User not authenticated');
       return null;
@@ -340,6 +389,7 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
           resumos_vinculados: 0,
           flashcards_vinculados: 0,
           questoes_vinculadas: 0,
+          estimated_duration_minutes: estimatedDurationMinutes,
           user_id: user.id
         })
         .select()
@@ -360,24 +410,44 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         tempo: '0min',
         resumosVinculados: 0,
         flashcardsVinculados: 0,
-        questoesVinculadas: 0
+        questoesVinculadas: 0,
+        estimated_duration_minutes: estimatedDurationMinutes
       };
 
+      // Update local state
+      let calculatedTopicDuration: number | undefined;
       setUnits(prev => prev.map(unit =>
         unit.id === unitId
           ? {
               ...unit,
-              topics: unit.topics.map(topic =>
-                topic.id === topicId
-                  ? {
-                      ...topic,
-                      subtopics: [...(topic.subtopics || []), newSubtopic]
-                    }
-                  : topic
-              )
+              topics: unit.topics.map(topic => {
+                if (topic.id === topicId) {
+                  const updatedSubtopics = [...(topic.subtopics || []), newSubtopic];
+
+                  // Calculate total duration from all subtopics (including the new one)
+                  calculatedTopicDuration = updatedSubtopics.reduce((sum, sub) => {
+                    return sum + (sub.estimated_duration_minutes || 90);
+                  }, 0);
+
+                  return {
+                    ...topic,
+                    subtopics: updatedSubtopics,
+                    estimated_duration_minutes: calculatedTopicDuration
+                  };
+                }
+                return topic;
+              })
             }
           : unit
       ));
+
+      // Update topic duration in database if subtopics exist
+      if (calculatedTopicDuration !== undefined) {
+        await supabase
+          .from('topics')
+          .update({ estimated_duration_minutes: calculatedTopicDuration })
+          .eq('id', topicId);
+      }
 
       return subtopicData.id;
     } catch (error) {
@@ -389,17 +459,19 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
   const updateSubtopic = useCallback(async (unitId: string, topicId: string, subtopicId: string, updates: Partial<Subtopic>) => {
     try {
       // Update in database
+      const dbUpdates: any = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.status !== undefined) dbUpdates.status = updates.status;
+      if (updates.totalAulas !== undefined) dbUpdates.total_aulas = updates.totalAulas;
+      if (updates.tempo !== undefined) dbUpdates.tempo = updates.tempo;
+      if (updates.resumosVinculados !== undefined) dbUpdates.resumos_vinculados = updates.resumosVinculados;
+      if (updates.flashcardsVinculados !== undefined) dbUpdates.flashcards_vinculados = updates.flashcardsVinculados;
+      if (updates.questoesVinculadas !== undefined) dbUpdates.questoes_vinculadas = updates.questoesVinculadas;
+      if (updates.estimated_duration_minutes !== undefined) dbUpdates.estimated_duration_minutes = updates.estimated_duration_minutes;
+
       const { error } = await supabase
         .from('subtopics')
-        .update({
-          title: updates.title,
-          status: updates.status,
-          total_aulas: updates.totalAulas,
-          tempo: updates.tempo,
-          resumos_vinculados: updates.resumosVinculados,
-          flashcards_vinculados: updates.flashcardsVinculados,
-          questoes_vinculadas: updates.questoesVinculadas
-        })
+        .update(dbUpdates)
         .eq('id', subtopicId);
 
       if (error) {
@@ -407,24 +479,49 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         return;
       }
 
-      // Update local state
-      setUnits(prev => prev.map(unit => 
-        unit.id === unitId 
+      // Update local state and recalculate parent topic duration if duration changed
+      let calculatedTopicDuration: number | undefined;
+      setUnits(prev => prev.map(unit =>
+        unit.id === unitId
           ? {
               ...unit,
-              topics: unit.topics.map(topic => 
-                topic.id === topicId 
-                  ? {
+              topics: unit.topics.map(topic => {
+                if (topic.id === topicId) {
+                  const updatedSubtopics = topic.subtopics?.map(subtopic =>
+                    subtopic.id === subtopicId ? { ...subtopic, ...updates } : subtopic
+                  );
+
+                  // If duration was updated, recalculate topic duration
+                  if (updates.estimated_duration_minutes !== undefined && updatedSubtopics && updatedSubtopics.length > 0) {
+                    calculatedTopicDuration = updatedSubtopics.reduce((sum, sub) => {
+                      return sum + (sub.estimated_duration_minutes || 90);
+                    }, 0);
+
+                    return {
                       ...topic,
-                      subtopics: topic.subtopics?.map(subtopic => 
-                        subtopic.id === subtopicId ? { ...subtopic, ...updates } : subtopic
-                      )
-                    }
-                  : topic
-              )
+                      subtopics: updatedSubtopics,
+                      estimated_duration_minutes: calculatedTopicDuration
+                    };
+                  }
+
+                  return {
+                    ...topic,
+                    subtopics: updatedSubtopics
+                  };
+                }
+                return topic;
+              })
             }
           : unit
       ));
+
+      // Update topic duration in database if it was recalculated
+      if (calculatedTopicDuration !== undefined) {
+        await supabase
+          .from('topics')
+          .update({ estimated_duration_minutes: calculatedTopicDuration })
+          .eq('id', topicId);
+      }
     } catch (error) {
       console.error('Error in updateSubtopic:', error);
     }
@@ -443,22 +540,55 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
         return;
       }
 
-      // Update local state
-      setUnits(prev => prev.map(unit => 
-        unit.id === unitId 
+      // Update local state and recalculate topic duration
+      let calculatedTopicDuration: number | undefined;
+      setUnits(prev => prev.map(unit =>
+        unit.id === unitId
           ? {
               ...unit,
-              topics: unit.topics.map(topic => 
-                topic.id === topicId 
-                  ? {
+              topics: unit.topics.map(topic => {
+                if (topic.id === topicId) {
+                  const updatedSubtopics = topic.subtopics?.filter(subtopic => subtopic.id !== subtopicId);
+
+                  // If there are still subtopics remaining, recalculate duration
+                  if (updatedSubtopics && updatedSubtopics.length > 0) {
+                    calculatedTopicDuration = updatedSubtopics.reduce((sum, sub) => {
+                      return sum + (sub.estimated_duration_minutes || 90);
+                    }, 0);
+
+                    return {
                       ...topic,
-                      subtopics: topic.subtopics?.filter(subtopic => subtopic.id !== subtopicId)
-                    }
-                  : topic
-              )
+                      subtopics: updatedSubtopics,
+                      estimated_duration_minutes: calculatedTopicDuration
+                    };
+                  }
+
+                  // No subtopics left, return to manual duration (default 120)
+                  return {
+                    ...topic,
+                    subtopics: updatedSubtopics,
+                    estimated_duration_minutes: 120
+                  };
+                }
+                return topic;
+              })
             }
           : unit
       ));
+
+      // Update topic duration in database
+      if (calculatedTopicDuration !== undefined) {
+        await supabase
+          .from('topics')
+          .update({ estimated_duration_minutes: calculatedTopicDuration })
+          .eq('id', topicId);
+      } else {
+        // Reset to manual duration default when no subtopics left
+        await supabase
+          .from('topics')
+          .update({ estimated_duration_minutes: 120 })
+          .eq('id', topicId);
+      }
     } catch (error) {
       console.error('Error in deleteSubtopic:', error);
     }
@@ -513,34 +643,90 @@ export const useUnitsManager = (initialUnits: Unit[] = []) => {
     }
   }, []);
 
+  // Helper function to calculate total duration from subtopics
+  const calculateTopicDuration = useCallback((topic: Topic): number => {
+    if (!topic.subtopics || topic.subtopics.length === 0) {
+      // No subtopics, return manual duration or default
+      return topic.estimated_duration_minutes || 120;
+    }
+
+    // Has subtopics, sum their durations
+    return topic.subtopics.reduce((sum, subtopic) => {
+      return sum + (subtopic.estimated_duration_minutes || 90);
+    }, 0);
+  }, []);
+
+  // Helper function to recalculate and update topic duration based on subtopics
+  const recalculateTopicDuration = useCallback(async (unitId: string, topicId: string) => {
+    const unit = units.find(u => u.id === unitId);
+    if (!unit) return;
+
+    const topic = unit.topics.find(t => t.id === topicId);
+    if (!topic) return;
+
+    // Only recalculate if topic has subtopics
+    if (topic.subtopics && topic.subtopics.length > 0) {
+      const calculatedDuration = calculateTopicDuration(topic);
+
+      // Update in database
+      const { error } = await supabase
+        .from('topics')
+        .update({ estimated_duration_minutes: calculatedDuration })
+        .eq('id', topicId);
+
+      if (error) {
+        console.error('Error updating topic duration:', error);
+        return;
+      }
+
+      // Update local state
+      setUnits(prev => prev.map(u =>
+        u.id === unitId
+          ? {
+              ...u,
+              topics: u.topics.map(t =>
+                t.id === topicId
+                  ? { ...t, estimated_duration_minutes: calculatedDuration }
+                  : t
+              )
+            }
+          : u
+      ));
+    }
+  }, [units, calculateTopicDuration]);
+
   return {
     units,
     setUnits,
     isLoading,
     loadUnitsFromDatabase,
-    
+
     // Unit operations
     addUnit,
     updateUnit,
     deleteUnit,
-    
+
     // Topic operations
     addTopic,
     updateTopic,
     deleteTopic,
-    
+
     // Subtopic operations
     addSubtopic,
     updateSubtopic,
     deleteSubtopic,
-    
+
     // Editing state
     editingItem,
     startEditing,
     stopEditing,
     isEditing,
-    
+
     // Last access tracking
-    updateLastAccess
+    updateLastAccess,
+
+    // Duration helpers
+    calculateTopicDuration,
+    recalculateTopicDuration
   };
 };

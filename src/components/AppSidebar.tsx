@@ -61,7 +61,7 @@ export function AppSidebar() {
   // Pegar os 5 documentos mais recentes
   const recentDocuments = useMemo(() => {
     return [...documents]
-      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .sort((a, b) => new Date(b.updated_at || b.created_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime())
       .slice(0, 5);
   }, [documents]);
 
@@ -183,7 +183,7 @@ export function AppSidebar() {
                         <TooltipContent side="right" className="group-hover:hidden max-w-xs">
                           <p className="font-medium">{doc.title}</p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(doc.updated_at).toLocaleDateString('pt-BR')}
+                            {new Date(doc.updated_at || doc.created_at || 0).toLocaleDateString('pt-BR')}
                           </p>
                         </TooltipContent>
                       </Tooltip>

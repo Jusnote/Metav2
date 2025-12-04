@@ -1,0 +1,27 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> vite_react_shadcn_ts@0.0.0 build
+> cross-env NODE_OPTIONS=--max-old-space-size=4096 next build
+
+   ▲ Next.js 15.5.5
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 50s
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./src/components/goals/AvailabilityAdjustmentDrawer.tsx:2:10
+Type error: 'Calendar' is declared but its value is never read.
+
+[0m [90m 1 |[39m [36mimport[39m { useState[33m,[39m useMemo } [36mfrom[39m [32m'react'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m { [33mCalendar[39m[33m,[39m [33mClock[39m[33m,[39m [33mX[39m[33m,[39m [33mInfo[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+ [90m   |[39m          [31m[1m^[22m[39m
+ [90m 3 |[39m [36mimport[39m { format[33m,[39m eachDayOfInterval[33m,[39m isSameDay[33m,[39m startOfMonth[33m,[39m endOfMonth[33m,[39m getDay } [36mfrom[39m [32m'date-fns'[39m[33m;[39m
+ [90m 4 |[39m [36mimport[39m { ptBR } [36mfrom[39m [32m'date-fns/locale'[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m {[0m
+Next.js build worker exited with code: 1 and signal: null
