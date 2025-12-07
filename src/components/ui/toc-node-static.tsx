@@ -4,7 +4,8 @@ import type { SlateEditor, SlateElementProps, TElement } from 'platejs';
 
 import { type Heading, BaseTocPlugin, isHeading } from '@platejs/toc';
 import { cva } from 'class-variance-authority';
-import { NodeApi, SlateElement } from 'platejs';
+import { NodeApi } from 'platejs';
+import { SlateElement } from 'platejs/static';
 
 import { Button } from '@/components/ui/button';
 

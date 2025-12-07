@@ -4,7 +4,7 @@ import type {
   RenderStaticNodeWrapper,
   SlateRenderElementProps,
   TListElement,
-} from 'platejs';
+} from 'platejs/static';
 
 import { isOrderedList } from '@platejs/list';
 import { CheckIcon } from 'lucide-react';

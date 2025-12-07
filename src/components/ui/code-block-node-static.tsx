@@ -6,7 +6,7 @@ import {
   type TCodeBlockElement,
   SlateElement,
   SlateLeaf,
-} from 'platejs';
+} from 'platejs/static';
 
 export function CodeBlockElementStatic(
   props: SlateElementProps<TCodeBlockElement>

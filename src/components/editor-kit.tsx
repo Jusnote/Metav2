@@ -21,6 +21,7 @@ import { DiscussionKit } from '@/components/discussion-kit';
 import { DndKit } from '@/components/dnd-kit';
 import { DocxKit } from '@/components/docx-kit';
 import { EmojiKit } from '@/components/emoji-kit';
+import { ExcalidrawKit } from '@/components/excalidraw-kit';
 import { ExitBreakKit } from '@/components/exit-break-kit';
 import { FixedToolbarKit } from '@/components/fixed-toolbar-kit';
 import { FloatingToolbarKit } from '@/components/floating-toolbar-kit';
@@ -53,6 +54,7 @@ export const EditorKit = [
   ...ColumnKit,
   ...MathKit,
   ...DateKit,
+  ...ExcalidrawKit,
   ...LinkKit,
   ...MentionKit,
 
