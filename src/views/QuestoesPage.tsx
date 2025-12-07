@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
@@ -69,6 +69,18 @@ export default function QuestoesPage() {
     return <div>Loading...</div>;
   }
 
+  // Carregar fonte Plus Jakarta Sans
+  useEffect(() => {
+    const linkDisplay = document.createElement('link');
+    linkDisplay.href = 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+    linkDisplay.rel = 'stylesheet';
+    document.head.appendChild(linkDisplay);
+
+    return () => {
+      document.head.removeChild(linkDisplay);
+    };
+  }, []);
+
   const [filtrosAtivos, setFiltrosAtivos] = useState<string[]>([]);
   const [mostrarFiltros, setMostrarFiltros] = useState(true);
   const [statusSelecionado, setStatusSelecionado] = useState("Todas");
@@ -138,10 +150,10 @@ export default function QuestoesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-background via-background to-accent/10">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* Header da Página */}
-      <div className="border-b border-border/50 bg-card/50 backdrop-blur-xs sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
               <h1 className="text-3xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -186,7 +198,7 @@ export default function QuestoesPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setMostrarFiltros(!mostrarFiltros)}
-                className="gap-2 bg-card/50 hover:bg-card"
+                className="gap-2 bg-white/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800"
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 {mostrarFiltros ? "Ocultar Filtros" : "Mostrar Filtros"}
@@ -202,10 +214,10 @@ export default function QuestoesPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-5xl mx-auto px-6 py-6">
         {/* Seção de Filtros Aprimorada */}
         {mostrarFiltros && (
-          <Card className="mb-8 shadow-lg bg-card/60 backdrop-blur-xs border-border/50 overflow-hidden">
+          <Card className="mb-8 shadow-lg bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 overflow-hidden">
             <CardHeader className="pb-4 bg-linear-to-r from-muted/20 to-accent/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -363,7 +375,7 @@ export default function QuestoesPage() {
         {/* Seção das Questões com Layout Moderno */}
         <div className="space-y-6">
           {/* Barra de Resultados */}
-          <div className="flex items-center justify-between py-4 px-6 bg-card/40 rounded-lg border border-border/50 backdrop-blur-xs">
+          <div className="flex items-center justify-between py-4 px-6 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-4">
               <div className="text-sm font-medium">
                 <span className="text-primary font-semibold">{todasQuestoes.length}</span>
@@ -398,106 +410,86 @@ export default function QuestoesPage() {
               <div className="text-center py-8 text-muted-foreground">Nenhuma questão encontrada. Crie sua primeira questão!</div>
             ) : (
               todasQuestoes.map((questao) => (
-              <Card key={questao.id} className="group hover:shadow-xl transition-all duration-300 bg-card/60 backdrop-blur-xs border-border/50 hover:border-primary/30 overflow-hidden">
-                <CardHeader className="pb-3 relative">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-primary via-primary/60 to-primary/30"></div>
-                  
-                  <div className="flex justify-between items-start pt-2">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="font-mono text-xs bg-muted/50">
-                          {questao.tipo === "usuario" ? questao.id.substring(0, 8).toUpperCase() : questao.id}
-                        </Badge>
-                        {getStatusIcon(questao.status)}
-                      </div>
-                      <div className="space-y-1">
-                        <div className="text-sm font-medium text-primary">
-                          {questao.disciplina}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {questao.assunto}
-                        </div>
-                      </div>
+              <Card key={questao.id} className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                <div className="p-6">
+                  {/* Header da questão */}
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="bg-primary/10 dark:bg-primary/20 text-primary font-semibold px-3 py-1 rounded-full text-xs">
+                        {questao.tipo === "usuario" ? questao.id.substring(0, 8).toUpperCase() : questao.id}
+                      </span>
+                      <span>|</span>
+                      <span>{questao.disciplina}</span>
+                      {questao.assunto && (
+                        <>
+                          <span>›</span>
+                          <span>{questao.assunto}</span>
+                        </>
+                      )}
                     </div>
-                    
-                    <div className="text-right space-y-2">
-                      <Badge 
-                        variant={questao.nivel === "Fácil" ? "secondary" : questao.nivel === "Médio" ? "default" : "destructive"}
-                        className="text-xs"
-                      >
-                        {questao.nivel}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground space-y-1">
-                        <div className="text-xs text-muted-foreground">
-                          {(questao.banca || questao.cargo) && (
-                            <div className="text-xs text-muted-foreground">
-                              {questao.banca}{questao.banca && questao.cargo && " - "}{questao.cargo}
-                            </div>
-                          )}
-                          {questao.ano && (
-                            <p className="text-xs text-muted-foreground">{questao.ano}</p>
-                          )}
-                        </div>
-                      </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300">
+                        {questao.nivel || "Médio"}
+                      </span>
                     </div>
                   </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-5">
-                  <div className="prose prose-sm max-w-none">
-                    <p className="text-foreground leading-relaxed font-medium">
-                      {questao.pergunta}
-                    </p>
+
+                  {/* Metadados da questão */}
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-6 flex items-center gap-x-3 gap-y-1 bg-slate-50 dark:bg-slate-800/50 px-3 py-2 rounded-lg">
+                    {questao.ano && (
+                      <>
+                        <span className="font-semibold text-slate-600 dark:text-slate-300">Ano:</span>
+                        <span>{questao.ano}</span>
+                      </>
+                    )}
+                    {questao.banca && (
+                      <>
+                        {questao.ano && <span className="text-slate-300 dark:text-slate-600">|</span>}
+                        <span className="font-semibold text-slate-600 dark:text-slate-300">Banca:</span>
+                        <span>{questao.banca}</span>
+                      </>
+                    )}
+                    {questao.cargo && (
+                      <>
+                        {(questao.ano || questao.banca) && <span className="text-slate-300 dark:text-slate-600">|</span>}
+                        <span className="font-semibold text-slate-600 dark:text-slate-300">Prova:</span>
+                        <span className="truncate max-w-md">{questao.cargo}</span>
+                      </>
+                    )}
                   </div>
-                  
-                  <div className="space-y-3">
+
+                  {/* Enunciado */}
+                  <div className="prose prose-slate dark:prose-invert max-w-none mb-8">
+                    <p>{questao.pergunta}</p>
+                  </div>
+
+                  {/* Alternativas */}
+                  <div className="space-y-2 pl-4">
                     {questao.alternativas.map((alternativa) => (
-                      <div 
-                        key={alternativa.letra} 
-                        className={`group/alt p-3 rounded-lg border border-border/50 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 ${
-                          respostasSelecionadas[questao.id] === alternativa.letra 
-                            ? "border-primary bg-primary/10 shadow-xs" 
-                            : ""
-                        }`}
+                      <div
+                        key={alternativa.letra}
+                        className="flex items-center space-x-4 py-2 px-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                         onClick={() => selecionarResposta(questao.id, alternativa.letra)}
                       >
-                        <Label 
-                          htmlFor={`${questao.id}-${alternativa.letra}`}
-                          className="flex items-start gap-3 cursor-pointer w-full"
-                        >
-                          <div className="flex items-center gap-3 shrink-0">
-                            <Checkbox
-                              id={`${questao.id}-${alternativa.letra}`}
-                              checked={respostasSelecionadas[questao.id] === alternativa.letra}
-                              onCheckedChange={() => selecionarResposta(questao.id, alternativa.letra)}
-                              className="mt-0.5"
-                            />
-                            <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-semibold transition-colors ${
-                              respostasSelecionadas[questao.id] === alternativa.letra
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border group-hover/alt:border-primary/50"
-                            }`}>
-                              {alternativa.letra}
-                            </div>
-                          </div>
-                          <span className="text-sm leading-relaxed flex-1 pt-1">
-                            {alternativa.texto}
-                          </span>
-                        </Label>
+                        <div className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded border-2 ${
+                          respostasSelecionadas[questao.id] === alternativa.letra
+                            ? "border-primary bg-primary text-white"
+                            : "border-primary/30 text-primary"
+                        } font-semibold`} style={{ fontSize: '13px' }}>
+                          {alternativa.letra}
+                        </div>
+                        <p className="text-slate-800 dark:text-slate-200" style={{ fontSize: '15px' }}>{alternativa.texto}</p>
                       </div>
                     ))}
                   </div>
-                  
-                  <div className="flex justify-between items-center pt-4 border-t border-border/50">
-                    <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-primary">
-                      <Bookmark className="h-4 w-4" />
-                      Adicionar ao Caderno
-                    </Button>
+
+                  {/* Botão responder */}
+                  <div className="mt-8 flex justify-between items-center">
                     <div className="flex gap-2">
                       {questao.tipo === "usuario" && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="gap-2 text-destructive hover:text-destructive"
                           onClick={() => deleteQuestao(questao.id)}
                         >
@@ -505,13 +497,22 @@ export default function QuestoesPage() {
                           Excluir
                         </Button>
                       )}
-                      <Button size="sm" className="gap-2 bg-primary hover:bg-primary-hover shadow-md">
-                        <CheckCircle className="h-4 w-4" />
-                        Responder
-                      </Button>
                     </div>
+                    <button className="bg-primary text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-600 transition-colors duration-300 text-sm">
+                      Responder
+                    </button>
                   </div>
-                </CardContent>
+                </div>
+
+                {/* Footer com links */}
+                <div className="border-t border-slate-200 dark:border-slate-800 p-4">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+                    <button className="flex items-center gap-2 hover:text-primary dark:hover:text-primary transition-colors">
+                      <Bookmark className="h-4 w-4" />
+                      <span>Cadernos</span>
+                    </button>
+                  </div>
+                </div>
               </Card>
             ))
             )}

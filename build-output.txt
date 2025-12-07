@@ -3,14 +3,1284 @@ npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> vite_react_shadcn_ts@0.0.0 build
-> cross-env NODE_OPTIONS=--max-old-space-size=4096 next build
+> vite_react_shadcn_ts@0.0.0 build:dev
+> next build
 
    ▲ Next.js 15.5.5
    - Environments: .env
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 94s
+ ⚠ Compiled with warnings in 3.8min
+
+./src/components/ui/blockquote-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/blockquote-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/callout-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/callout-node-static.tsx
+./src/components/callout-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/code-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/column-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/column-node-static.tsx
+./src/components/column-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/column-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/column-node-static.tsx
+./src/components/column-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/comment-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/comment-node-static.tsx
+./src/components/comment-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/date-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/date-node-static.tsx
+./src/components/date-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/editor-static.tsx
+Attempted import error: 'PlateStatic' is not exported from 'platejs' (imported as 'PlateStatic').
+
+Import trace for requested module:
+./src/components/ui/editor-static.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/equation-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/equation-node-static.tsx
+./src/components/math-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/equation-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/equation-node-static.tsx
+./src/components/math-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/export-toolbar-button.tsx
+Attempted import error: 'serializeHtml' is not exported from 'platejs' (imported as 'serializeHtml').
+
+Import trace for requested module:
+./src/components/ui/export-toolbar-button.tsx
+./src/components/ui/fixed-toolbar-buttons.tsx
+./src/components/fixed-toolbar-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/heading-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/heading-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/highlight-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/highlight-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/hr-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/hr-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/import-toolbar-button.tsx
+Attempted import error: 'getEditorDOMFromHtmlString' is not exported from 'platejs' (imported as 'getEditorDOMFromHtmlString').
+
+Import trace for requested module:
+./src/components/ui/import-toolbar-button.tsx
+./src/components/ui/fixed-toolbar-buttons.tsx
+./src/components/fixed-toolbar-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/kbd-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/kbd-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/link-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/link-node-static.tsx
+./src/components/link-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-audio-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-audio-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-file-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-file-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-image-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-image-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-video-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-video-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/mention-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/mention-node-static.tsx
+./src/components/mention-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/paragraph-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/paragraph-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/suggestion-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/suggestion-node-static.tsx
+./src/components/suggestion-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/toc-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/toc-node-static.tsx
+./src/components/toc-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/toggle-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/toggle-node-static.tsx
+./src/components/toggle-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/blockquote-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/blockquote-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/callout-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/callout-node-static.tsx
+./src/components/callout-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/code-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/code-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/column-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/column-node-static.tsx
+./src/components/column-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/column-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/column-node-static.tsx
+./src/components/column-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/comment-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/comment-node-static.tsx
+./src/components/comment-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/date-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/date-node-static.tsx
+./src/components/date-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/editor-static.tsx
+Attempted import error: 'PlateStatic' is not exported from 'platejs' (imported as 'PlateStatic').
+
+Import trace for requested module:
+./src/components/ui/editor-static.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/equation-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/equation-node-static.tsx
+./src/components/math-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/equation-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/equation-node-static.tsx
+./src/components/math-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/export-toolbar-button.tsx
+Attempted import error: 'serializeHtml' is not exported from 'platejs' (imported as 'serializeHtml').
+
+Import trace for requested module:
+./src/components/ui/export-toolbar-button.tsx
+./src/components/ui/fixed-toolbar-buttons.tsx
+./src/components/fixed-toolbar-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/heading-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/heading-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/highlight-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/highlight-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/hr-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/hr-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/import-toolbar-button.tsx
+Attempted import error: 'getEditorDOMFromHtmlString' is not exported from 'platejs' (imported as 'getEditorDOMFromHtmlString').
+
+Import trace for requested module:
+./src/components/ui/import-toolbar-button.tsx
+./src/components/ui/fixed-toolbar-buttons.tsx
+./src/components/fixed-toolbar-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/kbd-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/kbd-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/link-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/link-node-static.tsx
+./src/components/link-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-audio-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-audio-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-file-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-file-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-image-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-image-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/media-video-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-video-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/mention-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/mention-node-static.tsx
+./src/components/mention-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/paragraph-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/paragraph-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/suggestion-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/suggestion-node-static.tsx
+./src/components/suggestion-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/toc-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/toc-node-static.tsx
+./src/components/toc-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/toggle-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/toggle-node-static.tsx
+./src/components/toggle-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/components/ui/ai-chat-editor.tsx
+./src/components/ui/ai-menu.tsx
+./src/components/ai-kit.tsx
+./src/components/editor-kit.tsx
+./src/components/plate-editor.tsx
+./src/components/pages/PlateEditorPage.tsx
+./src/App.tsx
+./src/app/[[...slug]]/client.tsx
+
+./src/components/ui/blockquote-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/blockquote-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/callout-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/callout-node-static.tsx
+./src/components/callout-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/code-block-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/code-block-node-static.tsx
+./src/components/code-block-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/code-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/code-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/column-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/column-node-static.tsx
+./src/components/column-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/column-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/column-node-static.tsx
+./src/components/column-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/comment-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/comment-node-static.tsx
+./src/components/comment-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/date-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/date-node-static.tsx
+./src/components/date-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/equation-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/equation-node-static.tsx
+./src/components/math-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/equation-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/equation-node-static.tsx
+./src/components/math-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/heading-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/heading-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/highlight-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/highlight-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/hr-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/hr-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/kbd-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/kbd-node-static.tsx
+./src/components/basic-marks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/link-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/link-node-static.tsx
+./src/components/link-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/media-audio-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-audio-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/media-file-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-file-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/media-image-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-image-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/media-video-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/media-video-node-static.tsx
+./src/components/media-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/mention-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/mention-node-static.tsx
+./src/components/mention-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/paragraph-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/paragraph-node-static.tsx
+./src/components/basic-blocks-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/suggestion-node-static.tsx
+Attempted import error: 'SlateLeaf' is not exported from 'platejs' (imported as 'SlateLeaf').
+
+Import trace for requested module:
+./src/components/ui/suggestion-node-static.tsx
+./src/components/suggestion-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/table-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/table-node-static.tsx
+./src/components/table-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/toc-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/toc-node-static.tsx
+./src/components/toc-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
+./src/components/ui/toggle-node-static.tsx
+Attempted import error: 'SlateElement' is not exported from 'platejs' (imported as 'SlateElement').
+
+Import trace for requested module:
+./src/components/ui/toggle-node-static.tsx
+./src/components/toggle-base-kit.tsx
+./src/components/editor-base-kit.tsx
+./src/app/api/ai/command/route.ts
+
    Skipping validation of types
    Skipping linting
    Collecting page data ...
@@ -33,7 +1303,7 @@ Route (app)                                 Size  First Load JS
 + First Load JS shared by all             104 kB
   ├ chunks/1255-8ed6c64af9e8c6fb.js      45.5 kB
   ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
-  └ other shared chunks (total)          3.84 kB
+  └ other shared chunks (total)          3.82 kB
 
 
 ○  (Static)   prerendered as static content
