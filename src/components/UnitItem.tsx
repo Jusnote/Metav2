@@ -68,8 +68,8 @@ export const UnitItem: React.FC<UnitItemProps> = ({
           </div>
 
           {/* Ícone da Unidade */}
-          <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
-            <Package className="w-4 h-4 text-white" />
+          <div className="w-6 h-6 rounded-md bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
+            <Package className="w-3.5 h-3.5 text-white" />
           </div>
 
           {/* Conteúdo */}
@@ -128,9 +128,9 @@ export const UnitItem: React.FC<UnitItemProps> = ({
         </button>
       </div>
 
-      {/* Children (Topics) - SEM linha vertical para hierarquia mais limpa */}
+      {/* Children (Topics) */}
       {isExpanded && (hasTopics || isEditMode) && (
-        <div className="mt-2 ml-5 pl-3">
+        <div className="mt-1.5 ml-2 pl-3 border-l-2 border-blue-200/50">
           <div className="space-y-1">
             {children}
           </div>

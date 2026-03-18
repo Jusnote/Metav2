@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(npx shadcn@latest add:*)",
@@ -6,9 +9,21 @@
       "Bash(npm create fumadocs-app@latest)",
       "Bash(npm create:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Migração Plate.js v52 + Excalidraw + MCP + Fumadocs\n\n- Migração completa de Plate.js v49/v50 para v52\n- Corrigidos imports: platejs vs platejs/static para componentes estáticos\n- Adicionado ExcalidrawPlugin com componente visual\n- Configuração MCP para Cursor e VSCode (.cursor/mcp.json e .vscode/mcp.json)\n- Registro @platejs adicionado ao components.json\n- Criado Fumadocs (docs-plate/) com toda documentação do Plate v52\n- Removida documentação MDX duplicada do projeto principal\n\nArquivos modificados:\n- 24 componentes *-static.tsx: imports corrigidos\n- editor-kit.tsx: ExcalidrawKit adicionado\n- package.json: todos @platejs/* atualizados para ^52\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Migração Plate.js v52 + Excalidraw + MCP + Fumadocs\n\n- Migração completa de Plate.js v49/v50 para v52\n- Corrigidos imports: platejs vs platejs/static para componentes estáticos\n- Adicionado ExcalidrawPlugin com componente visual\n- Configuração MCP para Cursor e VSCode (.cursor/mcp.json e .vscode/mcp.json)\n- Registro @platejs adicionado ao components.json\n- Criado Fumadocs (docs-plate/) com toda documentação do Plate v52\n- Removida documentação MDX duplicada do projeto principal\n\nArquivos modificados:\n- 24 componentes *-static.tsx: imports corrigidos\n- editor-kit.tsx: ExcalidrawKit adicionado\n- package.json: todos @platejs/* atualizados para ^52\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(npx tsc:*)",
+      "Bash(yes:*)",
+      "mcp__plate__search_items_in_registries",
+      "WebSearch",
+      "Bash(ls:*)",
+      "WebFetch(domain:tiptap.dev)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "plate"
+  ]
 }

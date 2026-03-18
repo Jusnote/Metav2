@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from './ui/button';
 import { Edit3, Eye } from 'lucide-react';
 
 interface EditModeToggleProps {
@@ -14,24 +13,17 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({
   className = ''
 }) => {
   return (
-    <Button
+    <button
       onClick={onToggle}
-      variant={isEditMode ? 'default' : 'outline'}
-      size="sm"
-      className={`flex items-center gap-2 transition-all duration-200 ${className}`}
+      className={`p-1.5 rounded-lg transition-all duration-200 ${
+        isEditMode
+          ? 'bg-violet-100 text-violet-700 shadow-sm'
+          : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+      } ${className}`}
+      title={isEditMode ? 'Sair do modo edição' : 'Modo edição'}
     >
-      {isEditMode ? (
-        <>
-          <Eye className="w-4 h-4" />
-          Sair do Modo Edição
-        </>
-      ) : (
-        <>
-          <Edit3 className="w-4 h-4" />
-          Modo Edição
-        </>
-      )}
-    </Button>
+      {isEditMode ? <Eye className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+    </button>
   );
 };
 

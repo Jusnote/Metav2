@@ -133,8 +133,8 @@ export const TopicItem: React.FC<TopicItemProps> = ({
       <div className="group">
         <button
           onClick={handleClick}
-          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-150 ${
-            isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'
+          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-150 border-l-2 ${
+            isSelected ? 'bg-blue-50 border-blue-500 font-medium' : 'border-transparent hover:bg-blue-50/40'
           }`}
         >
           {/* Chevron */}
@@ -340,9 +340,9 @@ export const TopicItem: React.FC<TopicItemProps> = ({
         </button>
       </div>
 
-      {/* Children (Subtopics) - SEM linha vertical para hierarquia mais limpa */}
+      {/* Children (Subtopics) */}
       {isExpanded && (hasSubtopics || isEditMode) && (
-        <div className="mt-1 ml-5 pl-2">
+        <div className="mt-1 ml-2 pl-3 border-l-2 border-blue-200/50">
           <div className="space-y-0.5">
             {children}
           </div>

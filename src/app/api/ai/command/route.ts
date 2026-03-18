@@ -22,6 +22,76 @@ import { z } from 'zod';
 import { BaseEditorKit } from '@/components/editor-base-kit';
 import { markdownJoinerTransform } from '@/lib/markdown-joiner-transform';
 
+// --- Lei Seca context extraction ---
+
+function extractNodeText(node: any): string {
+  if (typeof node.text === 'string') return node.text;
+  if (Array.isArray(node.children)) {
+    return node.children.map(extractNodeText).join('');
+  }
+  return '';
+}
+
+function isLeiSecaDocument(children: any[]): boolean {
+  return children.some((block: any) => block.slug != null);
+}
+
+function extractLeiSecaContext(children: any[], selection: any): string | null {
+  if (!selection || !children || !isLeiSecaDocument(children)) return null;
+
+  // Find the selected block index
+  const focusPath = selection.focus?.path || selection.anchor?.path;
+  if (!focusPath || focusPath.length === 0) return null;
+
+  const selectedBlockIndex = focusPath[0];
+
+  // Walk backwards to find the parent article (slug === 'caput')
+  let articleIndex = -1;
+  for (let i = selectedBlockIndex; i >= 0; i--) {
+    const block = children[i];
+    if (block?.slug === 'caput') {
+      articleIndex = i;
+      break;
+    }
+  }
+
+  if (articleIndex === -1 || articleIndex === selectedBlockIndex) return null;
+
+  // Collect blocks from article to just before selection
+  const contextBlocks: string[] = [];
+  for (let i = articleIndex; i < selectedBlockIndex; i++) {
+    const text = extractNodeText(children[i]);
+    if (text.trim()) contextBlocks.push(text.trim());
+  }
+
+  if (contextBlocks.length === 0) return null;
+
+  // Also include contexto (hierarchy path) if available
+  const articleBlock = children[articleIndex];
+  const contexto = articleBlock?.contexto || '';
+
+  let context = '';
+  if (contexto) {
+    context += `Localização na lei: ${contexto}\n\n`;
+  }
+  context += contextBlocks.join('\n');
+
+  return context;
+}
+
+function buildLeiSecaPrefix(context: string | null): string {
+  if (!context) return '';
+  return `CONTEXTO JURÍDICO: Este documento é uma lei brasileira (Lei Seca). O trecho selecionado pertence ao seguinte artigo:
+
+<ArticleContext>
+${context}
+</ArticleContext>
+
+Ao responder, considere o artigo acima como contexto hierárquico do trecho selecionado. Responda em português brasileiro.
+
+`;
+}
+
 export async function POST(req: NextRequest) {
   const { apiKey: key, ctx, messages: messagesRaw } = await req.json();
 
@@ -33,16 +103,17 @@ export async function POST(req: NextRequest) {
     value: children,
   });
 
-  const apiKey = key || process.env.OPENAI_API_KEY;
+  const apiKey = key || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Missing OpenAI API key.' },
+      { error: 'Missing API key. Set GOOGLE_GENERATIVE_AI_API_KEY or OPENAI_API_KEY.' },
       { status: 401 }
     );
   }
 
   const isSelecting = editor.api.isExpanded();
+  const leiSecaContext = extractLeiSecaContext(children, selection);
 
   try {
     const stream = createUIMessageStream<ChatMessage>({
@@ -86,10 +157,14 @@ export async function POST(req: NextRequest) {
         }
 
         if (toolName === 'generate') {
-          const generateSystem = replacePlaceholders(
+          let generateSystem = replacePlaceholders(
             editor,
             generateSystemTemplate({ isSelecting })
           );
+
+          if (leiSecaContext) {
+            generateSystem = buildLeiSecaPrefix(leiSecaContext) + generateSystem;
+          }
 
           const gen = streamText({
             experimental_transform: markdownJoinerTransform(),
@@ -106,7 +181,11 @@ export async function POST(req: NextRequest) {
           if (!isSelecting)
             throw new Error('Edit tool is only available when selecting');
 
-          const editSystem = replacePlaceholders(editor, editSystemTemplate());
+          let editSystem = replacePlaceholders(editor, editSystemTemplate());
+
+          if (leiSecaContext) {
+            editSystem = buildLeiSecaPrefix(leiSecaContext) + editSystem;
+          }
 
           const edit = streamText({
             experimental_transform: markdownJoinerTransform(),
@@ -157,7 +236,9 @@ export async function POST(req: NextRequest) {
                   ),
               })
               .describe('A single comment'),
-            system: commentSystem,
+            system: leiSecaContext
+              ? buildLeiSecaPrefix(leiSecaContext) + commentSystem
+              : commentSystem,
           });
 
           // Create a single message ID for the entire comment stream

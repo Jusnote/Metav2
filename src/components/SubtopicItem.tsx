@@ -75,8 +75,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
 
   return (
     <div className="mb-0.5 relative">
-      {/* SEM linhas horizontais */}
-      <div className="flex items-center gap-2">
+      <div className="group flex items-center gap-1">
         {/* Schedule Button - cresce ao clicar no item, empurrando o checkbox */}
         {!isEditing && (
           <QuickSchedulePopover
@@ -89,7 +88,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
             <button
               onClick={(e) => e.stopPropagation()}
               className={`overflow-hidden transition-all duration-200 ease-in-out shrink-0 p-0.5 hover:bg-blue-50 rounded ${
-                showScheduleButton ? 'w-5 opacity-100 mr-1' : 'w-0 opacity-0'
+                showScheduleButton ? 'w-5 opacity-100' : 'w-0 opacity-0'
               }`}
               title="Agendar estudo"
             >
@@ -122,13 +121,13 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
               onToggleScheduleButton();
             }
           }}
-          className={`flex-1 flex items-center gap-1.5 px-1.5 py-1 rounded-md transition-all duration-150 ${
-            isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'
+          className={`flex-1 flex items-center gap-1.5 px-1.5 py-1 rounded-md transition-all duration-150 border-l-2 ${
+            isSelected ? 'bg-blue-50 border-blue-500' : 'border-transparent hover:bg-blue-50/40'
           }`}
         >
           {/* Ícone */}
-          <div className="w-5 h-5 rounded bg-gray-100 flex items-center justify-center shrink-0">
-            <FileText className="w-3 h-3 text-gray-600" />
+          <div className="w-5 h-5 rounded bg-slate-50 flex items-center justify-center shrink-0">
+            <FileText className="w-3 h-3 text-slate-300" />
           </div>
 
           {/* Título e Badges */}
