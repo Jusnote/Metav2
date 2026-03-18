@@ -3,8 +3,8 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
-import { AppHeader } from "./components/AppHeader";
-import { NavigationHeader } from "./components/NavigationHeader";
+import { AppSidebar } from "./components/AppSidebar";
+import { AppHeaderCompact } from "./components/AppHeaderCompact";
 import { StudyModeProvider } from "./contexts/StudyModeContext";
 import { QuestionsProvider } from "./contexts/QuestionsContext";
 import { TimerProvider } from "./contexts/TimerContext";
@@ -22,8 +22,18 @@ import AuthPage from "./views/AuthPage";
 import NotFound from "./views/NotFound";
 import EditorPage from "./views/EditorPage";
 import PlateEditorPage from "./components/pages/PlateEditorPage";
+import LeiSecaPage from "./views/LeiSecaPage";
+import LeiSecaTestPage from "./views/LeiSecaTestPage";
+import LeiSecaTestV3Page from "./views/LeiSecaTestV3Page";
+import ImportLeiPage from "./views/ImportLeiPage";
+import ImportLeiV2Page from "./views/ImportLeiV2Page";
+import { LeiSecaProvider } from "./contexts/LeiSecaContext";
+import { DocumentsOrganizationProvider } from "./contexts/DocumentsOrganizationContext";
+import { QuestoesProvider } from "./contexts/QuestoesContext";
+import { CadernosProvider } from "./contexts/CadernosContext";
 
 import DocumentsOrganizationPage from "./views/DocumentsOrganizationPage";
+import CadernosPage from "./views/CadernosPage";
 import NotesPage from "./views/NotesPage";
 import GoalsPage from "./views/GoalsPage";
 import { useAuth } from "./hooks/useAuth";
@@ -51,6 +61,9 @@ const AppContent = () => {
   
   // Detectar modo de estudo
   const isStudyMode = location?.pathname === '/flashcards' && searchParams.has('study');
+
+  // Detectar páginas full-width (sem padding no main)
+  const isFullWidth = (location?.pathname?.startsWith('/lei-seca') || location?.pathname?.startsWith('/documents-organization') || location?.pathname?.startsWith('/cadernos')) ?? false;
   
   // Expor função para mostrar/esconder timer globalmente
   React.useEffect(() => {
@@ -81,24 +94,30 @@ const AppContent = () => {
     );
   }
   
-  // Modo normal - com header horizontal
+  // Modo normal - sidebar envolve o conteúdo (3 containers aninhados)
   return (
-    <div className="w-full h-screen bg-background flex flex-col">
-      <AppHeader />
-      <NavigationHeader />
-      <main className="flex-1 overflow-auto" style={{ 
-        paddingBottom: isTimerVisible ? '80px' : '0' 
+    <CadernosProvider>
+    <QuestoesProvider>
+    <LeiSecaProvider>
+    <DocumentsOrganizationProvider>
+    <AppSidebar>
+      <AppHeaderCompact />
+      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'p-6'}`} style={{
+        paddingBottom: isTimerVisible ? '80px' : isFullWidth ? '0' : '24px'
       }}>
         <Outlet />
       </main>
-      <GlobalTimer 
-        isVisible={isTimerVisible} 
+      <GlobalTimer
+        isVisible={isTimerVisible}
         onActivityComplete={(_activity, _duration) => {
-          // Completar atividade atual via contexto
           (window as any).timerContext?.completeCurrentActivity?.();
         }}
       />
-    </div>
+    </AppSidebar>
+    </DocumentsOrganizationProvider>
+    </LeiSecaProvider>
+    </QuestoesProvider>
+    </CadernosProvider>
   );
 };
 
@@ -145,6 +164,17 @@ const App = () => {
                     <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
                     <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
                     <Route path="plate-editor" element={<PrivateRoute><PlateEditorPage /></PrivateRoute>} />
+                    {/* Lei Seca - rotas dinâmicas */}
+                    <Route path="lei-seca" element={<PrivateRoute><LeiSecaPage /></PrivateRoute>} />
+                    <Route path="lei-seca/:leiId" element={<PrivateRoute><LeiSecaPage /></PrivateRoute>} />
+                    <Route path="lei-seca/:leiId/:slug" element={<PrivateRoute><LeiSecaPage /></PrivateRoute>} />
+                    <Route path="lei-seca-test" element={<PrivateRoute><LeiSecaTestPage /></PrivateRoute>} />
+                    <Route path="lei-seca-test-v3" element={<PrivateRoute><LeiSecaTestV3Page /></PrivateRoute>} />
+                    <Route path="admin/importar-lei" element={<PrivateRoute><ImportLeiPage /></PrivateRoute>} />
+                    <Route path="admin/importar-lei-v2" element={<PrivateRoute><ImportLeiV2Page /></PrivateRoute>} />
+
+                    {/* Caderno Temático */}
+                    <Route path="cadernos" element={<PrivateRoute><CadernosPage /></PrivateRoute>} />
 
                     <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
                     <Route path="notes" element={<PrivateRoute><NotesPage /></PrivateRoute>} />

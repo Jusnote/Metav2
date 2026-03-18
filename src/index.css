@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import '../src/styles/_variables.scss';
+@import '../src/styles/_keyframe-animations.scss';
 
 @plugin 'tailwindcss-animate';
 
@@ -23,6 +25,18 @@
 
 @theme {
   --font-family-display: 'Plus Jakarta Sans', sans-serif;
+
+  /* Question Card Specific Colors */
+  --color-background-light: hsl(var(--c-background-light));
+  --color-background-dark: hsl(var(--c-background-dark));
+  --color-card-light: hsl(var(--c-card-light));
+  --color-card-dark: hsl(var(--c-card-dark));
+  --color-text-light-primary: hsl(var(--c-text-light-primary));
+  --color-text-light-secondary: hsl(var(--c-text-light-secondary));
+  --color-text-dark-primary: hsl(var(--c-text-dark-primary));
+  --color-text-dark-secondary: hsl(var(--c-text-dark-secondary));
+  --color-border-light: hsl(var(--c-border-light));
+  --color-border-dark: hsl(var(--c-border-dark));
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -119,6 +133,8 @@
   --animate-exit: fade-out 0.3s ease-out, scale-out 0.2s ease-out;
   --animate-color-fade: colorFade 2s infinite ease-in-out;
   --animate-icon-color-fade: iconColorFade 2s infinite ease-in-out;
+  --animate-check-bounce: check-bounce 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-check-draw: check-draw 150ms cubic-bezier(0.16, 1, 0.3, 1);
 
   --scale-102: 1.02;
 
@@ -260,6 +276,20 @@
       opacity: 0.2;
     }
   }
+
+  /* Checkbox micro-bounce on check */
+  @keyframes check-bounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.85); }
+    70% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* Checkmark draw animation */
+  @keyframes check-draw {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
 }
 
 /*
@@ -279,24 +309,24 @@
     border-color: var(--color-gray-200, currentcolor);
   }
   :root {
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 210 14% 95.5%;
+    --sidebar-foreground: 240 6% 10%;
+    --sidebar-primary: 37 91% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 12% 93.3%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 210 12% 91%;
+    --sidebar-ring: 37 91% 48%;
   }
   .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 37 91% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 240 4% 16.1%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 4% 16.1%;
+    --sidebar-ring: 37 91% 55%;
   }
 }
 
@@ -306,34 +336,48 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Question Card Custom Variables */
+    --c-primary: 217 91% 60%;
+    --c-primary-foreground: 210 40% 98%;
+    --c-background-light: 220 20% 99%;
+    --c-background-dark: 223 18% 8%;
+    --c-card-light: 255 100% 100%;
+    --c-card-dark: 223 14% 12%;
+    --c-text-light-primary: 222 84% 5%;
+    --c-text-light-secondary: 221 39% 11%;
+    --c-text-dark-primary: 210 40% 98%;
+    --c-text-dark-secondary: 215 28% 85%;
+    --c-border-light: 220 13% 91%;
+    --c-border-dark: 215 28% 17%;
+
     --background: 0 0% 100%;
-    --foreground: 215 25% 27%;
+    --foreground: 240 6% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 240 6% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 240 6% 10%;
 
-    --primary: 221 83% 53%;
+    --primary: 37 91% 48%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 221 83% 45%;
+    --primary-hover: 37 91% 42%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 215 25% 27%;
+    --secondary: 240 6% 95.7%;
+    --secondary-foreground: 240 6% 10%;
 
-    --muted: 220 13% 91%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 240 7% 90.8%;
+    --muted-foreground: 240 4% 46.1%;
 
-    --accent: 212 100% 97%;
-    --accent-foreground: 215 25% 27%;
+    --accent: 240 6% 95.7%;
+    --accent-foreground: 240 6% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+    --border: 240 7% 90.8%;
+    --input: 240 7% 90.8%;
+    --ring: 37 91% 48%;
 
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
@@ -363,14 +407,14 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    --sidebar-background: 220 13% 9%;
-    --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 221 83% 53%;
+    --sidebar-background: 210 14% 95.5%;
+    --sidebar-foreground: 240 6% 10%;
+    --sidebar-primary: 37 91% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 13% 15%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-accent: 210 12% 93.3%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 210 12% 91%;
+    --sidebar-ring: 37 91% 48%;
 
     /* Variáveis específicas do cronograma de estudos */
     --schedule-primary: 221 83% 53%;
@@ -393,29 +437,29 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 8% 12.5%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 8% 12.5%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 37 91% 55%;
+    --primary-foreground: 240 6% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 4% 16.1%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 4% 16.1%;
+    --muted-foreground: 240 4% 65.5%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 4% 16.1%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
     --success: 142 76% 45%;
     --success-foreground: 355 20% 99%;
@@ -426,17 +470,17 @@ All colors MUST be HSL.
     --info: 199 89% 58%;
     --info-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 220 13% 6%;
-    --sidebar-foreground: 210 40% 95%;
-    --sidebar-primary: 221 83% 53%;
+    --border: 240 4% 16.1%;
+    --input: 240 4% 16.1%;
+    --ring: 37 91% 55%;
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 37 91% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 13% 12%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-accent: 240 4% 16.1%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 4% 16.1%;
+    --sidebar-ring: 37 91% 55%;
   }
 }
 
@@ -909,6 +953,13 @@ All colors MUST be HSL.
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
+/* Lei Seca Sidebar - Offset para ficar abaixo do header */
+/* A classe é aplicada diretamente no div fixo interno do Sidebar */
+.sidebar-below-header {
+  top: var(--sidebar-top-offset, 0) !important;
+  height: calc(100vh - var(--sidebar-top-offset, 0)) !important;
+}
+
 /* 3D Flip Card Styles */
 .perspective-1000 {
   perspective: 1000px;
@@ -1158,6 +1209,14 @@ All colors MUST be HSL.
 :root {
   --highlight: oklch(0.852 0.199 91.936);
   --brand: oklch(0.623 0.214 259.815);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /*
@@ -1167,6 +1226,14 @@ All colors MUST be HSL.
 .dark {
   --highlight: oklch(0.852 0.199 91.936);
   --brand: oklch(0.707 0.165 254.624);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /*
@@ -1176,11 +1243,98 @@ All colors MUST be HSL.
 @theme inline {
   --color-highlight: var(--highlight);
   --color-brand: var(--brand);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
 }
 
 /*
   ---break---
 */
+
+/* =========================================
+   MODO FOCO - Documents Organization
+   CSS Grid Collapse + Animations
+   ========================================= */
+
+/* Grid collapse trick - precisa de CSS customizado */
+.doc-focus-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.7s cubic-bezier(0.25, 1, 0.2, 1);
+}
+
+.doc-focus-collapse.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.doc-focus-collapse > div {
+  min-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.25, 1, 0.2, 1);
+  transform-origin: top;
+}
+
+.doc-focus-collapse.collapsed.collapse-up > div {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.98);
+}
+
+.doc-focus-collapse.collapsed.collapse-down > div {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+}
+
+/* Fade in do conteudo */
+@keyframes docFocusFadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.doc-focus-content-enter {
+  animation: docFocusFadeIn 0.6s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+
+/* Scrollbar elegante */
+.doc-focus-scroll::-webkit-scrollbar { width: 6px; }
+.doc-focus-scroll::-webkit-scrollbar-track { background: transparent; }
+.doc-focus-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.doc-focus-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Sidebar cronograma collapse */
+.cronograma-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.25, 1, 0.2, 1);
+}
+.cronograma-collapse.open {
+  grid-template-rows: 1fr;
+}
+.cronograma-collapse > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Filter sidebar collapse */
+.filter-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.25, 1, 0.2, 1);
+}
+.filter-collapse.open {
+  grid-template-rows: 1fr;
+}
+.filter-collapse > div {
+  min-height: 0;
+  overflow: hidden;
+}
 
 @layer base {
   * {
@@ -1189,4 +1343,740 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Question Card Custom Shadows */
+  .shadow-soft-light {
+    box-shadow: 0 4px 6px -1px rgba(16, 24, 40, 0.03), 0 2px 4px -2px rgba(16, 24, 40, 0.03);
+  }
+
+  .shadow-soft-dark {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Material Symbols Font */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  }
+
+  /* Custom Scrollbar - Thin and Elegant */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+  }
+
+  .dark .custom-scrollbar {
+    scrollbar-color: rgba(71, 85, 105, 0.4) transparent;
+  }
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 3px !important;
+    height: 3px !important;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3) !important;
+    border-radius: 10px !important;
+    transition: background 0.2s !important;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5) !important;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(71, 85, 105, 0.4) !important;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(71, 85, 105, 0.6) !important;
+  }
+
+  /* Scroll fade — content fades at edges instead of hard clip */
+  .scroll-fade {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0px,
+      black 20px,
+      black calc(100% - 20px),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0px,
+      black 20px,
+      black calc(100% - 20px),
+      transparent 100%
+    );
+  }
+}
+
+/* ============================================================
+   QUESTION CARD — Micro-interactions & Animations
+   CSS-only animations. No framer-motion.
+   ============================================================ */
+
+/* Card entry — fade-slide-up on mount */
+.qc-card-enter {
+  animation: qcFadeSlideUp 0.35s ease-out both;
+}
+
+@keyframes qcFadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Banner */
+.qc-banner { }
+
+/* Subject pill hover expand */
+.qc-subject-pill { transition: max-width 0.3s ease, background-color 0.2s ease; }
+.qc-subject-pill:hover { max-width: 320px; background-color: hsl(214 95% 93%); }
+.dark .qc-subject-pill:hover { background-color: hsl(214 50% 20%); }
+
+/* Meta box hover */
+.qc-meta-box { transition: background-color 0.2s ease, box-shadow 0.2s ease; }
+.qc-meta-box:hover { box-shadow: 0 1px 3px 0 hsl(var(--foreground) / 0.04); }
+
+/* Prova box hover */
+.qc-prova-box { transition: background-color 0.2s ease; }
+.qc-prova-box:hover { background-color: hsl(214 95% 95% / 0.8); }
+.dark .qc-prova-box:hover { background-color: hsl(214 50% 15% / 0.3); }
+
+/* Alternative row base */
+.qc-alt-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  text-align: left;
+  border: 2px solid transparent;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, opacity 0.3s ease-out, transform 0.25s ease-out;
+  cursor: pointer;
+}
+.qc-alt-row:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(217 91% 60% / 0.5); }
+.qc-alt-row:disabled { cursor: default; }
+
+/* Default (unselected) */
+.qc-alt-default { background-color: transparent; }
+.qc-alt-default:not(:disabled):hover { background-color: hsl(var(--muted) / 0.4); }
+
+/* Selected (pre-answer) */
+.qc-alt-selected { background-color: hsl(240 6% 10% / 0.03); border-color: hsl(240 6% 10% / 0.08); }
+.dark .qc-alt-selected { background-color: hsl(0 0% 100% / 0.04); border-color: hsl(0 0% 100% / 0.08); }
+
+/* Correct (post-answer) — clean row, only left accent */
+.qc-alt-correct {
+  background-color: transparent;
+  border-color: transparent;
+  border-left: 2px solid hsl(142 76% 36% / 0.6);
+  animation: qcBorderLeftFadeIn 0.4s ease-out both;
+}
+.dark .qc-alt-correct { border-left-color: hsl(142 76% 36% / 0.5); }
+
+/* Wrong (post-answer, user's pick) — clean, subtle */
+.qc-alt-wrong {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* Dimmed (post-answer, other alternatives) */
+.qc-alt-dimmed { opacity: 0.5; animation: qcDimFade 0.35s ease-out both; }
+@keyframes qcDimFade { from { opacity: 1; } to { opacity: 0.5; } }
+
+/* Correct reveal: border-left only */
+.qc-reveal-correct { animation: qcBorderLeftFadeIn 0.4s ease-out both; }
+@keyframes qcBorderLeftFadeIn {
+  from { border-left-color: transparent; }
+}
+
+/* Wrong reveal: no animation, just settle */
+.qc-reveal-wrong { animation: none; }
+
+/* ── AI explanation enter + cursor ── */
+.qc-ai-enter {
+  animation: qcAiFadeIn 0.3s ease-out both;
+}
+@keyframes qcAiFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.qc-ai-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 13px;
+  margin-left: 1px;
+  background-color: hsl(217 91% 60%);
+  border-radius: 1px;
+  vertical-align: text-bottom;
+  animation: qcCursorBlink 0.8s steps(2) infinite;
+}
+@keyframes qcCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── SVG check line-draw animation ── */
+.qc-check-draw {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: qcDrawCheck 0.4s ease-out 0.15s forwards;
+}
+@keyframes qcDrawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── SVG arrow line-draw animation ── */
+.qc-arrow-draw {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: qcDrawArrow 0.4s ease-out 0.15s forwards;
+}
+@keyframes qcDrawArrow {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Letter circle base */
+.qc-alt-circle {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out, transform 0.15s ease-out, box-shadow 0.2s ease-out;
+  margin-top: 1px;
+}
+.qc-alt-row:not(:disabled):active .qc-alt-circle { transform: scale(1.15); }
+
+/* Circle states */
+.qc-circle-default { background-color: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+.qc-circle-selected {
+  background-color: hsl(240 6% 10%);
+  color: white;
+  box-shadow: 0 0 0 3px hsl(240 6% 10% / 0.08);
+  animation: qcCircleBounce 0.25s ease-out;
+}
+.dark .qc-circle-selected {
+  background-color: hsl(0 0% 95%);
+  color: hsl(240 6% 10%);
+  box-shadow: 0 0 0 3px hsl(0 0% 100% / 0.1);
+}
+@keyframes qcCircleBounce { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+.qc-circle-correct { background-color: hsl(142 76% 36%); color: white; box-shadow: 0 0 0 3px hsl(142 76% 36% / 0.15); }
+.qc-circle-wrong { background-color: hsl(0 84% 60%); color: white; box-shadow: 0 0 0 3px hsl(0 84% 60% / 0.15); }
+
+/* Icon reveal (check/close in circle) */
+.qc-icon-reveal { animation: qcIconFadeIn 0.3s ease-out 0.1s both; }
+@keyframes qcIconFadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+
+/* Trailing icon */
+.qc-trailing-icon { animation: qcIconFadeIn 0.35s ease-out 0.15s both; }
+
+/* Result badge — elegant fade-in (no bounce) */
+.qc-badge-enter { animation: qcBadgeFadeIn 0.35s ease-out both; }
+@keyframes qcBadgeFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Stats bar width animation */
+.qc-stat-bar { width: 0; animation: qcStatGrow 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.3s forwards; }
+@keyframes qcStatGrow { from { width: 0; } to { width: var(--stat-width); } }
+
+/* Stats container enter */
+.qc-stats-enter { animation: qcFadeSlideUp 0.3s ease-out 0.2s both; }
+
+/* Footer button hover */
+.qc-footer-btn { transition: all 0.15s ease-out; }
+.qc-footer-btn:hover { transform: scale(1.05); }
+.qc-footer-btn:active { transform: scale(0.95); }
+
+/* Submit button */
+.qc-submit-btn { transition: background-color 0.2s ease, box-shadow 0.25s ease, transform 0.1s ease, opacity 0.3s ease; }
+
+/* Loading spinner */
+.qc-spinner { animation: qcSpin 0.6s linear infinite; }
+@keyframes qcSpin { to { transform: rotate(360deg); } }
+
+/* ── Text highlighting modes (Lisere) ── */
+
+/* Yellow underline — default "highlight" mode */
+.qc-highlight-mark {
+  text-decoration: underline;
+  text-decoration-color: rgb(234 179 8 / 0.6);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  background-color: rgb(234 179 8 / 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.qc-highlight-mark:hover {
+  opacity: 0.7;
+}
+.dark .qc-highlight-mark {
+  text-decoration-color: rgb(250 204 21 / 0.55);
+  background-color: rgb(234 179 8 / 0.15);
+}
+
+/* Red strikethrough — "strike" mode */
+.qc-strike-mark {
+  text-decoration: line-through;
+  text-decoration-color: rgb(239 68 68 / 0.55);
+  text-decoration-thickness: 2px;
+  color: rgb(148 163 184 / 0.65);
+  background-color: rgb(239 68 68 / 0.06);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.qc-strike-mark:hover {
+  opacity: 0.7;
+}
+.dark .qc-strike-mark {
+  text-decoration-color: rgb(248 113 113 / 0.55);
+  color: rgb(148 163 184 / 0.5);
+  background-color: rgb(239 68 68 / 0.1);
+}
+
+/* ============ TipTap Lei Seca Editor ============ */
+
+.lei-seca-tiptap-content {
+  outline: none;
+  caret-color: transparent;
+  padding: 1.5rem 4rem 18rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: hsl(var(--foreground));
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.lei-seca-tiptap-content:focus {
+  outline: none;
+}
+
+/* Typography */
+.lei-seca-tiptap-content p {
+  margin: 0.25em 0;
+}
+
+.lei-seca-tiptap-content p:first-child {
+  margin-top: 0;
+}
+
+.lei-seca-tiptap-content strong {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.lei-seca-tiptap-content em {
+  font-style: italic;
+}
+
+.lei-seca-tiptap-content u {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Headings */
+.lei-seca-tiptap-content h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 1.5em 0 0.5em;
+}
+
+.lei-seca-tiptap-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 1.25em 0 0.5em;
+}
+
+.lei-seca-tiptap-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 1em 0 0.5em;
+}
+
+/* Highlight marks */
+.lei-seca-tiptap-content mark {
+  border-radius: 0.15em;
+  padding: 0.05em 0.15em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Selection */
+.lei-seca-tiptap-content ::selection {
+  background-color: hsl(var(--primary) / 0.2);
+}
+
+/* Horizontal rule */
+.lei-seca-tiptap-content hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+  margin: 1.5em 0;
+}
+
+/* Blockquote */
+.lei-seca-tiptap-content blockquote {
+  border-left: 3px solid hsl(var(--border));
+  padding-left: 1rem;
+  margin: 1em 0;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Code */
+.lei-seca-tiptap-content code {
+  background-color: hsl(var(--muted));
+  border-radius: 0.25rem;
+  padding: 0.15em 0.3em;
+  font-size: 0.875em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* AI Selection Mark — fake "selection" that persists when editor loses focus */
+.lei-seca-tiptap-content .ai-highlight {
+  background-color: #bfdbfe;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Dark mode */
+.dark .lei-seca-tiptap-content .ai-highlight {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .lei-seca-tiptap-content {
+    padding: 1rem 1.5rem 12rem;
+    font-size: 0.9375rem;
+  }
+}
+
+/* ============ Lei Seca — estilos por data-role ============ */
+
+.lei-seca-tiptap-content p[data-role="artigo"] {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+}
+
+.lei-seca-tiptap-content p[data-role="artigo"] strong:first-child,
+.lei-seca-tiptap-content p[data-role="paragrafo"] strong:first-child,
+.lei-seca-tiptap-content p[data-role="paragrafo_unico"] strong:first-child {
+  color: #2c5282;
+  font-weight: 700;
+}
+
+.lei-seca-tiptap-content p[data-role="paragrafo"],
+.lei-seca-tiptap-content p[data-role="paragrafo_unico"],
+.lei-seca-tiptap-content p[data-role="inciso"],
+.lei-seca-tiptap-content p[data-role="alinea"],
+.lei-seca-tiptap-content p[data-role="item"],
+.lei-seca-tiptap-content p[data-role="pena"] {
+  border-left: 1px solid #cbd5e0;
+  padding-left: 1.2rem;
+  margin-left: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.lei-seca-tiptap-content p[data-role="artigo"] + p[data-role="paragrafo"],
+.lei-seca-tiptap-content p[data-role="artigo"] + p[data-role="paragrafo_unico"],
+.lei-seca-tiptap-content p[data-role="artigo"] + p[data-role="inciso"],
+.lei-seca-tiptap-content p[data-role="artigo"] + p[data-role="alinea"],
+.lei-seca-tiptap-content p[data-role="artigo"] + p[data-role="item"],
+.lei-seca-tiptap-content p[data-role="artigo"] + p[data-role="pena"] {
+  padding-top: 0.6rem;
+}
+
+/* Spotlight: ativo apenas quando .lei-spotlight-enabled está no container */
+.lei-spotlight-enabled .lei-seca-tiptap-content:has(p[data-role]:hover) p[data-role] {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.lei-spotlight-enabled .lei-seca-tiptap-content:has(p[data-role]:hover) p[data-role]:hover {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* Focus tracking: ativo apenas quando .lei-focus-enabled está no container */
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="artigo"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="paragrafo"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="paragrafo_unico"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="inciso"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="alinea"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="item"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="pena"]:hover {
+  background-color: rgba(0, 0, 0, 0.025);
+  border-radius: 0 4px 4px 0;
+  transition: background-color 0.15s ease, border-left-color 0.15s ease;
+}
+
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="paragrafo"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="paragrafo_unico"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="inciso"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="alinea"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="item"]:hover,
+.lei-focus-enabled .lei-seca-tiptap-content p[data-role="pena"]:hover {
+  border-left-color: #3b82f6;
+}
+
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="artigo"]:hover,
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="paragrafo"]:hover,
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="paragrafo_unico"]:hover,
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="inciso"]:hover,
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="alinea"]:hover,
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="item"]:hover,
+.dark .lei-focus-enabled .lei-seca-tiptap-content p[data-role="pena"]:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.lei-seca-tiptap-content p[data-role="epigrafe"] {
+  font-weight: 700;
+  font-style: italic;
+  color: #4a5568;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ============ Lei Seca — Comment highlights ============ */
+
+.lei-seca-tiptap-content p.lei-has-comment {
+  background-color: rgba(255, 212, 0, 0.12);
+  border-left: 2px solid rgba(255, 196, 0, 0.5);
+  padding-left: calc(var(--lei-indent, 0) * 2rem + 0.5rem) !important;
+  margin-left: -2px;
+  transition: background-color 0.2s ease;
+}
+
+.lei-seca-tiptap-content p.lei-has-comment:hover {
+  background-color: rgba(255, 212, 0, 0.22);
+}
+
+.dark .lei-seca-tiptap-content p.lei-has-comment {
+  background-color: rgba(255, 212, 0, 0.08);
+  border-left-color: rgba(255, 196, 0, 0.35);
+}
+
+.dark .lei-seca-tiptap-content p.lei-has-comment:hover {
+  background-color: rgba(255, 212, 0, 0.15);
+}
+
+
+/* ============ Lei Seca — Annotation Slots (React Portal containers) ============ */
+
+/* The slot itself is an empty div created by ProseMirror Decoration.widget.
+   React renders the actual annotation content inside via createPortal. */
+.lei-seca-tiptap-content .annotation-slot {
+  margin: 4px 0 8px;
+  min-height: 0;
+  transition: min-height 0.2s ease;
+}
+
+/* When the slot has content (React Portal rendered inside) */
+.lei-seca-tiptap-content .annotation-slot:not(:empty) {
+  min-height: 40px;
+}
+
+/* Annotation card inside the slot */
+.lei-seca-tiptap-content .annotation-card {
+  animation: annotation-appear 0.25s cubic-bezier(0.2, 0.6, 0.4, 1);
+}
+
+@keyframes annotation-appear {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ============ Lei Ingestão Editor — espaçamento por role ============ */
+
+.lei-ingestao-content p[data-role] {
+  margin-bottom: 0;
+}
+
+/* Hierarquia */
+.lei-ingestao-content p[data-role="hierarchy"] {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Epígrafe (descrição abaixo de CAPÍTULO) — colada */
+.lei-ingestao-content p[data-role="epigrafe"] {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Artigo — espaço maior (separar artigos entre si) */
+.lei-ingestao-content p[data-role="artigo"] {
+  margin-top: 1.5rem;
+}
+
+/* Sub-elementos entre si — pausa curta */
+.lei-ingestao-content p[data-role="paragrafo"],
+.lei-ingestao-content p[data-role="paragrafo_unico"],
+.lei-ingestao-content p[data-role="inciso"],
+.lei-ingestao-content p[data-role="alinea"],
+.lei-ingestao-content p[data-role="item"],
+.lei-ingestao-content p[data-role="pena"] {
+  margin-top: 0.6rem;
+}
+
+/* Caput → 1º sub-elemento — pausa média */
+.lei-ingestao-content p[data-role="artigo"] + p[data-role="paragrafo"],
+.lei-ingestao-content p[data-role="artigo"] + p[data-role="paragrafo_unico"],
+.lei-ingestao-content p[data-role="artigo"] + p[data-role="inciso"],
+.lei-ingestao-content p[data-role="artigo"] + p[data-role="alinea"],
+.lei-ingestao-content p[data-role="artigo"] + p[data-role="item"],
+.lei-ingestao-content p[data-role="artigo"] + p[data-role="pena"] {
+  margin-top: 0.9rem;
+}
+
+/* Primeiro elemento (sem margin-top extra) */
+.lei-ingestao-content p[data-role]:first-child {
+  margin-top: 0;
+}
+
+/* ============================================================ */
+/* Modo Leitura — Preview visual no editor de ingestão          */
+/* ============================================================ */
+
+.lei-reader-preview .lei-ingestao-content {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #333333;
+  padding: 2rem 3rem;
+  background: #ffffff;
+}
+
+/* Oculta cursor e seleção visual no modo leitura */
+.lei-reader-preview .ProseMirror-focused { outline: none !important; }
+.lei-reader-preview .ProseMirror .ProseMirror-gapcursor { display: none; }
+
+/* Hierarquia */
+.lei-reader-preview .lei-ingestao-content p[data-role="hierarchy"] {
+  margin-top: 2.5rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.8px;
+  color: #1a202c;
+}
+
+/* Artigo */
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+}
+
+/* "Falso badge": número do artigo (primeiro strong) em azul */
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] strong:first-child,
+.lei-reader-preview .lei-ingestao-content p[data-role="paragrafo"] strong:first-child,
+.lei-reader-preview .lei-ingestao-content p[data-role="paragrafo_unico"] strong:first-child {
+  color: #2c5282 !important;
+  font-weight: 700;
+}
+
+/* Fio condutor — sub-elementos com borda esquerda contínua */
+.lei-reader-preview .lei-ingestao-content p[data-role="paragrafo"],
+.lei-reader-preview .lei-ingestao-content p[data-role="paragrafo_unico"],
+.lei-reader-preview .lei-ingestao-content p[data-role="inciso"],
+.lei-reader-preview .lei-ingestao-content p[data-role="alinea"],
+.lei-reader-preview .lei-ingestao-content p[data-role="item"],
+.lei-reader-preview .lei-ingestao-content p[data-role="pena"] {
+  border-left: 1px solid #cbd5e0;
+  padding-left: 1.2rem;
+  margin-left: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+/* Primeiro sub-elemento após artigo: pequena respiração */
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] + p[data-role="paragrafo"],
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] + p[data-role="paragrafo_unico"],
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] + p[data-role="inciso"],
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] + p[data-role="alinea"],
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] + p[data-role="item"],
+.lei-reader-preview .lei-ingestao-content p[data-role="artigo"] + p[data-role="pena"] {
+  padding-top: 0.6rem;
+}
+
+/* Epígrafe */
+.lei-reader-preview .lei-ingestao-content p[data-role="epigrafe"] {
+  font-weight: 700;
+  font-style: italic;
+  color: #4a5568;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ============ Lei Badges ============ */
+
+.lei-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  height: 18px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-left: 8px;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-family: inherit;
+  line-height: 1;
+  transition: opacity 0.15s;
+}
+
+.lei-badge:hover {
+  opacity: 0.75;
+}
+
+.lei-badge--revogado {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.lei-badge--vetado {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.lei-badge--sem_vigencia {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.lei-badge--informacoes {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
 }

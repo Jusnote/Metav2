@@ -1,531 +1,209 @@
-import { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { FileText, HelpCircle, Play, CreditCard, Clock, NotebookPen, TrendingUp, Sparkles, X, Plus, Wrench, Scale } from 'lucide-react';
+import { DesempenhoChart } from '../components/DesempenhoChart';
 import { useNavigate } from 'react-router-dom';
-import { FileText, HelpCircle, Play, CreditCard, Target } from 'lucide-react';
-import { useUnitsManager, type Unit, type Topic, type Subtopic } from '../hooks/useUnitsManager';
-import { EditModeToggle } from '../components/EditModeToggle';
-import { usePlateDocuments } from '../hooks/usePlateDocuments';
+import { useDocumentsOrganization } from '@/contexts/DocumentsOrganizationContext';
+import { HierarchyBreadcrumbs } from '../components/HierarchyBreadcrumbs';
 import { NotesModal } from '../components/NotesModal';
 import { SubtopicDocumentsModal } from '../components/SubtopicDocumentsModal';
 import { QuickCreateModal } from '../components/QuickCreateModal';
 import { TopicSubtopicCreateModal } from '../components/TopicSubtopicCreateModal';
-import { HierarchySearch } from '../components/HierarchySearch';
-import { HierarchyBreadcrumbs } from '../components/HierarchyBreadcrumbs';
-import { UnitItem } from '../components/UnitItem';
-import { TopicItem } from '../components/TopicItem';
-import { SubtopicItem } from '../components/SubtopicItem';
-import { useMaterialCounts } from '../hooks/useMaterialCounts';
-import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { GoalCreationDialog } from '../components/goals/GoalCreationDialog';
-import { Button } from '../components/ui/button';
+import { TopicAIAssistant } from '../components/TopicAIAssistant';
+import { PlateEditor } from '@/components/plate-editor';
+import { usePlateDocuments } from '@/hooks/usePlateDocuments';
 
 const DocumentsOrganizationPage = () => {
-  // Proteção SSR - useNavigate só funciona no client
   const navigate = typeof window !== 'undefined' ? useNavigate() : null;
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [expandedUnits, setExpandedUnits] = useState<Set<string>>(new Set());
-  const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
-  const [selectedSubtopic, setSelectedSubtopic] = useState<{unitId: string, topicId: string, subtopic: any} | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<{unitId: string, topic: any} | null>(null);
-  const [editingUnit, setEditingUnit] = useState<string | null>(null);
-  const [subtopicWithScheduleButton, setSubtopicWithScheduleButton] = useState<string | null>(null);
+  const [aiDrawerOpen, setAiDrawerOpen] = React.useState(false);
 
-  // Modal de anotações
-  const [notesModal, setNotesModal] = useState<{
-    isOpen: boolean;
-    subtopicId?: string | null;
-    topicId?: string | null;
-    title: string | null;
-  }>({
-    isOpen: false,
-    subtopicId: null,
-    topicId: null,
-    title: null
-  });
+  // Modo foco - qual card esta expandido
+  type FocusCardType = 'document' | 'flashcards' | 'questions' | 'lei-seca' | null;
+  const [focusCard, setFocusCard] = React.useState<FocusCardType>(null);
+  const [focusDocId, setFocusDocId] = React.useState<string | null>(null);
+  const [showDocList, setShowDocList] = React.useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const prevSelectionRef = useRef<string | null>(null);
+  const focusMode = focusCard !== null;
 
-  // Modal de documentos
-  const [documentsModal, setDocumentsModal] = useState<{
-    isOpen: boolean;
-    subtopicId: string | null;
-    subtopicTitle: string | null;
-  }>({
-    isOpen: false,
-    subtopicId: null,
-    subtopicTitle: null
-  });
+  const { getDocumentsBySubtopic } = usePlateDocuments();
 
-  // Modal de criação rápida
-  const [quickCreateModal, setQuickCreateModal] = useState<{
-    isOpen: boolean;
-    type: 'unit' | 'topic' | 'subtopic' | null;
-    unitId?: string | null;
-    topicId?: string | null;
-  }>({
-    isOpen: false,
-    type: null,
-    unitId: null,
-    topicId: null
-  });
-
-  // Modal de edição de tópico/subtópico
-  const [editModal, setEditModal] = useState<{
-    isOpen: boolean;
-    type: 'topic' | 'subtopic' | null;
-    unitId?: string | null;
-    topicId?: string | null;
-    itemId?: string | null;
-    itemTitle?: string;
-    itemDuration?: number;
-    hasSubtopics?: boolean;
-  }>({
-    isOpen: false,
-    type: null,
-    unitId: null,
-    topicId: null,
-    itemId: null,
-    itemTitle: '',
-    itemDuration: 0,
-    hasSubtopics: false
-  });
-
-  // Modal de criação de meta
-  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
-
-  const { createDocument } = usePlateDocuments();
-
-  // Hook para contagens de materiais
-  const { counts: materialCounts } = useMaterialCounts(
-    selectedSubtopic?.subtopic.id,
-    selectedSubtopic ? undefined : selectedTopic?.topic.id
-  );
-
-  // Gerenciamento de unidades
   const {
-    units,
-    addUnit,
-    updateUnit,
-    deleteUnit,
-    addTopic,
-    updateTopic,
-    deleteTopic,
-    addSubtopic,
-    updateSubtopic,
-    deleteSubtopic,
+    units, selectedSubtopic, selectedTopic,
+    notesModal, setNotesModal,
+    documentsModal, setDocumentsModal,
+    quickCreateModal, setQuickCreateModal,
+    editModal, setEditModal,
+    goalDialogOpen, setGoalDialogOpen,
+    handlePlaySubtopic, handleQuickCreate,
+    handleTopicSubtopicCreate, handleTopicSubtopicEdit,
+    createDocument, materialCounts,
     calculateTopicDuration,
-  } = useUnitsManager();
+    setSelectedSubtopic, setSelectedTopic,
+    setExpandedUnits, setExpandedTopics,
+  } = useDocumentsOrganization();
 
-  // Handler para abrir documentos
-  const handlePlaySubtopic = async (subtopicId: string, subtopicTitle: string) => {
-    setDocumentsModal({
-      isOpen: true,
-      subtopicId,
-      subtopicTitle
-    });
-  };
-
-  // Handler para criação via QuickCreateModal (unidades apenas)
-  const handleQuickCreate = async (name: string) => {
-    const { type, unitId, topicId } = quickCreateModal;
-
-    if (type === 'unit') {
-      const newUnit = await addUnit(name, 'Novo Assunto');
-      // Expandir automaticamente a nova unidade
-      if (newUnit) {
-        setExpandedUnits(prev => new Set(prev).add(newUnit));
-      }
-    }
-
-    setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null });
-  };
-
-  // Handler para criação de tópicos e subtópicos com tempo estimado
-  const handleTopicSubtopicCreate = async (data: { title: string; estimated_duration_minutes: number }) => {
-    const { type, unitId, topicId } = quickCreateModal;
-
-    if (type === 'topic' && unitId) {
-      const newTopic = await addTopic(unitId, data.title, data.estimated_duration_minutes);
-      // Expandir automaticamente a unidade pai e o novo tópico
-      setExpandedUnits(prev => new Set(prev).add(unitId));
-      if (newTopic) {
-        setExpandedTopics(prev => new Set(prev).add(newTopic));
-      }
-    } else if (type === 'subtopic' && unitId && topicId) {
-      await addSubtopic(unitId, topicId, data.title, data.estimated_duration_minutes);
-      // Expandir automaticamente a unidade pai e o tópico pai
-      setExpandedUnits(prev => new Set(prev).add(unitId));
-      setExpandedTopics(prev => new Set(prev).add(topicId));
-    }
-
-    setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null });
-  };
-
-  // Handler para edição de tópicos e subtópicos via modal
-  const handleTopicSubtopicEdit = async (data: { title: string; estimated_duration_minutes: number }) => {
-    const { type, unitId, topicId, itemId } = editModal;
-
-    if (type === 'topic' && unitId && itemId) {
-      const updates: any = { title: data.title };
-      if (data.estimated_duration_minutes !== undefined) {
-        updates.estimated_duration_minutes = data.estimated_duration_minutes;
-      }
-      await updateTopic(unitId, itemId, updates);
-    } else if (type === 'subtopic' && unitId && topicId && itemId) {
-      const updates: any = { title: data.title };
-      if (data.estimated_duration_minutes !== undefined) {
-        updates.estimated_duration_minutes = data.estimated_duration_minutes;
-      }
-      await updateSubtopic(unitId, topicId, itemId, updates);
-    }
-
-    setEditModal({
-      isOpen: false,
-      type: null,
-      unitId: null,
-      topicId: null,
-      itemId: null,
-      itemTitle: '',
-      itemDuration: 0,
-      hasSubtopics: false
-    });
-  };
-
-  // Handler para marcar subtópico como concluído
-  const handleToggleSubtopicComplete = async (
-    unitId: string,
-    topicId: string,
-    subtopicId: string,
-    completed: boolean
-  ) => {
-    await updateSubtopic(unitId, topicId, subtopicId, {
-      status: completed ? 'completed' : 'not-started'
-    });
-  };
-
-  // Handler para busca
-  const handleSearchSelect = (result: {
-    type: 'unit' | 'topic' | 'subtopic';
-    id: string;
-    unitId?: string;
-    topicId?: string;
-    item: Unit | Topic | Subtopic;
-  }) => {
-    if (result.unitId) {
-      setExpandedUnits(prev => {
-        const newSet = new Set(prev);
-        newSet.add(result.unitId!);
-        return newSet;
-      });
-    }
-
-    if (result.type === 'subtopic' && result.topicId) {
-      setExpandedTopics(prev => {
-        const newSet = new Set(prev);
-        newSet.add(result.topicId!);
-        return newSet;
-      });
-    }
-
-    if (result.type === 'subtopic' && result.unitId && result.topicId) {
-      handleSubtopicSelect(result.unitId, result.topicId, result.item);
-    } else if (result.type === 'topic' && result.unitId) {
-      handleTopicSelect(result.unitId, result.item);
-    } else if (result.type === 'unit') {
-      setExpandedUnits(prev => new Set(prev).add(result.id));
-    }
-  };
-
-  // Atalhos de teclado
-  useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: 'n',
-        ctrl: true,
-        handler: () => {
-          if (isEditMode) {
-            setQuickCreateModal({ isOpen: true, type: 'unit', unitId: null, topicId: null });
-          }
-        }
-      },
-      {
-        key: 't',
-        ctrl: true,
-        handler: () => {
-          if (isEditMode && expandedUnits.size > 0) {
-            const firstExpandedUnitId = Array.from(expandedUnits)[0];
-            setQuickCreateModal({ isOpen: true, type: 'topic', unitId: firstExpandedUnitId, topicId: null });
-          }
-        }
-      },
-      {
-        key: 's',
-        ctrl: true,
-        shift: true,
-        handler: () => {
-          if (isEditMode && expandedTopics.size > 0 && expandedUnits.size > 0) {
-            const firstExpandedUnitId = Array.from(expandedUnits)[0];
-            const firstExpandedTopicId = Array.from(expandedTopics)[0];
-            setQuickCreateModal({
-              isOpen: true,
-              type: 'subtopic',
-              unitId: firstExpandedUnitId,
-              topicId: firstExpandedTopicId
-            });
-          }
-        }
-      },
-      {
-        key: 'e',
-        ctrl: true,
-        handler: () => {
-          setIsEditMode(prev => !prev);
-        }
-      }
-    ],
-    enabled: true
-  });
-
-  // Expandir primeira unidade automaticamente
+  // Sair do foco ao trocar de topico/subtopico
+  const currentSelectionId = selectedSubtopic?.subtopic.id || selectedTopic?.topic.id || null;
   useEffect(() => {
-    if (units.length > 0 && expandedUnits.size === 0) {
-      setExpandedUnits(new Set([units[0].id]));
+    if (prevSelectionRef.current && prevSelectionRef.current !== currentSelectionId && focusCard) {
+      setFocusCard(null);
+      setFocusDocId(null);
+      setShowDocList(false);
     }
-  }, [units, expandedUnits]);
+    prevSelectionRef.current = currentSelectionId;
+  }, [currentSelectionId, focusMode]);
 
-  const toggleUnitExpansion = (unitId: string) => {
-    setExpandedUnits(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(unitId)) {
-        newSet.delete(unitId);
-      } else {
-        newSet.add(unitId);
+  // Abrir modo foco - documento
+  const handleOpenDocumentFocus = useCallback(async () => {
+    if (focusCard) return;
+
+    const itemId = selectedSubtopic?.subtopic.id || selectedTopic?.topic.id;
+    const itemTitle = selectedSubtopic?.subtopic.title || selectedTopic?.topic.title;
+    if (!itemId || !itemTitle) return;
+
+    const docs = getDocumentsBySubtopic(itemId);
+
+    if (docs.length === 0) {
+      const newDoc = await createDocument({
+        title: `Resumo: ${itemTitle}`,
+        content: [{ type: 'p', children: [{ text: '' }] }],
+        content_text: '',
+        subtopic_id: itemId,
+      });
+      if (newDoc) {
+        setFocusDocId(newDoc.id);
+        setShowDocList(false);
+        setFocusCard('document');
       }
-      return newSet;
+    } else if (docs.length === 1) {
+      setFocusDocId(docs[0].id);
+      setShowDocList(false);
+      setFocusCard('document');
+    } else {
+      setFocusDocId(null);
+      setShowDocList(true);
+      setFocusCard('document');
+    }
+  }, [focusCard, selectedSubtopic, selectedTopic, getDocumentsBySubtopic, createDocument]);
+
+  // Abrir modo foco - flashcards / questoes (em producao)
+  const handleOpenGenericFocus = useCallback((type: 'flashcards' | 'questions' | 'lei-seca') => {
+    if (focusCard) return;
+    setFocusCard(type);
+  }, [focusCard]);
+
+  // Selecionar documento da mini-lista
+  const handleSelectDocFromList = useCallback((docId: string) => {
+    setFocusDocId(docId);
+    setShowDocList(false);
+  }, []);
+
+  // Criar novo doc a partir da mini-lista
+  const handleCreateNewDocInFocus = useCallback(async () => {
+    const itemId = selectedSubtopic?.subtopic.id || selectedTopic?.topic.id;
+    const itemTitle = selectedSubtopic?.subtopic.title || selectedTopic?.topic.title;
+    if (!itemId || !itemTitle) return;
+
+    const newDoc = await createDocument({
+      title: `Resumo: ${itemTitle}`,
+      content: [{ type: 'p', children: [{ text: '' }] }],
+      content_text: '',
+      subtopic_id: itemId,
     });
-  };
+    if (newDoc) {
+      setFocusDocId(newDoc.id);
+      setShowDocList(false);
+    }
+  }, [selectedSubtopic, selectedTopic, createDocument]);
 
-  const toggleTopicExpansion = (topicId: string) => {
-    setExpandedTopics(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(topicId)) {
-        newSet.delete(topicId);
-      } else {
-        newSet.add(topicId);
-      }
-      return newSet;
-    });
-  };
+  // Fechar modo foco
+  const handleCloseFocusMode = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFocusCard(null);
+    setTimeout(() => {
+      setFocusDocId(null);
+      setShowDocList(false);
+      if (contentRef.current) contentRef.current.scrollTop = 0;
+    }, 700);
+  }, []);
 
-  const handleSubtopicSelect = (unitId: string, topicId: string, subtopic: any) => {
-    setSelectedSubtopic({ unitId, topicId, subtopic });
-    setSelectedTopic(null);
-  };
+  // Mini-lista de documentos inline
+  const renderDocList = () => {
+    const itemId = selectedSubtopic?.subtopic.id || selectedTopic?.topic.id;
+    if (!itemId) return null;
 
-  const handleTopicSelect = (unitId: string, topic: any) => {
-    setSelectedTopic({ unitId, topic });
-    setSelectedSubtopic(null);
+    const docs = getDocumentsBySubtopic(itemId)
+      .sort((a, b) => new Date(b.updated_at || b.created_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime());
+
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      }).format(date);
+    };
+
+    return (
+      <div className="flex-1 overflow-y-auto p-8 doc-focus-scroll">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Escolha um documento
+          </h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            {docs.length} {docs.length === 1 ? 'documento disponivel' : 'documentos disponiveis'}
+          </p>
+
+          <button
+            onClick={handleCreateNewDocInFocus}
+            className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-border hover:border-green-300 hover:bg-green-50/50 transition-all mb-4"
+          >
+            <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+              <Plus className="w-5 h-5 text-green-600" />
+            </div>
+            <span className="font-medium text-foreground">Criar Novo Documento</span>
+          </button>
+
+          <div className="space-y-3">
+            {docs.map((doc) => (
+              <button
+                key={doc.id}
+                onClick={() => handleSelectDocFromList(doc.id)}
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-background hover:border-green-300 hover:shadow-md transition-all text-left group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-green-100 group-hover:bg-green-200 flex items-center justify-center transition-colors">
+                  <FileText className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-foreground truncate">{doc.title}</div>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                    <Clock className="w-3 h-3" />
+                    {formatDate(doc.updated_at || doc.created_at || '')}
+                  </div>
+                </div>
+                <Play className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ height: 'calc(100vh - 4rem)' }}>
-        <div className="flex h-full">
-          {/* Sidebar */}
-          <div className="w-96 bg-gray-50 flex flex-col">
-            <div className="px-3 py-3 border-b border-gray-200/30">
-              <div className="flex items-center justify-between mb-3">
-                <h1 className="text-base font-normal text-gray-800">Edital</h1>
-                <EditModeToggle
-                  isEditMode={isEditMode}
-                  onToggle={() => setIsEditMode(!isEditMode)}
-                />
-              </div>
-
-              <HierarchySearch
-                units={units}
-                onSelect={handleSearchSelect}
-              />
-
-              <Button
-                onClick={() => setGoalDialogOpen(true)}
-                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white"
-                size="sm"
-              >
-                <Target className="w-4 h-4 mr-2" />
-                Criar Nova Meta
-              </Button>
-            </div>
-
-            {/* Hierarquia */}
-            <div className="flex-1 overflow-y-auto py-2">
-              <div className="px-3 space-y-1">
-                {units.map((unit) => (
-                  <UnitItem
-                    key={unit.id}
-                    unit={unit}
-                    isExpanded={expandedUnits.has(unit.id)}
-                    isEditMode={isEditMode}
-                    isEditing={editingUnit === unit.id}
-                    onToggleExpand={() => toggleUnitExpansion(unit.id)}
-                    onEdit={() => setEditingUnit(unit.id)}
-                    onCancelEdit={() => setEditingUnit(null)}
-                    onSave={async (newTitle) => {
-                      await updateUnit(unit.id, { title: newTitle });
-                      setEditingUnit(null);
-                    }}
-                    onDelete={async () => {
-                      if (confirm(`Deletar unidade "${unit.title}"?`)) {
-                        await deleteUnit(unit.id);
-                      }
-                    }}
-                  >
-                    <div className="space-y-1">
-                      {unit.topics.map((topic) => (
-                        <TopicItem
-                          key={topic.id}
-                          unitId={unit.id}
-                          topic={topic}
-                          isExpanded={expandedTopics.has(topic.id)}
-                          isSelected={selectedTopic?.topic.id === topic.id}
-                          isEditMode={isEditMode}
-                          isEditing={false}
-                          hasSubtopics={!!(topic.subtopics && topic.subtopics.length > 0)}
-                          onToggleExpand={() => toggleTopicExpansion(topic.id)}
-                          onSelect={() => handleTopicSelect(unit.id, topic)}
-                          onEdit={() => {
-                            setEditModal({
-                              isOpen: true,
-                              type: 'topic',
-                              unitId: unit.id,
-                              topicId: null,
-                              itemId: topic.id,
-                              itemTitle: topic.title,
-                              itemDuration: topic.estimated_duration_minutes || 120,
-                              hasSubtopics: !!(topic.subtopics && topic.subtopics.length > 0)
-                            });
-                          }}
-                          onCancelEdit={() => {}}
-                          onSave={async () => {}}
-                          onDelete={async () => {
-                            if (confirm(`Deletar tópico "${topic.title}"?`)) {
-                              await deleteTopic(unit.id, topic.id);
-                            }
-                          }}
-                        >
-                          {((topic.subtopics && topic.subtopics.length > 0) || isEditMode) && (
-                            <div className="space-y-1">
-                              {topic.subtopics && topic.subtopics.map((subtopic) => (
-                                <SubtopicItem
-                                  key={subtopic.id}
-                                  subtopic={subtopic}
-                                  unitId={unit.id}
-                                  topicId={topic.id}
-                                  isSelected={selectedSubtopic?.subtopic.id === subtopic.id}
-                                  isEditMode={isEditMode}
-                                  isEditing={false}
-                                  showScheduleButton={subtopicWithScheduleButton === subtopic.id}
-                                  onToggleScheduleButton={() => {
-                                    setSubtopicWithScheduleButton(
-                                      subtopicWithScheduleButton === subtopic.id ? null : subtopic.id
-                                    );
-                                  }}
-                                  onSelect={() => handleSubtopicSelect(unit.id, topic.id, subtopic)}
-                                  onEdit={() => {
-                                    setEditModal({
-                                      isOpen: true,
-                                      type: 'subtopic',
-                                      unitId: unit.id,
-                                      topicId: topic.id,
-                                      itemId: subtopic.id,
-                                      itemTitle: subtopic.title,
-                                      itemDuration: subtopic.estimated_duration_minutes || 90,
-                                      hasSubtopics: false
-                                    });
-                                  }}
-                                  onCancelEdit={() => {}}
-                                  onSave={async () => {}}
-                                  onDelete={async () => {
-                                    if (confirm(`Deletar subtópico "${subtopic.title}"?`)) {
-                                      await deleteSubtopic(unit.id, topic.id, subtopic.id);
-                                    }
-                                  }}
-                                  onToggleComplete={(completed) =>
-                                    handleToggleSubtopicComplete(unit.id, topic.id, subtopic.id, completed)
-                                  }
-                                />
-                              ))}
-
-                              {isEditMode && (
-                                <button
-                                  onClick={() => {
-                                    setQuickCreateModal({
-                                      isOpen: true,
-                                      type: 'subtopic',
-                                      unitId: unit.id,
-                                      topicId: topic.id
-                                    });
-                                  }}
-                                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all border border-dashed border-blue-300"
-                                >
-                                  <span className="text-base font-semibold">+</span>
-                                  <span className="font-medium text-xs">Adicionar Subtópico</span>
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </TopicItem>
-                      ))}
-
-                      {isEditMode && (
-                        <button
-                          onClick={() => {
-                            setQuickCreateModal({
-                              isOpen: true,
-                              type: 'topic',
-                              unitId: unit.id,
-                              topicId: null
-                            });
-                          }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all border border-dashed border-blue-300"
-                        >
-                          <span className="text-lg font-semibold">+</span>
-                          <span className="font-medium text-sm">Adicionar Tópico</span>
-                        </button>
-                      )}
-                    </div>
-                  </UnitItem>
-                ))}
-
-                {isEditMode && (
-                  <div className="mt-3 pt-3 border-t border-gray-200/50">
-                    <button
-                      onClick={() => {
-                        setQuickCreateModal({
-                          isOpen: true,
-                          type: 'unit',
-                          unitId: null,
-                          topicId: null
-                        });
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-gray-400 hover:bg-gray-100/50 hover:text-gray-600 transition-all"
-                    >
-                      <span className="text-sm">+</span>
-                      <span className="font-normal text-xs">Nova Unidade</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Painel de Detalhes */}
-          <div className="flex-1 flex flex-col bg-gray-50">
-            {selectedSubtopic || selectedTopic ? (
-              <>
-                {/* Header com informações do usuário/tópico */}
-                <div className="bg-white border-b border-gray-200">
+    <div className="h-full flex flex-col">
+      {/* Painel de Detalhes */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {selectedSubtopic || selectedTopic ? (
+          <>
+            {/* COLAPSAVEL: Header + Dashboard */}
+            <div className={`doc-focus-collapse collapse-up ${focusMode ? 'collapsed' : ''}`}>
+              <div>
+                <div className="border-b">
                   <div className="px-6 py-4">
                     <HierarchyBreadcrumbs
                       items={(() => {
-                        const breadcrumbs = [];
+                        const breadcrumbs: { label: string; onClick?: () => void }[] = [];
                         const unit = units.find(u => u.id === (selectedSubtopic?.unitId || selectedTopic?.unitId));
 
                         if (unit) {
@@ -542,7 +220,6 @@ const DocumentsOrganizationPage = () => {
                             const topic = unit.topics.find(t => t.id === selectedSubtopic.topicId);
                             if (topic) {
                               const hasSubtopics = topic.subtopics && topic.subtopics.length > 0;
-
                               breadcrumbs.push({
                                 label: topic.title,
                                 onClick: hasSubtopics
@@ -556,14 +233,10 @@ const DocumentsOrganizationPage = () => {
                                       setSelectedTopic({ unitId: unit.id, topic });
                                     }
                               });
-                              breadcrumbs.push({
-                                label: selectedSubtopic.subtopic.title
-                              });
+                              breadcrumbs.push({ label: selectedSubtopic.subtopic.title });
                             }
                           } else if (selectedTopic) {
-                            breadcrumbs.push({
-                              label: selectedTopic.topic.title
-                            });
+                            breadcrumbs.push({ label: selectedTopic.topic.title });
                           }
                         }
 
@@ -576,283 +249,403 @@ const DocumentsOrganizationPage = () => {
                     />
                   </div>
 
-                  {/* Informações Minimalistas */}
-                  <div className="bg-gray-50 rounded-xl p-4 mx-6 mb-4">
-                    <div className="mb-3">
-                      <div className="grid grid-cols-2 gap-6">
-                        {/* Lado Esquerdo - Progressão */}
-                        <div className="flex flex-col justify-between h-full">
-                          {/* Escala Jurídica Horizontal Compacta */}
-                          <div className="relative">
-                            {/* Timeline Jurídica */}
-                            <div className="flex items-center justify-between mb-3">
-                              {/* Nível 1 - Estudante */}
-                              <div className="flex flex-col items-center">
-                                <div className="w-6 h-6 bg-gray-300 bg-opacity-50 rounded-full flex items-center justify-center text-gray-400 text-sm relative z-10 opacity-40">
-                                  📚
-                                </div>
-                                <span className="text-xs text-gray-400 mt-1 opacity-40">Estudante</span>
+                  {/* Painel de Progressao */}
+                  <div className="mx-6 mb-4 space-y-3">
+                    {/* Stepper horizontal */}
+                    <div className="bg-muted rounded-xl px-5 py-3">
+                      <div className="flex items-center">
+                        {[
+                          { emoji: '\u{1F4DA}', label: 'Estudante', completed: true, current: false },
+                          { emoji: '\u2696\uFE0F', label: 'Conhecedor', completed: true, current: false },
+                          { emoji: '\u{1F3DB}\uFE0F', label: 'Proficiente', completed: false, current: true },
+                          { emoji: '\u{1F468}\u200D\u2696\uFE0F', label: 'Especialista', completed: false, current: false },
+                        ].map((step, i, arr) => (
+                          <React.Fragment key={i}>
+                            <div className="flex flex-col items-center shrink-0">
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${
+                                step.current
+                                  ? 'bg-blue-600 shadow-md shadow-blue-200 ring-2 ring-blue-100'
+                                  : step.completed
+                                    ? 'bg-blue-100 border border-blue-300'
+                                    : 'bg-gray-100 border border-gray-200'
+                              }`}>
+                                <span className={step.completed || step.current ? '' : 'opacity-40'}>{step.emoji}</span>
                               </div>
-
-                              {/* Linha 1-2 */}
-                              <div className="flex-1 h-px bg-gray-300 mx-2 -mt-6 opacity-30"></div>
-
-                              {/* Nível 2 - Conhecedor */}
-                              <div className="flex flex-col items-center">
-                                <div className="w-6 h-6 bg-gray-300 bg-opacity-50 rounded-full flex items-center justify-center text-gray-400 text-sm relative z-10 opacity-40">
-                                  ⚖️
-                                </div>
-                                <span className="text-xs text-gray-400 mt-1 opacity-40">Conhecedor</span>
-                              </div>
-
-                              {/* Linha 2-3 */}
-                              <div className="flex-1 h-px bg-gray-300 mx-2 -mt-6 opacity-30"></div>
-
-                              {/* Nível 3 - Proficiente (Atual) */}
-                              <div className="flex flex-col items-center relative">
-                                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm shadow-lg relative z-10">
-                                  🏛️
-                                </div>
-                                <span className="text-xs text-blue-700 mt-1 font-semibold">Proficiente</span>
-                                {/* Indicador "Você está aqui" */}
-                                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
-                                  <div className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    Você está aqui
-                                  </div>
-                                  <div className="w-1.5 h-1.5 bg-blue-600 rotate-45 absolute top-[-3px] left-1/2 transform -translate-x-1/2"></div>
-                                </div>
-                              </div>
-
-                              {/* Linha 3-4 */}
-                              <div className="flex-1 h-px bg-gray-300 mx-2 -mt-6 opacity-30"></div>
-
-                              {/* Nível 4 - Especialista */}
-                              <div className="flex flex-col items-center">
-                                <div className="w-6 h-6 bg-gray-300 bg-opacity-50 rounded-full flex items-center justify-center text-gray-400 text-sm relative z-10 opacity-40">
-                                  👨‍💼
-                                </div>
-                                <span className="text-xs text-gray-400 mt-1 opacity-40">Especialista</span>
-                              </div>
+                              <span className={`text-[8px] mt-1 leading-none ${
+                                step.current ? 'text-blue-600 font-bold' : step.completed ? 'text-blue-400 font-medium' : 'text-gray-400'
+                              }`}>
+                                {step.current ? `\u2191 ${step.label}` : step.label}
+                              </span>
                             </div>
-                          </div>
+                            {i < arr.length - 1 && (
+                              <div className="flex-1 h-0.5 rounded-full overflow-hidden bg-gray-200 mx-1.5 -mt-3">
+                                <div className={`h-full rounded-full ${
+                                  step.completed ? 'w-full bg-blue-400' : step.current ? 'w-1/2 bg-blue-300' : 'w-0'
+                                }`} />
+                              </div>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
 
-                          <div className="space-y-2">
-                            {/* Último Acesso e Tempo Investido */}
-                            <div className="flex items-center gap-2 p-1.5 rounded-md bg-gray-50/50 border border-gray-200/50">
-                              <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                                <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    {/* Stats row */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
+                        <Clock className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[9px] text-muted-foreground uppercase">Ultimo acesso</div>
+                          <div className="text-xs font-semibold text-foreground truncate">
+                            {(() => {
+                              const raw = selectedSubtopic?.subtopic.lastAccess || selectedTopic?.topic.lastAccess;
+                              if (!raw) return 'Nunca';
+                              const date = new Date(raw);
+                              const now = new Date();
+                              const diffMs = now.getTime() - date.getTime();
+                              const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                              const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                              if (diffDays === 0) {
+                                if (diffHours === 0) return 'Agora';
+                                return `Ha ${diffHours}h`;
+                              }
+                              if (diffDays === 1) return 'Ontem';
+                              if (diffDays < 7) return `${diffDays}d atras`;
+                              return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
+                        <svg className="w-3.5 h-3.5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <div className="min-w-0">
+                          <div className="text-[9px] text-muted-foreground uppercase">Tempo investido</div>
+                          <div className="text-xs font-semibold text-foreground">
+                            {(() => {
+                              const mins = selectedSubtopic?.subtopic.tempoInvestido || selectedTopic?.topic.tempoInvestido || 0;
+                              if (!mins || mins === 0) return 'Nenhum';
+                              const h = Math.floor(Number(mins) / 60);
+                              const m = Number(mins) % 60;
+                              if (h === 0) return `${m}min`;
+                              return `${h}h${m > 0 ? ` ${m}m` : ''}`;
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (selectedSubtopic) {
+                            setNotesModal({ isOpen: true, subtopicId: selectedSubtopic.subtopic.id, topicId: null, title: selectedSubtopic.subtopic.title });
+                          } else if (selectedTopic) {
+                            setNotesModal({ isOpen: true, subtopicId: null, topicId: selectedTopic.topic.id, title: selectedTopic.topic.title });
+                          }
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-blue-50 transition-all text-left"
+                      >
+                        <NotebookPen className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[9px] text-muted-foreground uppercase">Anotacoes</div>
+                          <div className="text-xs font-semibold text-blue-600">Ver notas</div>
+                        </div>
+                      </button>
+                    </div>
+
+                    {/* Revisoes + Desempenho + Assistente IA */}
+                    <div className="rounded-xl overflow-hidden">
+                      <div className="grid grid-cols-[1fr_1fr_1fr]">
+                        {/* Revisoes */}
+                        <div className="bg-muted p-4">
+                          <h4 className="font-semibold text-foreground mb-2 text-xs">Revisoes</h4>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 px-1.5 py-1 rounded-md cursor-pointer hover:bg-green-50 transition-colors">
+                              <div className="w-4 h-4 bg-green-100 rounded-full border-2 border-green-500 flex items-center justify-center shrink-0">
+                                <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <div>
-                                  <div className="text-xs text-gray-500 font-medium">Último acesso</div>
-                                  <div className="text-xs font-semibold text-gray-800">
-                                    {selectedSubtopic ? (selectedSubtopic.subtopic.lastAccess || new Date().toLocaleDateString('pt-BR')) : (selectedTopic?.topic.lastAccess || new Date().toLocaleDateString('pt-BR'))}
-                                  </div>
-                                </div>
-                                <div className="w-px h-6 bg-gray-300 mx-1"></div>
-                                <div>
-                                  <div className="text-xs text-gray-500 font-medium">Tempo investido</div>
-                                  <div className="text-xs font-semibold text-gray-800">
-                                    {selectedSubtopic ? (selectedSubtopic.subtopic.tempoInvestido || '0') : (selectedTopic?.topic.tempoInvestido || '0')}
-                                  </div>
-                                </div>
-                              </div>
+                              <span className="text-[11px] font-medium text-foreground">15/01</span>
+                              <span className="text-[11px] font-bold text-green-600 ml-auto">85%</span>
                             </div>
-
-                            {/* Minhas Anotações */}
-                            <div
-                              className="flex items-center gap-2 p-1.5 rounded-md bg-gray-50/50 border border-gray-200/50 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors"
-                              onClick={() => {
-                                if (selectedSubtopic) {
-                                  setNotesModal({
-                                    isOpen: true,
-                                    subtopicId: selectedSubtopic.subtopic.id,
-                                    topicId: null,
-                                    title: selectedSubtopic.subtopic.title
-                                  });
-                                } else if (selectedTopic) {
-                                  setNotesModal({
-                                    isOpen: true,
-                                    subtopicId: null,
-                                    topicId: selectedTopic.topic.id,
-                                    title: selectedTopic.topic.title
-                                  });
-                                }
-                              }}
-                            >
-                              <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                                <FileText className="w-3 h-3 text-gray-600" />
+                            <div className="flex items-center gap-2 px-1.5 py-1 rounded-md cursor-pointer hover:bg-green-50 transition-colors">
+                              <div className="w-4 h-4 bg-green-100 rounded-full border-2 border-green-500 flex items-center justify-center shrink-0">
+                                <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
                               </div>
-                              <div>
-                                <div className="text-xs text-gray-500 font-medium">Minhas anotações</div>
-                                <div className="text-xs font-semibold text-gray-800">Ver anotações</div>
+                              <span className="text-[11px] font-medium text-foreground">12/01</span>
+                              <span className="text-[11px] font-bold text-green-600 ml-auto">78%</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-1.5 py-1 rounded-md hover:bg-orange-50 transition-colors">
+                              <div className="w-4 h-4 bg-orange-100 rounded-full border-2 border-orange-400 flex items-center justify-center shrink-0">
+                                <div className="w-1 h-1 bg-orange-500 rounded-full animate-pulse"></div>
                               </div>
+                              <span className="text-[11px] font-medium text-orange-600">18/01</span>
+                              <button className="px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-medium rounded-full hover:bg-orange-200 transition-colors ml-auto">Fazer</button>
+                            </div>
+                            <div className="flex items-center gap-2 px-1.5 py-1 rounded-md">
+                              <div className="w-4 h-4 bg-gray-100 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                              </div>
+                              <span className="text-[11px] font-medium text-muted-foreground">22/01</span>
+                              <span className="text-[10px] text-muted-foreground ml-auto">4d</span>
                             </div>
                           </div>
                         </div>
 
-                        {/* Divisor Vertical */}
-                        <div className="relative">
-                          <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
+                        {/* Grafico Desempenho */}
+                        <div className="bg-muted border-l border-border/40 p-4 flex flex-col">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-semibold text-foreground text-xs flex items-center gap-1.5">
+                              Desempenho
+                              <svg className="w-3 h-3 text-emerald-500" viewBox="0 0 12 12" fill="none">
+                                <path d="M6 9V3M6 3L3 6M6 3L9 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </h4>
+                          </div>
+                          <div className="flex-1 flex flex-col justify-end">
+                            <DesempenhoChart
+                              key={selectedSubtopic?.subtopic.id || selectedTopic?.topic.id}
+                              altura={160}
+                            />
+                          </div>
+                        </div>
 
-                          {/* Lado Direito - Revisões Práticas */}
-                          <div className="pl-6">
-                            <h4 className="font-semibold text-gray-900 mb-3 text-sm">Revisões Práticas</h4>
-
-                            {/* Timeline Vertical */}
-                            <div className="space-y-2">
-                              {/* Revisão Concluída */}
-                              <div
-                                className="flex items-center gap-2 cursor-pointer hover:bg-green-50 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors"
-                              >
-                                <div className="flex items-center justify-center w-4 h-4 bg-green-100 rounded-md border-2 border-green-500">
-                                  <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                </div>
-                                <div className="flex-1 flex items-center justify-between">
-                                  <div className="text-xs font-medium text-gray-900">15/01</div>
-                                  <div className="text-xs font-semibold text-green-600">85%</div>
-                                </div>
-                              </div>
-
-                              {/* Linha de Conexão */}
-                              <div className="ml-2 w-px h-2 bg-blue-300"></div>
-
-                              {/* Revisão Concluída 2 */}
-                              <div
-                                className="flex items-center gap-2 cursor-pointer hover:bg-green-50 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors"
-                              >
-                                <div className="flex items-center justify-center w-4 h-4 bg-green-100 rounded-md border-2 border-green-500">
-                                  <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                </div>
-                                <div className="flex-1 flex items-center justify-between">
-                                  <div className="text-xs font-medium text-gray-900">12/01</div>
-                                  <div className="text-xs font-semibold text-green-600">78%</div>
-                                </div>
-                              </div>
-
-                              {/* Linha de Conexão */}
-                              <div className="ml-2 w-px h-2 bg-blue-300"></div>
-
-                              {/* Revisão Pendente */}
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-center justify-center w-4 h-4 bg-orange-100 rounded-md border-2 border-orange-400">
-                                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-sm animate-pulse"></div>
-                                </div>
-                                <div className="flex-1 flex items-center justify-between">
-                                  <div className="text-xs font-medium text-orange-600">18/01</div>
-                                  <button className="px-1.5 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full hover:bg-orange-200 transition-colors">
-                                    Fazer
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Linha de Conexão */}
-                              <div className="ml-2 w-px h-2 bg-blue-300"></div>
-
-                              {/* Revisão Agendada */}
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-center justify-center w-4 h-4 bg-gray-100 rounded-md border-2 border-gray-300">
-                                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-sm"></div>
-                                </div>
-                                <div className="flex-1 flex items-center justify-between">
-                                  <div className="text-xs font-medium text-gray-600">22/01</div>
-                                  <div className="text-xs text-gray-400">4d</div>
-                                </div>
-                              </div>
+                        {/* Assistente IA */}
+                        <div className="bg-gradient-to-br from-violet-50 to-blue-50 border-l border-violet-200/30 p-4 flex flex-col">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center shrink-0 shadow-sm">
+                              <Sparkles className="w-3.5 h-3.5 text-white" />
                             </div>
+                            <div>
+                              <h4 className="font-semibold text-foreground text-xs leading-none">Assistente IA</h4>
+                              <span className="text-[8px] text-violet-500 font-medium">Beta</span>
+                            </div>
+                          </div>
+
+                          <p className="text-[11px] text-muted-foreground leading-relaxed flex-1">
+                            Seu desempenho em revisoes esta crescendo. Foque nos detalhes de excecoes e qualificadoras para alcancar 90%.
+                          </p>
+
+                          <div className="space-y-2 mt-3">
+                            <button
+                              onClick={() => setAiDrawerOpen(true)}
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-blue-600 text-white text-[11px] font-medium hover:from-violet-700 hover:to-blue-700 transition-all shadow-sm"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              Conversar sobre este topico
+                            </button>
+                            <button className="w-full text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-all px-3 py-1.5 rounded-lg">
+                              Gerar questoes
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                {/* Materiais de Estudo */}
-                <div className="flex-1 overflow-y-auto p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Materiais de Estudo</h2>
-                  <div className="space-y-3">
-                    {/* Documento */}
-                    <button
-                      onClick={() => {
-                        const item = selectedSubtopic ? selectedSubtopic.subtopic : selectedTopic?.topic;
-                        if (item) {
-                          handlePlaySubtopic(item.id, item.title);
-                        }
-                      }}
-                      className="w-full bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition-all p-5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-green-600" />
-                          </div>
-                          <div className="text-left">
-                            <div className="font-semibold text-gray-900 mb-1">Documento</div>
-                            <div className="text-sm text-gray-500">
-                              {materialCounts.documents} {materialCounts.documents === 1 ? 'resumo vinculado' : 'resumos vinculados'}
-                            </div>
-                          </div>
-                        </div>
-                        <Play className="w-5 h-5 text-gray-400" />
-                      </div>
-                    </button>
+            {/* Materiais de Estudo */}
+            <div className="flex-1 flex flex-col overflow-hidden p-6">
 
-                    {/* Flashcards */}
-                    <button className="w-full bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all p-5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                            <CreditCard className="w-6 h-6 text-purple-600" />
-                          </div>
-                          <div className="text-left">
-                            <div className="font-semibold text-gray-900 mb-1">Flashcards</div>
-                            <div className="text-sm text-gray-500">
-                              {materialCounts.flashcards} {materialCounts.flashcards === 1 ? 'cartão disponível' : 'cartões disponíveis'}
-                            </div>
-                          </div>
-                        </div>
-                        <Play className="w-5 h-5 text-gray-400" />
-                      </div>
-                    </button>
-
-                    {/* Questões */}
-                    <button className="w-full bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all p-5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-                            <HelpCircle className="w-6 h-6 text-orange-600" />
-                          </div>
-                          <div className="text-left">
-                            <div className="font-semibold text-gray-900 mb-1">Questões</div>
-                            <div className="text-sm text-gray-500">
-                              {materialCounts.questions} {materialCounts.questions === 1 ? 'questão disponível' : 'questões disponíveis'}
-                            </div>
-                          </div>
-                        </div>
-                        <Play className="w-5 h-5 text-gray-400" />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-gray-400">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">📚</div>
-                  <p>Selecione um tópico ou subtópico</p>
+              {/* COLAPSAVEL: Titulo */}
+              <div className={`doc-focus-collapse collapse-up ${focusMode ? 'collapsed' : ''}`}>
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-4">Materiais de Estudo</h2>
                 </div>
               </div>
-            )}
+
+              <div className={`flex-1 min-h-0 ${focusMode ? 'flex flex-col gap-3' : 'grid grid-cols-2 gap-3 content-start'}`}>
+
+                {/* CARDS DE MATERIAIS - Grid 2x2 / Modo foco */}
+                {([
+                  {
+                    type: 'document' as const,
+                    title: 'Documento',
+                    subtitle: `${materialCounts.documents} ${materialCounts.documents === 1 ? 'resumo' : 'resumos'}`,
+                    icon: FileText,
+                    colorBg: 'from-green-100 to-green-200',
+                    colorBgActive: 'from-green-500 to-green-700',
+                    colorIcon: 'text-green-600',
+                    colorShadow: 'shadow-[0_0_20px_rgba(34,197,94,0.4)]',
+                    hoverBorder: 'hover:border-green-300',
+                    onClick: handleOpenDocumentFocus,
+                  },
+                  {
+                    type: 'flashcards' as const,
+                    title: 'Flashcards',
+                    subtitle: `${materialCounts.flashcards} ${materialCounts.flashcards === 1 ? 'cartao' : 'cartoes'}`,
+                    icon: CreditCard,
+                    colorBg: 'from-purple-100 to-purple-200',
+                    colorBgActive: 'from-purple-500 to-purple-700',
+                    colorIcon: 'text-purple-600',
+                    colorShadow: 'shadow-[0_0_20px_rgba(147,51,234,0.4)]',
+                    hoverBorder: 'hover:border-purple-300',
+                    onClick: () => handleOpenGenericFocus('flashcards'),
+                  },
+                  {
+                    type: 'questions' as const,
+                    title: 'Questoes',
+                    subtitle: `${materialCounts.questions} ${materialCounts.questions === 1 ? 'questao' : 'questoes'}`,
+                    icon: HelpCircle,
+                    colorBg: 'from-orange-100 to-orange-200',
+                    colorBgActive: 'from-orange-500 to-orange-700',
+                    colorIcon: 'text-orange-600',
+                    colorShadow: 'shadow-[0_0_20px_rgba(249,115,22,0.4)]',
+                    hoverBorder: 'hover:border-orange-300',
+                    onClick: () => handleOpenGenericFocus('questions'),
+                  },
+                  {
+                    type: 'lei-seca' as const,
+                    title: 'Lei Seca',
+                    subtitle: 'Leitura da lei',
+                    icon: Scale,
+                    colorBg: 'from-sky-100 to-sky-200',
+                    colorBgActive: 'from-sky-500 to-sky-700',
+                    colorIcon: 'text-sky-600',
+                    colorShadow: 'shadow-[0_0_20px_rgba(14,165,233,0.4)]',
+                    hoverBorder: 'hover:border-sky-300',
+                    onClick: () => handleOpenGenericFocus('lei-seca'),
+                  },
+                ]).map((card) => {
+                  const isActive = focusCard === card.type;
+                  const isHidden = focusCard !== null && !isActive;
+                  const Icon = card.icon;
+
+                  return (
+                    <div
+                      key={card.type}
+                      className={`
+                        ${isHidden ? 'doc-focus-collapse collapse-down collapsed' : ''}
+                        ${isActive ? 'flex-1 flex flex-col min-h-0 col-span-2' : ''}
+                      `}
+                    >
+                      <div className={isActive ? 'flex-1 flex flex-col min-h-0' : ''}>
+                        <div
+                          className={`flex flex-col bg-background rounded-xl border overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.2,1)] ${
+                            isActive
+                              ? 'flex-1 border-transparent shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] cursor-default'
+                              : `flex-none cursor-pointer border-border ${card.hoverBorder} hover:shadow-md hover:-translate-y-0.5`
+                          }`}
+                          onClick={!focusCard ? card.onClick : undefined}
+                        >
+                          {/* Header */}
+                          <div className={`flex items-center justify-between shrink-0 bg-background/90 backdrop-blur-sm z-10 ${
+                            isActive
+                              ? 'px-6 h-[72px] border-b border-border'
+                              : 'px-4 h-[64px]'
+                          }`}>
+                            <div className={`flex items-center ${isActive ? 'gap-4' : 'gap-3'}`}>
+                              <div className={`relative flex items-center justify-center rounded-xl transition-all duration-600 bg-gradient-to-br ${
+                                isActive
+                                  ? `w-10 h-10 ${card.colorBgActive} rounded-full scale-90 ${card.colorShadow}`
+                                  : `w-9 h-9 ${card.colorBg}`
+                              }`}>
+                                <Icon className={`transition-colors duration-500 ${
+                                  isActive ? 'w-5 h-5 text-white' : `w-[18px] h-[18px] ${card.colorIcon}`
+                                }`} />
+                              </div>
+
+                              <div className="min-w-0">
+                                <h3 className={`font-semibold text-foreground leading-tight ${isActive ? 'text-base' : 'text-sm'}`}>{card.title}</h3>
+                                <p className={`text-muted-foreground mt-0.5 transition-all duration-300 truncate ${
+                                  isActive ? 'opacity-0 absolute text-xs' : 'opacity-100 text-[11px]'
+                                }`}>
+                                  {card.subtitle}
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted border border-border text-foreground font-semibold text-xs hover:bg-accent transition-all duration-400 ${
+                                isActive
+                                  ? 'opacity-100 pointer-events-auto scale-100'
+                                  : 'opacity-0 pointer-events-none scale-90'
+                              }`}
+                              onClick={handleCloseFocusMode}
+                            >
+                              <X className="w-3.5 h-3.5" />
+                              Sair do Foco
+                            </button>
+                          </div>
+
+                          {/* Conteudo interno */}
+                          {isActive && (
+                            <div className="flex-1 flex flex-col overflow-hidden doc-focus-content-enter" ref={contentRef}>
+                              {card.type === 'document' ? (
+                                showDocList ? (
+                                  renderDocList()
+                                ) : focusDocId ? (
+                                  <div className="flex-1 overflow-hidden">
+                                    <PlateEditor documentId={focusDocId} />
+                                  </div>
+                                ) : null
+                              ) : (
+                                <div className="flex-1 flex items-center justify-center">
+                                  <div className="text-center max-w-md mx-auto px-8">
+                                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${card.colorBg} flex items-center justify-center mx-auto mb-5`}>
+                                      <Wrench className={`w-7 h-7 ${card.colorIcon}`} />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-foreground mb-2">Em desenvolvimento</h3>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                      {card.type === 'flashcards'
+                                        ? 'O estudo de flashcards integrado esta sendo construido. Em breve voce podera revisar seus cartoes diretamente aqui, sem sair da pagina.'
+                                        : card.type === 'questions'
+                                          ? 'A resolucao de questoes integrada esta sendo construida. Em breve voce podera praticar diretamente aqui, sem sair da pagina.'
+                                          : 'A leitura da lei seca integrada esta sendo construida. Em breve voce podera estudar os dispositivos legais diretamente aqui, sem sair da pagina.'
+                                      }
+                                    </p>
+                                    <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                                      <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                                      Em producao
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
+            <div className="text-center">
+              <div className="text-4xl mb-2">{'\u{1F4DA}'}</div>
+              <p>Selecione um topico ou subtopico</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
+      {/* Assistente IA Drawer */}
+      <TopicAIAssistant
+        open={aiDrawerOpen}
+        onOpenChange={setAiDrawerOpen}
+        context={{
+          topicTitle: selectedTopic?.topic.title || selectedSubtopic?.subtopic.title,
+          subtopicTitle: selectedSubtopic?.subtopic.title,
+          level: 'Proficiente',
+          lastAccess: (selectedSubtopic?.subtopic as any)?.lastAccess || (selectedTopic?.topic as any)?.lastAccess || undefined,
+          timeInvested: (() => {
+            const mins = (selectedSubtopic?.subtopic as any)?.tempoInvestido || (selectedTopic?.topic as any)?.tempoInvestido || 0;
+            if (!mins || mins === 0) return 'Nenhum';
+            const h = Math.floor(Number(mins) / 60);
+            const m = Number(mins) % 60;
+            return h > 0 ? `${h}h ${m}min` : `${m}min`;
+          })(),
+          reviews: '15/01: 85%, 12/01: 78%',
+        }}
+      />
+
+      {/* Modais */}
       <NotesModal
         isOpen={notesModal.isOpen}
         onClose={() => setNotesModal({ isOpen: false, subtopicId: null, topicId: null, title: null })}
@@ -884,7 +677,6 @@ const DocumentsOrganizationPage = () => {
         />
       )}
 
-      {/* Modal para criar unidades (sem tempo estimado) */}
       {quickCreateModal.type === 'unit' && (
         <QuickCreateModal
           isOpen={quickCreateModal.isOpen}
@@ -895,48 +687,26 @@ const DocumentsOrganizationPage = () => {
         />
       )}
 
-      {/* Modal para criar tópicos e subtópicos (com tempo estimado) */}
-      {(quickCreateModal.type === 'topic' || quickCreateModal.type === 'subtopic') && (() => {
-        // Find the topic if we're creating a subtopic to show calculated duration
-        let hasSubtopics = false;
-        let calculatedDuration = 0;
-
-        if (quickCreateModal.type === 'topic' && quickCreateModal.unitId) {
-          // For topics, we're creating new, so hasSubtopics is always false initially
-          hasSubtopics = false;
-        }
-
-        return (
-          <TopicSubtopicCreateModal
-            isOpen={quickCreateModal.isOpen}
-            onClose={() => setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null })}
-            onSave={handleTopicSubtopicCreate}
-            type={quickCreateModal.type}
-            hasSubtopics={hasSubtopics}
-            calculatedDuration={calculatedDuration}
-          />
-        );
-      })()}
+      {(quickCreateModal.type === 'topic' || quickCreateModal.type === 'subtopic') && (
+        <TopicSubtopicCreateModal
+          isOpen={quickCreateModal.isOpen}
+          onClose={() => setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null })}
+          onSave={handleTopicSubtopicCreate}
+          type={quickCreateModal.type}
+          hasSubtopics={false}
+          calculatedDuration={0}
+        />
+      )}
 
       <GoalCreationDialog
         open={goalDialogOpen}
         onOpenChange={setGoalDialogOpen}
       />
 
-      {/* Modal para editar tópicos e subtópicos */}
       {editModal.isOpen && editModal.type && (
         <TopicSubtopicCreateModal
           isOpen={editModal.isOpen}
-          onClose={() => setEditModal({
-            isOpen: false,
-            type: null,
-            unitId: null,
-            topicId: null,
-            itemId: null,
-            itemTitle: '',
-            itemDuration: 0,
-            hasSubtopics: false
-          })}
+          onClose={() => setEditModal({ isOpen: false, type: null, unitId: null, topicId: null, itemId: null, itemTitle: '', itemDuration: 0, hasSubtopics: false })}
           onSave={handleTopicSubtopicEdit}
           type={editModal.type}
           hasSubtopics={editModal.hasSubtopics || false}

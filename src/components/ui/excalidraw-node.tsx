@@ -27,6 +27,13 @@ export function ExcalidrawElement(
           {Excalidraw && (
             <Excalidraw
               {...(excalidrawProps as any)}
+              initialData={{
+                ...(excalidrawProps as any)?.initialData,
+                appState: {
+                  ...(excalidrawProps as any)?.initialData?.appState,
+                  collaborators: new Map(),
+                },
+              }}
               viewModeEnabled={readOnly}
             />
           )}
