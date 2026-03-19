@@ -219,11 +219,13 @@ Quando o usuario seleciona e copia do JusBrasil, o clipboard contem HTML rico. T
 | `<a href>` | **Sim** | Links completos com URL |
 | `<p>` | **Sim** | Cada dispositivo |
 | `<h6>` | **Sim** | Hierarquia (TITULO, CAPITULO) |
-| CSS class inline | **Parcial** | Depende do browser — `law-item_revoked` pode nao vir |
-| `id` attribute | **Parcial** | Browsers podem descartar IDs ao copiar |
+| CSS class inline | **Sim** | `law-item_revoked`, `heading_sizexl`, `heading_sizelg` preservadas |
+| `id` attribute | **Sim** | `capitulo-i-14`, `art.-1o-16`, etc. preservados |
 | Texto strikethrough | **Sim** | Dispositivos revogados tem `<s>` ou `text-decoration` |
 
-**Nota importante:** O clipboard HTML nao e garantido ser identico ao DOM. Browsers podem simplificar o HTML ao copiar. O paste interceptor deve ser **tolerante** e tratar campos como `domId` e `revoked` como opcionais. Quando nao disponiveis via clipboard, o parser usa regex como fallback.
+**Testado em Chrome (Windows 10, marco 2026).** O clipboard HTML preservou TUDO: links (27), h6 (2), IDs (8), CSS classes (10), inclusive `law-item_revoked`. Resultado melhor que o esperado.
+
+**Nota:** Outros browsers (Firefox, Edge) podem se comportar diferente. O paste interceptor deve ser **tolerante** e tratar campos como `domId` e `revoked` como opcionais com fallback regex.
 
 ### 3.5 Fallback para Dados Perdidos no Clipboard
 
@@ -235,74 +237,137 @@ Quando o usuario seleciona e copia do JusBrasil, o clipboard contem HTML rico. T
 | Posicao/ordem | Indice sequencial no HTML | Ordem de aparicao no TipTap |
 | Descricoes de hierarquia | `<p>` apos elemento de hierarquia | Heuristica (ALL CAPS ou "Da/Das/Do/Dos") |
 
-## 4. Hierarquia: Sumario Manual (Opcional)
+## 4. Hierarquia: Playwright Extrai o Sumario Automaticamente
 
-No pipeline Playwright, o Sumario do JusBrasil e extraido automaticamente (396 nos com arvore completa). No copy/paste, o usuario teria que copiar o Sumario separadamente.
+### 4.1 Problema Testado
 
-**Opcao A — Sumario automatico (recomendado):**
-O wizard de importacao tem um step "Hierarquia" onde o usuario:
-1. Abre o Sumario no JusBrasil (botao "Sumario")
-2. Seleciona todo o conteudo do Sumario e copia
-3. Cola num campo separado no wizard
-4. Parser extrai a arvore hierarquica dos links do Sumario
+O Sumario do JusBrasil e um componente tree-view (Radix UI) que **nao serializa corretamente para o clipboard**. Mesmo com todos os nos expandidos, o copy/paste captura apenas ~10 dos 733 nos. O tree-view usa lazy rendering que nao vai pro clipboard.
 
-**Opcao B — Hierarquia inferida:**
-O parser constroi a hierarquia a partir dos `<h6>` e `<p>` de hierarquia capturados pelo paste interceptor. Menos confiavel que o Sumario, mas funciona como fallback.
+### 4.2 Solucao: Playwright so para o Sumario
 
-**Opcao C — Sem hierarquia separada:**
-O parser existente (`lei-parser.ts`) ja reconstroi hierarquia por regex. Manter como fallback final.
+O pipeline copy/paste usa Playwright **exclusivamente** para extrair o Sumario. O usuario cola o corpo da lei manualmente; o Playwright faz apenas uma chamada leve para a mesma URL e extrai a arvore hierarquica.
 
-**Recomendacao:** Opcao A com fallback para C. Se o clipboard preservar os `<h6>` e IDs, a Opcao B funciona automaticamente sem passo extra.
+**Testado com sucesso (Codigo Civil):**
+
+| Metrica | Valor |
+|---|---|
+| Nos extraidos | **733** |
+| LIVRO | 31 |
+| TITULO | 39 |
+| CAPITULO | 350 |
+| Secao | 298 |
+| Subsecao | 15 |
+| Tempo de extracao | ~3 segundos |
+
+**Logica de extracao do Sumario:**
+
+```typescript
+async function extractTocFromJusBrasil(page: Page): Promise<TocNode[]> {
+  // 1. Clicar no botao Sumario
+  const sumBtn = await page.$('button:has-text("Sumário")');
+  await sumBtn?.click();
+  await page.waitForTimeout(500);
+
+  // 2. Expandir TODOS os nos (multiplas rodadas ate nao ter mais)
+  let round = 0;
+  while (round < 30) {
+    const collapsed = await page.$$('button[aria-expanded="false"]');
+    if (collapsed.length === 0) break;
+    for (const btn of collapsed) await btn.click();
+    round++;
+  }
+
+  // 3. Extrair todos os links com ancora
+  return page.evaluate(() => {
+    const links = document.querySelectorAll('a[href*="#"]');
+    const toc = [];
+    for (const a of links) {
+      const text = a.textContent?.trim();
+      const href = a.getAttribute('href') || '';
+      if (!text || !href.includes('#')) continue;
+      if (!text.match(/^(LIVRO|TÍTULO|CAPÍTULO|Seção|Subseção|PARTE|DISPOSIÇÕES)/i)) continue;
+
+      const anchor = href.split('#')[1];
+      const level = text.match(/^PARTE/) ? 0 :
+                    text.match(/^LIVRO/) ? 1 :
+                    text.match(/^TÍTULO/i) ? 2 :
+                    text.match(/^CAPÍTULO/i) ? 3 :
+                    text.match(/^Seção/i) ? 4 :
+                    text.match(/^Subseção/i) ? 5 : 6;
+      toc.push({ text, anchor, level, children: [] });
+    }
+    return toc;
+  });
+}
+```
+
+### 4.3 Risco: Bloqueio do Playwright pelo JusBrasil
+
+O JusBrasil ja bloqueia HTTP direto (403). O Playwright usa browser real, entao hoje passa. Mas podem adicionar deteccao de automacao.
+
+**Mitigacoes:**
+- `playwright.launch({ headless: false })` — browser visivel, dificil de detectar
+- User-agent real do Chrome instalado
+- Delays humanos (`waitForTimeout`) entre acoes
+- Acesso leve: 1 pagina, 1 vez por lei, so pro Sumario
+
+**Se for bloqueado — fallback em cascata:**
+1. **Fallback A:** Hierarquia dos `<h6>` + `<p>` do corpo colado (testado, funciona, perde descricoes de nivel superior)
+2. **Fallback B:** Parser regex reconstroi hierarquia pelo texto (parser existente, `lei-parser.ts`)
+3. **Fallback C:** Usuario informa hierarquia manualmente no wizard
+
+Na pratica, mesmo sem Sumario a lei funciona — a hierarquia fica menos completa mas os dispositivos sao os mesmos.
 
 ## 5. Fluxo do Usuario
 
-### 5.1 Ingestao via Copy/Paste
+### 5.1 Ingestao via Copy/Paste Hibrido
 
 ```
-Step 1: Fonte
+Step 1: Colar o corpo da lei (MANUAL)
   - Usuario abre JusBrasil no browser
   - Seleciona toda a lei (Ctrl+A no corpo da lei)
   - Copia (Ctrl+C)
-
-Step 2: Colar
-  - Usuario abre o wizard de importacao (ImportLeiV2Page)
-  - Preenche metadados (nome, numero, sigla da lei)
+  - Abre wizard de importacao, preenche metadados (nome, numero, sigla, URL)
   - Cola no editor (Ctrl+V)
-  - [Bastidores] Paste interceptor captura HTML raw
+  - [Bastidores] Paste interceptor captura HTML raw (links, h6, IDs, classes)
   - [Bastidores] Link extension preserva links no TipTap
   - Editor mostra texto com links azuis (conferencia visual)
-  - Status bar mostra: "2.155 elementos, 1.890 links, 396 hierarquia"
+  - Status bar: "2.155 elementos, 1.890 links, 8 h6, 315 revogados"
 
-Step 3: Hierarquia (opcional)
-  - Se o interceptor nao capturou hierarquia suficiente:
-  - Usuario abre Sumario no JusBrasil, copia, cola num campo separado
-  - Parser extrai arvore hierarquica
+Step 2: Extrair hierarquia (AUTOMATICO)
+  - Wizard usa a URL informada no Step 1
+  - Playwright abre a URL, clica Sumario, expande tudo
+  - Extrai arvore hierarquica (733 nos do Codigo Civil)
+  - Se Playwright falhar: fallback para h6/p do corpo colado
+  - Status bar: "733 nos de hierarquia extraidos"
 
-Step 4: Validacao
+Step 3: Validacao (AUTOMATICO)
   - Parser classifica dispositivos (links primario, regex fallback)
+  - Cruza dispositivos com hierarquia do Sumario
   - Regex separa anotacoes
-  - Validacao automatica roda (contagem, gaps, residuais)
+  - Validacao: contagem, gaps, residuais
   - Cross-check com Planalto
   - Relatorio verde/amarelo/vermelho
   - Usuario revisa flagados
 
-Step 5: Salvar
+Step 4: Salvar
   - Usuario aprova -> upsert no Supabase
 ```
 
-### 5.2 Comparacao: Copy/Paste vs Playwright
+### 5.2 Comparacao: Copy/Paste Hibrido vs Playwright Puro
 
-| Aspecto | Copy/Paste | Playwright |
+| Aspecto | Copy/Paste Hibrido | Playwright Puro |
 |---|---|---|
-| Setup | Zero (browser ja aberto) | Instalar Playwright + binarios |
-| Velocidade | Manual (1-3 min por lei) | Automatico (~30s por lei) |
-| Links preservados | Sim (clipboard HTML) | Sim (DOM direto) |
-| CSS classes | Parcial (browser pode simplificar) | Completo |
-| IDs de hierarquia | Parcial | Completo |
-| Sumario | Passo manual extra | Automatico |
+| Setup | Playwright so pra Sumario | Playwright pra tudo |
+| Corpo da lei | Manual (cola no editor) | Automatico (extrai DOM) |
+| Hierarquia | Playwright extrai Sumario | Playwright extrai Sumario |
+| Links preservados | Sim (testado Chrome) | Sim (DOM direto) |
+| CSS classes | Sim (testado Chrome) | Sim |
+| IDs de hierarquia | Sim (testado Chrome) | Sim |
 | Conferencia visual | Sim (ve no editor) | Nao (JSON) |
-| Escala para 200 leis | Doloroso | Viavel |
-| Confiabilidade | Alta (humano valida) | Alta (validacao automatica) |
+| Velocidade | ~2 min (cola + Playwright Sumario) | ~30s (tudo automatico) |
+| Escala para 200 leis | Viavel mas lento | Ideal |
+| Se JusBrasil bloquear Playwright | Fallback: h6/p do corpo colado | Pipeline inteiro quebra |
 
 ## 6. Estrutura de Arquivos
 
@@ -311,6 +376,8 @@ Step 5: Salvar
 ```
 src/lib/
   lei-paste-interceptor.ts    # Extrai metadados do HTML do clipboard
+scripts/
+  lei-toc-extractor.ts        # Playwright — extrai APENAS o Sumario do JusBrasil
 ```
 
 ### 6.2 Arquivos Modificados
@@ -338,11 +405,12 @@ src/lib/
 
 | Risco | Impacto | Mitigacao |
 |---|---|---|
-| Browser simplifica HTML ao copiar | Links OK, mas IDs e classes podem sumir | Fallback regex funciona sem eles |
+| Browser simplifica HTML ao copiar | Testado Chrome: preserva tudo. Outros browsers podem variar | Fallback regex funciona sem eles |
 | Usuario copia parcialmente | Lei incompleta | Validacao de contagem sequencial detecta gaps |
 | TipTap strip links mesmo com extensao | Perde classificacao por link | Paste interceptor captura ANTES do TipTap |
 | Copy de area errada (header, footer) | Lixo no inicio/fim | Parser ignora preambulo e detecta fim da lei |
 | Lei muito grande trava o editor | UX ruim ao colar CC com 4.880 dispositivos | Medir performance; se necessario, processar fora do TipTap |
+| JusBrasil bloqueia Playwright | Perde extracao do Sumario | Fallback: h6/p do corpo colado; headless:false + delays humanos; acesso leve (1 pagina/lei) |
 
 ## 8. Fora de Escopo
 
