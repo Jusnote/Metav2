@@ -103,8 +103,10 @@ Analise real do DOM do JusBrasil. Exemplo de referencia (Codigo Civil, Lei 10.40
 interface RawDevice {
   text: string;           // Texto puro do dispositivo
   html: string;           // HTML interno do <p> ou <h6>
-  href: string | null;    // URL do link (ex: /topicos/10620194/artigo-1636-da-lei...)
+  href: string | null;    // URL do link DO dispositivo (primeiro <a> com /topicos/ + padrao)
   slug: string | null;    // Slug extraido do href
+  referenceLinks: Array<{ text: string; href: string; type: 'topico' | 'legislacao' }>;
+                          // Links de referencia a outros dispositivos/leis (para linkagem futura)
   revoked: boolean;       // CSS class law-item_revoked
   domId: string | null;   // ID do elemento (ex: "livro-i-10", "capitulo-i-4726")
   tagName: string;        // "P" ou "H6"

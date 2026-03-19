@@ -21,65 +21,32 @@ Este spec descreve um pipeline **alternativo** ao Playwright para ingestao de le
 
 ## 2. Problema Especifico do Copy/Paste
 
-Quando o usuario copia do JusBrasil e cola no editor TipTap atual:
+O TipTap transforma o HTML ao colar — descarta links, CSS classes, IDs e tags `<h6>`. Testamos o clipboard HTML num `contenteditable div` simples e tudo foi preservado (links, h6, IDs, classes). Mas no TipTap nao ha garantia.
 
-1. **Links `<a href>` sao descartados** — o editor de ingestao (`lei-ingestao-editor.tsx`) nao inclui a extensao Link do TipTap. Os links que identificam cada dispositivo sao perdidos.
-2. **CSS classes sao perdidas** — `law-item_revoked` desaparece ao colar.
-3. **Tags `<h6>` de hierarquia viram `<p>`** — TITULO e CAPITULO perdem a distincao visual.
-4. **IDs de elementos sao perdidos** — `livro-i-10`, `capitulo-i-4726` desaparecem.
-
-## 3. Solucao: Abordagem A+C (Link Extension + Paste Interceptor)
+## 3. Solucao: Paste Interceptor + TipTap como Preview Editavel
 
 ### 3.1 Visao Geral
 
 ```
 Usuario copia lei inteira do JusBrasil (Ctrl+C)
   -> Cola no editor de ingestao (Ctrl+V)
-  -> [A] Extensao Link preserva os <a href> no TipTap
-  -> [C] Paste interceptor captura o HTML raw do clipboard ANTES do TipTap
+  -> handlePaste intercepta ANTES do TipTap:
+     -> Captura clipboardData.getData('text/html')
      -> Extrai: links, CSS classes, IDs, tags h6
-     -> Salva como metadados estruturados em paralelo
-  -> Editor mostra texto com links visiveis (conferencia visual)
-  -> Parser usa metadados do interceptor (primario) + links do TipTap (fallback)
-  -> Camadas 2, 3, 4 identicas ao pipeline Playwright
+     -> Salva HTML raw em state (dados para o parser)
+  -> TipTap renderiza o conteudo normalmente (preview editavel)
+  -> Usuario corrige formatacao se necessario (bold, indent, roles)
+  -> Na hora de parsear:
+     -> HTML raw do clipboard = fonte primaria (links, hierarquia, revogados)
+     -> TipTap JSON = correcoes manuais do usuario (roles, indent, formatacao)
+  -> Playwright extrai Sumario automaticamente (hierarquia completa)
+  -> Validacao automatica
+  -> Supabase
 ```
 
-### 3.2 Componente A: Link Extension no Editor de Ingestao
+**Principio:** O TipTap continua como **editor de preview e correcao**. O parser usa o **HTML raw do clipboard** para dados estruturados (links, h6, IDs, classes). As correcoes manuais do usuario no TipTap (roles, indent) sao mergeadas depois.
 
-**Arquivo modificado:** `src/components/lei-seca/lei-ingestao-editor.tsx`
-
-**Mudanca:** Adicionar extensao Link ao TipTap do editor de ingestao.
-
-```typescript
-// Atual (sem Link):
-const extensions = [
-  StarterKit.configure({ paragraph: false }),
-  LeiParagraph,
-  TextAlign,
-  Highlight,
-  Underline,
-];
-
-// Proposto (com Link):
-const extensions = [
-  StarterKit.configure({ paragraph: false }),
-  LeiParagraph,
-  TextAlign,
-  Highlight,
-  Underline,
-  Link.configure({
-    openOnClick: false,        // Nao abrir links ao clicar
-    HTMLAttributes: {
-      class: 'lei-device-link', // Classe CSS para estilizar
-      target: null,             // Nao abrir em nova aba
-    },
-  }),
-];
-```
-
-**Beneficio:** O usuario VE os links no editor apos colar. Cada "Art. 1o", "I -", "Paragrafo unico" aparece como link clicavel, dando **conferencia visual** de que os links foram preservados.
-
-### 3.3 Componente C: Paste Interceptor
+### 3.2 Paste Interceptor
 
 **Arquivo novo:** `src/lib/lei-paste-interceptor.ts`
 
@@ -203,14 +170,66 @@ editorProps: {
         `${extraction.stats.hierarchyFound} hierarquia`);
     }
 
-    // Retornar false para deixar o TipTap processar normalmente
-    // (a extensao Link vai preservar os <a href>)
+    // Retornar false para deixar o TipTap renderizar normalmente
+    // TipTap funciona como PREVIEW EDITAVEL — usuario ve e corrige
+    // Os dados estruturados vem do HTML raw capturado acima
     return false;
   },
 }
 ```
 
-### 3.4 O que o HTML do Clipboard Preserva?
+### 3.3 Papel do TipTap: Preview Editavel
+
+O TipTap **continua no editor de ingestao** com papel de preview editavel. Parser le **HTML raw** do clipboard (primario) e TipTap JSON para correcoes manuais (secundario). Adicionar extensao Link para conferencia visual (links clicaveis no preview).
+
+### 3.4 Links de Dispositivo vs Links de Referencia
+
+No JusBrasil existem dois tipos de links dentro de cada `<p>`:
+
+1. **Link do dispositivo** (identifica O dispositivo): `<a href="/topicos/...">Art. 1o</a>`
+2. **Link de referencia** (aponta para OUTRO dispositivo ou lei): `"nos termos do <a href="/topicos/...">art. 5o</a>"`
+
+**Dados reais testados (Codigo Civil): 4.089 device links, 457 ref links, 0 falsos positivos.**
+
+**Regra para o parser:**
+
+```typescript
+function extractLinks(element: Element): {
+  deviceLink: string | null;
+  referenceLinks: ReferenceLink[];
+} {
+  const links = element.querySelectorAll('a');
+  let deviceLink: string | null = null;
+  const referenceLinks: ReferenceLink[] = [];
+
+  for (const a of links) {
+    const href = a.getAttribute('href') || '';
+    const text = a.textContent?.trim() || '';
+
+    // Link do dispositivo: primeiro <a> com /topicos/ cujo texto match padrao
+    if (!deviceLink && href.includes('/topicos/') &&
+        text.match(/^(Art\.?\s|§\s|Parágrafo|[IVXLCDM]+\s*[-–—]|[a-z]\))/i)) {
+      deviceLink = href;
+      continue;
+    }
+
+    // Demais links: guardar como referencia (para linkagem futura entre leis)
+    if (href.includes('/topicos/') || href.includes('/legislacao/')) {
+      referenceLinks.push({
+        text,
+        href,
+        type: href.includes('/legislacao/') ? 'legislacao' : 'topico'
+      });
+    }
+  }
+
+  return { deviceLink, referenceLinks };
+}
+```
+
+**Os links de referencia NAO sao descartados.** Sao armazenados como metadata do dispositivo para uso futuro: linkagem interna entre leis no sistema (ex: "art. 5o da CF/88" clicavel abrindo direto na lei seca correspondente).
+
+### 3.5 O que o HTML do Clipboard Preserva?
 
 Quando o usuario seleciona e copia do JusBrasil, o clipboard contem HTML rico. Testes indicam que browsers preservam:
 
