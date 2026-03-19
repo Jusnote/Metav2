@@ -72,6 +72,9 @@ Analise real do DOM do JusBrasil (Codigo Civil, Lei 10.406/02):
 - Cada dispositivo tem um `<a href>` com identificador unico e hierarquia codificada na URL
 - Dispositivos revogados marcados com CSS class `law-item_revoked`
 - Pagina carrega todos os artigos de uma vez (sem paginacao)
+- Hierarquia (LIVRO, TITULO, CAPITULO) usa `<h6>` com CSS classes por nivel (`heading_sizexl`, `heading_sizelg`)
+- Cada elemento de hierarquia tem `id` unico com posicao DOM (ex: `livro-i-10`, `capitulo-i-4726`)
+- Sumario lateral tem 396 nos com arvore hierarquica completa, links ancora e descricoes
 
 **Limitacoes conhecidas:**
 - Anotacoes legislativas sao texto inline (mesmo problema do Planalto — regex necessario)
@@ -88,26 +91,42 @@ Analise real do DOM do JusBrasil (Codigo Civil, Lei 10.406/02):
 
 **Input:** URL do JusBrasil (ex: `https://www.jusbrasil.com.br/legislacao/91577/codigo-civil-lei-10406-02`)
 
-**Output:** Array de objetos `RawDevice`:
+**Output:** Objeto `RawLeiExtraction`:
 
 ```typescript
 interface RawDevice {
-  // Texto puro do dispositivo
-  text: string;
-  // HTML interno do <p>
-  html: string;
-  // URL do link do dispositivo (ex: /topicos/10620194/artigo-1636-da-lei-n-10406...)
-  href: string | null;
-  // Slug extraido do href (ex: "artigo-1636-da-lei-n-10406")
-  slug: string | null;
-  // Se e item revogado (CSS class law-item_revoked)
-  revoked: boolean;
-  // Indice sequencial no DOM
-  index: number;
+  text: string;           // Texto puro do dispositivo
+  html: string;           // HTML interno do <p> ou <h6>
+  href: string | null;    // URL do link (ex: /topicos/10620194/artigo-1636-da-lei...)
+  slug: string | null;    // Slug extraido do href
+  revoked: boolean;       // CSS class law-item_revoked
+  domId: string | null;   // ID do elemento (ex: "livro-i-10", "capitulo-i-4726")
+  tagName: string;        // "P" ou "H6"
+  index: number;          // Indice sequencial no DOM
+}
+
+interface TocNode {
+  text: string;           // "LIVRO I DAS PESSOAS"
+  anchor: string;         // "livroi"
+  level: number;          // 1=livro, 2=titulo, 3=capitulo, 4=secao, 5=subsecao
+  children: TocNode[];    // Sub-nos (arvore completa)
+}
+
+interface RawLeiExtraction {
+  metadata: LeiMetadata;
+  devices: RawDevice[];   // Todos os <p> e <h6> do corpo da lei
+  toc: TocNode[];         // Arvore hierarquica extraida do Sumario
+  stats: {
+    totalDevices: number;
+    totalArticles: number;
+    totalRevoked: number;
+    totalHierarchy: number;
+    totalTocNodes: number;
+  };
 }
 ```
 
-**Logica de extracao:**
+**Logica de extracao (dispositivos + hierarquia):**
 
 ```typescript
 // Pseudocodigo
@@ -124,21 +143,69 @@ await page.waitForFunction(() => {
 const scrollHeight = await page.evaluate(() => document.body.scrollHeight);
 // Se necessario, scroll incremental para trigger lazy loading
 
-// Extrair todos os <p> com metadados
+// Extrair todos os <p> E <h6> (hierarquia usa h6) com metadados
 const devices = await page.evaluate(() => {
-  return Array.from(document.querySelectorAll('p')).map((p, i) => {
-    const link = p.querySelector('a');
+  return Array.from(document.querySelectorAll('p, h6')).map((el, i) => {
+    const link = el.querySelector('a');
     return {
-      text: p.textContent?.trim() || '',
-      html: p.innerHTML,
+      text: el.textContent?.trim() || '',
+      html: el.innerHTML,
       href: link?.href || null,
       slug: link?.href?.match(/topicos\/\d+\/(.+)/)?.[1] || null,
-      revoked: p.className?.includes('revoked') || false,
+      revoked: el.className?.includes('revoked') || false,
+      domId: el.id || null,        // "livro-i-10", "capitulo-i-4726", etc.
+      tagName: el.tagName,          // "P" ou "H6"
       index: i,
     };
   }).filter(d => d.text.length > 0);
 });
+
+// Extrair arvore hierarquica do Sumario (botao "Sumario")
+// O Sumario tem links com ancora e hierarquia ja estruturada
+const toc = await page.evaluate(() => {
+  // Clicar no botao Sumario para abrir o painel
+  const sumBtn = Array.from(document.querySelectorAll('button'))
+    .find(b => b.textContent?.includes('Sumário'));
+  if (sumBtn) sumBtn.click();
+
+  // Extrair todos os links do TOC
+  const tocLinks = document.querySelectorAll('a');
+  const nodes = [];
+  for (const a of tocLinks) {
+    const text = a.textContent?.trim();
+    const href = a.href;
+    if (!href?.includes('#') || !text) continue;
+    if (!text.match(/^(LIVRO|TÍTULO|CAPÍTULO|Seção|Subseção|PARTE|DISPOSIÇÕES)/i)) continue;
+
+    const level = text.match(/^PARTE/) ? 0 :
+                  text.match(/^LIVRO/) ? 1 :
+                  text.match(/^TÍTULO/i) ? 2 :
+                  text.match(/^CAPÍTULO/i) ? 3 :
+                  text.match(/^Seção/i) ? 4 :
+                  text.match(/^Subseção/i) ? 5 : 6;
+
+    nodes.push({ text, anchor: href.split('#')[1], level, children: [] });
+  }
+
+  // Construir arvore por nivel
+  // (logica de aninhamento feita no parser, nao aqui)
+  return nodes;
+});
 ```
+
+**Hierarquia no DOM do JusBrasil:**
+
+| Nivel | Tag HTML | CSS class | ID pattern | Exemplo |
+|---|---|---|---|---|
+| PARTE | `<p>` | (none) | `parte-geral-{pos}` | PARTE GERAL |
+| LIVRO | `<p>` | (none) | `livro-i-{pos}` | LIVRO I |
+| TITULO | `<h6>` | `heading_sizexl` | `tituloi` | TITULO I |
+| CAPITULO | `<h6>` | `heading_sizelg` | `capituloi...` | CAPITULO I |
+| Secao | `<p>` | (none) | (none) | Secao I |
+| Subsecao | `<p>` | (none) | (none) | Subsecao I |
+| Descricao | `<p>` | (none) | (none) | DAS PESSOAS NATURAIS |
+
+**O numero no ID (ex: `livro-i-10`) e a posicao do elemento no DOM.** Isso permite ordenacao deterministica e cruzamento com dispositivos por posicao.
 
 **Metadados da lei** (extraidos do titulo da pagina):
 
