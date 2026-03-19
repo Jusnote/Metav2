@@ -55,16 +55,18 @@ Pipeline de ingestao em 4 camadas usando JusBrasil como fonte primaria (ingestao
 
 ### 3.2 Justificativa da Fonte
 
-Analise real do DOM do JusBrasil (Codigo Civil, Lei 10.406/02):
+Analise real do DOM do JusBrasil. Exemplo de referencia (Codigo Civil, Lei 10.406/02):
 
 | Metrica | Valor |
 |---|---|
 | Artigos unicos | 2.095 (inclui versoes revogadas) |
 | Artigos vigentes | 2.016 |
 | Artigos revogados | 123 (marcados com CSS `law-item_revoked`) |
-| Maior numero de artigo | 2.046 (completo) |
-| Gaps na sequencia | 0 reais (1 falso positivo por inconsistencia de formatacao) |
-| Dispositivos totais (`<p>`) | 4.880 |
+| Maior numero de artigo | 2.046 (completo, zero gaps reais) |
+| Dispositivos totais (`<p>` + `<h6>`) | 4.880 |
+| Nos hierarquicos no Sumario | 1.065 |
+
+**Nota:** Estes numeros sao do Codigo Civil como referencia. Cada lei tera valores diferentes — leis menores terao dezenas de artigos e poucos nos hierarquicos.
 
 **Vantagens do JusBrasil sobre o Planalto:**
 - Cada dispositivo e um `<p>` isolado no DOM
@@ -76,18 +78,9 @@ Analise real do DOM do JusBrasil (Codigo Civil, Lei 10.406/02):
 - Cada elemento de hierarquia tem `id` unico com posicao DOM (ex: `livro-i-10`, `capitulo-i-4726`)
 - Sumario lateral tem arvore hierarquica completa, extraivel via Playwright
 
-**Dados reais do Sumario (Codigo Civil, testado):**
+**Testado com sucesso.** Exemplo real (Codigo Civil): 1.065 nos hierarquicos extraidos. Cada lei tera quantidade diferente conforme sua estrutura — leis menores podem ter apenas dezenas de nos.
 
-| Nivel | Quantidade |
-|---|---|
-| LIVRO | 31 |
-| TITULO | 39 |
-| CAPITULO | 350 |
-| Secao | 298 |
-| Subsecao | 15 |
-| **Total** | **733 nos** |
-
-**Nota:** O Sumario usa Radix UI tree-view com nos colapsados. Copy/paste do Sumario NAO funciona (lazy render). O Playwright precisa expandir todos os nos antes de extrair (~30 rodadas de clique, ~3 segundos total).
+**Nota critica:** O Sumario usa Radix UI tree-view que renderiza filhos **assincronamente**. Copy/paste do Sumario NAO funciona (lazy render). A extracao usa MutationObserver para garantir expansao integral — reage a cada insercao de novo no no DOM e so termina apos 500ms sem mutacoes.
 
 **Limitacoes conhecidas:**
 - Anotacoes legislativas sao texto inline (mesmo problema do Planalto — regex necessario)
@@ -174,28 +167,50 @@ const devices = await page.evaluate(() => {
 });
 
 // Extrair arvore hierarquica do Sumario (botao "Sumario")
-// Testado: Codigo Civil = 733 nos extraidos em ~3 segundos
+// Testado: Codigo Civil = 1.065 nos extraidos
 //
 // IMPORTANTE: O Sumario usa um tree-view Radix UI com nos colapsados.
-// E necessario expandir TODOS os nos antes de extrair os links.
-// Copy/paste do Sumario NAO funciona (Radix lazy render nao serializa).
+// Radix renderiza filhos ASSINCRONAMENTE apos expandir o pai.
+// Copy/paste do Sumario NAO funciona (lazy render nao serializa).
+// Solucao: MutationObserver reage a cada insercao de novos nos.
 
 // Step 1: Abrir o painel do Sumario
 const sumBtn = await page.$('button:has-text("Sumário")');
 await sumBtn?.click();
 await page.waitForTimeout(500);
 
-// Step 2: Expandir TODOS os nos colapsados (multiplas rodadas)
-let tocRound = 0;
-while (tocRound < 30) {
-  const collapsed = await page.$$('button[aria-expanded="false"]');
-  if (collapsed.length === 0) break;
-  for (const btn of collapsed) await btn.click();
-  tocRound++;
-  await page.waitForTimeout(100); // Delay entre rodadas para render
-}
+// Step 2: Expandir TODOS os nos usando MutationObserver
+// MutationObserver e nao-bloqueante e reage instantaneamente quando
+// o Radix insere novos filhos no DOM. Nao faz polling — escuta o DOM.
+// Termina quando 500ms passam sem nenhuma mutacao (certeza de que acabou).
+// Nao gera requisicoes HTTP — roda inteiramente no DOM local ja carregado.
+const totalExpanded = await page.evaluate(() => {
+  return new Promise((resolve) => {
+    let total = 0;
+    let timeout;
 
-// Step 3: Extrair todos os links com ancora
+    function expandVisible() {
+      const collapsed = document.querySelectorAll('button[aria-expanded="false"]');
+      for (const btn of collapsed) { btn.click(); total++; }
+
+      // Reset timer — se nada mudar em 500ms, acabou
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        observer.disconnect();
+        resolve(total);
+      }, 500);
+    }
+
+    // Observa mudancas no DOM (Radix inserindo filhos)
+    const observer = new MutationObserver(() => expandVisible());
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Primeiro disparo
+    expandVisible();
+  });
+});
+
+// Step 3: Extrair todos os links com ancora (agora todos visiveis)
 const toc = await page.evaluate(() => {
   const links = document.querySelectorAll('a[href*="#"]');
   const nodes = [];

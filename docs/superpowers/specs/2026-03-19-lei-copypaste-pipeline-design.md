@@ -247,17 +247,7 @@ O Sumario do JusBrasil e um componente tree-view (Radix UI) que **nao serializa 
 
 O pipeline copy/paste usa Playwright **exclusivamente** para extrair o Sumario. O usuario cola o corpo da lei manualmente; o Playwright faz apenas uma chamada leve para a mesma URL e extrai a arvore hierarquica.
 
-**Testado com sucesso (Codigo Civil):**
-
-| Metrica | Valor |
-|---|---|
-| Nos extraidos | **733** |
-| LIVRO | 31 |
-| TITULO | 39 |
-| CAPITULO | 350 |
-| Secao | 298 |
-| Subsecao | 15 |
-| Tempo de extracao | ~3 segundos |
+**Testado com sucesso.** Exemplo real (Codigo Civil): 1.065 nos extraidos (31 livros, 39 titulos, 529 capitulos, 451 secoes, 15 subsecoes). Cada lei tera quantidade diferente conforme sua estrutura.
 
 **Logica de extracao do Sumario:**
 
@@ -268,16 +258,29 @@ async function extractTocFromJusBrasil(page: Page): Promise<TocNode[]> {
   await sumBtn?.click();
   await page.waitForTimeout(500);
 
-  // 2. Expandir TODOS os nos (multiplas rodadas ate nao ter mais)
-  let round = 0;
-  while (round < 30) {
-    const collapsed = await page.$$('button[aria-expanded="false"]');
-    if (collapsed.length === 0) break;
-    for (const btn of collapsed) await btn.click();
-    round++;
-  }
+  // 2. Expandir TODOS os nos usando MutationObserver
+  // Radix renderiza filhos assincronamente — MutationObserver reage
+  // instantaneamente a cada insercao. Termina apos 500ms sem mutacoes.
+  // Nao gera requisicoes HTTP — roda no DOM local ja carregado.
+  await page.evaluate(() => {
+    return new Promise((resolve) => {
+      let total = 0;
+      let timeout;
 
-  // 3. Extrair todos os links com ancora
+      function expandVisible() {
+        const collapsed = document.querySelectorAll('button[aria-expanded="false"]');
+        for (const btn of collapsed) { btn.click(); total++; }
+        clearTimeout(timeout);
+        timeout = setTimeout(() => { observer.disconnect(); resolve(total); }, 500);
+      }
+
+      const observer = new MutationObserver(() => expandVisible());
+      observer.observe(document.body, { childList: true, subtree: true });
+      expandVisible();
+    });
+  });
+
+  // 3. Extrair todos os links com ancora (todos visiveis agora)
   return page.evaluate(() => {
     const links = document.querySelectorAll('a[href*="#"]');
     const toc = [];
