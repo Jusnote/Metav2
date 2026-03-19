@@ -74,7 +74,20 @@ Analise real do DOM do JusBrasil (Codigo Civil, Lei 10.406/02):
 - Pagina carrega todos os artigos de uma vez (sem paginacao)
 - Hierarquia (LIVRO, TITULO, CAPITULO) usa `<h6>` com CSS classes por nivel (`heading_sizexl`, `heading_sizelg`)
 - Cada elemento de hierarquia tem `id` unico com posicao DOM (ex: `livro-i-10`, `capitulo-i-4726`)
-- Sumario lateral tem 396 nos com arvore hierarquica completa, links ancora e descricoes
+- Sumario lateral tem arvore hierarquica completa, extraivel via Playwright
+
+**Dados reais do Sumario (Codigo Civil, testado):**
+
+| Nivel | Quantidade |
+|---|---|
+| LIVRO | 31 |
+| TITULO | 39 |
+| CAPITULO | 350 |
+| Secao | 298 |
+| Subsecao | 15 |
+| **Total** | **733 nos** |
+
+**Nota:** O Sumario usa Radix UI tree-view com nos colapsados. Copy/paste do Sumario NAO funciona (lazy render). O Playwright precisa expandir todos os nos antes de extrair (~30 rodadas de clique, ~3 segundos total).
 
 **Limitacoes conhecidas:**
 - Anotacoes legislativas sao texto inline (mesmo problema do Planalto — regex necessario)
@@ -161,22 +174,38 @@ const devices = await page.evaluate(() => {
 });
 
 // Extrair arvore hierarquica do Sumario (botao "Sumario")
-// O Sumario tem links com ancora e hierarquia ja estruturada
-const toc = await page.evaluate(() => {
-  // Clicar no botao Sumario para abrir o painel
-  const sumBtn = Array.from(document.querySelectorAll('button'))
-    .find(b => b.textContent?.includes('Sumário'));
-  if (sumBtn) sumBtn.click();
+// Testado: Codigo Civil = 733 nos extraidos em ~3 segundos
+//
+// IMPORTANTE: O Sumario usa um tree-view Radix UI com nos colapsados.
+// E necessario expandir TODOS os nos antes de extrair os links.
+// Copy/paste do Sumario NAO funciona (Radix lazy render nao serializa).
 
-  // Extrair todos os links do TOC
-  const tocLinks = document.querySelectorAll('a');
+// Step 1: Abrir o painel do Sumario
+const sumBtn = await page.$('button:has-text("Sumário")');
+await sumBtn?.click();
+await page.waitForTimeout(500);
+
+// Step 2: Expandir TODOS os nos colapsados (multiplas rodadas)
+let tocRound = 0;
+while (tocRound < 30) {
+  const collapsed = await page.$$('button[aria-expanded="false"]');
+  if (collapsed.length === 0) break;
+  for (const btn of collapsed) await btn.click();
+  tocRound++;
+  await page.waitForTimeout(100); // Delay entre rodadas para render
+}
+
+// Step 3: Extrair todos os links com ancora
+const toc = await page.evaluate(() => {
+  const links = document.querySelectorAll('a[href*="#"]');
   const nodes = [];
-  for (const a of tocLinks) {
+  for (const a of links) {
     const text = a.textContent?.trim();
-    const href = a.href;
-    if (!href?.includes('#') || !text) continue;
+    const href = a.getAttribute('href') || '';
+    if (!text || !href.includes('#')) continue;
     if (!text.match(/^(LIVRO|TÍTULO|CAPÍTULO|Seção|Subseção|PARTE|DISPOSIÇÕES)/i)) continue;
 
+    const anchor = href.split('#')[1];
     const level = text.match(/^PARTE/) ? 0 :
                   text.match(/^LIVRO/) ? 1 :
                   text.match(/^TÍTULO/i) ? 2 :
@@ -184,11 +213,8 @@ const toc = await page.evaluate(() => {
                   text.match(/^Seção/i) ? 4 :
                   text.match(/^Subseção/i) ? 5 : 6;
 
-    nodes.push({ text, anchor: href.split('#')[1], level, children: [] });
+    nodes.push({ text, anchor, level, children: [] });
   }
-
-  // Construir arvore por nivel
-  // (logica de aninhamento feita no parser, nao aqui)
   return nodes;
 });
 ```
