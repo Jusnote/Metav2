@@ -1,0 +1,12 @@
+{
+  "name": "lei-pipeline",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CLI pipeline to extract Brazilian federal laws from JusBrasil GraphQL API",
+  "private": true,
+  "dependencies": {
+    "commander": "^13.1.0",
+    "pg": "^8.13.3",
+    "typesense": "^2.1.0"
+  }
+}
