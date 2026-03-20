@@ -84,7 +84,7 @@ NAO_IDENTIFICADO items are classified by position:
 
 These are linked to their parent dispositivo as fields (`epigrafe`, `pena`), and also stored as separate dispositivos to maintain sequential order.
 
-## Database Schema (PostgreSQL)
+## Database Schema (PostgreSQL — Hetzner)
 
 ```sql
 CREATE TABLE leis (
@@ -95,7 +95,7 @@ CREATE TABLE leis (
   nivel TEXT NOT NULL DEFAULT 'FEDERAL',
   data DATE,
   status TEXT DEFAULT 'ATIVO',
-  hierarquia JSONB NOT NULL,        -- structural tree
+  hierarquia JSONB NOT NULL,        -- structural tree (denormalized, regenerated on re-import)
   raw_metadata JSONB,
   doc_id INT,                       -- JusBrasil docId (for re-extraction)
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -106,7 +106,7 @@ CREATE TABLE leis (
 );
 
 CREATE TABLE dispositivos (
-  id BIGINT PRIMARY KEY,            -- codeInt64 from API (stable)
+  id BIGINT PRIMARY KEY,            -- codeInt64 from API (stable across re-imports)
   lei_id TEXT NOT NULL REFERENCES leis(id),
   tipo TEXT NOT NULL,               -- ARTIGO, PARAGRAFO, INCISO, ALINEA, PENA,
                                     -- EPIGRAFE, SUBTITULO, PARTE, LIVRO, TITULO,
@@ -120,8 +120,9 @@ CREATE TABLE dispositivos (
   links JSONB,                      -- [{href, titulo, textoAncora, leiId}]
   revogado BOOLEAN DEFAULT false,
   posicao INT NOT NULL,             -- original array index (guarantees order)
-  path TEXT,                        -- "parte-especial/titulo-1/cap-1"
+  path TEXT,                        -- "parte-especial/titulo-1/cap-1" (nullable: EMENTA/PREAMBULO have no path)
   created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
   search_vector TSVECTOR GENERATED ALWAYS AS (
     to_tsvector('portuguese', coalesce(texto,'') || ' ' || coalesce(epigrafe,''))
   ) STORED
@@ -129,6 +130,7 @@ CREATE TABLE dispositivos (
 
 -- Base indexes
 CREATE INDEX idx_disp_lei ON dispositivos(lei_id);
+CREATE INDEX idx_disp_posicao ON dispositivos(lei_id, posicao);
 CREATE INDEX idx_disp_tipo ON dispositivos(tipo);
 CREATE INDEX idx_disp_path ON dispositivos(path);
 CREATE INDEX idx_disp_search ON dispositivos USING GIN(search_vector);
@@ -136,13 +138,46 @@ CREATE INDEX idx_lei_search ON leis USING GIN(search_vector);
 CREATE INDEX idx_lei_tipo ON leis(tipo);
 CREATE INDEX idx_lei_nivel ON leis(nivel);
 
--- Unique constraint (prevents duplicate imports)
+-- Unique constraint on posicao (prevents duplicate imports)
 CREATE UNIQUE INDEX idx_disp_unique ON dispositivos(lei_id, posicao);
 
 -- Partial index for non-revoked items (95% of queries)
 CREATE INDEX idx_disp_vigentes ON dispositivos(lei_id, posicao)
   WHERE revogado = false;
 ```
+
+**Re-import strategy:** `upload.js` uses `ON CONFLICT (id) DO UPDATE` (primary key = codeInt64), NOT `ON CONFLICT (lei_id, posicao)`. This ensures that if JusBrasil inserts a new dispositivo that shifts posicao values, existing rows keep their identity and only their `posicao` field is updated. User grifos reference `dispositivo_id` (codeInt64), which is stable.
+
+### Supabase Schema (user data)
+
+```sql
+-- User highlights/annotations (Supabase with RLS)
+CREATE TABLE grifos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
+  lei_id TEXT NOT NULL,               -- "lei-10406-2002"
+  dispositivo_id BIGINT NOT NULL,     -- codeInt64 (stable, NOT posicao)
+  texto_selecionado TEXT NOT NULL,    -- selected text
+  char_start INT NOT NULL,            -- character offset within dispositivo texto
+  char_end INT NOT NULL,
+  cor TEXT DEFAULT 'yellow',          -- highlight color
+  nota TEXT,                          -- optional user note
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- RLS: users can only access their own grifos
+ALTER TABLE grifos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users read own grifos" ON grifos FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users write own grifos" ON grifos FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users update own grifos" ON grifos FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users delete own grifos" ON grifos FOR DELETE USING (auth.uid() = user_id);
+
+CREATE INDEX idx_grifos_user_lei ON grifos(user_id, lei_id);
+CREATE INDEX idx_grifos_dispositivo ON grifos(dispositivo_id);
+```
+
+**Key decision:** Grifos reference `dispositivo_id` (codeInt64) not `posicao`. If a law is re-imported and posicao values shift, grifos remain valid because codeInt64 is stable across re-imports.
 
 ## GraphQL Schema
 
@@ -206,7 +241,7 @@ type Dispositivo {
   anotacoes: [Anotacao!]
   links: [ReferenciaCruzada!]
   revogado: Boolean!
-  path: String!
+  path: String             # nullable (EMENTA/PREAMBULO have no path)
   posicao: Int!
 }
 
@@ -250,6 +285,16 @@ enum TipoDispositivo {
 
 enum Nivel { FEDERAL ESTADUAL MUNICIPAL }
 enum Status { ATIVO REVOGADO }
+
+type LeisConnection {
+  nodes: [Lei!]!
+  totalCount: Int!
+}
+
+type DispositivosConnection {
+  nodes: [Dispositivo!]!
+  totalCount: Int!
+}
 ```
 
 ## Extraction Pipeline
@@ -281,7 +326,7 @@ Output: `leis/{id}/processed.json` with lei metadata + dispositivos array + flag
 
 ### Script 4: upload.js
 
-Uploads processed data to PostgreSQL and Typesense. Uses `ON CONFLICT (lei_id, posicao) DO UPDATE` for safe re-imports. Syncs Typesense collection with dispositivo data for instant search.
+Uploads processed data to PostgreSQL and Typesense. Uses `ON CONFLICT (id) DO UPDATE` (codeInt64 primary key) for safe re-imports — posicao may shift but identity is preserved. Syncs Typesense collection with dispositivo data for instant search.
 
 **Controls:** `--input ./leis/`, `--pg postgresql://...`, `--typesense http://...`, `--dry-run`, `--batch-size 500`
 
@@ -337,9 +382,9 @@ LeiSecaPage
 
 1. User selects text in the law
 2. `onMouseUp` → `window.getSelection()`
-3. Capture: selected text, start/end offset, dispositivo (via `data-posicao`)
+3. Capture: selected text, start/end char offset, dispositivo_id (via `data-id` on DOM element)
 4. Show popover: "Grifar" | "Anotar" | "Criar Flashcard"
-5. Save to Supabase: `{ lei_id, posicao, start, end, cor, nota }`
+5. Save to Supabase: `{ lei_id, dispositivo_id, char_start, char_end, cor, nota }`
 6. Re-render with `<mark>` on highlighted ranges
 
 ### Data sources
@@ -363,6 +408,36 @@ Frontend makes 2 calls on page load: API for law data, Supabase for user data. M
 | ALINEA | margin-left 3, "a)" bold |
 | PENA | italic, muted color |
 | ANOTACAO | gray, italic, hidden in lei seca mode |
+
+## Typesense Collection Schema
+
+```json
+{
+  "name": "dispositivos",
+  "fields": [
+    { "name": "id", "type": "string" },
+    { "name": "lei_id", "type": "string", "facet": true },
+    { "name": "lei_titulo", "type": "string" },
+    { "name": "tipo", "type": "string", "facet": true },
+    { "name": "nivel", "type": "string", "facet": true },
+    { "name": "texto", "type": "string" },
+    { "name": "epigrafe", "type": "string", "optional": true },
+    { "name": "numero", "type": "string", "optional": true },
+    { "name": "posicao", "type": "int32" },
+    { "name": "path", "type": "string", "optional": true, "facet": true }
+  ],
+  "default_sorting_field": "posicao"
+}
+```
+
+Sync strategy (v1): `upload.js` upserts to Typesense in the same batch as PostgreSQL. No CDC/polling — re-run upload.js to resync after re-imports.
+
+## API Configuration
+
+Fastify CORS configuration required since frontend (Vercel/localhost) calls API on different origin:
+```js
+fastify.register(cors, { origin: ['https://metav2.vercel.app', 'http://localhost:3000'] })
+```
 
 ## Server Infrastructure
 
