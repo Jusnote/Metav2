@@ -55,7 +55,11 @@ async function curlPost(url, body) {
       throw new Error(`HTTP ${httpStatus}: ${responseBody.slice(0, 500)}`);
     }
 
-    return JSON.parse(responseBody);
+    try {
+      return JSON.parse(responseBody);
+    } catch (e) {
+      throw new Error(`Invalid JSON from ${url}: ${responseBody.slice(0, 300)}`);
+    }
   } finally {
     await unlink(tmpPath).catch(() => {});
   }
@@ -66,7 +70,7 @@ export async function queryDocView(query, variables = {}, operationName) {
   if (operationName) body.operationName = operationName;
 
   const json = await curlPost(GRAPHQL_URL, body);
-  if (json.errors) throw new Error(`GraphQL: ${json.errors[0].message}`);
+  if (json.errors?.length) throw new Error(`GraphQL: ${json.errors[0].message}`);
   return json.data;
 }
 
@@ -75,7 +79,7 @@ export async function querySearch(query, variables = {}, operationName) {
   if (operationName) body.operationName = operationName;
 
   const json = await curlPost(SEARCH_URL, body);
-  if (json.errors) throw new Error(`GraphQL: ${json.errors[0].message}`);
+  if (json.errors?.length) throw new Error(`GraphQL: ${json.errors[0].message}`);
   return json.data;
 }
 
