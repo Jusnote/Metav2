@@ -159,11 +159,10 @@ function processLei(leiDir) {
       continue;
     }
 
-    // Skip revoked items
+    // Count revoked items but DO NOT skip them — they are included as
+    // dispositivos with revogado=true. Frontend controls visibility.
     if (item.revoked) {
       revogados++;
-      classified.push({ item, skip: true, tipo: item.type, revoked: true });
-      continue;
     }
 
     // Determine effective type
@@ -304,7 +303,7 @@ function processLei(leiDir) {
       pena: pena || null,
       anotacoes: anotacoes || null,
       links: links || null,
-      revogado: false,
+      revogado: item.revoked || false,
       posicao: item.index,
       path: path || '',
     });
