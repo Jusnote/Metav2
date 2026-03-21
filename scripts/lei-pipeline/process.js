@@ -221,14 +221,36 @@ function processLei(leiDir) {
   }
 
   // Second pass: build dispositivos with epigrafe/pena linking
+  const itensExcluidos = [];
+
   for (let ci = 0; ci < classified.length; ci++) {
     const entry = classified[ci];
-    if (entry.skip) continue;
+
+    // Items marked skip in first pass (PROTOCOLO, DOU_PUBLICACAO, TABELA)
+    if (entry.skip) {
+      itensExcluidos.push({
+        id: entry.item.codeInt64,
+        tipo: entry.item.type,
+        texto: entry.item.description,
+        posicao: entry.item.index,
+        motivo: entry.item.type,
+      });
+      continue;
+    }
 
     const { item, tipo, subtype, textoLimpo, rawDescription, anotacoes, links, numero, path } = entry;
 
-    // Skip only items that are pure metadata, not part of the law text sequence
-    if (['html_content', 'vigencia', 'vide', 'anotacao_standalone'].includes(tipo)) continue;
+    // NAO_IDENTIFICADO classified as metadata — preserve in itens_excluidos
+    if (['html_content', 'vigencia', 'vide', 'anotacao_standalone'].includes(tipo)) {
+      itensExcluidos.push({
+        id: item.codeInt64,
+        tipo: tipo,
+        texto: item.description,
+        posicao: item.index,
+        motivo: tipo,
+      });
+      continue;
+    }
 
     // Look backward for epigrafe: find the nearest previous non-revoked NAO_IDENTIFICADO
     // classified as epigrafe that hasn't been consumed yet
@@ -315,10 +337,11 @@ function processLei(leiDir) {
     artigos,
     revogados,
     flagged: flagged.length,
+    excluidos: itensExcluidos.length,
   };
 
   // ── Write output ──
-  const output = { lei, dispositivos, stats, flagged };
+  const output = { lei, dispositivos, stats, flagged, itens_excluidos: itensExcluidos };
   const outPath = join(leiDir, 'processed.json');
   writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf-8');
 
