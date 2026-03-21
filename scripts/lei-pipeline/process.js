@@ -22,7 +22,7 @@ import { buildHierarchy, buildPathMap } from './lib/hierarchy-builder.js';
 // ── CLI ──────────────────────────────────────────────────────────────
 
 program
-  .option('--input <dir>', 'Directory with lei subdirectories', './leis')
+  .option('--input <dir>', 'Directory with lei subdirectories', 'D:/leis')
   .option('--lei <id>', 'Process a single lei by directory name')
   .option('--force', 'Reprocess even if processed.json exists', false)
   .parse();
@@ -348,6 +348,55 @@ function processLei(leiDir) {
   return { leiId, stats };
 }
 
+// ── Directory helpers ────────────────────────────────────────────
+
+/**
+ * Recursively find all directories containing raw.json
+ */
+function findAllLeiDirs(dir, result) {
+  if (!existsSync(dir)) return;
+  const entries = readdirSync(dir);
+
+  // If this directory has raw.json, it's a lei directory
+  if (entries.includes('raw.json')) {
+    result.push(dir);
+    return;
+  }
+
+  // Otherwise recurse into subdirectories
+  for (const entry of entries) {
+    if (entry.startsWith('_') || entry.startsWith('.')) continue;
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      findAllLeiDirs(fullPath, result);
+    }
+  }
+}
+
+/**
+ * Find a lei directory by name, searching recursively
+ */
+function findLeiDir(dir, leiName) {
+  if (!existsSync(dir)) return null;
+  const entries = readdirSync(dir);
+
+  for (const entry of entries) {
+    if (entry.startsWith('_') || entry.startsWith('.')) continue;
+    const fullPath = join(dir, entry);
+    if (!statSync(fullPath).isDirectory()) continue;
+
+    // Check if this is the lei we're looking for
+    if (entry === leiName && existsSync(join(fullPath, 'raw.json'))) {
+      return fullPath;
+    }
+
+    // Recurse
+    const found = findLeiDir(fullPath, leiName);
+    if (found) return found;
+  }
+  return null;
+}
+
 // ── Main ─────────────────────────────────────────────────────────────
 
 function main() {
@@ -362,23 +411,16 @@ function main() {
   let leiDirs = [];
 
   if (opts.lei) {
-    // Process a single lei
-    const leiDir = join(inputDir, opts.lei);
-    if (!existsSync(leiDir)) {
-      console.error(`[error] Lei directory not found: ${leiDir}`);
+    // Process a single lei — search recursively for it
+    const found = findLeiDir(inputDir, opts.lei);
+    if (!found) {
+      console.error(`[error] Lei directory not found: ${opts.lei} in ${inputDir}`);
       process.exit(1);
     }
-    leiDirs.push(leiDir);
+    leiDirs.push(found);
   } else {
-    // Process all lei directories
-    const entries = readdirSync(inputDir);
-    for (const entry of entries) {
-      if (entry.startsWith('_') || entry.startsWith('.')) continue;
-      const fullPath = join(inputDir, entry);
-      if (!statSync(fullPath).isDirectory()) continue;
-      if (!existsSync(join(fullPath, 'raw.json'))) continue;
-      leiDirs.push(fullPath);
-    }
+    // Process all lei directories recursively (nivel/tipo/lei-id/)
+    findAllLeiDirs(inputDir, leiDirs);
   }
 
   if (leiDirs.length === 0) {
