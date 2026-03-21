@@ -11,7 +11,7 @@ import { join } from 'path';
 
 // ── CLI ─────────────────────────────────────────────────────────────
 program
-  .option('--level <level>', 'FEDERAL, ESTADUAL, MUNICIPAL', 'FEDERAL')
+  .option('--level <level>', 'ALL, FEDERAL, ESTADUAL, MUNICIPAL', 'ALL')
   .option('--types <types>', 'Comma-separated: LEIS,DECRETOS,...',
     'LEIS,DECRETOS,LEIS_COMPLEMENTARES,MEDIDAS_PROVISORIAS,DECRETOS_LEI,EMENDAS,LEIS_DELEGADAS,CODIGOS')
   .option('--output <dir>', 'Output directory', 'D:/leis')
@@ -172,16 +172,26 @@ async function main() {
   const seenIds = new Set(existing.map(e => e.docId));
   let totalNew = 0;
 
+  // Determine which levels to process
+  const levels = opts.level.toUpperCase() === 'ALL'
+    ? ['FEDERAL', 'ESTADUAL', 'MUNICIPAL']
+    : [opts.level.toUpperCase()];
+
+  for (const level of levels) {
+    console.log(`\n${'#'.repeat(60)}`);
+    console.log(`# Level: ${level}`);
+    console.log(`${'#'.repeat(60)}`);
+
   for (const type of TYPES) {
     console.log(`\n${'='.repeat(60)}`);
-    console.log(`Type: ${type}`);
+    console.log(`Type: ${type} (${level})`);
     console.log(`${'='.repeat(60)}`);
 
     let typeTotal = 0;
 
     for (let year = Y_START; year <= Y_END; year++) {
       const baseFilters = [
-        { field: 'level', operator: 'equals', value: opts.level },
+        { field: 'level', operator: 'equals', value: level },
         { field: 'type',  operator: 'equals', value: type },
       ];
 
@@ -259,8 +269,9 @@ async function main() {
     }
 
     totalNew += typeTotal;
-    console.log(`  ── ${type} total new: ${typeTotal}`);
+    console.log(`  ── ${type} (${level}) total new: ${typeTotal}`);
   }
+  } // end levels loop
 
   // ── Save ────────────────────────────────────────────────────────
   writeFileSync(indexPath, JSON.stringify(allItems, null, 2), 'utf-8');

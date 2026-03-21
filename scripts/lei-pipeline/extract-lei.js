@@ -172,10 +172,14 @@ function processAndSave(doc, outputDir) {
 
   const leiId = generateLeiId(doc);
 
-  // Organize by nivel/tipo: D:/leis/federal/leis/lei-10406-2002/
+  // Organize by nivel/[uf]/tipo: D:/leis/federal/lei/lei-10406-2002/
+  //                              D:/leis/estadual/sp/lei/lei-1234-2020/
   const nivel = (doc.legisLevel || 'federal').toLowerCase();
+  const uf = (doc.legisState || '').toLowerCase();
   const tipo = (doc.legisType || 'outros').toLowerCase().replace(/_/g, '-').replace(/\s+/g, '-');
-  const leiDir = join(outputDir, nivel, tipo, leiId);
+  const leiDir = uf
+    ? join(outputDir, nivel, uf, tipo, leiId)    // estadual/sp/lei/ ou municipal/rj/decreto/
+    : join(outputDir, nivel, tipo, leiId);        // federal/lei/
   mkdirSync(leiDir, { recursive: true });
 
   // Separate lawItems from document metadata
