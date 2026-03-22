@@ -8,7 +8,6 @@
 //   node process.js --lei lei-10406-2002 --input ./leis # process one
 //   node process.js --force --input ./leis              # reprocess even if processed.json exists
 
-import { program } from 'commander';
 import {
   readFileSync, writeFileSync, readdirSync, existsSync, statSync,
 } from 'fs';
@@ -19,15 +18,21 @@ import { extractInlineLinks } from './lib/link-extractor.js';
 import { buildSubtitleIndexes, classifyNaoIdentificado } from './lib/classifier.js';
 import { buildHierarchy, buildPathMap } from './lib/hierarchy-builder.js';
 
-// ── CLI ──────────────────────────────────────────────────────────────
+// ── CLI (manual parsing to avoid Commander stdin hang) ──────────────
 
-program
-  .option('--input <dir>', 'Directory with lei subdirectories', 'D:/leis')
-  .option('--lei <id>', 'Process a single lei by directory name')
-  .option('--force', 'Reprocess even if processed.json exists', false)
-  .parse();
+const args = process.argv.slice(2);
+function getArg(name, defaultVal) {
+  const idx = args.indexOf(name);
+  if (idx === -1) return defaultVal;
+  if (typeof defaultVal === 'boolean') return true;
+  return args[idx + 1] || defaultVal;
+}
 
-const opts = program.opts();
+const opts = {
+  input: getArg('--input', 'D:/leis'),
+  lei: getArg('--lei', null),
+  force: args.includes('--force'),
+};
 
 // ── Constants ────────────────────────────────────────────────────────
 
@@ -123,8 +128,8 @@ function processLei(leiDir) {
     isActive: doc.isActive !== undefined ? doc.isActive : true,
     publisher: doc.publisher || null,
     parentDocument: doc.parentDocument || null,
-    publishedDate: doc.publishedDate || null,
-    updatedDate: doc.updatedDate || null,
+    publishedDate: doc.publishedDate ? new Date(doc.publishedDate).toISOString() : null,
+    updatedDate: doc.updatedDate ? new Date(doc.updatedDate).toISOString() : null,
     hierarquia,
     raw_metadata: {
       legisType: doc.legisType,
@@ -174,9 +179,8 @@ function processLei(leiDir) {
       tipo = subtype; // The subtype becomes the tipo
     }
 
-    // Structural and EMENTA items: keep as dispositivos with their type
-    // They need minimal processing (no annotation extraction)
-    if (STRUCTURAL_TYPES.has(item.type) || item.type === 'EMENTA') {
+    // Structural items: keep as dispositivos with minimal processing
+    if (STRUCTURAL_TYPES.has(item.type)) {
       classified.push({
         item,
         skip: false,
@@ -186,6 +190,25 @@ function processLei(leiDir) {
         rawDescription: item.description,
         anotacoes: null,
         links: null,
+        numero: null,
+        path: pathMap.get(item.index) || '',
+        isStructural: true,
+      });
+      continue;
+    }
+
+    // EMENTA: process through link extraction (may contain HTML <a> tags)
+    if (item.type === 'EMENTA') {
+      const ementaLinks = extractInlineLinks(item.description);
+      classified.push({
+        item,
+        skip: false,
+        tipo: item.type,
+        subtype: null,
+        textoLimpo: ementaLinks.cleanText,
+        rawDescription: item.description,
+        anotacoes: null,
+        links: ementaLinks.links.length > 0 ? ementaLinks.links : null,
         numero: null,
         path: pathMap.get(item.index) || '',
         isStructural: true,
@@ -311,15 +334,21 @@ function processLei(leiDir) {
     // Pena and epigrafe: KEEP as dispositivos (maintain sequential order)
     // They are ALSO linked as fields on the parent ARTIGO/PARAGRAFO
 
+    // Fix empty texto (violated NOT NULL) and unclassified tipos
+    const finalTipo = item.type !== 'NAO_IDENTIFICADO'
+      ? item.type
+      : (tipo === 'nao_classificado')
+        ? 'NAO_IDENTIFICADO'
+        : (tipo === 'paragrafo_quebrado')
+          ? 'PARAGRAFO'
+          : tipo.toUpperCase();
+    const finalTexto = textoLimpo || rawDescription || '(sem conteúdo)';
+
     dispositivos.push({
       id: item.codeInt64,
-      tipo: item.type !== 'NAO_IDENTIFICADO'
-        ? item.type
-        : (tipo === 'nao_classificado' || tipo === 'paragrafo_quebrado')
-          ? 'NAO_IDENTIFICADO'
-          : tipo.toUpperCase(),
+      tipo: finalTipo,
       numero: numero || null,
-      texto: textoLimpo,
+      texto: finalTexto,
       raw_description: rawDescription,
       epigrafe: epigrafe || null,
       pena: pena || null,
@@ -411,16 +440,27 @@ function main() {
   let leiDirs = [];
 
   if (opts.lei) {
-    // Process a single lei — search recursively for it
-    const found = findLeiDir(inputDir, opts.lei);
+    // If full path provided, use directly. Otherwise search.
+    let found = null;
+    if (existsSync(join(opts.lei, 'raw.json'))) {
+      found = opts.lei;
+    } else if (existsSync(join(inputDir, opts.lei, 'raw.json'))) {
+      found = join(inputDir, opts.lei);
+    } else {
+      // Search recursively (slow for large trees)
+      console.log(`[search] Looking for ${opts.lei} in ${inputDir}...`);
+      found = findLeiDir(inputDir, opts.lei);
+    }
     if (!found) {
-      console.error(`[error] Lei directory not found: ${opts.lei} in ${inputDir}`);
+      console.error(`[error] Lei directory not found: ${opts.lei}`);
       process.exit(1);
     }
     leiDirs.push(found);
   } else {
     // Process all lei directories recursively (nivel/tipo/lei-id/)
+    console.log(`[scan] Scanning for raw.json files in ${inputDir}...`);
     findAllLeiDirs(inputDir, leiDirs);
+    console.log(`[scan] Found ${leiDirs.length} lei directories.`);
   }
 
   if (leiDirs.length === 0) {

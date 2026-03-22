@@ -6,8 +6,22 @@
 
 import { querySearch, fetchWithRetry } from './lib/graphql-client.js';
 import { program } from 'commander';
-import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, createWriteStream, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+
+async function saveIndexStream(filePath, items) {
+  return new Promise((resolve, reject) => {
+    const stream = createWriteStream(filePath, 'utf-8');
+    stream.on('error', reject);
+    stream.write('[\n');
+    for (let i = 0; i < items.length; i++) {
+      const line = JSON.stringify(items[i]);
+      stream.write(i === 0 ? '  ' + line : ',\n  ' + line);
+    }
+    stream.write('\n]\n');
+    stream.end(resolve);
+  });
+}
 
 // ── CLI ─────────────────────────────────────────────────────────────
 program
@@ -172,6 +186,9 @@ async function main() {
   const seenIds = new Set(existing.map(e => e.docId));
   let totalNew = 0;
 
+  // Track gaps (months that exceeded deep paging limit)
+  const gaps = [];
+
   // Determine which levels to process
   const levels = opts.level.toUpperCase() === 'ALL'
     ? ['FEDERAL', 'ESTADUAL', 'MUNICIPAL']
@@ -251,6 +268,7 @@ async function main() {
 
           if (mHits > MAX_PAGINABLE) {
             console.log(`[WARN] month has ${mHits} hits, exceeds limit — some laws will be missed!`);
+            gaps.push({ level, type, year, month, hits: mHits, fetched: MAX_PAGINABLE, missed: mHits - MAX_PAGINABLE });
           }
 
           const { items } = await paginateAll(mBuilder);
@@ -274,9 +292,22 @@ async function main() {
   } // end levels loop
 
   // ── Save ────────────────────────────────────────────────────────
-  writeFileSync(indexPath, JSON.stringify(allItems, null, 2), 'utf-8');
+  await saveIndexStream(indexPath, allItems);
+
+  // Save gaps report
+  const gapsPath = join(outDir, '_gaps.json');
+  writeFileSync(gapsPath, JSON.stringify(gaps, null, 2), 'utf-8');
+
   console.log(`\n${'='.repeat(60)}`);
   console.log(`Done. Total entries in _index.json: ${allItems.length} (${totalNew} new this run)`);
+  if (gaps.length > 0) {
+    const totalMissed = gaps.reduce((s, g) => s + g.missed, 0);
+    console.log(`\n[GAPS] ${gaps.length} months exceeded paging limit. ~${totalMissed} laws missed.`);
+    console.log(`Saved to: ${gapsPath}`);
+    console.log(`Re-run with finer segmentation to fill these gaps.`);
+  } else {
+    console.log(`No gaps detected — all months within paging limits.`);
+  }
   console.log(`Saved to: ${indexPath}`);
 }
 

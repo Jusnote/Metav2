@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 
 const GRAPHQL_URL = 'https://www.jusbrasil.com.br/web-docview/graphql';
 const SEARCH_URL = 'https://www.jusbrasil.com.br/graphql';
+const PROXY_URL = process.env.PROXY_URL || '';
 
 const HEADERS = {
   'Content-Type': 'application/json',
@@ -36,6 +37,7 @@ async function curlPost(url, body) {
       '-H', `Origin: ${HEADERS['Origin']}`,
       '-d', `@${tmpPath}`,
       '--max-time', '30',
+      ...(PROXY_URL ? ['--proxy', PROXY_URL] : []),
       url
     ];
 

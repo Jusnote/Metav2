@@ -8,7 +8,6 @@
 //   node upload.js --lei decreto-lei-2848-1940 --pg postgres://...
 //   node upload.js --input D:/leis/federal --pg postgres://...   # upload only federal laws
 
-import { program } from 'commander';
 import {
   readFileSync, writeFileSync, readdirSync, existsSync, statSync,
 } from 'fs';
@@ -16,19 +15,25 @@ import { join } from 'path';
 import pg from 'pg';
 import Typesense from 'typesense';
 
-// ── CLI ──────────────────────────────────────────────────────────────
+// ── CLI (manual parsing to avoid Commander stdin hang) ──────────────
 
-program
-  .option('--input <dir>', 'Directory to scan for processed.json', 'D:/leis')
-  .option('--lei <id>', 'Upload single lei by directory name')
-  .option('--pg <url>', 'PostgreSQL connection string')
-  .option('--typesense <url>', 'Typesense URL', 'http://localhost:8108')
-  .option('--typesense-key <key>', 'Typesense API key')
-  .option('--batch-size <n>', 'Insert batch size', '500')
-  .option('--dry-run', 'Show what would be done', false)
-  .parse();
+const args = process.argv.slice(2);
+function getArg(name, defaultVal) {
+  const idx = args.indexOf(name);
+  if (idx === -1) return defaultVal;
+  if (typeof defaultVal === 'boolean') return true;
+  return args[idx + 1] || defaultVal;
+}
 
-const opts = program.opts();
+const opts = {
+  input: getArg('--input', 'D:/leis'),
+  lei: getArg('--lei', null),
+  pg: getArg('--pg', null),
+  typesense: getArg('--typesense', 'http://localhost:8108'),
+  typesenseKey: getArg('--typesense-key', null),
+  batchSize: getArg('--batch-size', '500'),
+  dryRun: args.includes('--dry-run'),
+};
 
 // ── Directory helpers (same pattern as process.js) ────────────────
 
@@ -298,14 +303,25 @@ async function main() {
   let leiDirs = [];
 
   if (opts.lei) {
-    const found = findLeiDir(inputDir, opts.lei);
+    // Accept full path or search
+    let found = null;
+    if (existsSync(join(opts.lei, 'processed.json'))) {
+      found = opts.lei;
+    } else if (existsSync(join(inputDir, opts.lei, 'processed.json'))) {
+      found = join(inputDir, opts.lei);
+    } else {
+      console.log(`[search] Looking for ${opts.lei} in ${inputDir}...`);
+      found = findLeiDir(inputDir, opts.lei);
+    }
     if (!found) {
-      console.error(`[error] Lei directory not found: ${opts.lei} in ${inputDir}`);
+      console.error(`[error] Lei directory not found: ${opts.lei}`);
       process.exit(1);
     }
     leiDirs.push(found);
   } else {
+    console.log(`[scan] Scanning for processed.json files in ${inputDir}...`);
     findAllLeiDirs(inputDir, leiDirs);
+    console.log(`[scan] Found ${leiDirs.length} lei directories.`);
   }
 
   if (leiDirs.length === 0) {
