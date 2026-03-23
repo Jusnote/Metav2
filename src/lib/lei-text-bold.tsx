@@ -18,7 +18,7 @@ export function BoldPrefix({ texto, tipo }: { texto: string; tipo: string }) {
   }
 
   if (match) {
-    return <><strong className="underline">{match[1]}</strong>{match[2]}</>
+    return <><strong>{match[1]}</strong>{match[2]}</>
   }
 
   return <>{texto}</>
