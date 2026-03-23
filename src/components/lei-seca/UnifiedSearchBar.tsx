@@ -19,11 +19,13 @@ interface FlatTreeItem {
   path: string
 }
 
-function flattenHierarchy(nodes: HierarquiaNode[], depth = 0): FlatTreeItem[] {
+function flattenHierarchy(nodes: HierarquiaNode[], depth = 0, parentPath = ''): FlatTreeItem[] {
   const result: FlatTreeItem[] = []
-  for (const node of nodes) {
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    const uniqueId = `${parentPath}/${node.path}:${i}`
     result.push({
-      id: node.path,
+      id: uniqueId,
       label: node.descricao,
       desc: node.subtitulo,
       depth,
@@ -31,7 +33,7 @@ function flattenHierarchy(nodes: HierarquiaNode[], depth = 0): FlatTreeItem[] {
       path: node.path,
     })
     if (node.filhos?.length) {
-      result.push(...flattenHierarchy(node.filhos, depth + 1))
+      result.push(...flattenHierarchy(node.filhos, depth + 1, `${parentPath}/${node.path}`))
     }
   }
   return result
