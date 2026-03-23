@@ -130,14 +130,10 @@ export function SearchBreadcrumbDropdown({
     onSelectArtigo(_artigoIndex)
   }, [onSelectArtigo])
 
-  // Handle section node click → resolve path to posicao
-  const handleToggleAndNavigate = useCallback((id: string) => {
+  // Handle section node click → just expand/collapse, don't navigate or close
+  const handleToggle = useCallback((id: string) => {
     toggleSection(id)
-    const posicao = resolvePathToPosicao(id, dispositivos)
-    if (posicao !== null) {
-      onSelectHit(posicao)
-    }
-  }, [toggleSection, dispositivos, onSelectHit])
+  }, [toggleSection])
 
   // ---- Keyboard navigation: flat list of selectable items ----
   const selectableItems = useMemo<SelectableItem[]>(() => {
@@ -288,7 +284,7 @@ export function SearchBreadcrumbDropdown({
           <LeiTree
             data={displayTree}
             expanded={expandedSections}
-            onToggle={handleToggleAndNavigate}
+            onToggle={handleToggle}
             onSelectArtigo={handleTreeSelect}
           />
         </div>
