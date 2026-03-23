@@ -28,62 +28,24 @@ export function useLei(id: string | null) {
   }
 }
 
-// Hook: paginated dispositivos with manual accumulation
+// Hook: load ALL dispositivos at once (API MAX_LIMIT=10000, protected by rate limiting)
 export function useDispositivos(leiId: string | null, incluirRevogados = false) {
-  const [allDispositivos, setAll] = useState<Dispositivo[]>([])
-  const [offset, setOffset] = useState(0)
-  const [totalCount, setTotalCount] = useState(0)
-  const prevLeiIdRef = useRef(leiId)
-  const prevRevogadosRef = useRef(incluirRevogados)
-
-  // Reset when lei or revogados filter changes
-  useEffect(() => {
-    if (leiId !== prevLeiIdRef.current || incluirRevogados !== prevRevogadosRef.current) {
-      setAll([])
-      setOffset(0)
-      setTotalCount(0)
-      prevLeiIdRef.current = leiId
-      prevRevogadosRef.current = incluirRevogados
-    }
-  }, [leiId, incluirRevogados])
-
   const [result] = useQuery<{ dispositivos: DispositivosConnection }>({
     query: DISPOSITIVOS_QUERY,
-    variables: { leiId, offset, limit: 100, incluirRevogados },
+    variables: { leiId, offset: 0, limit: 10000, incluirRevogados },
     pause: !leiId,
   })
 
-  // Append new page to accumulated array
-  useEffect(() => {
-    if (result.data?.dispositivos) {
-      const newNodes = result.data.dispositivos.nodes
-      if (newNodes.length > 0) {
-        setAll(prev => {
-          // Avoid duplicates on re-render
-          const existingIds = new Set(prev.map(d => d.id))
-          const unique = newNodes.filter(n => !existingIds.has(n.id))
-          return unique.length > 0 ? [...prev, ...unique] : prev
-        })
-        setTotalCount(result.data.dispositivos.totalCount)
-      }
-    }
-  }, [result.data])
-
-  const loadMore = useCallback(() => {
-    if (!result.fetching && allDispositivos.length < totalCount) {
-      setOffset(allDispositivos.length)
-    }
-  }, [result.fetching, allDispositivos.length, totalCount])
-
-  const hasMore = allDispositivos.length < totalCount
+  const dispositivos = result.data?.dispositivos.nodes ?? []
+  const totalCount = result.data?.dispositivos.totalCount ?? 0
 
   return {
-    dispositivos: allDispositivos,
+    dispositivos,
     totalCount,
-    loadMore,
-    hasMore,
-    isLoading: result.fetching && allDispositivos.length === 0,
-    isLoadingMore: result.fetching && allDispositivos.length > 0,
+    loadMore: () => {},  // No-op: everything loaded at once
+    hasMore: false,
+    isLoading: result.fetching,
+    isLoadingMore: false,
   }
 }
 
