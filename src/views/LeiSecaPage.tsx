@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { DispositivoList } from "@/components/lei-seca/dispositivos/DispositivoList";
 import { LeiToolbar } from "@/components/lei-seca/LeiToolbar";
 import { useLeiSeca } from "@/contexts/LeiSecaContext";
 import { activeArtigoStore } from "@/stores/activeArtigoStore";
 import { leiCommentsStore, useLeiCommentsOpen } from "@/stores/leiCommentsStore";
+import { useKeyboardNav } from "@/hooks/useKeyboardNav";
+import { LeiSearchBar } from "@/components/lei-seca/LeiSearchBar";
 import type { VirtuosoHandle } from "react-virtuoso";
 
 const StudyCompanionPanel = dynamic(
@@ -37,12 +39,23 @@ export default function LeiSecaPage() {
     currentLei,
     currentLeiId,
     leiSecaMode,
+    toggleLeiSecaMode,
     showRevogados,
+    toggleRevogados,
     companionOpen,
   } = useLeiSeca();
 
   const commentsOpen = useLeiCommentsOpen();
   const virtuosoRef = useRef<VirtuosoHandle | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useKeyboardNav({
+    dispositivos,
+    virtuosoRef,
+    toggleLeiSecaMode,
+    toggleRevogados,
+    onToggleSearch: () => setSearchOpen(prev => !prev),
+  });
 
   // Sync comments store with current lei
   useEffect(() => {
@@ -108,7 +121,20 @@ export default function LeiSecaPage() {
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area — full width so scrollbar stays at right edge */}
-        <div className="flex-1 overflow-hidden bg-white">
+        <div className="flex-1 overflow-hidden bg-white relative">
+          {searchOpen && (
+            <LeiSearchBar
+              leiId={currentLeiId}
+              onClose={() => setSearchOpen(false)}
+              onSelectHit={(posicao) => {
+                const index = dispositivos.findIndex(d => d.posicao === posicao)
+                if (index >= 0 && virtuosoRef.current) {
+                  virtuosoRef.current.scrollToIndex({ index, align: 'start', behavior: 'smooth' })
+                  setSearchOpen(false)
+                }
+              }}
+            />
+          )}
           <DispositivoList
             dispositivos={dispositivos}
             totalCount={totalDispositivos}
