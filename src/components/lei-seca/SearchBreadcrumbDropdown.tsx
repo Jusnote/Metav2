@@ -112,15 +112,17 @@ export function SearchBreadcrumbDropdown({
     return filterTree(treeWithArtigos, input)
   }, [treeWithArtigos, input])
 
-  // Auto-expand all matching branches when searching (separate effect, not inside useMemo)
+  // Auto-expand all matching branches when searching
+  // Uses baseTree (not treeWithArtigos) to avoid infinite loop:
+  // setExpandedSections → expandedSections changes → treeWithArtigos recalculates → effect re-fires
   useEffect(() => {
     if (!input) return
-    const filtered = filterTree(treeWithArtigos, input)
+    const filtered = filterTree(baseTree, input)
     const allIds = collectBranchIds(filtered)
     if (allIds.length > 0) {
       setExpandedSections(new Set(allIds))
     }
-  }, [input, treeWithArtigos])
+  }, [input, baseTree])
 
   const hasInput = input.length > 0
   const showSearchResults = hasInput && (hits.length > 0 || isSearching)
