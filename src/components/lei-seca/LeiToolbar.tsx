@@ -2,19 +2,45 @@
 
 import { fontSizeStore, useFontSize } from '@/stores/fontSizeStore'
 import { useLeiSeca } from '@/contexts/LeiSecaContext'
+import { UnifiedSearchBar } from './UnifiedSearchBar'
 
-export function LeiToolbar() {
-  const { leiSecaMode, toggleLeiSecaMode, showRevogados, toggleRevogados } = useLeiSeca()
+interface LeiToolbarProps {
+  onScrollToDispositivo: (posicao: number) => void
+}
+
+export function LeiToolbar({ onScrollToDispositivo }: LeiToolbarProps) {
+  const {
+    leis, currentLeiId, currentLei, handleLeiChange,
+    leiSecaMode, toggleLeiSecaMode,
+    showRevogados, toggleRevogados,
+  } = useLeiSeca()
   const fontSize = useFontSize()
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2 border-b border-[#eee] bg-white font-[Outfit,sans-serif] text-[12px]">
+    <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#eee] bg-white font-[Outfit,sans-serif] text-[12px]">
+      {/* Lei selector */}
+      <select
+        value={currentLeiId}
+        onChange={e => handleLeiChange(e.target.value)}
+        className="text-[12px] py-1.5 px-2.5 border border-[#e5e5e5] rounded-lg text-[#555] bg-[#fafafa] min-w-[140px] outline-none font-[Outfit,sans-serif]"
+      >
+        {leis.map(l => (
+          <option key={l.id} value={l.id}>{l.apelido ?? l.titulo}</option>
+        ))}
+      </select>
+
+      {/* Unified search bar */}
+      <UnifiedSearchBar
+        leiId={currentLeiId}
+        hierarquia={currentLei?.hierarquia ?? []}
+        onScrollToDispositivo={onScrollToDispositivo}
+      />
+
+      {/* Toggles */}
       <button
         onClick={toggleLeiSecaMode}
-        className={`px-3 py-1 rounded-full transition-colors ${
-          leiSecaMode
-            ? 'bg-[rgb(67,80,92)] text-white'
-            : 'bg-[#f4f4f4] text-[#666] hover:bg-[#eee]'
+        className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
+          leiSecaMode ? 'bg-[rgb(67,80,92)] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
         }`}
       >
         {leiSecaMode ? 'Lei Seca \u2713' : 'Lei Seca'}
@@ -22,24 +48,22 @@ export function LeiToolbar() {
 
       <button
         onClick={toggleRevogados}
-        className={`px-3 py-1 rounded-full transition-colors ${
-          showRevogados
-            ? 'bg-[rgb(67,80,92)] text-white'
-            : 'bg-[#f4f4f4] text-[#666] hover:bg-[#eee]'
+        className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
+          showRevogados ? 'bg-[rgb(67,80,92)] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
         }`}
       >
         {showRevogados ? 'Revogados \u2713' : 'Revogados'}
       </button>
 
-      <div className="text-[10px] text-[#ccc] ml-auto mr-3 hidden sm:block">
-        J/K navegar · L lei seca · R revogados · Ctrl+F buscar
+      {/* Font size */}
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <button onClick={fontSizeStore.decrease} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[11px] font-bold">A-</button>
+        <span className="text-[11px] text-[#ccc] w-5 text-center">{fontSize}</span>
+        <button onClick={fontSizeStore.increase} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[13px] font-bold">A+</button>
       </div>
 
-      <div className="flex items-center gap-1">
-        <button onClick={fontSizeStore.decrease} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#666] hover:bg-[#eee] flex items-center justify-center text-[11px] font-bold">A-</button>
-        <span className="text-[11px] text-[#999] w-6 text-center">{fontSize}</span>
-        <button onClick={fontSizeStore.increase} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#666] hover:bg-[#eee] flex items-center justify-center text-[13px] font-bold">A+</button>
-      </div>
+      {/* Hints */}
+      <span className="text-[10px] text-[#ddd] hidden lg:block flex-shrink-0">J/K &middot; L &middot; R</span>
     </div>
   )
 }

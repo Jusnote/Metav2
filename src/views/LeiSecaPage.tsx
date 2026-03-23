@@ -9,7 +9,6 @@ import { activeArtigoStore } from "@/stores/activeArtigoStore";
 import { leiCommentsStore, useLeiCommentsOpen } from "@/stores/leiCommentsStore";
 import { useKeyboardNav } from "@/hooks/useKeyboardNav";
 import { useCopyWithReference } from "@/hooks/useCopyWithReference";
-import { LeiSearchBar } from "@/components/lei-seca/LeiSearchBar";
 import { ReadingProgressBar } from "@/components/lei-seca/ReadingProgressBar";
 import { useReadingProgressTracker } from "@/hooks/useReadingProgress";
 import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
@@ -51,14 +50,12 @@ export default function LeiSecaPage() {
 
   const commentsOpen = useLeiCommentsOpen();
   const virtuosoRef = useRef<VirtuosoHandle | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
 
   useKeyboardNav({
     dispositivos,
     virtuosoRef,
     toggleLeiSecaMode,
     toggleRevogados,
-    onToggleSearch: () => setSearchOpen(prev => !prev),
   });
 
   useCopyWithReference(dispositivos, currentLei);
@@ -76,6 +73,17 @@ export default function LeiSecaPage() {
     (startIndex: number) => {
       if (dispositivos[startIndex]) {
         activeArtigoStore.setActiveArtigoIndex(startIndex);
+      }
+    },
+    [dispositivos]
+  );
+
+  // Scroll to a dispositivo by posicao (used by UnifiedSearchBar via LeiToolbar)
+  const handleScrollToDispositivo = useCallback(
+    (posicao: number) => {
+      const index = dispositivos.findIndex(d => d.posicao === posicao);
+      if (index >= 0 && virtuosoRef.current) {
+        virtuosoRef.current.scrollToIndex({ index, align: 'start', behavior: 'smooth' });
       }
     },
     [dispositivos]
@@ -110,7 +118,7 @@ export default function LeiSecaPage() {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <p className="text-red-600">
-          Erro ao carregar lei: {error?.message ?? "Lei não encontrada"}
+          Erro ao carregar lei: {error?.message ?? "Lei n\u00e3o encontrada"}
         </p>
       </div>
     );
@@ -126,25 +134,12 @@ export default function LeiSecaPage() {
 
   return (
     <div className="h-full flex flex-col min-w-0 flex-1">
-      <LeiToolbar />
+      <LeiToolbar onScrollToDispositivo={handleScrollToDispositivo} />
       <ReadingProgressBar />
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area — full width so scrollbar stays at right edge */}
         <div className="flex-1 overflow-hidden bg-white relative">
-          {searchOpen && (
-            <LeiSearchBar
-              leiId={currentLeiId}
-              onClose={() => setSearchOpen(false)}
-              onSelectHit={(posicao) => {
-                const index = dispositivos.findIndex(d => d.posicao === posicao)
-                if (index >= 0 && virtuosoRef.current) {
-                  virtuosoRef.current.scrollToIndex({ index, align: 'start', behavior: 'smooth' })
-                  setSearchOpen(false)
-                }
-              }}
-            />
-          )}
           <DispositivoList
             dispositivos={dispositivos}
             totalCount={totalDispositivos}

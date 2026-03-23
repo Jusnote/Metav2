@@ -67,8 +67,6 @@ const mainNavigation: NavItem[] = [
     label: "Lei Seca",
     href: "/lei-seca",
     icon: <IconScale className="h-5 w-5" />,
-    customPanel: true,
-    panelWidth: 340,
   },
   {
     label: "Conteúdos",

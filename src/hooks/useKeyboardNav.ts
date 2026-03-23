@@ -8,7 +8,6 @@ interface UseKeyboardNavOptions {
   virtuosoRef: React.RefObject<VirtuosoHandle | null>
   toggleLeiSecaMode: () => void
   toggleRevogados: () => void
-  onToggleSearch: () => void
 }
 
 export function useKeyboardNav({
@@ -16,7 +15,6 @@ export function useKeyboardNav({
   virtuosoRef,
   toggleLeiSecaMode,
   toggleRevogados,
-  onToggleSearch,
 }: UseKeyboardNavOptions) {
 
   const findNextArtigo = useCallback((currentIndex: number, direction: 1 | -1) => {
@@ -56,14 +54,9 @@ export function useKeyboardNav({
       if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
         toggleRevogados()
       }
-
-      if (e.key === 'f' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        onToggleSearch()
-      }
     }
 
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [findNextArtigo, virtuosoRef, toggleLeiSecaMode, toggleRevogados, onToggleSearch])
+  }, [findNextArtigo, virtuosoRef, toggleLeiSecaMode, toggleRevogados])
 }
