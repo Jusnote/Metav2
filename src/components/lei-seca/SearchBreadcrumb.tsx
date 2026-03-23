@@ -33,6 +33,15 @@ export function SearchBreadcrumb({
 }: SearchBreadcrumbProps) {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+
+  // Refs for dropdown keyboard actions
+  const confirmSelectionRef = useRef<(() => void) | null>(null)
+  const expandSelectionRef = useRef<(() => void) | null>(null)
+  const collapseSelectionRef = useRef<(() => void) | null>(null)
+
+  // Reset selection when input changes
+  useEffect(() => { setSelectedIndex(-1) }, [input])
 
   // Sync open state to parent
   useEffect(() => { onOpenChange?.(open) }, [open, onOpenChange])
@@ -88,7 +97,7 @@ export function SearchBreadcrumb({
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
 
-  // Escape closes
+  // Escape closes + keyboard navigation (↑↓ Enter → ←)
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -96,11 +105,28 @@ export function SearchBreadcrumb({
         setOpen(false)
         setInput('')
         setDebouncedTerm('')
+        return
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedIndex(prev => prev + 1)
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedIndex(prev => Math.max(-1, prev - 1))
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault()
+        confirmSelectionRef.current?.()
+      } else if (e.key === 'ArrowRight' && selectedIndex >= 0) {
+        e.preventDefault()
+        expandSelectionRef.current?.()
+      } else if (e.key === 'ArrowLeft' && selectedIndex >= 0) {
+        e.preventDefault()
+        collapseSelectionRef.current?.()
       }
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [open])
+  }, [open, selectedIndex])
 
   const handleOpen = useCallback(() => {
     setOpen(true)
@@ -222,6 +248,11 @@ export function SearchBreadcrumb({
           debouncedTerm={debouncedTerm}
           onSelectHit={handleSelect}
           onSelectArtigo={handleSelectArtigo}
+          selectedIndex={selectedIndex}
+          onClampIndex={setSelectedIndex}
+          confirmSelectionRef={confirmSelectionRef}
+          expandSelectionRef={expandSelectionRef}
+          collapseSelectionRef={collapseSelectionRef}
         />
       )}
     </div>
