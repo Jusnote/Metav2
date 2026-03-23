@@ -43,11 +43,13 @@ export function DispositivoList({
       endReached={handleEndReached}
       overscan={200}
       itemContent={(index, item) => (
-        <DispositivoRenderer
-          item={item}
-          leiSecaMode={leiSecaMode}
-          showRevogados={showRevogados}
-        />
+        <div className="max-w-3xl mx-auto px-14 leading-relaxed">
+          <DispositivoRenderer
+            item={item}
+            leiSecaMode={leiSecaMode}
+            showRevogados={showRevogados}
+          />
+        </div>
       )}
       rangeChanged={({ startIndex, endIndex }) => {
         onRangeChanged?.(startIndex, endIndex)
@@ -55,7 +57,7 @@ export function DispositivoList({
       components={{
         Footer: () =>
           isLoadingMore ? (
-            <div className="text-center py-4 text-muted-foreground text-sm">
+            <div className="max-w-3xl mx-auto px-14 text-center py-4 text-muted-foreground text-sm">
               Carregando mais dispositivos...
             </div>
           ) : null,
