@@ -20,7 +20,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
-import { LeiSecaSidebar } from "./lei-seca/LeiSecaSidebar";
 import { DocumentsOrganizationSidebar } from "./DocumentsOrganizationSidebar";
 import { QuestoesFilterSidebar } from "./questoes/QuestoesFilterSidebar";
 import { CadernosSidebar } from "./cadernos/CadernosSidebar";
@@ -254,7 +253,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     panelItem.href === "/questoes" ? (
                       <QuestoesFilterSidebar />
                     ) : panelItem.href === "/lei-seca" ? (
-                      <LeiSecaSidebar />
+                      null
                     ) : panelItem.href === "/documents-organization" ? (
                       <DocumentsOrganizationSidebar />
                     ) : panelItem.href === "/cadernos" ? (
