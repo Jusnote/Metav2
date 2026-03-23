@@ -3,10 +3,10 @@ import { AnotacaoInline } from './AnotacaoInline'
 
 export function Inciso({ item, leiSecaMode }: { item: Dispositivo; leiSecaMode?: boolean }) {
   return (
-    <div className="mb-1.5 ml-12 py-0.5" data-posicao={item.posicao}>
-      {item.texto}
+    <div className="mb-2 pl-[52px]" data-posicao={item.posicao}>
+      <span className="text-slate-700">{item.texto}</span>
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (
-        <div className="ml-4 mt-1 space-y-1">
+        <div className="ml-6 mt-1 space-y-1">
           {item.anotacoes.map((a, i) => <AnotacaoInline key={i} anotacao={a} />)}
         </div>
       )}

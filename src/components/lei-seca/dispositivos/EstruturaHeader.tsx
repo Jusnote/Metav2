@@ -1,35 +1,43 @@
 import type { Dispositivo } from '@/types/lei-api'
 
-const CENTERED_BOLD_LARGE = ['PARTE', 'LIVRO', 'TITULO']
-const CENTERED_BOLD = ['CAPITULO', 'SECAO']
+const LARGE = ['PARTE', 'LIVRO', 'TITULO']
+const MEDIUM = ['CAPITULO', 'SECAO']
 
 export function EstruturaHeader({ item }: { item: Dispositivo }) {
-  const isLarge = CENTERED_BOLD_LARGE.includes(item.tipo)
-  const isBold = CENTERED_BOLD.includes(item.tipo)
-  const isSubsecao = item.tipo === 'SUBSECAO'
+  if (LARGE.includes(item.tipo)) {
+    return (
+      <div className="text-center py-5" data-posicao={item.posicao}>
+        {item.tipo === 'PARTE' ? (
+          <div className="text-[10px] tracking-[5px] uppercase text-indigo-600 font-bold border-y border-slate-200 py-4">
+            {item.texto}
+          </div>
+        ) : (
+          <>
+            <div className="text-sm font-bold text-slate-900 tracking-wide">{item.texto}</div>
+            {item.epigrafe && (
+              <div className="text-[13px] text-slate-500 italic mt-1">{item.epigrafe}</div>
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
 
+  if (MEDIUM.includes(item.tipo)) {
+    return (
+      <div className="text-center py-4" data-posicao={item.posicao}>
+        <div className="text-[13px] font-semibold text-slate-800">{item.texto}</div>
+        {item.epigrafe && (
+          <div className="text-[13px] text-slate-500 italic mt-1">{item.epigrafe}</div>
+        )}
+      </div>
+    )
+  }
+
+  // SUBSECAO
   return (
     <div className="text-center py-3" data-posicao={item.posicao}>
-      {isLarge && (
-        <div className="text-xs uppercase tracking-widest text-red-400 font-bold">
-          {item.texto}
-        </div>
-      )}
-      {isBold && (
-        <div className="text-sm font-bold text-slate-300">
-          {item.texto}
-        </div>
-      )}
-      {isSubsecao && (
-        <div className="text-sm italic text-slate-400">
-          {item.texto}
-        </div>
-      )}
-      {item.epigrafe && (
-        <div className="text-xs italic text-slate-500 mt-1">
-          {item.epigrafe}
-        </div>
-      )}
+      <div className="text-[13px] italic text-slate-500">{item.texto}</div>
     </div>
   )
 }

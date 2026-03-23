@@ -106,18 +106,20 @@ export default function LeiSecaPage() {
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area */}
-        <div className="flex-1 overflow-hidden min-w-0">
-          <DispositivoList
-            dispositivos={dispositivos}
-            totalCount={totalDispositivos}
-            loadMore={loadMore}
-            hasMore={hasMore}
-            isLoadingMore={isLoadingMore}
-            leiSecaMode={leiSecaMode}
-            showRevogados={showRevogados}
-            onRangeChanged={handleRangeChanged}
-            virtuosoRef={virtuosoRef}
-          />
+        <div className="flex-1 overflow-hidden flex justify-center">
+          <div className="w-full max-w-3xl px-14 leading-relaxed">
+            <DispositivoList
+              dispositivos={dispositivos}
+              totalCount={totalDispositivos}
+              loadMore={loadMore}
+              hasMore={hasMore}
+              isLoadingMore={isLoadingMore}
+              leiSecaMode={leiSecaMode}
+              showRevogados={showRevogados}
+              onRangeChanged={handleRangeChanged}
+              virtuosoRef={virtuosoRef}
+            />
+          </div>
         </div>
 
         {/* Study Companion Panel */}
