@@ -5,8 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { AppSidebar } from "./components/AppSidebar";
 import { AppHeaderCompact } from "./components/AppHeaderCompact";
-import { StudyModeProvider } from "./contexts/StudyModeContext";
-import { QuestionsProvider } from "./contexts/QuestionsContext";
 import { TimerProvider } from "./contexts/TimerContext";
 import { StudyConfigProvider } from "./contexts/StudyConfigContext";
 
@@ -27,6 +25,8 @@ import LeiSecaTestPage from "./views/LeiSecaTestPage";
 import LeiSecaTestV3Page from "./views/LeiSecaTestV3Page";
 import ImportLeiPage from "./views/ImportLeiPage";
 import ImportLeiV2Page from "./views/ImportLeiV2Page";
+import { Provider as UrqlProvider } from 'urql'
+import { leiClient } from '@/lib/urql-client'
 import { LeiSecaProvider } from "./contexts/LeiSecaContext";
 import { DocumentsOrganizationProvider } from "./contexts/DocumentsOrganizationContext";
 import { QuestoesProvider } from "./contexts/QuestoesContext";
@@ -98,6 +98,7 @@ const AppContent = () => {
   return (
     <CadernosProvider>
     <QuestoesProvider>
+    <UrqlProvider value={leiClient}>
     <LeiSecaProvider>
     <DocumentsOrganizationProvider>
     <AppSidebar>
@@ -116,6 +117,7 @@ const AppContent = () => {
     </AppSidebar>
     </DocumentsOrganizationProvider>
     </LeiSecaProvider>
+    </UrqlProvider>
     </QuestoesProvider>
     </CadernosProvider>
   );
@@ -128,13 +130,9 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <TimerProvider>
-            <StudyModeProvider>
-              <QuestionsProvider>
                 <Toaster />
                 <Sonner />
                 <div>Loading...</div>
-              </QuestionsProvider>
-            </StudyModeProvider>
           </TimerProvider>
         </TooltipProvider>
       </QueryClientProvider>
@@ -146,8 +144,6 @@ const App = () => {
       <TooltipProvider>
         <StudyConfigProvider>
           <TimerProvider>
-            <StudyModeProvider>
-              <QuestionsProvider>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -185,8 +181,6 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
-              </QuestionsProvider>
-            </StudyModeProvider>
           </TimerProvider>
         </StudyConfigProvider>
       </TooltipProvider>
