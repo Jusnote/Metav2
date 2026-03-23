@@ -106,7 +106,7 @@ export default function LeiSecaPage() {
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area — full width so scrollbar stays at right edge */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden bg-white">
           <DispositivoList
             dispositivos={dispositivos}
             totalCount={totalDispositivos}
