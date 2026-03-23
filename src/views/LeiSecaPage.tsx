@@ -32,6 +32,8 @@ const LeiCommentsPanel = dynamic(
 );
 
 export default function LeiSecaPage() {
+  const [searchOpen, setSearchOpen] = useState(false);
+
   const {
     dispositivos,
     totalDispositivos,
@@ -159,10 +161,11 @@ export default function LeiSecaPage() {
               totalDispositivos={totalDispositivos}
               onScrollToDispositivo={handleScrollToDispositivo}
               onSelectArtigoIndex={handleSelectArtigoIndex}
+              onOpenChange={setSearchOpen}
             />
           </div>
           {/* DispositivoList: overflow-hidden stays here */}
-          <div className="flex-1 overflow-hidden">
+          <div className={`flex-1 overflow-hidden transition-opacity duration-200 ${searchOpen ? 'opacity-15' : ''}`}>
             <DispositivoList
               dispositivos={dispositivos}
               totalCount={totalDispositivos}

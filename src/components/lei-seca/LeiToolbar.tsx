@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react'
 import { fontSizeStore, useFontSize } from '@/stores/fontSizeStore'
 import { useLeiSeca } from '@/contexts/LeiSecaContext'
 
@@ -10,50 +11,89 @@ export function LeiToolbar() {
     showRevogados, toggleRevogados,
   } = useLeiSeca()
   const fontSize = useFontSize()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#eee] bg-white font-[Outfit,sans-serif] text-[12px]">
-      {/* Lei selector */}
-      <select
-        value={currentLeiId}
-        onChange={e => handleLeiChange(e.target.value)}
-        className="text-[12px] py-1.5 px-2.5 border border-[#e5e5e5] rounded-lg text-[#555] bg-[#fafafa] min-w-[140px] outline-none font-[Outfit,sans-serif]"
-      >
-        {leis.map(l => (
-          <option key={l.id} value={l.id}>{l.apelido ?? l.titulo}</option>
-        ))}
-      </select>
+    <div className="border-b border-[#eee] bg-white font-[Outfit,sans-serif] text-[12px]">
+      <div className="flex items-center gap-3 px-4 py-2.5">
+        {/* Lei selector */}
+        <select
+          value={currentLeiId}
+          onChange={e => handleLeiChange(e.target.value)}
+          className="text-[12px] py-1.5 px-2.5 border border-[#e5e5e5] rounded-lg text-[#555] bg-[#fafafa] min-w-[140px] outline-none font-[Outfit,sans-serif]"
+        >
+          {leis.map(l => (
+            <option key={l.id} value={l.id}>{l.apelido ?? l.titulo}</option>
+          ))}
+        </select>
 
-      <div className="flex-1" />
+        <div className="flex-1" />
 
-      {/* Toggles */}
-      <button
-        onClick={toggleLeiSecaMode}
-        className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
-          leiSecaMode ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
-        }`}
-      >
-        {leiSecaMode ? 'Lei Seca \u2713' : 'Lei Seca'}
-      </button>
+        {/* Lei Seca toggle (always visible) */}
+        <button
+          onClick={toggleLeiSecaMode}
+          className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
+            leiSecaMode ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
+          }`}
+        >
+          {leiSecaMode ? (
+            <><span className="hidden sm:inline">Lei Seca</span><span className="sm:hidden">LS</span> ✓</>
+          ) : (
+            <><span className="hidden sm:inline">Lei Seca</span><span className="sm:hidden">LS</span></>
+          )}
+        </button>
 
-      <button
-        onClick={toggleRevogados}
-        className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
-          showRevogados ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
-        }`}
-      >
-        {showRevogados ? 'Revogados \u2713' : 'Revogados'}
-      </button>
+        {/* Desktop-only controls */}
+        <div className="hidden sm:flex items-center gap-3">
+          <button
+            onClick={toggleRevogados}
+            className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
+              showRevogados ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
+            }`}
+          >
+            {showRevogados ? 'Revogados \u2713' : 'Revogados'}
+          </button>
 
-      {/* Font size */}
-      <div className="flex items-center gap-1 flex-shrink-0">
-        <button onClick={fontSizeStore.decrease} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[11px] font-bold">A-</button>
-        <span className="text-[11px] text-[#ccc] w-5 text-center">{fontSize}</span>
-        <button onClick={fontSizeStore.increase} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[13px] font-bold">A+</button>
+          {/* Font size */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button onClick={fontSizeStore.decrease} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[11px] font-bold">A-</button>
+            <span className="text-[11px] text-[#ccc] w-5 text-center">{fontSize}</span>
+            <button onClick={fontSizeStore.increase} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[13px] font-bold">A+</button>
+          </div>
+
+          {/* Hints */}
+          <span className="text-[10px] text-[#ddd] hidden lg:block flex-shrink-0">J/K · L · R</span>
+        </div>
+
+        {/* Mobile overflow button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="sm:hidden w-7 h-7 flex items-center justify-center border border-[#e5e5e5] rounded-md text-[#888] text-[14px]"
+        >
+          ⋯
+        </button>
       </div>
 
-      {/* Hints */}
-      <span className="text-[10px] text-[#ddd] hidden lg:block flex-shrink-0">J/K · L · R</span>
+      {/* Mobile overflow menu */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden flex items-center gap-3 px-4 pb-2.5 flex-wrap">
+          <button
+            onClick={toggleRevogados}
+            className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
+              showRevogados ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
+            }`}
+          >
+            {showRevogados ? 'Revogados \u2713' : 'Revogados'}
+          </button>
+
+          {/* Font size */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button onClick={fontSizeStore.decrease} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[11px] font-bold">A-</button>
+            <span className="text-[11px] text-[#ccc] w-5 text-center">{fontSize}</span>
+            <button onClick={fontSizeStore.increase} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#888] hover:bg-[#eee] flex items-center justify-center text-[13px] font-bold">A+</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

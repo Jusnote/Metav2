@@ -13,6 +13,14 @@ interface SearchBreadcrumbProps {
   totalDispositivos: number
   onScrollToDispositivo: (posicao: number) => void
   onSelectArtigoIndex: (index: number) => void
+  onOpenChange?: (open: boolean) => void
+}
+
+function abbreviateLabel(label: string): string {
+  return label
+    .replace(/^Título\s/i, 'Tít. ')
+    .replace(/^Capítulo\s/i, 'Cap. ')
+    .replace(/^Seção\s/i, 'Seç. ')
 }
 
 export function SearchBreadcrumb({
@@ -21,9 +29,13 @@ export function SearchBreadcrumb({
   totalDispositivos,
   onScrollToDispositivo,
   onSelectArtigoIndex,
+  onOpenChange,
 }: SearchBreadcrumbProps) {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
+
+  // Sync open state to parent
+  useEffect(() => { onOpenChange?.(open) }, [open, onOpenChange])
   const [debouncedTerm, setDebouncedTerm] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -139,7 +151,8 @@ export function SearchBreadcrumb({
                   <span className={`text-[11px] font-light ${
                     i === segments.length - 1 ? 'text-[#888] font-normal' : 'text-[#c0c0c0]'
                   }`}>
-                    {seg.label}
+                    <span className="hidden sm:inline">{seg.label}</span>
+                    <span className="sm:hidden">{abbreviateLabel(seg.label)}</span>
                   </span>
                 </span>
               ))}
@@ -151,7 +164,8 @@ export function SearchBreadcrumb({
           <span className="ml-auto flex items-center gap-2 flex-shrink-0">
             <span className="text-[9px] text-[#ddd] font-mono bg-[#f8f8f8] px-[6px] py-[1px] rounded hidden sm:inline">Ctrl+F</span>
             <span className="text-[10px] text-[#ddd] font-light tabular-nums">
-              {activeIndex + 1} / {totalArtigos}
+              <span className="hidden sm:inline">{activeIndex + 1} / {totalArtigos}</span>
+              <span className="sm:hidden">{activeIndex + 1}/{totalArtigos}</span>
             </span>
           </span>
         </button>

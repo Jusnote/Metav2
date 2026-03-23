@@ -124,7 +124,7 @@ export function SearchBreadcrumbDropdown({
     <div className="absolute left-0 right-0 top-full z-50">
       <div
         ref={scrollRef}
-        className="bg-[#fafafa] border border-[#e8e8e8] border-t-0 rounded-b-[10px] shadow-[0_12px_32px_rgba(0,0,0,0.08)] max-h-[380px] overflow-y-auto"
+        className="bg-[#fafafa] border border-[#e8e8e8] border-t-0 sm:rounded-b-[10px] rounded-b-[8px] shadow-[0_12px_32px_rgba(0,0,0,0.08)] sm:max-h-[380px] max-h-[60vh] overflow-y-auto"
       >
         {/* ---- HIERARCHY SECTION ---- */}
         <div className="px-[14px] pt-[10px] pb-1 text-[9px] text-[#c0c0c0] uppercase tracking-[1.5px] font-normal">
@@ -202,12 +202,13 @@ export function SearchBreadcrumbDropdown({
         )}
 
         {/* ---- FOOTER ---- */}
-        <div className="px-[14px] py-[6px] border-t border-[#f0f0f0] text-[10px] text-[#d0d0d0] font-light flex gap-[14px] sticky bottom-0 bg-[#fafafa] rounded-b-[10px]">
-          <span>↑↓</span>
-          <span>→ expandir</span>
-          <span>← colapsar</span>
-          <span>⏎ ir</span>
-          <span>esc</span>
+        <div className="px-[14px] py-[6px] border-t border-[#f0f0f0] text-[10px] text-[#d0d0d0] font-light flex gap-[14px] sticky bottom-0 bg-[#fafafa] sm:rounded-b-[10px] rounded-b-[8px]">
+          <span className="hidden sm:inline">↑↓</span>
+          <span className="hidden sm:inline">→ expandir</span>
+          <span className="hidden sm:inline">← colapsar</span>
+          <span className="hidden sm:inline">⏎ ir</span>
+          <span className="hidden sm:inline">esc</span>
+          <span className="sm:hidden">toque para navegar</span>
         </div>
       </div>
     </div>
