@@ -1,0 +1,290 @@
+<h2>Destaque sutil no artigo, epígrafe discreta</h2>
+<p class="subtitle">Epígrafe vira label simples. Artigo ganha destaque mínimo. Clique na preferida.</p>
+
+<div class="cards" style="display:grid; grid-template-columns:1fr; gap:28px;">
+
+  <!-- S1: Artigo com fundo quase invisível -->
+  <div class="card" data-choice="s1" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="card-body" style="padding:0;">
+      <div style="padding:12px 20px; border-bottom:1px solid #e2e8f0;">
+        <div class="letter" style="display:inline-block; background:#171717; color:white; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:bold; font-size:14px; margin-right:8px;">1</div>
+        <strong style="font-size:16px; color:#171717;">Background Fantasma</strong>
+        <span style="color:#a3a3a3; margin-left:8px;">— Artigo com fundo quase imperceptível, epígrafe como texto pequeno</span>
+      </div>
+
+      <div style="background:#ffffff; padding:0; display:flex; justify-content:center;">
+        <div style="max-width:680px; width:100%; padding:48px 48px; color:#18181b; font-size:15px; line-height:1.9; font-family:'Inter', -apple-system, sans-serif;">
+
+          <!-- PARTE -->
+          <div style="text-align:center; margin:40px 0 36px; position:relative;">
+            <div style="position:absolute; left:0; right:0; top:50%; height:1px; background:#f0f0f0;"></div>
+            <span style="position:relative; background:#fff; padding:0 24px; font-size:10px; letter-spacing:7px; text-transform:uppercase; color:#a1a1aa; font-weight:600;">PARTE ESPECIAL</span>
+          </div>
+
+          <!-- TITULO -->
+          <div style="text-align:center; margin-bottom:36px;">
+            <div style="font-size:14px; font-weight:700; color:#3f3f46; letter-spacing:2px; text-transform:uppercase;">Título I</div>
+            <div style="font-size:14px; color:#a1a1aa; margin-top:4px;">Dos crimes contra a pessoa</div>
+          </div>
+
+          <!-- CAPITULO -->
+          <div style="text-align:center; margin-bottom:32px;">
+            <div style="font-size:12px; font-weight:600; color:#52525b; letter-spacing:1.5px; text-transform:uppercase;">Capítulo I</div>
+            <div style="font-size:13px; color:#a1a1aa; font-style:italic; margin-top:3px;">Dos crimes contra a vida</div>
+          </div>
+
+          <!-- EPIGRAFE — pequena, discreta, só texto -->
+          <div style="margin-top:28px; margin-bottom:6px;">
+            <span style="font-size:11px; color:#a1a1aa; font-style:italic;">Homicídio simples</span>
+          </div>
+
+          <!-- ARTIGO — fundo fantasma -->
+          <div style="margin-bottom:6px; padding:8px 12px; background:#fafafb; border-radius:4px;">
+            <strong>Art. 121.</strong> Matar alguem:
+          </div>
+
+          <div style="padding-left:28px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de seis a vinte anos.
+          </div>
+
+          <div style="padding-left:28px; color:#d4d4d8; font-size:11px; margin-bottom:12px;">
+            (Vide Lei nº 8.072, de 25.7.90)
+          </div>
+
+          <!-- EPIGRAFE -->
+          <div style="margin-top:28px; margin-bottom:6px;">
+            <span style="font-size:11px; color:#a1a1aa; font-style:italic;">Homicídio qualificado</span>
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:6px;">
+            <strong>§ 2º</strong> Se o homicídio é cometido:
+          </div>
+
+          <div style="padding-left:52px; margin-bottom:4px;">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">II — por motivo futil;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel;</div>
+
+          <div style="padding-left:76px; margin-bottom:3px; color:#3f3f46;">a) contra cônjuge ou companheiro;</div>
+          <div style="padding-left:76px; margin-bottom:3px; color:#3f3f46;">b) contra descendente ou ascendente;</div>
+
+          <div style="padding-left:28px; margin-top:8px; opacity:0.2;">
+            <span style="text-decoration:line-through;">§ 3º Se o homicídio é culposo:</span>
+          </div>
+
+          <div style="margin:36px 0; height:1px; background:#f4f4f5;"></div>
+
+          <div style="margin-bottom:6px;">
+            <span style="font-size:11px; color:#a1a1aa; font-style:italic;">Induzimento ao suicídio</span>
+          </div>
+
+          <div style="margin-bottom:6px; padding:8px 12px; background:#fafafb; border-radius:4px;">
+            <strong>Art. 122.</strong> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação:
+          </div>
+
+          <div style="padding-left:28px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de 6 meses a 2 anos.
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:6px;">
+            <strong>§ 1º</strong> Se resulta lesão corporal de natureza grave:
+          </div>
+
+          <div style="padding-left:52px; color:#b4b4b4; font-size:13px;">
+            Pena — reclusão, de 1 a 3 anos.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2: Artigo com borda esquerda fina -->
+  <div class="card" data-choice="s2" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="card-body" style="padding:0;">
+      <div style="padding:12px 20px; border-bottom:1px solid #e2e8f0;">
+        <div class="letter" style="display:inline-block; background:#171717; color:white; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:bold; font-size:14px; margin-right:8px;">2</div>
+        <strong style="font-size:16px; color:#171717;">Linha Fina</strong>
+        <span style="color:#a3a3a3; margin-left:8px;">— Artigo com border-left de 1px cinza, quase invisível mas marca o início</span>
+      </div>
+
+      <div style="background:#ffffff; padding:0; display:flex; justify-content:center;">
+        <div style="max-width:680px; width:100%; padding:48px 48px; color:#18181b; font-size:15px; line-height:1.9; font-family:'Inter', -apple-system, sans-serif;">
+
+          <!-- PARTE -->
+          <div style="text-align:center; margin:40px 0 36px; position:relative;">
+            <div style="position:absolute; left:0; right:0; top:50%; height:1px; background:#f0f0f0;"></div>
+            <span style="position:relative; background:#fff; padding:0 24px; font-size:10px; letter-spacing:7px; text-transform:uppercase; color:#a1a1aa; font-weight:600;">PARTE ESPECIAL</span>
+          </div>
+
+          <div style="text-align:center; margin-bottom:36px;">
+            <div style="font-size:14px; font-weight:700; color:#3f3f46; letter-spacing:2px; text-transform:uppercase;">Título I</div>
+            <div style="font-size:14px; color:#a1a1aa; margin-top:4px;">Dos crimes contra a pessoa</div>
+          </div>
+
+          <div style="text-align:center; margin-bottom:32px;">
+            <div style="font-size:12px; font-weight:600; color:#52525b; letter-spacing:1.5px; text-transform:uppercase;">Capítulo I</div>
+            <div style="font-size:13px; color:#a1a1aa; font-style:italic; margin-top:3px;">Dos crimes contra a vida</div>
+          </div>
+
+          <!-- EPIGRAFE discreta -->
+          <div style="margin-top:28px; margin-bottom:6px;">
+            <span style="font-size:11px; color:#a1a1aa; font-style:italic;">Homicídio simples</span>
+          </div>
+
+          <!-- ARTIGO com border-left fina cinza -->
+          <div style="margin-bottom:6px; padding-left:12px; border-left:1px solid #d4d4d8;">
+            <strong>Art. 121.</strong> Matar alguem:
+          </div>
+
+          <div style="padding-left:28px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de seis a vinte anos.
+          </div>
+
+          <div style="padding-left:28px; color:#d4d4d8; font-size:11px; margin-bottom:12px;">
+            (Vide Lei nº 8.072, de 25.7.90)
+          </div>
+
+          <div style="margin-top:28px; margin-bottom:6px;">
+            <span style="font-size:11px; color:#a1a1aa; font-style:italic;">Homicídio qualificado</span>
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:6px;">
+            <strong>§ 2º</strong> Se o homicídio é cometido:
+          </div>
+
+          <div style="padding-left:52px; margin-bottom:4px;">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">II — por motivo futil;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel;</div>
+
+          <div style="padding-left:76px; margin-bottom:3px; color:#3f3f46;">a) contra cônjuge ou companheiro;</div>
+          <div style="padding-left:76px; margin-bottom:3px; color:#3f3f46;">b) contra descendente ou ascendente;</div>
+
+          <div style="padding-left:28px; margin-top:8px; opacity:0.2;">
+            <span style="text-decoration:line-through;">§ 3º Se o homicídio é culposo:</span>
+          </div>
+
+          <div style="margin:36px 0; height:1px; background:#f4f4f5;"></div>
+
+          <div style="margin-bottom:6px;">
+            <span style="font-size:11px; color:#a1a1aa; font-style:italic;">Induzimento ao suicídio</span>
+          </div>
+
+          <div style="margin-bottom:6px; padding-left:12px; border-left:1px solid #d4d4d8;">
+            <strong>Art. 122.</strong> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação:
+          </div>
+
+          <div style="padding-left:28px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de 6 meses a 2 anos.
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:6px;">
+            <strong>§ 1º</strong> Se resulta lesão corporal de natureza grave:
+          </div>
+
+          <div style="padding-left:52px; color:#b4b4b4; font-size:13px;">
+            Pena — reclusão, de 1 a 3 anos.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Artigo com margem top maior -->
+  <div class="card" data-choice="s3" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="card-body" style="padding:0;">
+      <div style="padding:12px 20px; border-bottom:1px solid #e2e8f0;">
+        <div class="letter" style="display:inline-block; background:#171717; color:white; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:bold; font-size:14px; margin-right:8px;">3</div>
+        <strong style="font-size:16px; color:#171717;">Espaço como Destaque</strong>
+        <span style="color:#a3a3a3; margin-left:8px;">— Nenhum adorno. O espaço antes do artigo é o destaque.</span>
+      </div>
+
+      <div style="background:#ffffff; padding:0; display:flex; justify-content:center;">
+        <div style="max-width:680px; width:100%; padding:48px 48px; color:#18181b; font-size:15px; line-height:1.9; font-family:'Inter', -apple-system, sans-serif;">
+
+          <!-- PARTE -->
+          <div style="text-align:center; margin:40px 0 36px; position:relative;">
+            <div style="position:absolute; left:0; right:0; top:50%; height:1px; background:#f0f0f0;"></div>
+            <span style="position:relative; background:#fff; padding:0 24px; font-size:10px; letter-spacing:7px; text-transform:uppercase; color:#a1a1aa; font-weight:600;">PARTE ESPECIAL</span>
+          </div>
+
+          <div style="text-align:center; margin-bottom:36px;">
+            <div style="font-size:14px; font-weight:700; color:#3f3f46; letter-spacing:2px; text-transform:uppercase;">Título I</div>
+            <div style="font-size:14px; color:#a1a1aa; margin-top:4px;">Dos crimes contra a pessoa</div>
+          </div>
+
+          <div style="text-align:center; margin-bottom:32px;">
+            <div style="font-size:12px; font-weight:600; color:#52525b; letter-spacing:1.5px; text-transform:uppercase;">Capítulo I</div>
+            <div style="font-size:13px; color:#a1a1aa; font-style:italic; margin-top:3px;">Dos crimes contra a vida</div>
+          </div>
+
+          <!-- EPIGRAFE discreta -->
+          <div style="margin-top:32px; margin-bottom:4px;">
+            <span style="font-size:11px; color:#b4b4b4; font-style:italic;">Homicídio simples</span>
+          </div>
+
+          <!-- ARTIGO — zero adorno, destaque é o espaço acima + bold -->
+          <div style="margin-bottom:6px;">
+            <strong>Art. 121.</strong> Matar alguem:
+          </div>
+
+          <div style="padding-left:28px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de seis a vinte anos.
+          </div>
+
+          <div style="padding-left:28px; color:#d4d4d8; font-size:11px; margin-bottom:6px;">
+            (Vide Lei nº 8.072, de 25.7.90)
+          </div>
+
+          <!-- Próximo artigo — o espaço de 32px marca a transição -->
+          <div style="margin-top:32px; margin-bottom:4px;">
+            <span style="font-size:11px; color:#b4b4b4; font-style:italic;">Homicídio qualificado</span>
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:6px;">
+            <strong>§ 2º</strong> Se o homicídio é cometido:
+          </div>
+
+          <div style="padding-left:52px; margin-bottom:4px;">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">II — por motivo futil;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel;</div>
+
+          <div style="padding-left:76px; margin-bottom:3px; color:#3f3f46;">a) contra cônjuge ou companheiro;</div>
+          <div style="padding-left:76px; margin-bottom:3px; color:#3f3f46;">b) contra descendente ou ascendente;</div>
+
+          <div style="padding-left:28px; margin-top:8px; opacity:0.2;">
+            <span style="text-decoration:line-through;">§ 3º Se o homicídio é culposo:</span>
+          </div>
+
+          <!-- Próximo artigo — espaço é o separador -->
+          <div style="margin-top:32px; margin-bottom:4px;">
+            <span style="font-size:11px; color:#b4b4b4; font-style:italic;">Induzimento ao suicídio</span>
+          </div>
+
+          <div style="margin-bottom:6px;">
+            <strong>Art. 122.</strong> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação:
+          </div>
+
+          <div style="padding-left:28px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de 6 meses a 2 anos.
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:6px;">
+            <strong>§ 1º</strong> Se resulta lesão corporal de natureza grave:
+          </div>
+
+          <div style="padding-left:52px; color:#b4b4b4; font-size:13px; margin-bottom:6px;">
+            Pena — reclusão, de 1 a 3 anos.
+          </div>
+
+          <div style="padding-left:28px; margin-bottom:4px;">
+            <strong>§ 3º</strong> A pena é duplicada:
+          </div>
+
+          <div style="padding-left:52px; margin-bottom:4px;">I — se o crime é praticado por motivo egoístico, torpe ou fútil;</div>
+          <div style="padding-left:52px; margin-bottom:4px;">II — se a vítima é menor ou tem diminuída, por qualquer causa, a capacidade de resistência.</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

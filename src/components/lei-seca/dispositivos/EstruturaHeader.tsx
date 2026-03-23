@@ -37,7 +37,16 @@ export function EstruturaHeader({ item }: { item: Dispositivo }) {
     )
   }
 
-  // SUBSECAO or SUBTITULO
+  // SUBTITULO — colado ao header acima (pouco margin-top)
+  if (item.tipo === 'SUBTITULO') {
+    return (
+      <div className="text-center mb-7 -mt-6" data-posicao={item.posicao}>
+        <div className="text-[13px] text-zinc-400 italic">{item.texto}</div>
+      </div>
+    )
+  }
+
+  // SUBSECAO
   return (
     <div className="text-center mb-7 mt-6" data-posicao={item.posicao}>
       <div className="text-[13px] text-zinc-400 italic">{item.texto}</div>

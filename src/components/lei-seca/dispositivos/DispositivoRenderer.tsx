@@ -11,7 +11,7 @@ import { Pena } from './Pena'
 import { RevogadoCollapsed } from './RevogadoCollapsed'
 import { GenericDispositivo } from './GenericDispositivo'
 
-const STRUCTURAL = ['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO', 'SUBSECAO']
+const STRUCTURAL = ['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO', 'SUBSECAO', 'SUBTITULO']
 
 interface Props {
   item: Dispositivo

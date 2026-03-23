@@ -1,0 +1,109 @@
+<h2>Design: Sistema de Lei Seca v2</h2>
+<p class="subtitle">Visão geral da arquitetura — API GraphQL + Typesense + React puro</p>
+
+<div class="section">
+  <h3>Arquitetura Geral</h3>
+  <div class="mockup">
+    <div class="mockup-header">Visão de alto nível</div>
+    <div class="mockup-body" style="padding:24px;">
+
+      <!-- Row 1: Sources -->
+      <div style="text-align:center; margin-bottom:16px;">
+        <span style="background:#1e293b; border:2px solid #7c8aff; border-radius:8px; padding:8px 16px; display:inline-block;">
+          JusBrasil GraphQL API
+        </span>
+      </div>
+      <div style="text-align:center; color:#888; margin-bottom:16px;">↓ fetch direto (3 headers)</div>
+
+      <!-- Row 2: Extraction -->
+      <div style="text-align:center; margin-bottom:16px;">
+        <span style="background:#1e293b; border:2px solid #fbbf24; border-radius:8px; padding:8px 16px; display:inline-block;">
+          <strong>Script Node.js</strong><br>
+          <span style="font-size:12px; color:#888;">extract.js → process.js → upload.js</span>
+        </span>
+      </div>
+      <div style="text-align:center; color:#888; margin-bottom:4px;">↓ roda local (VS Code) ou no Hetzner</div>
+      <div style="text-align:center; color:#888; margin-bottom:16px;">↓ salva em pastas organizadas</div>
+
+      <!-- Row 3: Storage -->
+      <div style="display:flex; justify-content:center; gap:24px; margin-bottom:16px; flex-wrap:wrap;">
+        <div style="background:#1e293b; border:2px solid #4ade80; border-radius:8px; padding:12px 20px; text-align:center; min-width:180px;">
+          <div style="font-weight:600; color:#4ade80;">PostgreSQL</div>
+          <div style="font-size:12px; color:#888;">leis + dispositivos<br>source of truth</div>
+        </div>
+        <div style="text-align:center; align-self:center; color:#888;">sync →</div>
+        <div style="background:#1e293b; border:2px solid #f472b6; border-radius:8px; padding:12px 20px; text-align:center; min-width:180px;">
+          <div style="font-weight:600; color:#f472b6;">Typesense</div>
+          <div style="font-size:12px; color:#888;">busca instant<br>typo tolerance + facets</div>
+        </div>
+      </div>
+      <div style="text-align:center; color:#888; margin-bottom:16px;">↓ GraphQL API</div>
+
+      <!-- Row 4: API -->
+      <div style="text-align:center; margin-bottom:16px;">
+        <span style="background:#1e293b; border:2px solid #4ade80; border-radius:8px; padding:12px 20px; display:inline-block; min-width:280px;">
+          <div style="font-weight:600; color:#4ade80;">API GraphQL (Fastify + Mercurius)</div>
+          <div style="font-size:12px; color:#888;">Hetzner • Coolify • mesmo servidor</div>
+        </span>
+      </div>
+      <div style="text-align:center; color:#888; margin-bottom:16px;">↓ JSON puro</div>
+
+      <!-- Row 5: Frontend -->
+      <div style="display:flex; justify-content:center; gap:24px; flex-wrap:wrap;">
+        <div style="background:#1e293b; border:2px solid #7c8aff; border-radius:8px; padding:12px 20px; text-align:center; min-width:200px;">
+          <div style="font-weight:600; color:#7c8aff;">Frontend React (Metav2)</div>
+          <div style="font-size:12px; color:#888;">React puro + getSelection()<br>TipTap leve só para notas</div>
+        </div>
+        <div style="background:#1e293b; border:2px solid #fbbf24; border-radius:8px; padding:12px 20px; text-align:center; min-width:200px;">
+          <div style="font-weight:600; color:#fbbf24;">Supabase</div>
+          <div style="font-size:12px; color:#888;">auth + grifos + anotações<br>flashcards + cadernos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Componentes do Sistema</h3>
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead>
+      <tr style="border-bottom:2px solid #333;">
+        <th style="text-align:left; padding:8px; color:#888;">Componente</th>
+        <th style="text-align:left; padding:8px; color:#888;">Tecnologia</th>
+        <th style="text-align:left; padding:8px; color:#888;">Responsabilidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px; font-weight:600; color:#fbbf24;">Scripts CLI</td>
+        <td style="padding:8px;">Node.js puro</td>
+        <td style="padding:8px;">extract.js (GraphQL → raw.json), process.js (raw → processed), upload.js (→ PostgreSQL + Typesense)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px; font-weight:600; color:#4ade80;">API GraphQL</td>
+        <td style="padding:8px;">Fastify + Mercurius</td>
+        <td style="padding:8px;">Servir leis, dispositivos, hierarquia. Proxy busca para Typesense.</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px; font-weight:600; color:#4ade80;">PostgreSQL</td>
+        <td style="padding:8px;">PostgreSQL 16</td>
+        <td style="padding:8px;">Source of truth. Tabelas: leis, dispositivos. Índices GIN para tsvector.</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px; font-weight:600; color:#f472b6;">Typesense</td>
+        <td style="padding:8px;">Typesense (existente)</td>
+        <td style="padding:8px;">Busca instant com typo tolerance, facets, highlight. Collection: dispositivos.</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px; font-weight:600; color:#7c8aff;">Frontend</td>
+        <td style="padding:8px;">React + Next.js (Metav2)</td>
+        <td style="padding:8px;">Renderização pura de dispositivos. getSelection() para grifos. TipTap leve para notas.</td>
+      </tr>
+      <tr>
+        <td style="padding:8px; font-weight:600; color:#fbbf24;">Supabase</td>
+        <td style="padding:8px;">Supabase (existente)</td>
+        <td style="padding:8px;">Auth, grifos do usuário, anotações, flashcards, cadernos. Real-time sync.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

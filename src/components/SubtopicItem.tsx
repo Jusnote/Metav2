@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Check, Clock, Calendar, Edit3, Trash2, MoreVertical } from 'lucide-react';
+import { Check, Calendar, Edit3, Trash2, MoreVertical } from 'lucide-react';
 import { TopicSubtopicInlineEditor } from './TopicSubtopicInlineEditor';
 import { QuickSchedulePopover } from './QuickSchedulePopover';
 import { useMaterialCounts } from '../hooks/useMaterialCounts';
@@ -87,12 +87,12 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
           >
             <button
               onClick={(e) => e.stopPropagation()}
-              className={`overflow-hidden transition-all duration-200 ease-in-out shrink-0 p-0.5 hover:bg-blue-50 rounded ${
+              className={`overflow-hidden transition-all duration-200 ease-in-out shrink-0 p-0.5 hover:bg-zinc-100/50 rounded ${
                 showScheduleButton ? 'w-5 opacity-100' : 'w-0 opacity-0'
               }`}
               title="Agendar estudo"
             >
-              <Calendar className="w-4 h-4 text-blue-600" />
+              <Calendar className="w-4 h-4 text-zinc-500" />
             </button>
           </QuickSchedulePopover>
         )}
@@ -103,10 +103,10 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
             e.stopPropagation();
             onToggleComplete(!isCompleted);
           }}
-          className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+          className={`shrink-0 w-4 h-4 rounded-[3.5px] border-[1.5px] flex items-center justify-center transition-all ${
             isCompleted
-              ? 'bg-green-500 border-green-500 hover:bg-green-600'
-              : 'border-gray-300 hover:border-green-400'
+              ? 'bg-[#E8930C] border-[#E8930C] animate-check-bounce'
+              : 'border-zinc-300 dark:border-zinc-600 hover:border-[#E8930C]/60'
           }`}
           title={isCompleted ? 'Marcar como não concluído' : 'Marcar como concluído'}
         >
@@ -122,15 +122,10 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
             }
           }}
           className={`flex-1 flex items-center gap-1.5 px-1.5 py-1 rounded-md transition-all duration-150 border-l-2 ${
-            isSelected ? 'bg-blue-50 border-blue-500' : 'border-transparent hover:bg-blue-50/40'
+            isSelected ? 'bg-zinc-200/50 border-[#E8930C]' : 'border-transparent hover:bg-zinc-100/40'
           }`}
         >
-          {/* Ícone */}
-          <div className="w-5 h-5 rounded bg-slate-50 flex items-center justify-center shrink-0">
-            <FileText className="w-3 h-3 text-slate-300" />
-          </div>
-
-          {/* Título e Badges */}
+          {/* Título e Relevância */}
           <div className="flex-1 min-w-0">
             {isEditing ? (
               <TopicSubtopicInlineEditor
@@ -141,45 +136,36 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
                   await onSave(newTitle, newDuration);
                 }}
                 onCancel={onCancelEdit}
-                className="text-gray-700 text-xs"
+                className="text-zinc-700 text-xs"
                 showDurationInput={true}
                 isCalculated={false}
               />
             ) : (
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-xs truncate flex-1 text-left ${
-                    isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'
+                  className={`text-[11px] truncate flex-1 text-left ${
+                    isCompleted ? 'text-zinc-400/50 line-through' : 'text-zinc-700'
                   }`}
                 >
                   {subtopic.title}
                 </span>
-                {/* Tempo estimado (discreto) */}
-                {subtopic.estimated_duration_minutes && (
-                  <span className="text-xs text-gray-400 flex items-center gap-0.5 shrink-0">
-                    <Clock className="w-3 h-3" />
-                    {Math.floor(subtopic.estimated_duration_minutes / 60)}h{subtopic.estimated_duration_minutes % 60 > 0 ? ` ${subtopic.estimated_duration_minutes % 60}m` : ''}
+                {/* Estrelas de relevância (3 estrelas) */}
+                {!isCompleted && (
+                  <span className="flex items-center gap-px shrink-0" title="Relevância para a prova">
+                    {[1, 2, 3].map((star) => {
+                      const relevance = (subtopic as any).relevance ?? 2;
+                      return (
+                        <svg
+                          key={star}
+                          className={`w-2.5 h-2.5 ${star <= relevance ? 'text-[#E8930C]' : 'text-zinc-200 dark:text-zinc-700'}`}
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      );
+                    })}
                   </span>
-                )}
-                {/* Badges minimalistas */}
-                {(counts.documents > 0 || counts.flashcards > 0 || counts.questions > 0) && (
-                  <div className="flex items-center gap-1 shrink-0">
-                    {counts.documents > 0 && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-medium">
-                        {counts.documents}
-                      </span>
-                    )}
-                    {counts.flashcards > 0 && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium">
-                        {counts.flashcards}
-                      </span>
-                    )}
-                    {counts.questions > 0 && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-orange-50 text-orange-700 text-xs font-medium">
-                        {counts.questions}
-                      </span>
-                    )}
-                  </div>
                 )}
               </div>
             )}

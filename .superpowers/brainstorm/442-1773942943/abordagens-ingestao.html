@@ -1,0 +1,155 @@
+<h2>Sistema de Ingestão de Leis — 3 Abordagens</h2>
+<p class="subtitle">Analise cada abordagem e selecione a que mais faz sentido para o seu fluxo de estudo</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Fix & Scale — Corrigir o Parser + Automatizar Planalto</h3>
+      <p>Manter o pipeline atual, mas corrigir as lacunas do regex e automatizar o scraping do HTML do Planalto.</p>
+
+      <div style="background: #1a1a2e; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 13px; line-height: 1.8;">
+        <span style="color: #888">Pipeline:</span><br>
+        <span style="color: #4fc3f7">Planalto HTML</span>
+        <span style="color: #666">→</span>
+        <span style="color: #ff9800">Scraper automático</span>
+        <span style="color: #666">→</span>
+        <span style="color: #ab47bc">Parser regex melhorado</span>
+        <span style="color: #666">→</span>
+        <span style="color: #66bb6a">Plate.js JSON</span>
+        <span style="color: #666">→</span>
+        <span style="color: #42a5f5">Supabase</span>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Prós</h4>
+          <ul>
+            <li>Mudança mínima na arquitetura</li>
+            <li>Parser já existe, só precisa expandir</li>
+            <li>HTML do Planalto tem tags &lt;a&gt; nas anotações — mais fácil de separar que texto puro</li>
+            <li>Implementação rápida (~1-2 semanas)</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Contras</h4>
+          <ul>
+            <li>Regex nunca será 100% — sempre pode escapar um padrão novo</li>
+            <li>Planalto pode mudar o HTML a qualquer momento</li>
+            <li>Sem fonte oficial de verdade para validar</li>
+            <li>Escalar para 200 leis ainda depende de scraping frágil</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>LexML/Senado API — Fonte Estruturada Oficial</h3>
+      <p>Usar as APIs governamentais (LexML XML + Senado Dados Abertos) como fonte primária. Anotações já vêm separadas na estrutura XML.</p>
+
+      <div style="background: #1a1a2e; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 13px; line-height: 1.8;">
+        <span style="color: #888">Pipeline:</span><br>
+        <span style="color: #4fc3f7">LexML URN</span>
+        <span style="color: #666">→</span>
+        <span style="color: #ff9800">API XML/JSON</span>
+        <span style="color: #666">→</span>
+        <span style="color: #ab47bc">XML Parser (estruturado)</span>
+        <span style="color: #666">→</span>
+        <span style="color: #66bb6a">Plate.js JSON</span>
+        <span style="color: #666">→</span>
+        <span style="color: #42a5f5">Supabase</span>
+        <br><br>
+        <span style="color: #888">Fallback:</span><br>
+        <span style="color: #ef5350">Planalto HTML</span>
+        <span style="color: #666">→</span>
+        <span style="color: #ab47bc">Parser regex (Abord. A)</span>
+        <span style="color: #666">→</span>
+        <span style="color: #42a5f5">Supabase</span>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Prós</h4>
+          <ul>
+            <li>Dados estruturados oficiais — confiáveis e estáveis</li>
+            <li>Anotações marcadas semanticamente no XML</li>
+            <li>URN persistente (urn:lex:br:federal:lei:...)</li>
+            <li>Automatizável para 200+ leis por batch</li>
+            <li>Possibilidade de atualização automática</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Contras</h4>
+          <ul>
+            <li>API pode não ter texto integral de todas as leis</li>
+            <li>Precisa de fallback para leis não disponíveis</li>
+            <li>XML parsing mais complexo que regex</li>
+            <li>Confiabilidade da API (uptime) desconhecida</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Multi-Source + Docling — Pipeline Robusto Universal</h3>
+      <p>Pipeline com múltiplas fontes: LexML (primário), Planalto HTML (secundário), Docling para PDFs. Normaliza tudo para o mesmo formato.</p>
+
+      <div style="background: #1a1a2e; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 13px; line-height: 1.8;">
+        <span style="color: #888">Fontes:</span><br>
+        <span style="color: #4fc3f7">① LexML API</span> &nbsp;|&nbsp;
+        <span style="color: #ff9800">② Planalto HTML</span> &nbsp;|&nbsp;
+        <span style="color: #e91e63">③ PDF (Docling)</span> &nbsp;|&nbsp;
+        <span style="color: #9c27b0">④ JusBrasil*</span>
+        <br><br>
+        <span style="color: #666">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ normalização ↓</span><br><br>
+        <span style="color: #66bb6a">Formato Unificado</span>
+        <span style="color: #666">→</span>
+        <span style="color: #ab47bc">Separador de Camadas</span>
+        <span style="color: #666">→</span>
+        <span style="color: #42a5f5">Supabase</span>
+        <br><br>
+        <span style="color: #666; font-size: 11px">* JusBrasil: dados bem estruturados por dispositivo, mas requer cuidado legal com scraping</span>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Prós</h4>
+          <ul>
+            <li>Aceita QUALQUER fonte — não depende de uma só</li>
+            <li>Docling resolve PDFs (DOU, compilações do Senado)</li>
+            <li>Formato normalizado único para todas as fontes</li>
+            <li>Máxima cobertura para as 200 leis</li>
+            <li>Camada de anotações separada by design</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Contras</h4>
+          <ul>
+            <li>Mais complexo de implementar e manter</li>
+            <li>Docling é pesado (Python + modelo ML)</li>
+            <li>JusBrasil tem implicações legais de scraping</li>
+            <li>Over-engineering se as APIs Gov já cobrirem tudo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 20px; background: #1a1a2e; border-radius: 12px; border-left: 4px solid #4fc3f7;">
+  <h3 style="margin: 0 0 12px 0; color: #4fc3f7;">💡 Minha Recomendação: Abordagem B + elementos de A</h3>
+  <p style="margin: 0; color: #ccc; line-height: 1.7;">
+    <strong>LexML como fonte primária</strong> (dados já estruturados, anotações separadas no XML) com <strong>Planalto HTML como fallback</strong> (parser corrigido).
+    Docling é overkill para este caso — o problema não é formato de documento (PDF), é separação de anotações, e isso se resolve melhor na fonte.
+    <br><br>
+    <strong>Sobre JusBrasil:</strong> Boa observação sua — eles realmente estruturam cada dispositivo como entidade. Mas scraping deles tem risco legal (LGPD + termos de uso). O LexML oferece a mesma estruturação sem esse risco, pois é dado aberto oficial.
+    <br><br>
+    <strong>Sobre Docling:</strong> Não recomendo como peça central. Docling brilha para converter PDFs/DOCX desorganizados → structured output. Mas as leis brasileiras já existem em formato estruturado (HTML/XML) nas fontes oficiais. Usar Docling seria adicionar complexidade (Python + modelo ML de 258M) para resolver um problema que se resolve melhor na camada de fonte de dados.
+  </p>
+</div>

@@ -75,6 +75,9 @@ export async function uploadToSupabase(
       data_publicacao: metadata.data_publicacao || null,
       hierarquia: data.lei.hierarquia,
       total_artigos: data.artigos.length,
+      // GraphQL pipeline fields (optional)
+      raw_tabelas: (data as any).rawTabelas || [],
+      raw_metadata: (data as any).rawMetadata || {},
     };
 
     // Phase 2: Prepare artigos payload
@@ -85,7 +88,7 @@ export async function uploadToSupabase(
       message: `Preparando ${data.artigos.length} artigos...`,
     });
 
-    const artigosPayload = data.artigos.map((art) => ({
+    const artigosPayload = data.artigos.map((art: any) => ({
       id: `${metadata.id}-${art.id}`,
       numero: art.numero,
       slug: `${metadata.id}-${art.slug}`,
@@ -98,6 +101,14 @@ export async function uploadToSupabase(
       path: art.path,
       content_hash: art.content_hash,
       revoked_versions: art.revoked_versions || [],
+      // GraphQL pipeline fields (optional — backward compatible)
+      anotacoes_legislativas: art.anotacoes_legislativas || [],
+      fonte: art.fonte || 'jusbrasil-graphql',
+      source_id: art.source_id ?? null,
+      source_type: art.source_type ?? null,
+      source_index: art.source_index ?? null,
+      qualidade_score: art.qualidade_score ?? null,
+      flags: art.flags || [],
     }));
 
     // Phase 3: Send to API Route (atomic operation)

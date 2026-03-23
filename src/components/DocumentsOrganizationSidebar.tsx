@@ -243,7 +243,7 @@ export function DocumentsOrganizationSidebar() {
         onClick={handleToggleCronograma}
         className={`mx-3 mt-3 mb-1 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
           showCronograma
-            ? 'bg-blue-50 text-blue-600 border border-blue-200'
+            ? 'bg-zinc-100 text-zinc-700 border border-zinc-200/60'
             : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground border border-transparent'
         }`}
       >
@@ -255,7 +255,7 @@ export function DocumentsOrganizationSidebar() {
       {/* Cronograma calendar (collapsible) */}
       <div className={`cronograma-collapse ${showCronograma ? 'open' : ''}`}>
         <div>
-          <div className="px-3 pb-2">
+          <div className="mx-3 mt-1 mb-2 p-3 bg-white dark:bg-zinc-800/50 rounded-xl border border-zinc-200/40 dark:border-zinc-700/30 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.04)]">
             {/* Calendar mode: Week */}
             {calendarMode === 'week' && (
               <div>
@@ -358,15 +358,15 @@ export function DocumentsOrganizationSidebar() {
 
             {/* Filter label */}
             {cronogramaDate && (
-              <div className="mt-2 flex items-center justify-between px-2 py-1.5 rounded-lg bg-blue-50 border border-blue-100">
-                <span className="text-[10px] font-medium text-blue-700">
+              <div className="mt-2 flex items-center justify-between px-2 py-1.5 rounded-lg bg-zinc-100 border border-zinc-200/60">
+                <span className="text-[10px] font-medium text-zinc-700">
                   {filterLabel} — {filterCount} {filterCount === 1 ? 'topico' : 'topicos'}
                 </span>
                 <button
                   onClick={handleClearFilter}
-                  className="p-0.5 rounded hover:bg-blue-100 transition-colors"
+                  className="p-0.5 rounded hover:bg-zinc-200 transition-colors"
                 >
-                  <X className="w-3 h-3 text-blue-500" />
+                  <X className="w-3 h-3 text-zinc-400 hover:text-zinc-600" />
                 </button>
               </div>
             )}
@@ -375,7 +375,7 @@ export function DocumentsOrganizationSidebar() {
       </div>
 
       {/* Divider */}
-      {showCronograma && <div className="border-b border-slate-200/50" />}
+      {showCronograma && <div className="border-b border-zinc-200/40" />}
 
       {/* Header */}
       <div className="px-3 pt-3 pb-2 space-y-2">
@@ -388,7 +388,7 @@ export function DocumentsOrganizationSidebar() {
               <>
                 <button
                   onClick={() => setGoalDialogOpen(true)}
-                  className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
+                  className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
                   title="Criar Nova Meta"
                 >
                   <Target className="w-4 h-4" />
@@ -410,7 +410,7 @@ export function DocumentsOrganizationSidebar() {
         )}
       </div>
 
-      <div className="border-b border-slate-200/50" />
+      <div className="border-b border-zinc-200/40" />
 
       {/* Hierarquia (filtered or full) */}
       <div className="flex-1 overflow-y-auto py-2">
@@ -526,7 +526,7 @@ export function DocumentsOrganizationSidebar() {
                                   topicId: topic.id,
                                 });
                               }}
-                              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all border border-dashed border-blue-300"
+                              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-amber-600 transition-all"
                             >
                               <span className="text-base font-semibold">+</span>
                               <span className="font-medium text-xs">Adicionar Subtópico</span>
@@ -547,7 +547,7 @@ export function DocumentsOrganizationSidebar() {
                           topicId: null,
                         });
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all border border-dashed border-blue-300"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-amber-600 transition-all"
                     >
                       <span className="text-lg font-semibold">+</span>
                       <span className="font-medium text-sm">Adicionar Tópico</span>

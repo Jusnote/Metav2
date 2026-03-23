@@ -1,5 +1,6 @@
 import type { Dispositivo } from '@/types/lei-api'
 import { AnotacaoInline } from './AnotacaoInline'
+import { BoldPrefix } from '@/lib/lei-text-bold'
 
 export function Artigo({ item, leiSecaMode }: { item: Dispositivo; leiSecaMode?: boolean }) {
   return (
@@ -8,7 +9,7 @@ export function Artigo({ item, leiSecaMode }: { item: Dispositivo; leiSecaMode?:
       data-id={item.id}
       data-posicao={item.posicao}
     >
-      <div className="text-zinc-900">{item.texto}</div>
+      <div className="text-zinc-900"><BoldPrefix texto={item.texto} tipo={item.tipo} /></div>
 
       {item.pena && (
         <div className="pl-7 text-[#b4b4b4] text-[13px] mt-1">

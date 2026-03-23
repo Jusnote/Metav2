@@ -1,0 +1,1 @@
+fetch("/web-docview/graphql",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:'{root{document:documentByNumericID(artifact:"LEGISLACAO",docId:91577){lawItems(start:0,end:1){ZZZZZ_FAKE_FIELD}}}}'})}).then(function(r){return r.json()}).then(function(d){console.log(JSON.stringify(d,null,2))})

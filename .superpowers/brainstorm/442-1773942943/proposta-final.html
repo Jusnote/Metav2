@@ -1,0 +1,226 @@
+<h2>Proposta: Pipeline de Ingestão de Leis com Qualidade Garantida</h2>
+<p class="subtitle">Arquitetura em 3 camadas: Ingestão Inteligente → Separação de Anotações → Validação Automática</p>
+
+<!-- LAYER 1: INGESTION -->
+<div class="section">
+  <h3>Camada 1 — Ingestão Inteligente</h3>
+  <p style="color: #aaa; margin-bottom: 16px;">O objetivo é extrair o máximo de estrutura possível da fonte, antes do parsing.</p>
+
+  <div style="background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 12px 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+      <div style="border: 1px solid #333; border-radius: 8px; padding: 16px;">
+        <div style="color: #ef5350; font-weight: 600; margin-bottom: 8px;">❌ HOJE (copy/paste)</div>
+        <div style="font-family: monospace; font-size: 12px; color: #888; line-height: 1.8;">
+          Planalto.gov.br<br>
+          → Ctrl+C (perde HTML)<br>
+          → Texto puro no editor<br>
+          → Regex tenta adivinhar<br>
+          → <span style="color: #ef5350;">Anotações escapam</span>
+        </div>
+      </div>
+
+      <div style="border: 1px solid #4fc3f7; border-radius: 8px; padding: 16px;">
+        <div style="color: #4fc3f7; font-weight: 600; margin-bottom: 8px;">✅ PROPOSTO (HTML direto)</div>
+        <div style="font-family: monospace; font-size: 12px; color: #888; line-height: 1.8;">
+          Planalto.gov.br<br>
+          → Fetch HTML direto (URL)<br>
+          → Extrair &lt;a&gt; tags (anotações)<br>
+          → <span style="color: #4fc3f7;">Parser HTML adaptativo</span><br>
+          → <span style="color: #66bb6a;">Anotações já separadas</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; padding: 16px; background: #0d1117; border-radius: 8px; border-left: 3px solid #ff9800;">
+      <div style="color: #ff9800; font-weight: 600; margin-bottom: 8px;">O insight-chave: HTML variável ≠ anotações variáveis</div>
+      <div style="color: #aaa; font-size: 13px; line-height: 1.7;">
+        Sim, cada lei tem HTML diferente. MAS as <strong style="color: #fff;">anotações legislativas seguem um padrão mais consistente</strong> mesmo entre leis:
+        elas são quase sempre <code style="background: #1a1a2e; padding: 2px 6px; border-radius: 3px;">&lt;a href="..."&gt;(Redação dada...)&lt;/a&gt;</code>
+        ou texto entre parênteses com palavras-chave conhecidas. O parser HTML não precisa entender a estrutura inteira da lei —
+        só precisa <strong style="color: #fff;">identificar e extrair as anotações antes de parsear o texto</strong>.
+        <br><br>
+        <strong style="color: #ff9800;">Estratégia:</strong> Primeiro remove todas as tags &lt;a&gt; que são anotações do HTML → salva separadamente →
+        depois converte o HTML limpo pra texto → aí sim aplica o parser regex (que agora não precisa mais adivinhar anotações).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYER 2: ANNOTATION SEPARATION -->
+<div class="section">
+  <h3>Camada 2 — Separação de Anotações em Camadas</h3>
+  <p style="color: #aaa; margin-bottom: 16px;">Texto limpo para estudo + histórico legislativo sob demanda.</p>
+
+  <div style="background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 12px 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px; border-top: 3px solid #66bb6a;">
+        <div style="color: #66bb6a; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Camada 1: Lei Seca</div>
+        <div style="color: #aaa; font-size: 12px; line-height: 1.6;">
+          Texto puro da lei, sem NENHUMA anotação. É o que o usuário vê por padrão durante o estudo.
+        </div>
+        <div style="margin-top: 12px; padding: 10px; background: #1a1a2e; border-radius: 6px; font-size: 12px; color: #ccc;">
+          Art. 121. Matar alguém:<br>
+          Pena - reclusão, de seis a vinte anos.
+        </div>
+      </div>
+
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px; border-top: 3px solid #ff9800;">
+        <div style="color: #ff9800; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Camada 2: Histórico</div>
+        <div style="color: #aaa; font-size: 12px; line-height: 1.6;">
+          Anotações legislativas organizadas. Visível via hover/click/toggle no dispositivo.
+        </div>
+        <div style="margin-top: 12px; padding: 10px; background: #1a1a2e; border-radius: 6px; font-size: 12px; color: #888;">
+          <span style="color: #ff9800;">⟡</span> Redação dada pela Lei nº 13.968/2019<br>
+          <span style="color: #ff9800;">⟡</span> Vigência
+        </div>
+      </div>
+
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px; border-top: 3px solid #ab47bc;">
+        <div style="color: #ab47bc; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Camada 3: Minhas Notas</div>
+        <div style="color: #aaa; font-size: 12px; line-height: 1.6;">
+          Anotações pessoais do usuário (caderno temático). Já existe no sistema.
+        </div>
+        <div style="margin-top: 12px; padding: 10px; background: #1a1a2e; border-radius: 6px; font-size: 12px; color: #888;">
+          <span style="color: #ab47bc;">📝</span> Homicídio simples é crime doloso...
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; padding: 12px; background: #0d1117; border-radius: 8px;">
+      <div style="color: #ccc; font-size: 13px; line-height: 1.7;">
+        <strong>Storage:</strong> Cada dispositivo no Supabase terá campos separados:
+        <code style="background: #1a1a2e; padding: 2px 6px; border-radius: 3px;">texto_limpo</code> (camada 1),
+        <code style="background: #1a1a2e; padding: 2px 6px; border-radius: 3px;">anotacoes_legislativas[]</code> (camada 2),
+        <code style="background: #1a1a2e; padding: 2px 6px; border-radius: 3px;">texto_original</code> (backup integral).
+        A camada 3 já está no <code style="background: #1a1a2e; padding: 2px 6px; border-radius: 3px;">caderno_items</code>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYER 3: VALIDATION -->
+<div class="section">
+  <h3>Camada 3 — Validação Automática (Cinto e Suspensório)</h3>
+  <p style="color: #aaa; margin-bottom: 16px;">Garantir que nenhum dispositivo fique faltando, truncado ou com anotação grudada.</p>
+
+  <div style="background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 12px 0;">
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+        <div style="color: #42a5f5; font-weight: 600; margin-bottom: 8px;">🔢 Validação Estrutural</div>
+        <ul style="color: #aaa; font-size: 12px; line-height: 2; padding-left: 16px; margin: 0;">
+          <li>Contar artigos parseados vs. total esperado</li>
+          <li>Verificar sequência numérica (Art. 1, 2, ... N sem gaps)</li>
+          <li>Detectar artigos com texto vazio ou suspeitamente curto</li>
+          <li>Validar hierarquia (todo artigo tem path)</li>
+        </ul>
+      </div>
+
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+        <div style="color: #66bb6a; font-weight: 600; margin-bottom: 8px;">🔍 Validação de Anotações</div>
+        <ul style="color: #aaa; font-size: 12px; line-height: 2; padding-left: 16px; margin: 0;">
+          <li>Regex de segurança no texto_limpo buscando padrões residuais</li>
+          <li>Detectar parênteses com palavras-chave legislativas</li>
+          <li>Flaggar dispositivos onde texto_limpo ≈ texto_original (anotação não extraída?)</li>
+          <li>Score de confiança por dispositivo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+        <div style="color: #ff9800; font-weight: 600; margin-bottom: 8px;">🔄 Validação Cruzada</div>
+        <ul style="color: #aaa; font-size: 12px; line-height: 2; padding-left: 16px; margin: 0;">
+          <li>Comparar contagem de dispositivos entre Planalto e segunda fonte</li>
+          <li>Verificar texto de amostra aleatória (10% dos artigos) contra fonte 2</li>
+          <li>Detectar divergências de vigência (revogado numa fonte, ativo na outra)</li>
+        </ul>
+      </div>
+
+      <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+        <div style="color: #e91e63; font-weight: 600; margin-bottom: 8px;">📊 Relatório de Qualidade</div>
+        <ul style="color: #aaa; font-size: 12px; line-height: 2; padding-left: 16px; margin: 0;">
+          <li>Dashboard pós-ingestão: verde/amarelo/vermelho por lei</li>
+          <li>Lista de dispositivos flagrados para revisão manual</li>
+          <li>% de cobertura e score geral de confiança</li>
+          <li>Só 200 leis — revisão manual é viável nos flagrados</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; padding: 16px; background: #0d1117; border-radius: 8px; border-left: 3px solid #66bb6a;">
+      <div style="color: #66bb6a; font-weight: 600; margin-bottom: 8px;">O princípio: Revisão manual só nos flagrados</div>
+      <div style="color: #aaa; font-size: 13px; line-height: 1.7;">
+        Se a validação automática flagga 5% dos dispositivos, em 2.082 artigos do CC isso são ~104 artigos para revisar manualmente —
+        viável. E se a ingestão for boa, pode ser 1% ou menos. O olho humano só precisa ver o que a máquina não tem certeza.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UX -->
+<div class="section">
+  <h3>UX do Estudo — Camada de Anotações Legislativas</h3>
+  <p style="color: #aaa; margin-bottom: 16px;">Como o usuário interage com as anotações durante o estudo da lei seca.</p>
+
+  <div style="background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 12px 0;">
+    <div style="max-width: 600px; margin: 0 auto;">
+
+      <!-- Mock lei seca view -->
+      <div style="background: #0d1117; border-radius: 8px; padding: 20px; border: 1px solid #333;">
+        <div style="color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Lei Seca — Código Penal</div>
+
+        <!-- Article with indicator -->
+        <div style="position: relative; padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 2px solid transparent;">
+          <div style="color: #eee; font-size: 14px; line-height: 1.8;">
+            <strong>Art. 121.</strong> Matar alguém:
+          </div>
+          <!-- Small annotation indicator -->
+          <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: #ff9800; border-radius: 50%; opacity: 0.6;" title="Tem histórico legislativo"></div>
+        </div>
+
+        <div style="padding: 12px; border-radius: 6px; margin-bottom: 8px; margin-left: 16px;">
+          <div style="color: #ccc; font-size: 14px; line-height: 1.8;">
+            Pena - reclusão, de seis a vinte anos.
+          </div>
+        </div>
+
+        <!-- Expanded annotation tooltip example -->
+        <div style="margin: 8px 0 8px 32px; padding: 12px; background: #1a1a2e; border-radius: 8px; border: 1px solid #ff980033; font-size: 12px;">
+          <div style="color: #ff9800; font-weight: 600; margin-bottom: 6px;">📜 Histórico Legislativo</div>
+          <div style="color: #aaa; line-height: 1.8;">
+            • Redação dada pela Lei nº 13.968, de 2019<br>
+            • Vigência
+          </div>
+        </div>
+
+        <div style="padding: 12px; border-radius: 6px; margin-bottom: 4px; margin-left: 16px;">
+          <div style="color: #ccc; font-size: 14px; line-height: 1.8;">
+            <strong style="color: #eee;">§ 1º</strong> Se o agente comete o crime impelido por motivo de relevante valor social ou moral...
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px; color: #888; font-size: 12px; text-align: center;">
+        ● laranja = dispositivo tem histórico legislativo (hover/click para ver)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 20px; background: #1a1a2e; border-radius: 12px; border-left: 4px solid #66bb6a;">
+  <h3 style="margin: 0 0 12px 0; color: #66bb6a;">Resumo da Proposta</h3>
+  <div style="color: #ccc; font-size: 14px; line-height: 1.8;">
+    <strong>1. Ingestão:</strong> Fetch do HTML do Planalto (não copy/paste) → extrair anotações das tags HTML ANTES de parsear → parser regex no texto já limpo<br>
+    <strong>2. Storage:</strong> texto_limpo + anotacoes_legislativas[] + texto_original separados por dispositivo<br>
+    <strong>3. Validação:</strong> Contagem estrutural + regex de segurança no texto limpo + validação cruzada + relatório<br>
+    <strong>4. UX:</strong> Lei seca limpa por padrão, indicador visual de histórico legislativo, popup/hover para ver anotações<br>
+    <strong>5. Escala:</strong> Pipeline automatizável — informar URL do Planalto → ingestão + validação → relatório → revisão manual só dos flagrados
+  </div>
+</div>
+
+<div style="margin-top: 16px; text-align: center; color: #888; font-size: 13px;">
+  Essa proposta faz sentido? Podemos ajustar qualquer camada.
+</div>
