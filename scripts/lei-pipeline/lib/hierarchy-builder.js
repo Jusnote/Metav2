@@ -44,11 +44,17 @@ export function buildHierarchy(structural) {
     const levelIdx = HIERARCHY_LEVEL[item.type];
     if (levelIdx === undefined) continue;
 
+    // Path slug must include subtitle (when present) to match buildPathMap behavior.
+    // buildPathMap generates: "titulo-i-da-aplicacao-da-lei-penal" (description + subtitle)
+    // so hierarchy must use the same slug, not just "titulo-i" (description only).
+    const pathLabel = item.subtitle
+      ? `${item.description} ${item.subtitle}`
+      : item.description;
     const node = {
       tipo: LEVEL_TO_TIPO[item.type] || item.type.toLowerCase(),
       descricao: item.description,
       subtitulo: item.subtitle || null,
-      path: slugify(item.description),
+      path: slugify(pathLabel),
       filhos: [],
     };
 
