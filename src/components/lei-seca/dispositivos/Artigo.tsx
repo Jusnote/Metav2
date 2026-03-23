@@ -4,20 +4,20 @@ import { AnotacaoInline } from './AnotacaoInline'
 export function Artigo({ item, leiSecaMode }: { item: Dispositivo; leiSecaMode?: boolean }) {
   return (
     <div
-      className="mb-5 py-3 pl-4 border-l-3 border-indigo-600 bg-indigo-50/30 rounded-r-md"
+      className="mb-1.5 pl-3 border-l border-zinc-300"
       data-id={item.id}
       data-posicao={item.posicao}
     >
-      <div className="text-slate-800">{item.texto}</div>
+      <div className="text-zinc-900">{item.texto}</div>
 
       {item.pena && (
-        <div className="text-slate-400 italic ml-6 mt-2 text-[13px]">
+        <div className="pl-7 text-[#b4b4b4] text-[13px] mt-1">
           {item.pena}
         </div>
       )}
 
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (
-        <div className="ml-6 mt-2 space-y-1">
+        <div className="pl-7 mt-1 space-y-0.5">
           {item.anotacoes.map((a, i) => <AnotacaoInline key={i} anotacao={a} />)}
         </div>
       )}

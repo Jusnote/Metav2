@@ -4,20 +4,23 @@ const LARGE = ['PARTE', 'LIVRO', 'TITULO']
 const MEDIUM = ['CAPITULO', 'SECAO']
 
 export function EstruturaHeader({ item }: { item: Dispositivo }) {
-  if (LARGE.includes(item.tipo)) {
+  if (item.tipo === 'PARTE') {
     return (
-      <div className="text-center py-5" data-posicao={item.posicao}>
-        {item.tipo === 'PARTE' ? (
-          <div className="text-[10px] tracking-[5px] uppercase text-indigo-600 font-bold border-y border-slate-200 py-4">
-            {item.texto}
-          </div>
-        ) : (
-          <>
-            <div className="text-sm font-bold text-slate-900 tracking-wide">{item.texto}</div>
-            {item.epigrafe && (
-              <div className="text-[13px] text-slate-500 italic mt-1">{item.epigrafe}</div>
-            )}
-          </>
+      <div className="text-center my-10 relative" data-posicao={item.posicao}>
+        <div className="absolute left-0 right-0 top-1/2 h-px bg-zinc-100" />
+        <span className="relative bg-white px-6 text-[10px] tracking-[7px] uppercase text-zinc-400 font-semibold">
+          {item.texto}
+        </span>
+      </div>
+    )
+  }
+
+  if (item.tipo === 'LIVRO' || item.tipo === 'TITULO') {
+    return (
+      <div className="text-center mb-9 mt-9" data-posicao={item.posicao}>
+        <div className="text-sm font-bold text-zinc-700 tracking-[2px] uppercase">{item.texto}</div>
+        {item.epigrafe && (
+          <div className="text-sm text-zinc-400 mt-1">{item.epigrafe}</div>
         )}
       </div>
     )
@@ -25,19 +28,19 @@ export function EstruturaHeader({ item }: { item: Dispositivo }) {
 
   if (MEDIUM.includes(item.tipo)) {
     return (
-      <div className="text-center py-4" data-posicao={item.posicao}>
-        <div className="text-[13px] font-semibold text-slate-800">{item.texto}</div>
+      <div className="text-center mb-8 mt-7" data-posicao={item.posicao}>
+        <div className="text-xs font-semibold text-zinc-600 tracking-[1.5px] uppercase">{item.texto}</div>
         {item.epigrafe && (
-          <div className="text-[13px] text-slate-500 italic mt-1">{item.epigrafe}</div>
+          <div className="text-[13px] text-zinc-400 italic mt-1">{item.epigrafe}</div>
         )}
       </div>
     )
   }
 
-  // SUBSECAO
+  // SUBSECAO or SUBTITULO
   return (
-    <div className="text-center py-3" data-posicao={item.posicao}>
-      <div className="text-[13px] italic text-slate-500">{item.texto}</div>
+    <div className="text-center mb-7 mt-6" data-posicao={item.posicao}>
+      <div className="text-[13px] text-zinc-400 italic">{item.texto}</div>
     </div>
   )
 }
