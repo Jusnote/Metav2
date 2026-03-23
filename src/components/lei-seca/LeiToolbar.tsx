@@ -31,7 +31,11 @@ export function LeiToolbar() {
         {showRevogados ? 'Revogados \u2713' : 'Revogados'}
       </button>
 
-      <div className="flex items-center gap-1 ml-auto">
+      <div className="text-[10px] text-[#ccc] ml-auto mr-3 hidden sm:block">
+        J/K navegar · L lei seca · R revogados · Ctrl+F buscar
+      </div>
+
+      <div className="flex items-center gap-1">
         <button onClick={fontSizeStore.decrease} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#666] hover:bg-[#eee] flex items-center justify-center text-[11px] font-bold">A-</button>
         <span className="text-[11px] text-[#999] w-6 text-center">{fontSize}</span>
         <button onClick={fontSizeStore.increase} className="w-7 h-7 rounded-full bg-[#f4f4f4] text-[#666] hover:bg-[#eee] flex items-center justify-center text-[13px] font-bold">A+</button>
