@@ -8,7 +8,11 @@ import { useLeiSeca } from "@/contexts/LeiSecaContext";
 import { activeArtigoStore } from "@/stores/activeArtigoStore";
 import { leiCommentsStore, useLeiCommentsOpen } from "@/stores/leiCommentsStore";
 import { useKeyboardNav } from "@/hooks/useKeyboardNav";
+import { useCopyWithReference } from "@/hooks/useCopyWithReference";
 import { LeiSearchBar } from "@/components/lei-seca/LeiSearchBar";
+import { ReadingProgressBar } from "@/components/lei-seca/ReadingProgressBar";
+import { useReadingProgressTracker } from "@/hooks/useReadingProgress";
+import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
 import type { VirtuosoHandle } from "react-virtuoso";
 
 const StudyCompanionPanel = dynamic(
@@ -56,6 +60,11 @@ export default function LeiSecaPage() {
     toggleRevogados,
     onToggleSearch: () => setSearchOpen(prev => !prev),
   });
+
+  useCopyWithReference(dispositivos, currentLei);
+
+  const activeIndex = useActiveArtigoIndex();
+  useReadingProgressTracker(currentLeiId, dispositivos, totalDispositivos, activeIndex);
 
   // Sync comments store with current lei
   useEffect(() => {
@@ -118,6 +127,7 @@ export default function LeiSecaPage() {
   return (
     <div className="h-full flex flex-col min-w-0 flex-1">
       <LeiToolbar />
+      <ReadingProgressBar />
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area — full width so scrollbar stays at right edge */}
