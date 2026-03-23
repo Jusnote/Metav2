@@ -43,7 +43,7 @@ export function DispositivoList({
       endReached={handleEndReached}
       overscan={200}
       itemContent={(index, item) => (
-        <div className="max-w-3xl mx-auto px-14 leading-relaxed">
+        <div className="max-w-3xl mx-auto px-11 font-[Literata,Georgia,serif] text-base leading-[1.9]">
           <DispositivoRenderer
             item={item}
             leiSecaMode={leiSecaMode}
