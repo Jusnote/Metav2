@@ -1,15 +1,15 @@
 import type { Dispositivo } from '@/types/lei-api'
-import { AnotacaoInline } from './AnotacaoInline'
 import { BoldPrefix } from '@/lib/lei-text-bold'
 
 export function Paragrafo({ item, leiSecaMode }: { item: Dispositivo; leiSecaMode?: boolean }) {
   return (
-    <div className="pl-8 mb-0.5" data-posicao={item.posicao}>
+    <div className="pl-[34px] mb-2 relative" data-posicao={item.posicao}>
+      <span className="absolute left-[20px] text-[14px] text-[#d0d0d0]">›</span>
       <BoldPrefix texto={item.texto} tipo={item.tipo} />
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (
-        <div className="pl-8 mt-0.5 space-y-0.5">
-          {item.anotacoes.map((a, i) => <AnotacaoInline key={i} anotacao={a} />)}
-        </div>
+        <span className="text-[12px] font-light text-[#ccc] ml-1.5 hover:text-[#888] transition-colors">
+          {item.anotacoes.map(a => a.texto ?? `(${a.tipo})`).join(' ')}
+        </span>
       )}
     </div>
   )

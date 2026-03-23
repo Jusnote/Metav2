@@ -43,7 +43,7 @@ export function DispositivoList({
       endReached={handleEndReached}
       overscan={200}
       itemContent={(index, item) => (
-        <div className="max-w-3xl mx-auto px-11 font-[Literata,Georgia,serif] text-base leading-[1.9]">
+        <div className="max-w-[820px] mx-auto px-5 font-[Literata,Georgia,serif] text-base leading-[1.9]">
           <DispositivoRenderer
             item={item}
             leiSecaMode={leiSecaMode}
@@ -57,7 +57,7 @@ export function DispositivoList({
       components={{
         Footer: () =>
           isLoadingMore ? (
-            <div className="max-w-3xl mx-auto px-14 text-center py-4 text-muted-foreground text-sm">
+            <div className="max-w-[820px] mx-auto px-5 text-center py-4 text-muted-foreground text-sm">
               Carregando mais dispositivos...
             </div>
           ) : null,
