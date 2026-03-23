@@ -79,7 +79,7 @@ export default function LeiSecaPage() {
     [dispositivos]
   );
 
-  // Scroll to a dispositivo by posicao (used by UnifiedSearchBar via LeiToolbar)
+  // Scroll to a dispositivo by posicao (used by SearchBreadcrumb)
   const handleScrollToDispositivo = useCallback(
     (posicao: number) => {
       const index = dispositivos.findIndex(d => d.posicao === posicao);
