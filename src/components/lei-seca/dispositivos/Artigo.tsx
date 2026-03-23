@@ -14,10 +14,7 @@ export function Artigo({ item, leiSecaMode }: ArtigoProps) {
       data-posicao={item.posicao}
     >
       <div className="mb-1">
-        <span className="font-bold text-red-400">
-          {item.numero ? `Art. ${item.numero}.` : 'Art.'}
-        </span>
-        <span className="ml-1">{item.texto}</span>
+        {item.texto}
       </div>
 
       {item.pena && (
