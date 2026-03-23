@@ -4,8 +4,7 @@ import { useState, useCallback, useRef, useMemo, useEffect, type MutableRefObjec
 import { useActiveArtigoIndex } from '@/stores/activeArtigoStore'
 import { LeiTree } from '@/components/ui/lei-tree'
 import type { LeiTreeNode } from '@/components/ui/lei-tree'
-import { TracingBeam } from '@/components/ui/tracing-beam'
-import type { TracingBeamRef } from '@/components/ui/tracing-beam'
+// TracingBeam removed from dropdown — too heavy for compact context. Using plain LeiTree.
 import { hierarquiaToTreeNodes, injectArtigosIntoTree, resolvePathToPosicao } from '@/lib/lei-hierarchy'
 import { sanitizeHighlight } from './HighlightText'
 import type { HierarquiaNode, Dispositivo, BuscaHit } from '@/types/lei-api'
@@ -82,7 +81,6 @@ export function SearchBreadcrumbDropdown({
 }: SearchBreadcrumbDropdownProps) {
   const activeIndex = useActiveArtigoIndex()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const beamRef = useRef<TracingBeamRef>(null)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
 
   const toggleSection = useCallback((id: string) => {
@@ -285,22 +283,14 @@ export function SearchBreadcrumbDropdown({
           )}
         </div>
 
-        {/* LeiTree + TracingBeam */}
+        {/* LeiTree — clean, no TracingBeam in dropdown */}
         <div className="px-1">
-          <TracingBeam
-            ref={beamRef}
-            activeArtigoIndex={activeIndex}
-            scrollContainerRef={scrollRef}
-          >
-            <LeiTree
-              data={displayTree}
-              expanded={expandedSections}
-              onToggle={handleToggleAndNavigate}
-              onSelectArtigo={handleTreeSelect}
-              onAnimationStart={() => beamRef.current?.animationStarted()}
-              onAnimationSettled={() => beamRef.current?.remeasure()}
-            />
-          </TracingBeam>
+          <LeiTree
+            data={displayTree}
+            expanded={expandedSections}
+            onToggle={handleToggleAndNavigate}
+            onSelectArtigo={handleTreeSelect}
+          />
         </div>
 
         {displayTree.length === 0 && hasInput && !showSearchResults && (

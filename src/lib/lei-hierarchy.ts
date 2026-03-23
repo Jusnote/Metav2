@@ -35,8 +35,10 @@ export function injectArtigosIntoTree(
       : undefined
 
     if (expandedIds.has(node.id)) {
+      // Strip disambiguation suffix (e.g. "livro-iii--1" → "livro-iii") for path matching
+      const originalPath = node.id.replace(/--\d+$/, '')
       const artigos = dispositivos
-        .filter(d => d.tipo === 'ARTIGO' && d.path?.startsWith(node.id + '/'))
+        .filter(d => d.tipo === 'ARTIGO' && d.path?.startsWith(originalPath + '/'))
         .map((d, _i, arr) => ({
           id: `artigo-${d.id}`,
           type: 'artigo' as const,
@@ -105,6 +107,8 @@ export function resolvePathToPosicao(
   path: string,
   dispositivos: Dispositivo[]
 ): number | null {
-  const match = dispositivos.find(d => d.path?.startsWith(path))
+  // Strip disambiguation suffix for matching
+  const cleanPath = path.replace(/--\d+$/, '')
+  const match = dispositivos.find(d => d.path?.startsWith(cleanPath))
   return match?.posicao ?? null
 }
