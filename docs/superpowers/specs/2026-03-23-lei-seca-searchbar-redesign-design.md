@@ -22,7 +22,8 @@ The current `UnifiedSearchBar` (merged in `d2fdf15`) has structural issues:
 - The sidebar is removed entirely
 - A single component serves dual purpose: breadcrumb (closed) and search input (open)
 - This component is **aligned with the text column** (same `max-width` wrapper), not in the toolbar
-- The dropdown uses TracingBeam visual (dots + gradient line) to show position in hierarchy
+- The dropdown reuses existing `LeiTree` + `TracingBeam` components from `src/components/ui/`
+- Capítulos are expandable: clicking reveals artigos as leaf nodes (resolved locally from loaded `dispositivos`)
 - Mobile adapts with abbreviated breadcrumb and full-height dropdown
 
 ### Why not sidebar?
@@ -101,26 +102,53 @@ Appears directly below the search input, same width.
 
 Section header: `font-size: 9px`, `color: #c0c0c0`, `uppercase`, `letter-spacing: 1.5px`, label "Navegação"
 
-Tree items:
-- **Level 0 (Título):** `font-size: 12px`, `font-weight: 500`, `color: #444`
-  - Subtitle: `font-size: 10px`, `color: #b8b8b8`, `font-weight: 300`
-  - Dot: `width: 7px`, `height: 7px`, `border-radius: 50%`
-  - Active dot: `background: #2c3338` (filled)
-  - Inactive dot: `border: 1.5px solid #ddd`, `background: #fafafa` (hollow)
-- **Level 1 (Capítulo):** `font-size: 11px`, `padding-left: 56px`
-  - Dot: `5px × 5px`
-  - Active: `background: #2c3338`
-  - Inactive: `background: #ddd`
-- **Current item:** `background: #f0f4ff`, active dot gets `box-shadow: 0 0 0 3px rgba(44,51,56,0.1)`
+**Reuses existing components:**
+- `<TracingBeam>` wraps `<LeiTree>` inside the dropdown scroll container
+- `scrollContainerRef` points to the dropdown div (`max-height: 380px`, `overflow-y: auto`)
+- `activeArtigoIndex` from `useActiveArtigoIndex()` drives the active dot position
 
-TracingBeam line:
-- Full line: `width: 1.5px`, `background: #ededed`, `border-radius: 1px`
-- Active portion: `width: 1.5px`, `background: #2c3338`, `opacity: 0.4`
-- Active length proportional to scroll position (e.g., at article 45/341 → ~13%)
+**Tree data (LeiTreeNode[]):**
+- Built from `currentLei.hierarquia` via existing `hierarquiaToTreeNodes()` from sidebar
+- Structural nodes (Título, Capítulo, Seção) come from the API hierarchy
+- **Artigo nodes injected on expand** (see "Expandable Articles" section below)
 
-Hover on items: `background: #f0f0f0`, `border-radius: 6px`, `transition: 0.15s`
+**Visual customization** via className overrides on LeiTree/TracingBeam to match the minimal design:
+- Dot colors: active `#2c3338`, inactive `#ddd`
+- Hover: `bg-[#f0f0f0]` rounded
+- Current item: `bg-[#f0f4ff]`
+- TracingBeam gradient colors adapted to `#2c3338` palette
 
-Footer: `font-size: 10px`, `color: #d0d0d0`, `font-weight: 300`, "↑↓ navegar · ⏎ ir · esc fechar"
+Footer: `font-size: 10px`, `color: #d0d0d0`, `font-weight: 300`, "↑↓ navegar · → expandir · ← colapsar · ⏎ ir · esc fechar"
+
+### Expandable Articles in Hierarchy
+
+Capítulos/Seções show a chevron `›` (collapsed) / `˅` (expanded). Clicking expands to show artigos as leaf nodes.
+
+**Data resolution (local, no API change):**
+```typescript
+function injectArtigosIntoTree(
+  treeNodes: LeiTreeNode[],
+  dispositivos: Dispositivo[],
+  expandedIds: Set<string>
+): LeiTreeNode[]
+```
+
+Strategy:
+1. For each expanded Capítulo/Seção node, filter `dispositivos` where `d.path?.startsWith(node.id)` and `d.tipo === 'ARTIGO'`
+2. Map matched dispositivos to `LeiTreeNode` with `type: 'artigo'`, `artigoIndex: dispositivos.indexOf(d)`, `label: "Art. {numero}"`, `preview: first 60 chars of texto`
+3. Inject as `children` of the expanded node
+4. Memoize with `useMemo` keyed on `expandedIds` + `dispositivos.length`
+
+**Artigo leaf visual (via existing ArtigoNode in LeiTree):**
+- Dot: 3px (smaller than section dots)
+- Label: `font-size: 10.5px`, `font-weight: 300`, `color: #777`
+- Optional subtitle: first words of `texto`, `color: #c8c8c8`
+- Active artigo: highlighted with `bg-[#eef1ff]`, dot filled `#2c3338`
+- Inner connecting line: `1px #efefef` (drawn by TracingBeam automatically)
+
+**Keyboard:** `→` expands selected node, `←` collapses
+
+**Limitation:** Only artigos already loaded via pagination appear. If a Capítulo's artigos haven't been fetched yet, show a subtle message "Carregue mais para ver artigos" or trigger `loadMore` automatically.
 
 **With input (filtered hierarchy + full-text results):**
 
@@ -143,6 +171,8 @@ Two sections separated by a `1px #efefef` divider:
 | `Ctrl+F` / `Cmd+F` | Open search, focus input |
 | `Escape` | Close search, return to breadcrumb |
 | `↑` / `↓` | Move selection through results (both hierarchy and text results as one list) |
+| `→` | Expand selected tree node (show artigos) |
+| `←` | Collapse selected tree node (hide artigos) |
 | `Enter` | Navigate to selected result (scroll Virtuoso) |
 | Type text | Filter hierarchy + trigger debounced API search (500ms) |
 
@@ -231,7 +261,7 @@ Note: `SearchBreadcrumb` sits above the Virtuoso list but inside the same scroll
 
 **Prop threading:** `handleScrollToDispositivo` is passed directly from `LeiSecaPage` to `SearchBreadcrumb` (not through `LeiToolbar` anymore). `SearchBreadcrumb` also receives `dispositivos`, `currentLei`, and reads `activeArtigoIndex` from the external store.
 
-**TracingBeam in dropdown:** The existing `tracing-beam.tsx` is designed for sidebar scroll containers with framer-motion. The dropdown uses a TracingBeam-*inspired* visual (dots + gradient line via CSS), not the actual component. This is simpler and avoids pulling in scroll-driven animation logic for a static indicator.
+**Reusing LeiTree + TracingBeam:** The dropdown reuses the existing `src/components/ui/lei-tree.tsx` and `src/components/ui/tracing-beam.tsx` components directly. `TracingBeam` needs its `scrollContainerRef` pointed at the dropdown's scroll container (`max-height: 380px`, `overflow-y: auto`) instead of the sidebar. `LeiTree` already supports `type: 'artigo'` nodes with `artigoIndex`, `onSelectArtigo`, and expand/collapse with `AnimatePresence`. No recreation needed — only wiring changes.
 
 ## Mobile Adaptations (< 640px)
 
