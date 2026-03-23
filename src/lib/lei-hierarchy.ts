@@ -4,14 +4,22 @@ import type { LeiTreeNode } from '@/components/ui/lei-tree'
 // ---- Map API hierarchy → LeiTree data ----
 
 export function hierarquiaToTreeNodes(nodes: HierarquiaNode[]): LeiTreeNode[] {
-  return nodes.map((node) => ({
-    id: node.path,
-    type: node.tipo.toLowerCase() as LeiTreeNode['type'],
-    badge: node.descricao,
-    label: node.descricao,
-    sublabel: node.subtitulo,
-    children: node.filhos?.length ? hierarquiaToTreeNodes(node.filhos) : undefined,
-  }))
+  const seen = new Map<string, number>()
+  return nodes.map((node) => {
+    // Disambiguate duplicate paths (API may return e.g. two "livro-iii")
+    const count = seen.get(node.path) ?? 0
+    seen.set(node.path, count + 1)
+    const id = count === 0 ? node.path : `${node.path}--${count}`
+
+    return {
+      id,
+      type: node.tipo.toLowerCase() as LeiTreeNode['type'],
+      badge: node.descricao,
+      label: node.descricao,
+      sublabel: node.subtitulo,
+      children: node.filhos?.length ? hierarquiaToTreeNodes(node.filhos) : undefined,
+    }
+  })
 }
 
 // ---- Inject artigos as leaf nodes when a branch is expanded ----
