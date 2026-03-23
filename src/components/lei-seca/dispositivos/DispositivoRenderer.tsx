@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
+import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
 import { EstruturaHeader } from './EstruturaHeader'
 import { Epigrafe } from './Epigrafe'
 import { Artigo } from './Artigo'
@@ -17,7 +19,15 @@ interface Props {
   showRevogados?: boolean
 }
 
-export function DispositivoRenderer({ item, leiSecaMode, showRevogados }: Props) {
+export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados }: Props) {
+  // Normalize ordinals once per render (§ 2 o → § 2º, Art. 3 o → Art. 3º)
+  const item = useMemo<Dispositivo>(() => ({
+    ...rawItem,
+    texto: normalizeOrdinals(rawItem.texto),
+    epigrafe: rawItem.epigrafe ? normalizeOrdinals(rawItem.epigrafe) : null,
+    pena: rawItem.pena ? normalizeOrdinals(rawItem.pena) : null,
+  }), [rawItem])
+
   if (item.revogado && !showRevogados) return <RevogadoCollapsed item={item} />
 
   if (STRUCTURAL.includes(item.tipo)) return <EstruturaHeader item={item} />
