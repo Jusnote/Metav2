@@ -11,6 +11,7 @@ import { useKeyboardNav } from "@/hooks/useKeyboardNav";
 import { useCopyWithReference } from "@/hooks/useCopyWithReference";
 import { ReadingProgressBar } from "@/components/lei-seca/ReadingProgressBar";
 import { useReadingProgressTracker } from "@/hooks/useReadingProgress";
+import { SearchBreadcrumb } from "@/components/lei-seca/SearchBreadcrumb";
 import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
 import type { VirtuosoHandle } from "react-virtuoso";
 
@@ -89,6 +90,16 @@ export default function LeiSecaPage() {
     [dispositivos]
   );
 
+  // Scroll to a dispositivo by virtuoso index (used by SearchBreadcrumb)
+  const handleSelectArtigoIndex = useCallback(
+    (index: number) => {
+      if (virtuosoRef.current) {
+        virtuosoRef.current.scrollToIndex({ index, align: 'start', behavior: 'smooth' })
+      }
+    },
+    []
+  )
+
   // Scroll to a dispositivo by slug (used by LeiCommentsPanel)
   const scrollToCommentSlug = useCallback(
     (slug: string) => {
@@ -134,23 +145,36 @@ export default function LeiSecaPage() {
 
   return (
     <div className="h-full flex flex-col min-w-0 flex-1">
-      <LeiToolbar onScrollToDispositivo={handleScrollToDispositivo} />
+      <LeiToolbar />
       <ReadingProgressBar />
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area — full width so scrollbar stays at right edge */}
-        <div className="flex-1 overflow-hidden bg-white relative">
-          <DispositivoList
-            dispositivos={dispositivos}
-            totalCount={totalDispositivos}
-            loadMore={loadMore}
-            hasMore={hasMore}
-            isLoadingMore={isLoadingMore}
-            leiSecaMode={leiSecaMode}
-            showRevogados={showRevogados}
-            onRangeChanged={handleRangeChanged}
-            virtuosoRef={virtuosoRef}
-          />
+        <div className="flex-1 flex flex-col bg-white relative">
+          {/* SearchBreadcrumb: aligned with text column, overflow-visible for dropdown */}
+          <div className="max-w-[820px] mx-auto px-5 w-full relative z-20">
+            <SearchBreadcrumb
+              currentLei={currentLei}
+              dispositivos={dispositivos}
+              totalDispositivos={totalDispositivos}
+              onScrollToDispositivo={handleScrollToDispositivo}
+              onSelectArtigoIndex={handleSelectArtigoIndex}
+            />
+          </div>
+          {/* DispositivoList: overflow-hidden stays here */}
+          <div className="flex-1 overflow-hidden">
+            <DispositivoList
+              dispositivos={dispositivos}
+              totalCount={totalDispositivos}
+              loadMore={loadMore}
+              hasMore={hasMore}
+              isLoadingMore={isLoadingMore}
+              leiSecaMode={leiSecaMode}
+              showRevogados={showRevogados}
+              onRangeChanged={handleRangeChanged}
+              virtuosoRef={virtuosoRef}
+            />
+          </div>
         </div>
 
         {/* Study Companion Panel */}

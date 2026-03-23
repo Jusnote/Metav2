@@ -2,15 +2,10 @@
 
 import { fontSizeStore, useFontSize } from '@/stores/fontSizeStore'
 import { useLeiSeca } from '@/contexts/LeiSecaContext'
-import { UnifiedSearchBar } from './UnifiedSearchBar'
 
-interface LeiToolbarProps {
-  onScrollToDispositivo: (posicao: number) => void
-}
-
-export function LeiToolbar({ onScrollToDispositivo }: LeiToolbarProps) {
+export function LeiToolbar() {
   const {
-    leis, currentLeiId, currentLei, handleLeiChange,
+    leis, currentLeiId, handleLeiChange,
     leiSecaMode, toggleLeiSecaMode,
     showRevogados, toggleRevogados,
   } = useLeiSeca()
@@ -29,18 +24,13 @@ export function LeiToolbar({ onScrollToDispositivo }: LeiToolbarProps) {
         ))}
       </select>
 
-      {/* Unified search bar */}
-      <UnifiedSearchBar
-        leiId={currentLeiId}
-        hierarquia={currentLei?.hierarquia ?? []}
-        onScrollToDispositivo={onScrollToDispositivo}
-      />
+      <div className="flex-1" />
 
       {/* Toggles */}
       <button
         onClick={toggleLeiSecaMode}
         className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
-          leiSecaMode ? 'bg-[rgb(67,80,92)] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
+          leiSecaMode ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
         }`}
       >
         {leiSecaMode ? 'Lei Seca \u2713' : 'Lei Seca'}
@@ -49,7 +39,7 @@ export function LeiToolbar({ onScrollToDispositivo }: LeiToolbarProps) {
       <button
         onClick={toggleRevogados}
         className={`px-3 py-1 rounded-full transition-colors flex-shrink-0 ${
-          showRevogados ? 'bg-[rgb(67,80,92)] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
+          showRevogados ? 'bg-[#2c3338] text-white' : 'bg-[#f4f4f4] text-[#888] hover:bg-[#eee]'
         }`}
       >
         {showRevogados ? 'Revogados \u2713' : 'Revogados'}
@@ -63,7 +53,7 @@ export function LeiToolbar({ onScrollToDispositivo }: LeiToolbarProps) {
       </div>
 
       {/* Hints */}
-      <span className="text-[10px] text-[#ddd] hidden lg:block flex-shrink-0">J/K &middot; L &middot; R</span>
+      <span className="text-[10px] text-[#ddd] hidden lg:block flex-shrink-0">J/K · L · R</span>
     </div>
   )
 }
