@@ -45,10 +45,14 @@ function matchDispositivoToNode(
   // The dispositivo path must have at least as many segments as the node
   if (dParts.length < nodeParts.length) return false
 
-  // Each node segment must be a prefix of the corresponding dispositivo segment
-  // e.g. "titulo-i" matches "titulo-i-da-aplicacao-da-lei-penal"
+  // Each node segment must match the start of the corresponding dispositivo segment,
+  // followed by "-" (longer slug) or exact match.
+  // e.g. "titulo-i" matches "titulo-i-da-aplicacao-da-lei-penal" (followed by "-")
+  // but "titulo-i" must NOT match "titulo-ii-do-crime" (followed by "i", not "-")
   for (let i = 0; i < nodeParts.length; i++) {
-    if (!dParts[i].startsWith(nodeParts[i])) return false
+    const nSeg = nodeParts[i]
+    const dSeg = dParts[i]
+    if (dSeg !== nSeg && !dSeg.startsWith(nSeg + '-')) return false
   }
 
   return true
@@ -138,8 +142,9 @@ export function resolveBreadcrumb(
   // Walk hierarchy depth-first, matching each dispositivo path segment
   let currentNodes = hierarquia
   for (const dPart of dParts) {
-    // Find hierarchy node whose slug is a prefix of this dispositivo path segment
-    const match = currentNodes.find(n => dPart.startsWith(n.path))
+    // Find hierarchy node whose slug matches this dispositivo path segment
+    // Must be exact or followed by "-" to avoid titulo-i matching titulo-ii
+    const match = currentNodes.find(n => dPart === n.path || dPart.startsWith(n.path + '-'))
     if (match) {
       segments.push({
         label: match.descricao + (match.subtitulo ? ` — ${match.subtitulo}` : ''),
