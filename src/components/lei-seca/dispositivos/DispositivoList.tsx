@@ -2,6 +2,7 @@ import { useRef, useCallback } from 'react'
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso'
 import type { Dispositivo } from '@/types/lei-api'
 import { DispositivoRenderer } from './DispositivoRenderer'
+import { useFontSize } from '@/stores/fontSizeStore'
 
 interface DispositivoListProps {
   dispositivos: Dispositivo[]
@@ -29,6 +30,7 @@ export function DispositivoList({
 }: DispositivoListProps) {
   const internalRef = useRef<VirtuosoHandle>(null)
   const virtuosoRef = externalRef ?? internalRef
+  const fontSize = useFontSize()
 
   const handleEndReached = useCallback(() => {
     if (hasMore && !isLoadingMore) {
@@ -43,7 +45,8 @@ export function DispositivoList({
       endReached={handleEndReached}
       overscan={200}
       itemContent={(index, item) => (
-        <div className="max-w-[820px] mx-auto px-5 font-[Literata,Georgia,serif] text-base leading-[1.9] text-[rgb(67,80,92)]">
+        <div className="max-w-[820px] mx-auto px-5 font-[Literata,Georgia,serif] leading-[1.9] text-[rgb(67,80,92)]"
+             style={{ fontSize: `${fontSize}px` }}>
           <DispositivoRenderer
             item={item}
             leiSecaMode={leiSecaMode}

@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { DispositivoList } from "@/components/lei-seca/dispositivos/DispositivoList";
+import { LeiToolbar } from "@/components/lei-seca/LeiToolbar";
 import { useLeiSeca } from "@/contexts/LeiSecaContext";
 import { activeArtigoStore } from "@/stores/activeArtigoStore";
 import { leiCommentsStore, useLeiCommentsOpen } from "@/stores/leiCommentsStore";
@@ -103,6 +104,7 @@ export default function LeiSecaPage() {
 
   return (
     <div className="h-full flex flex-col min-w-0 flex-1">
+      <LeiToolbar />
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* Virtuoso list area — full width so scrollbar stays at right edge */}
