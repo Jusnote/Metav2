@@ -39,33 +39,70 @@ export function injectArtigosIntoTree(
       ? injectArtigosIntoTree(node.children, dispositivos, expandedIds)
       : undefined
 
-    if (expandedIds.has(node.id)) {
-      // Strip disambiguation suffix for path matching
-      const cleanPath = node.id.replace(/--\d+$/, '')
+    const cleanPath = node.id.replace(/--\d+$/, '')
+    const isLeaf = !children || children.length === 0
+    const isExpanded = expandedIds.has(node.id)
 
-      // Only inject in leaf structural nodes (no structural sub-children)
-      const hasStructuralChildren = children?.some(c => c.type !== 'artigo') ?? false
-      if (hasStructuralChildren) {
-        return { ...node, children }
-      }
+    // For leaf nodes: check if artigos exist for this path.
+    // If they do, we need to signal that this node IS expandable
+    // (by giving it a placeholder child) even before the user expands it.
+    // Otherwise LeiTree won't show the chevron → user can never expand → artigos never appear.
+    if (isLeaf) {
+      const hasArtigos = dispositivos.some(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
 
-      // Match artigos whose path exactly equals this node's path
-      // (artigos share the path of their deepest structural ancestor)
-      const artigos = dispositivos
-        .filter(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
-        .map((d) => ({
-          id: `artigo-${d.id}`,
-          type: 'artigo' as const,
-          label: `Art. ${d.numero ?? '?'}`,
-          preview: d.texto.slice(0, 60),
-          artigoIndex: dispositivos.indexOf(d),
-          children: undefined,
-        }))
-
-      if (artigos.length > 0) {
+      if (hasArtigos && !isExpanded) {
+        // Not expanded yet: add a placeholder child so the chevron shows
         return {
           ...node,
-          children: [...(children ?? []), ...artigos],
+          children: [{
+            id: `${node.id}--placeholder`,
+            type: 'artigo' as const,
+            label: 'Expandir para ver artigos...',
+            children: undefined,
+          }],
+        }
+      }
+
+      if (hasArtigos && isExpanded) {
+        // Expanded: inject actual artigos
+        const artigos = dispositivos
+          .filter(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
+          .map((d) => ({
+            id: `artigo-${d.id}`,
+            type: 'artigo' as const,
+            label: `Art. ${d.numero ?? '?'}`,
+            preview: d.texto.slice(0, 60),
+            artigoIndex: dispositivos.indexOf(d),
+            children: undefined,
+          }))
+
+        return {
+          ...node,
+          children: artigos,
+        }
+      }
+    }
+
+    // Non-leaf nodes: inject artigos only if expanded AND this is the deepest level
+    if (isExpanded) {
+      const hasStructuralChildren = children?.some(c => c.type !== 'artigo') ?? false
+      if (!hasStructuralChildren) {
+        const artigos = dispositivos
+          .filter(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
+          .map((d) => ({
+            id: `artigo-${d.id}`,
+            type: 'artigo' as const,
+            label: `Art. ${d.numero ?? '?'}`,
+            preview: d.texto.slice(0, 60),
+            artigoIndex: dispositivos.indexOf(d),
+            children: undefined,
+          }))
+
+        if (artigos.length > 0) {
+          return {
+            ...node,
+            children: [...(children ?? []), ...artigos],
+          }
         }
       }
     }
