@@ -37,9 +37,19 @@ export function injectArtigosIntoTree(
     if (expandedIds.has(node.id)) {
       // Strip disambiguation suffix (e.g. "livro-iii--1" → "livro-iii") for path matching
       const originalPath = node.id.replace(/--\d+$/, '')
+      const prefix = originalPath + '/'
+
+      // Only inject artigos that are DIRECT children of this node —
+      // i.e., path is "node-path/art-xxx" with no further "/" segments after the match.
+      // This prevents Art. 1 (parte-geral/titulo-i/cap-i/art-1) from appearing under PARTE GERAL.
       const artigos = dispositivos
-        .filter(d => d.tipo === 'ARTIGO' && d.path?.startsWith(originalPath + '/'))
-        .map((d, _i, arr) => ({
+        .filter(d => {
+          if (d.tipo !== 'ARTIGO' || !d.path?.startsWith(prefix)) return false
+          const remainder = d.path.slice(prefix.length)
+          // Direct child: no more "/" in the remainder
+          return !remainder.includes('/')
+        })
+        .map((d) => ({
           id: `artigo-${d.id}`,
           type: 'artigo' as const,
           label: `Art. ${d.numero ?? '?'}`,
