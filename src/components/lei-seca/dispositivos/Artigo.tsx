@@ -5,8 +5,7 @@ import { BoldPrefix } from '@/lib/lei-text-bold'
 export function Artigo({ item, leiSecaMode }: { item: Dispositivo; leiSecaMode?: boolean }) {
   return (
     <div className="mb-2" data-id={item.id} data-posicao={item.posicao}>
-      <div><BoldPrefix texto={item.texto} tipo={item.tipo} /></div>
-
+      <BoldPrefix texto={item.texto} tipo={item.tipo} />
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (
         <span className="text-[12px] font-light text-[#ccc] ml-1.5 hover:text-[#888] transition-colors">
           {item.anotacoes.map(a => a.texto ?? `(${a.tipo})`).join(' ')}
