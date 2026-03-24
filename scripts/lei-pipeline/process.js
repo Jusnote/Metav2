@@ -77,6 +77,56 @@ function extractNumero(type, description) {
   return null;
 }
 
+// ── Compute parent-child relationships ──────────────────────────────
+const PC_STRUCTURAL = new Set(['PARTE','LIVRO','TITULO','CAPITULO','SECAO','SUBSECAO','SUBTITULO','EMENTA','PREAMBULO']);
+
+function computeParentChild(dispositivos) {
+  let currentArtigo = null;
+  let currentParagrafo = null;
+  let currentInciso = null;
+
+  for (const d of dispositivos) {
+    if (PC_STRUCTURAL.has(d.tipo) || d.tipo === 'EPIGRAFE') {
+      d.parent_id = null;
+      d.artigo_id = null;
+      d.depth = -1;
+      continue;
+    }
+
+    if (d.tipo === 'ARTIGO') {
+      currentArtigo = d.id;
+      currentParagrafo = null;
+      currentInciso = null;
+      d.parent_id = null;
+      d.artigo_id = d.id;
+      d.depth = 0;
+    } else if (d.tipo === 'PARAGRAFO' || d.tipo === 'CAPUT') {
+      currentParagrafo = d.id;
+      currentInciso = null;
+      d.parent_id = currentArtigo;
+      d.artigo_id = currentArtigo;
+      d.depth = 1;
+    } else if (d.tipo === 'INCISO') {
+      currentInciso = d.id;
+      d.parent_id = currentParagrafo ?? currentArtigo;
+      d.artigo_id = currentArtigo;
+      d.depth = 2;
+    } else if (d.tipo === 'ALINEA') {
+      d.parent_id = currentInciso ?? currentParagrafo ?? currentArtigo;
+      d.artigo_id = currentArtigo;
+      d.depth = 3;
+    } else if (d.tipo === 'PENA') {
+      d.parent_id = currentParagrafo ?? currentArtigo;
+      d.artigo_id = currentArtigo;
+      d.depth = 1;
+    } else {
+      d.parent_id = currentArtigo;
+      d.artigo_id = currentArtigo;
+      d.depth = currentParagrafo ? 2 : 1;
+    }
+  }
+}
+
 // ── Process a single lei ─────────────────────────────────────────────
 
 /**
@@ -123,7 +173,7 @@ function processLei(leiDir) {
     ementa: doc.description || '',
     tipo: leiTipo,
     nivel: (doc.legisLevel || 'FEDERAL').toUpperCase(),
-    data: doc.date ? new Date(doc.date).toISOString().split('T')[0] : null,
+    data: (() => { try { const d = new Date(doc.date); return !isNaN(d.getTime()) ? d.toISOString().split('T')[0] : null; } catch { return null; } })(),
     status: doc.status || 'ATIVO',
     isActive: doc.isActive !== undefined ? doc.isActive : true,
     publisher: doc.publisher || null,
@@ -143,8 +193,6 @@ function processLei(leiDir) {
   // ── Process dispositivos ──
   const dispositivos = [];
   const flagged = [];
-  let artigos = 0;
-  let revogados = 0;
 
   // Track previous non-revoked item for epigrafe/pena linking
   // We'll do a two-pass approach: first pass collects all items with classification,
@@ -162,12 +210,6 @@ function processLei(leiDir) {
     if (item.type === 'PROTOCOLO' || item.type === 'DOU_PUBLICACAO' || item.type === 'TABELA') {
       classified.push({ item, skip: true, tipo: item.type });
       continue;
-    }
-
-    // Count revoked items but DO NOT skip them — they are included as
-    // dispositivos with revogado=true. Frontend controls visibility.
-    if (item.revoked) {
-      revogados++;
     }
 
     // Determine effective type
@@ -218,8 +260,16 @@ function processLei(leiDir) {
 
     // Extract inline links
     const linkResult = extractInlineLinks(item.description);
-    const cleanTextFromLinks = linkResult.cleanText;
+    let cleanTextFromLinks = linkResult.cleanText;
     const links = linkResult.links;
+
+    // Strip <strike>...</strike> blocks (old penalty text embedded with new)
+    cleanTextFromLinks = cleanTextFromLinks.replace(/<strike>[^<]*<\/strike>\s*/gi, '');
+    cleanTextFromLinks = cleanTextFromLinks.replace(/<\/?strike>/gi, '');
+    // Targeted HTML cleanup (safe for "X < Y" expressions)
+    const KNOWN_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|div|p|br|sup|sub|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
+    cleanTextFromLinks = cleanTextFromLinks.replace(KNOWN_TAGS, '');
+    cleanTextFromLinks = cleanTextFromLinks.replace(/\s*>\s*$/, '');
 
     // Separate annotations from the link-cleaned text
     const annotResult = separateAnnotations(cleanTextFromLinks);
@@ -318,9 +368,6 @@ function processLei(leiDir) {
       }
     }
 
-    // Count artigos
-    if (item.type === 'ARTIGO') artigos++;
-
     // Flag problematic items
     const isFlagged = tipo === 'paragrafo_quebrado' || tipo === 'nao_classificado';
     if (isFlagged) {
@@ -357,14 +404,20 @@ function processLei(leiDir) {
       revogado: item.revoked || false,
       posicao: item.index,
       path: path || '',
+      parent_id: null,   // computed by computeParentChild
+      artigo_id: null,   // computed by computeParentChild
+      depth: 0,          // computed by computeParentChild
     });
   }
+
+  // Compute parent-child relationships
+  computeParentChild(dispositivos);
 
   // ── Stats ──
   const stats = {
     total: dispositivos.length,
-    artigos,
-    revogados,
+    artigos: dispositivos.filter(d => d.tipo === 'ARTIGO').length,
+    revogados: dispositivos.filter(d => d.revogado).length,
     flagged: flagged.length,
     excluidos: itensExcluidos.length,
   };
