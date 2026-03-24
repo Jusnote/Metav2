@@ -98,9 +98,15 @@ export function extractInlineLinks(description) {
   // Replace <a> tags with their text content
   let cleanText = description.replace(/<a\s+[^>]*>(.*?)<\/a>/gi, '$1');
 
-  // Targeted HTML tag removal — safe for texts containing < and > (e.g., "se X < Y")
-  const KNOWN_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|div|p|br|sup|sub|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
-  cleanText = cleanText.replace(KNOWN_TAGS, '');
+  // Targeted HTML cleanup — two-pass (safe for "X < Y" expressions)
+  // Block-level tags → space (prevents word-gluing)
+  const BLOCK_TAGS = /(<\/?(br|p|div|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
+  cleanText = cleanText.replace(BLOCK_TAGS, ' ');
+  // Inline tags → empty
+  const INLINE_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|sup|sub)\b[^>]*>)/gi;
+  cleanText = cleanText.replace(INLINE_TAGS, '');
+  // Collapse multiple spaces
+  cleanText = cleanText.replace(/\s{2,}/g, ' ').trim();
 
   // Decode HTML entities
   cleanText = decodeEntities(cleanText);

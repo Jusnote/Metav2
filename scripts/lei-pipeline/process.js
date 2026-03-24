@@ -84,6 +84,7 @@ function computeParentChild(dispositivos) {
   let currentArtigo = null;
   let currentParagrafo = null;
   let currentInciso = null;
+  let currentAlinea = null;
 
   for (const d of dispositivos) {
     if (PC_STRUCTURAL.has(d.tipo) || d.tipo === 'EPIGRAFE') {
@@ -97,24 +98,33 @@ function computeParentChild(dispositivos) {
       currentArtigo = d.id;
       currentParagrafo = null;
       currentInciso = null;
+      currentAlinea = null;
       d.parent_id = null;
       d.artigo_id = d.id;
       d.depth = 0;
     } else if (d.tipo === 'PARAGRAFO' || d.tipo === 'CAPUT') {
       currentParagrafo = d.id;
       currentInciso = null;
+      currentAlinea = null;
       d.parent_id = currentArtigo;
       d.artigo_id = currentArtigo;
       d.depth = 1;
     } else if (d.tipo === 'INCISO') {
       currentInciso = d.id;
+      currentAlinea = null;
       d.parent_id = currentParagrafo ?? currentArtigo;
       d.artigo_id = currentArtigo;
       d.depth = 2;
     } else if (d.tipo === 'ALINEA') {
+      currentAlinea = d.id;
       d.parent_id = currentInciso ?? currentParagrafo ?? currentArtigo;
       d.artigo_id = currentArtigo;
       d.depth = 3;
+    } else if (d.tipo === 'ITEM') {
+      // LC 95/1998: itens são subdivisões de alíneas (1., 2., 3.)
+      d.parent_id = currentAlinea ?? currentInciso ?? currentParagrafo ?? currentArtigo;
+      d.artigo_id = currentArtigo;
+      d.depth = 4;
     } else if (d.tipo === 'PENA') {
       d.parent_id = currentParagrafo ?? currentArtigo;
       d.artigo_id = currentArtigo;
@@ -266,9 +276,15 @@ function processLei(leiDir) {
     // Strip <strike>...</strike> blocks (old penalty text embedded with new)
     cleanTextFromLinks = cleanTextFromLinks.replace(/<strike>[^<]*<\/strike>\s*/gi, '');
     cleanTextFromLinks = cleanTextFromLinks.replace(/<\/?strike>/gi, '');
-    // Targeted HTML cleanup (safe for "X < Y" expressions)
-    const KNOWN_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|div|p|br|sup|sub|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
-    cleanTextFromLinks = cleanTextFromLinks.replace(KNOWN_TAGS, '');
+    // Targeted HTML cleanup — two-pass (safe for "X < Y" expressions)
+    // 1. Block-level tags → space (prevents word-gluing: "Sentença<br>Condenatória" → "Sentença Condenatória")
+    const BLOCK_TAGS = /(<\/?(br|p|div|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
+    cleanTextFromLinks = cleanTextFromLinks.replace(BLOCK_TAGS, ' ');
+    // 2. Inline tags → empty (bold, italic, links etc. don't need spacing)
+    const INLINE_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|sup|sub)\b[^>]*>)/gi;
+    cleanTextFromLinks = cleanTextFromLinks.replace(INLINE_TAGS, '');
+    // Collapse multiple spaces left by block tag replacement
+    cleanTextFromLinks = cleanTextFromLinks.replace(/\s{2,}/g, ' ').trim();
     cleanTextFromLinks = cleanTextFromLinks.replace(/\s*>\s*$/, '');
 
     // Separate annotations from the link-cleaned text
