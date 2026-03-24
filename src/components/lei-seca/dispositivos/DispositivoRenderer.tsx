@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
+import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
 import { EstruturaHeader } from './EstruturaHeader'
 import { Epigrafe } from './Epigrafe'
@@ -17,9 +18,11 @@ interface Props {
   item: Dispositivo
   leiSecaMode?: boolean
   showRevogados?: boolean
+  grifos?: Grifo[]
+  onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
 }
 
-export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados }: Props) {
+export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados, grifos = [], onGrifoClick }: Props) {
   // Normalize ordinals once per render (§ 2 o → § 2º, Art. 3 o → Art. 3º)
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
@@ -36,11 +39,11 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados 
 
   if (STRUCTURAL.includes(item.tipo)) return <EstruturaHeader item={item} />
   if (item.tipo === 'EPIGRAFE') return <Epigrafe item={item} />
-  if (item.tipo === 'ARTIGO') return <Artigo item={item} leiSecaMode={leiSecaMode} />
-  if (item.tipo === 'PARAGRAFO' || item.tipo === 'CAPUT') return <Paragrafo item={item} leiSecaMode={leiSecaMode} />
-  if (item.tipo === 'INCISO') return <Inciso item={item} leiSecaMode={leiSecaMode} />
-  if (item.tipo === 'ALINEA') return <Alinea item={item} leiSecaMode={leiSecaMode} />
-  if (item.tipo === 'PENA') return <Pena item={item} />
+  if (item.tipo === 'ARTIGO') return <Artigo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  if (item.tipo === 'PARAGRAFO' || item.tipo === 'CAPUT') return <Paragrafo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  if (item.tipo === 'INCISO') return <Inciso item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  if (item.tipo === 'ALINEA') return <Alinea item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  if (item.tipo === 'PENA') return <Pena item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 
-  return <GenericDispositivo item={item} />
+  return <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 }
