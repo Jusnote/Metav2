@@ -4,9 +4,9 @@ import { useState, useCallback, useRef, useMemo, useEffect, type MutableRefObjec
 import { useActiveArtigoIndex } from '@/stores/activeArtigoStore'
 import { LeiTree } from '@/components/ui/lei-tree'
 import type { LeiTreeNode } from '@/components/ui/lei-tree'
-// TracingBeam removed from dropdown — too heavy for compact context. Using plain LeiTree.
-import { hierarquiaToTreeNodes, injectArtigosIntoTree, resolvePathToPosicao } from '@/lib/lei-hierarchy'
+import { hierarquiaToTreeNodes, injectArtigosIntoTree, resolvePathToPosicao, resolveActivePathIds } from '@/lib/lei-hierarchy'
 import { sanitizeHighlight } from './HighlightText'
+import { DrillDownView } from './DrillDownView'
 import type { HierarquiaNode, Dispositivo, BuscaHit } from '@/types/lei-api'
 
 interface SearchBreadcrumbDropdownProps {
@@ -81,7 +81,21 @@ export function SearchBreadcrumbDropdown({
 }: SearchBreadcrumbDropdownProps) {
   const activeIndex = useActiveArtigoIndex()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
+
+  // Auto-expand active path on mount
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(() =>
+    resolveActivePathIds(dispositivos, activeIndex, hierarquia)
+  )
+
+  // Responsive state
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const toggleSection = useCallback((id: string) => {
     setExpandedSections(prev => {
@@ -98,6 +112,12 @@ export function SearchBreadcrumbDropdown({
     [hierarquia]
   )
 
+  // Active path IDs for highlighting ancestors in the connected tree
+  const activePathIds = useMemo(
+    () => resolveActivePathIds(dispositivos, activeIndex, hierarquia),
+    [dispositivos, activeIndex, hierarquia]
+  )
+
   // Inject artigos into expanded nodes
   const treeWithArtigos = useMemo(
     () => injectArtigosIntoTree(baseTree, dispositivos, expandedSections),
@@ -111,8 +131,6 @@ export function SearchBreadcrumbDropdown({
   }, [treeWithArtigos, input])
 
   // Auto-expand all matching branches when searching
-  // Uses baseTree (not treeWithArtigos) to avoid infinite loop:
-  // setExpandedSections → expandedSections changes → treeWithArtigos recalculates → effect re-fires
   useEffect(() => {
     if (!input) return
     const filtered = filterTree(baseTree, input)
@@ -125,12 +143,10 @@ export function SearchBreadcrumbDropdown({
   const hasInput = input.length > 0
   const showSearchResults = hasInput && (hits.length > 0 || isSearching)
 
-  // Handle tree node click → scroll to position
   const handleTreeSelect = useCallback((_artigoIndex: number) => {
     onSelectArtigo(_artigoIndex)
   }, [onSelectArtigo])
 
-  // Handle section node click → just expand/collapse, don't navigate or close
   const handleToggle = useCallback((id: string) => {
     toggleSection(id)
   }, [toggleSection])
@@ -225,30 +241,24 @@ export function SearchBreadcrumbDropdown({
   useEffect(() => {
     if (selectedIndex === undefined || selectedIndex < 0) return
 
-    // For search hits, data-selectable-index is on the button
     const hitEl = scrollRef.current?.querySelector(`[data-selectable-index="${selectedIndex}"]`)
     if (hitEl) {
       hitEl.scrollIntoView({ block: 'nearest' })
       return
     }
 
-    // For tree nodes, find the corresponding DOM element
     const item = selectableItems[selectedIndex]
     if (!item || item.type !== 'tree-node') return
 
     let el: Element | null = null
     if (item.artigoIndex !== undefined) {
-      // Artigo nodes have data-artigo-index
       el = scrollRef.current?.querySelector(`[data-artigo-index="${item.artigoIndex}"]`) ?? null
     } else if (item.path) {
-      // Branch nodes: we query all [data-tree-branch] buttons and match by the node order in the tree
-      // Find branch elements in order and match to our flat list index among tree-node items
       const treeNodeItems = selectableItems.filter(s => s.type === 'tree-node')
       const indexAmongTreeNodes = treeNodeItems.indexOf(item)
       if (indexAmongTreeNodes >= 0) {
         const treeContainer = scrollRef.current?.querySelector('[role="tree"]')
         if (treeContainer) {
-          // Get all interactive elements: branch buttons + artigo containers
           const allNodes = treeContainer.querySelectorAll('[data-tree-branch], [data-artigo-index]')
           el = allNodes[indexAmongTreeNodes] ?? null
         }
@@ -257,53 +267,78 @@ export function SearchBreadcrumbDropdown({
 
     if (el) {
       el.scrollIntoView({ block: 'nearest' })
-      // Add temporary highlight
-      el.classList.add('ring-2', 'ring-blue-300', 'bg-blue-50/50', 'rounded-md')
+      el.classList.add('ring-2', 'ring-[rgba(22,163,74,0.3)]', 'bg-[rgba(22,163,74,0.06)]', 'rounded-md')
       return () => {
-        el?.classList.remove('ring-2', 'ring-blue-300', 'bg-blue-50/50', 'rounded-md')
+        el?.classList.remove('ring-2', 'ring-[rgba(22,163,74,0.3)]', 'bg-[rgba(22,163,74,0.06)]', 'rounded-md')
       }
     }
   }, [selectedIndex, selectableItems])
 
   return (
-    <div className="absolute left-0 right-0 top-full z-50">
+    <div className="absolute left-0 right-0 top-full z-50 mt-[6px]">
       <div
         ref={scrollRef}
-        className="bg-[#fafafa] border border-[#e8e8e8] border-t-0 sm:rounded-b-[10px] rounded-b-[8px] shadow-[0_12px_32px_rgba(0,0,0,0.08)] sm:max-h-[380px] max-h-[60vh] overflow-y-auto"
+        className="bg-white/95 rounded-xl border border-white/50 sm:max-h-[380px] max-h-[60vh] overflow-y-auto will-change-transform"
+        style={{
+          boxShadow: '0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5)',
+        }}
       >
         {/* ---- HIERARCHY SECTION ---- */}
-        <div className="px-[14px] pt-[10px] pb-1 text-[9px] text-[#c0c0c0] uppercase tracking-[1.5px] font-normal">
+        <div className="px-4 pt-[10px] pb-1 text-[9px] text-[#8a9a8f] uppercase tracking-[1.5px] font-medium">
           Navegação
           {hasInput && displayTree.length > 0 && (
             <span className="ml-1 normal-case tracking-normal">— {displayTree.length} itens</span>
           )}
         </div>
 
-        {/* LeiTree — clean, no TracingBeam in dropdown */}
-        <div className="px-1">
-          <LeiTree
-            data={displayTree}
-            expanded={expandedSections}
-            onToggle={handleToggle}
-            onSelectArtigo={handleTreeSelect}
-          />
-        </div>
+        {/* Skeleton loading */}
+        {hierarquia.length === 0 && (
+          <div className="px-4 py-3 space-y-2">
+            <div className="h-3 rounded bg-[rgba(22,163,74,0.06)] animate-pulse" style={{ width: '60%' }} />
+            <div className="h-3 rounded bg-[rgba(22,163,74,0.06)] animate-pulse" style={{ width: '40%' }} />
+            <div className="h-3 rounded bg-[rgba(22,163,74,0.06)] animate-pulse" style={{ width: '50%' }} />
+          </div>
+        )}
 
-        {displayTree.length === 0 && hasInput && !showSearchResults && (
-          <div className="px-[14px] py-3 text-[11px] text-[#ccc] font-light">
+        {/* Desktop: Connected tree */}
+        {hierarquia.length > 0 && !isMobile && (
+          <div className="px-1">
+            <LeiTree
+              data={displayTree}
+              expanded={expandedSections}
+              activePath={activePathIds}
+              onToggle={handleToggle}
+              onSelectArtigo={handleTreeSelect}
+            />
+          </div>
+        )}
+
+        {/* Mobile: Drill-down */}
+        {hierarquia.length > 0 && isMobile && (
+          <DrillDownView
+            hierarquia={hierarquia}
+            dispositivos={dispositivos}
+            input={input}
+            onSelectHit={onSelectHit}
+            onSelectArtigo={onSelectArtigo}
+          />
+        )}
+
+        {!isMobile && displayTree.length === 0 && hasInput && !showSearchResults && (
+          <div className="px-4 py-3 text-[11px] text-[#b0c0b5] font-light">
             Nenhum item na estrutura
           </div>
         )}
 
         {/* ---- DIVIDER ---- */}
         {showSearchResults && displayTree.length > 0 && (
-          <div className="h-px bg-[#efefef] mx-[14px] my-[6px]" />
+          <div className="h-px bg-[rgba(22,163,74,0.06)] mx-4 my-[6px]" />
         )}
 
         {/* ---- FULL-TEXT SEARCH RESULTS ---- */}
         {showSearchResults && (
           <>
-            <div className="px-[14px] pt-[8px] pb-1 text-[9px] text-[#c0c0c0] uppercase tracking-[1.5px] font-normal">
+            <div className="px-4 pt-2 pb-1 text-[9px] text-[#8a9a8f] uppercase tracking-[1.5px] font-medium">
               No texto
               {!isSearching && (
                 <span className="ml-1 normal-case tracking-normal">— {total} resultados</span>
@@ -321,17 +356,17 @@ export function SearchBreadcrumbDropdown({
                   key={i}
                   data-selectable-index={flatIndex}
                   onClick={() => onSelectHit(hit.dispositivo.posicao)}
-                  className={`w-full text-left px-[14px] py-2 border-l-2 transition-all duration-150 rounded-r-lg ${
+                  className={`w-full text-left px-4 py-2 border-l-2 transition-all duration-150 ${
                     isSelected
-                      ? 'border-l-[#2c3338] bg-[#f0f4ff]'
-                      : 'border-transparent hover:border-l-[#2c3338] hover:bg-[#f0f0f0]'
+                      ? 'border-l-[#16a34a] bg-[rgba(22,163,74,0.06)]'
+                      : 'border-transparent hover:border-l-[#16a34a] hover:bg-[rgba(22,163,74,0.04)]'
                   }`}
                 >
                   <div
-                    className="text-[12.5px] text-[#4a5058] leading-[1.6] font-[Literata,Georgia,serif] line-clamp-2"
+                    className="text-[12.5px] text-[#4a5a50] leading-[1.6] font-[Literata,Georgia,serif] line-clamp-2 [&_b]:font-semibold [&_b]:text-[#1a2a1f] [&_mark]:bg-[rgba(74,222,128,0.25)] [&_mark]:text-inherit [&_mark]:rounded-sm [&_mark]:px-[1px]"
                     dangerouslySetInnerHTML={{ __html: sanitizeHighlight(hit.highlight) }}
                   />
-                  <div className="text-[9px] text-[#c0c0c0] mt-[3px] font-light font-[Outfit,sans-serif]">
+                  <div className="text-[9.5px] text-[#a0b0a5] mt-[3px] font-light font-[Outfit,sans-serif]">
                     {hit.lei.titulo}
                   </div>
                 </button>
@@ -342,18 +377,20 @@ export function SearchBreadcrumbDropdown({
 
         {/* No results at all */}
         {hasInput && !isSearching && debouncedTerm.length >= 2 && hits.length === 0 && displayTree.length === 0 && (
-          <div className="px-[14px] py-6 text-center text-[12px] text-[#ccc] font-light">
+          <div className="px-4 py-6 text-center text-[12px] text-[#b0c0b5] font-light">
             Nenhum resultado para &ldquo;{input}&rdquo;
           </div>
         )}
 
         {/* ---- FOOTER ---- */}
-        <div className="px-[14px] py-[6px] border-t border-[#f0f0f0] text-[10px] text-[#d0d0d0] font-light flex gap-[14px] sticky bottom-0 bg-[#fafafa] sm:rounded-b-[10px] rounded-b-[8px]">
-          <span className="hidden sm:inline">↑↓</span>
-          <span className="hidden sm:inline">→ expandir</span>
-          <span className="hidden sm:inline">← colapsar</span>
-          <span className="hidden sm:inline">⏎ ir</span>
-          <span className="hidden sm:inline">esc</span>
+        <div className="px-4 py-[6px] border-t border-[rgba(22,163,74,0.06)] text-[10px] text-[#b0c0b5] font-light flex gap-[14px] sticky bottom-0 bg-white/95 rounded-b-xl">
+          <span className="hidden sm:flex gap-[14px]">
+            <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded mr-[2px]">↑</kbd><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded">↓</kbd> navegar</span>
+            <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded mr-[2px]">→</kbd> expandir</span>
+            <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded mr-[2px]">←</kbd> colapsar</span>
+            <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded mr-[2px]">⏎</kbd> ir</span>
+            <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded">esc</kbd></span>
+          </span>
           <span className="sm:hidden">toque para navegar</span>
         </div>
       </div>
