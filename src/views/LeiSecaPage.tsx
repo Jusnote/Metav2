@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { DispositivoList } from "@/components/lei-seca/dispositivos/DispositivoList";
 import { LeiToolbar } from "@/components/lei-seca/LeiToolbar";
@@ -13,6 +13,10 @@ import { ReadingProgressBar } from "@/components/lei-seca/ReadingProgressBar";
 import { useReadingProgressTracker } from "@/hooks/useReadingProgress";
 import { SearchBreadcrumb } from "@/components/lei-seca/SearchBreadcrumb";
 import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
+import { useGrifos } from "@/hooks/useGrifos";
+import { GrifoPopup } from "@/components/lei-seca/GrifoPopup";
+import { grifoPopupStore } from "@/stores/grifoPopupStore";
+import type { Grifo, GrifoColor } from "@/types/grifo";
 
 const StudyCompanionPanel = dynamic(
   () =>
@@ -56,6 +60,101 @@ export default function LeiSecaPage() {
   });
 
   useCopyWithReference(dispositivos, currentLei);
+
+  const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId);
+
+  // Selection handler — opens grifo popup on text selection
+  const lastScrollRef = useRef(0);
+  useEffect(() => {
+    const scrollHandler = () => { lastScrollRef.current = Date.now(); };
+    window.addEventListener('scroll', scrollHandler, true);
+    return () => window.removeEventListener('scroll', scrollHandler, true);
+  }, []);
+
+  useEffect(() => {
+    const handler = () => {
+      if (Date.now() - lastScrollRef.current < 300) return;
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) return;
+      const text = sel.toString().trim();
+      if (text.length <= 3) return;
+      const range = sel.getRangeAt(0);
+      const textoEl = (range.startContainer as HTMLElement).closest?.('[data-texto]')
+        ?? (range.startContainer.parentElement as HTMLElement)?.closest?.('[data-texto]');
+      if (!textoEl) return;
+      const dispEl = textoEl.closest('[data-id]');
+      if (!dispEl) return;
+      const dispositivoId = dispEl.getAttribute('data-id')!;
+      const textoContent = textoEl.textContent ?? '';
+      const selText = sel.toString();
+      const startIdx = textoContent.indexOf(selText);
+      if (startIdx === -1) return;
+      grifoPopupStore.openNew({
+        dispositivoId,
+        startOffset: startIdx,
+        endOffset: startIdx + selText.length,
+        textoGrifado: selText,
+      });
+    };
+    document.addEventListener('mouseup', handler);
+    return () => document.removeEventListener('mouseup', handler);
+  }, []);
+
+  // Keyboard shortcuts Alt+1..5
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (!e.altKey) return;
+      const colors: Record<string, GrifoColor> = { '1': 'yellow', '2': 'green', '3': 'blue', '4': 'pink', '5': 'orange' };
+      const color = colors[e.key];
+      if (!color) return;
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || sel.toString().trim().length <= 3) return;
+      e.preventDefault();
+      // Trigger same flow as popup color click
+      const s = grifoPopupStore.getSnapshot();
+      if (s.isOpen && s.dispositivoId && currentLeiId) {
+        createGrifo({
+          lei_id: currentLeiId,
+          dispositivo_id: s.dispositivoId,
+          start_offset: s.startOffset,
+          end_offset: s.endOffset,
+          texto_grifado: s.textoGrifado,
+          color,
+        });
+        grifoPopupStore.setLastColor(color);
+        grifoPopupStore.close();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [createGrifo, currentLeiId]);
+
+  // Grifo click handler
+  const handleGrifoClick = useCallback((grifo: Grifo, _rect: DOMRect) => {
+    grifoPopupStore.openExisting(grifo);
+  }, []);
+
+  // Popup callbacks
+  const handleCreateGrifo = useCallback((color: GrifoColor) => {
+    const s = grifoPopupStore.getSnapshot();
+    if (!s.dispositivoId || !currentLeiId) return;
+    createGrifo({
+      lei_id: currentLeiId,
+      dispositivo_id: s.dispositivoId,
+      start_offset: s.startOffset,
+      end_offset: s.endOffset,
+      texto_grifado: s.textoGrifado,
+      color,
+    });
+  }, [createGrifo, currentLeiId]);
+
+  const handleUpdateColor = useCallback((id: string, color: GrifoColor) => {
+    updateGrifo(id, { color });
+  }, [updateGrifo]);
+
+  const handleDeleteGrifo = useCallback((id: string) => {
+    deleteGrifo(id);
+  }, [deleteGrifo]);
 
   const activeIndex = useActiveArtigoIndex();
   useReadingProgressTracker(currentLeiId, dispositivos, totalDispositivos, activeIndex);
@@ -152,6 +251,8 @@ export default function LeiSecaPage() {
               dispositivos={dispositivos}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
+              grifosByDispositivo={grifosByDispositivo}
+              onGrifoClick={handleGrifoClick}
             />
           </div>
         </div>
@@ -172,6 +273,12 @@ export default function LeiSecaPage() {
           </div>
         )}
       </div>
+      <GrifoPopup
+        onCreateGrifo={handleCreateGrifo}
+        onUpdateColor={handleUpdateColor}
+        onDeleteGrifo={handleDeleteGrifo}
+        onOpenNote={() => { /* TODO: wire inline note in sub-project integration */ }}
+      />
     </div>
   );
 }

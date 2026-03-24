@@ -40,6 +40,13 @@ export function useCopyWithReference(
 
       e.preventDefault()
       e.clipboardData?.setData('text/plain', textWithRef)
+
+      // Strip grifo marks from HTML clipboard
+      const htmlContent = e.clipboardData?.getData('text/html') ?? ''
+      if (htmlContent) {
+        const cleanHtml = htmlContent.replace(/<\/?mark[^>]*>/g, '')
+        e.clipboardData?.setData('text/html', cleanHtml)
+      }
     }
 
     document.addEventListener('copy', handler)

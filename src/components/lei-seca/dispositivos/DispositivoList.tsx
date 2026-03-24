@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
+import type { Grifo } from '@/types/grifo'
 import { DispositivoRenderer } from './DispositivoRenderer'
 import { EstruturaBlock } from './EstruturaBlock'
 import { useFontSize } from '@/stores/fontSizeStore'
@@ -10,6 +11,8 @@ interface DispositivoListProps {
   dispositivos: Dispositivo[]
   leiSecaMode?: boolean
   showRevogados?: boolean
+  grifosByDispositivo?: Map<string, Grifo[]>
+  onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
 }
 
 type RenderItem =
@@ -58,6 +61,8 @@ export function DispositivoList({
   dispositivos,
   leiSecaMode,
   showRevogados,
+  grifosByDispositivo,
+  onGrifoClick,
 }: DispositivoListProps) {
   const fontSize = useFontSize()
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
@@ -87,6 +92,8 @@ export function DispositivoList({
               item={entry.item}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
+              grifos={grifosByDispositivo?.get(entry.item.id) ?? []}
+              onGrifoClick={onGrifoClick}
             />
           </div>
         )
