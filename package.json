@@ -196,7 +196,8 @@
     "supabase": "^2.31.8",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.1"
+    "typescript-eslint": "^8.0.1",
+    "vitest": "^4.1.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.46.2",
