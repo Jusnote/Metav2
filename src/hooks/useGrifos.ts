@@ -85,8 +85,8 @@ export function useGrifos(leiId: string | null): UseGrifosReturn {
         })))
         .select()
       if (error) {
-        const tempIds = new Set(creates.map(g => g.id))
-        setGrifos(prev => prev.filter(g => !tempIds.has(g.id)))
+        console.warn('[useGrifos] flush create failed:', error.message)
+        // Keep optimistic grifos visible — they'll be retried or user can redo
       } else if (data) {
         setGrifos(prev => {
           const tempIds = new Set(creates.map(g => g.id))

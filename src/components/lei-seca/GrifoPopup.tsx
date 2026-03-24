@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useCallback, useEffect, useState } from 'react'
-import { useFloating, flip, shift, offset, autoUpdate, useDismiss, useInteractions, FloatingPortal } from '@floating-ui/react'
+import { useCallback, useEffect, useState, useLayoutEffect } from 'react'
+import { useFloating, flip, shift, offset, useDismiss, useInteractions, FloatingPortal } from '@floating-ui/react'
 import { useGrifoPopupState, grifoPopupStore } from '@/stores/grifoPopupStore'
 import type { GrifoColor } from '@/types/grifo'
 import { GRIFO_COLORS, GRIFO_COLOR_NAMES } from '@/types/grifo'
@@ -18,23 +18,8 @@ interface GrifoPopupProps {
 export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpenNote }: GrifoPopupProps) {
   const popupState = useGrifoPopupState()
   const [showMore, setShowMore] = useState(false)
-  const virtualRef = useRef<{ getBoundingClientRect: () => DOMRect }>({
-    getBoundingClientRect: () => new DOMRect(),
-  })
 
-  // Update virtual reference when popup opens
-  useEffect(() => {
-    if (!popupState.isOpen) return
-    const sel = window.getSelection()
-    if (sel && sel.rangeCount > 0) {
-      const range = sel.getRangeAt(0)
-      virtualRef.current = {
-        getBoundingClientRect: () => range.getBoundingClientRect(),
-      }
-    }
-  }, [popupState.isOpen, popupState.dispositivoId])
-
-  const { refs, floatingStyles, context } = useFloating({
+  const { refs, floatingStyles, context, update } = useFloating({
     open: popupState.isOpen,
     onOpenChange: (open) => { if (!open) grifoPopupStore.close() },
     placement: 'top',
@@ -43,11 +28,26 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
       flip({ fallbackPlacements: ['bottom'] }),
       shift({ padding: 8 }),
     ],
-    whileElementsMounted: autoUpdate,
-    elements: {
-      reference: virtualRef.current as any,
-    },
   })
+
+  // Set virtual reference from selection rect when popup opens
+  useLayoutEffect(() => {
+    if (!popupState.isOpen) return
+
+    const sel = window.getSelection()
+    if (!sel || sel.rangeCount === 0) return
+
+    const range = sel.getRangeAt(0)
+    const rect = range.getBoundingClientRect()
+
+    // Frozen rect (selection may clear after this)
+    refs.setReference({
+      getBoundingClientRect: () => rect,
+    })
+
+    // Force position recalculation
+    update()
+  }, [popupState.isOpen, popupState.dispositivoId, refs, update])
 
   const dismiss = useDismiss(context, {
     escapeKey: true,
@@ -94,7 +94,6 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
 
   if (!popupState.isOpen) return null
 
-  // Sort colors: last used first
   const sortedColors = [
     popupState.lastColor,
     ...COLOR_ORDER.filter(c => c !== popupState.lastColor),
@@ -113,31 +112,32 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
         aria-label="Opções de grifo"
       >
         <div className="flex items-center gap-2 px-3 py-2">
-          {/* Color circles */}
           {sortedColors.map((color, i) => {
             const isActive = isEditing && popupState.existingGrifo?.color === color
             const isFirst = i === 0
-            const size = isFirst ? 'w-[18px] h-[18px] sm:w-[14px] sm:h-[14px]' : 'w-[14px] h-[14px] sm:w-[10px] sm:h-[10px]'
+            const dotSize = isFirst ? 18 : 14
             return (
               <button
                 key={color}
                 onClick={() => handleColorClick(color)}
-                className={`${size} rounded-full cursor-pointer transition-transform hover:scale-125 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center`}
+                className="rounded-full cursor-pointer transition-transform hover:scale-125 flex items-center justify-center min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
                 aria-label={GRIFO_COLOR_NAMES[color]}
                 title={GRIFO_COLOR_NAMES[color]}
               >
                 <div
-                  className={`${size} rounded-full ${isActive ? 'ring-2 ring-offset-1 ring-black/20' : ''}`}
-                  style={{ background: GRIFO_COLORS[color].replace(/[\d.]+\)$/, '0.7)') }}
+                  className={`rounded-full ${isActive ? 'ring-2 ring-offset-1 ring-black/20' : ''}`}
+                  style={{
+                    width: dotSize,
+                    height: dotSize,
+                    background: GRIFO_COLORS[color].replace(/[\d.]+\)$/, '0.7)'),
+                  }}
                 />
               </button>
             )
           })}
 
-          {/* Divider */}
           <div className="w-px h-4 bg-black/[0.06] mx-1" />
 
-          {/* Note button */}
           <button
             onClick={handleNote}
             className="text-[13px] text-[#8a9a8f] hover:text-[#3a5540] transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
@@ -147,7 +147,6 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
             📝
           </button>
 
-          {/* More button */}
           <div className="relative">
             <button
               onClick={() => setShowMore(!showMore)}
@@ -158,7 +157,6 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
               ···
             </button>
 
-            {/* More dropdown */}
             {showMore && (
               <div className="absolute top-full right-0 mt-1 bg-white rounded-lg border border-black/[0.06] shadow-lg py-1 min-w-[160px] z-10">
                 {isEditing && (
