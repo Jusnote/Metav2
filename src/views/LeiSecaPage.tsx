@@ -73,7 +73,10 @@ export default function LeiSecaPage() {
   }, []);
 
   useEffect(() => {
-    const handler = () => {
+    const handler = (e: MouseEvent) => {
+      // Ignore mouseup inside the grifo popup (let button clicks complete)
+      if ((e.target as HTMLElement).closest?.('[role="toolbar"]')) return;
+
       if (Date.now() - lastScrollRef.current < 300) return;
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed) return;
