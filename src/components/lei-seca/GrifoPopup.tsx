@@ -19,8 +19,22 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
   const popupState = useGrifoPopupState()
   const [showMore, setShowMore] = useState(false)
 
-  const { refs, floatingStyles, context, update } = useFloating({
-    open: popupState.isOpen,
+  // Freeze selection rect when popup opens (selection clears on click)
+  const [frozenRect, setFrozenRect] = useState<DOMRect | null>(null)
+
+  useLayoutEffect(() => {
+    if (!popupState.isOpen) {
+      setFrozenRect(null)
+      return
+    }
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0) {
+      setFrozenRect(sel.getRangeAt(0).getBoundingClientRect())
+    }
+  }, [popupState.isOpen, popupState.dispositivoId])
+
+  const { refs, floatingStyles, context } = useFloating({
+    open: popupState.isOpen && !!frozenRect,
     onOpenChange: (open) => { if (!open) grifoPopupStore.close() },
     placement: 'top',
     middleware: [
@@ -28,31 +42,30 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
       flip({ fallbackPlacements: ['bottom'] }),
       shift({ padding: 8 }),
     ],
+    elements: {
+      reference: frozenRect ? { getBoundingClientRect: () => frozenRect } : undefined,
+    },
   })
-
-  // Set virtual reference from selection rect when popup opens
-  useLayoutEffect(() => {
-    if (!popupState.isOpen) return
-
-    const sel = window.getSelection()
-    if (!sel || sel.rangeCount === 0) return
-
-    const range = sel.getRangeAt(0)
-    const rect = range.getBoundingClientRect()
-
-    // Frozen rect (selection may clear after this)
-    refs.setReference({
-      getBoundingClientRect: () => rect,
-    })
-
-    // Force position recalculation
-    update()
-  }, [popupState.isOpen, popupState.dispositivoId, refs, update])
 
   const dismiss = useDismiss(context, {
     escapeKey: true,
     outsidePress: true,
   })
+
+  // Close on scroll (200ms debounce)
+  useEffect(() => {
+    if (!popupState.isOpen) return
+    let scrollTimer: ReturnType<typeof setTimeout>
+    const handler = () => {
+      clearTimeout(scrollTimer)
+      scrollTimer = setTimeout(() => grifoPopupStore.close(), 200)
+    }
+    window.addEventListener('scroll', handler, true)
+    return () => {
+      window.removeEventListener('scroll', handler, true)
+      clearTimeout(scrollTimer)
+    }
+  }, [popupState.isOpen])
 
   const { getFloatingProps } = useInteractions([dismiss])
 
