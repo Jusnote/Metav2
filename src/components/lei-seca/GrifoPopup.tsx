@@ -1,7 +1,7 @@
 "use client"
 
-import { useCallback, useEffect, useState, useLayoutEffect } from 'react'
-import { useFloating, flip, shift, offset, useDismiss, useInteractions, FloatingPortal } from '@floating-ui/react'
+import { useCallback, useEffect, useState, useLayoutEffect, useRef } from 'react'
+import { useFloating, flip, shift, offset, autoUpdate, useDismiss, useInteractions, FloatingPortal } from '@floating-ui/react'
 import { useGrifoPopupState, grifoPopupStore } from '@/stores/grifoPopupStore'
 import type { GrifoColor } from '@/types/grifo'
 import { GRIFO_COLORS, GRIFO_COLOR_NAMES } from '@/types/grifo'
@@ -19,22 +19,45 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
   const popupState = useGrifoPopupState()
   const [showMore, setShowMore] = useState(false)
 
-  // Freeze selection rect when popup opens (selection clears on click)
-  const [frozenRect, setFrozenRect] = useState<DOMRect | null>(null)
+  // Store the Range object — it moves with the DOM on scroll
+  const rangeRef = useRef<Range | null>(null)
+  const [hasRange, setHasRange] = useState(false)
 
   useLayoutEffect(() => {
     if (!popupState.isOpen) {
-      setFrozenRect(null)
+      rangeRef.current = null
+      setHasRange(false)
       return
     }
     const sel = window.getSelection()
     if (sel && sel.rangeCount > 0) {
-      setFrozenRect(sel.getRangeAt(0).getBoundingClientRect())
+      rangeRef.current = sel.getRangeAt(0).cloneContents() ? sel.getRangeAt(0) : null
+      // Clone the range so it persists even if selection clears
+      try {
+        rangeRef.current = sel.getRangeAt(0).cloneRange()
+      } catch {
+        rangeRef.current = null
+      }
+      setHasRange(!!rangeRef.current)
     }
   }, [popupState.isOpen, popupState.dispositivoId])
 
+  // Virtual element that reads from the live Range on every position calc
+  const virtualElement = hasRange ? {
+    getBoundingClientRect: () => {
+      if (!rangeRef.current) return new DOMRect()
+      return rangeRef.current.getBoundingClientRect()
+    },
+    getClientRects: () => {
+      if (!rangeRef.current) return [] as unknown as DOMRectList
+      return rangeRef.current.getClientRects()
+    },
+    // contextElement tells autoUpdate which scroll ancestor to watch
+    contextElement: rangeRef.current?.startContainer?.parentElement ?? undefined,
+  } : undefined
+
   const { refs, floatingStyles, context } = useFloating({
-    open: popupState.isOpen && !!frozenRect,
+    open: popupState.isOpen && hasRange,
     onOpenChange: (open) => { if (!open) grifoPopupStore.close() },
     placement: 'top',
     middleware: [
@@ -42,8 +65,9 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
       flip({ fallbackPlacements: ['bottom'] }),
       shift({ padding: 8 }),
     ],
+    whileElementsMounted: autoUpdate,
     elements: {
-      reference: frozenRect ? { getBoundingClientRect: () => frozenRect } : undefined,
+      reference: virtualElement as any,
     },
   })
 
@@ -51,21 +75,6 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
     escapeKey: true,
     outsidePress: true,
   })
-
-  // Close on scroll (200ms debounce)
-  useEffect(() => {
-    if (!popupState.isOpen) return
-    let scrollTimer: ReturnType<typeof setTimeout>
-    const handler = () => {
-      clearTimeout(scrollTimer)
-      scrollTimer = setTimeout(() => grifoPopupStore.close(), 200)
-    }
-    window.addEventListener('scroll', handler, true)
-    return () => {
-      window.removeEventListener('scroll', handler, true)
-      clearTimeout(scrollTimer)
-    }
-  }, [popupState.isOpen])
 
   const { getFloatingProps } = useInteractions([dismiss])
 
@@ -92,7 +101,7 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
     setShowMore(false)
   }, [onOpenNote])
 
-  // Keyboard shortcuts for delete
+  // Keyboard: Delete/Backspace when popup open
   useEffect(() => {
     if (!popupState.isOpen) return
     const handler = (e: KeyboardEvent) => {
@@ -105,7 +114,7 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
     return () => document.removeEventListener('keydown', handler)
   }, [popupState.isOpen, popupState.existingGrifo, handleDelete])
 
-  if (!popupState.isOpen) return null
+  if (!popupState.isOpen || !hasRange) return null
 
   const sortedColors = [
     popupState.lastColor,
@@ -127,8 +136,7 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
         <div className="flex items-center gap-2 px-3 py-2">
           {sortedColors.map((color, i) => {
             const isActive = isEditing && popupState.existingGrifo?.color === color
-            const isFirst = i === 0
-            const dotSize = isFirst ? 18 : 14
+            const dotSize = i === 0 ? 18 : 14
             return (
               <button
                 key={color}
