@@ -98,8 +98,9 @@ export function extractInlineLinks(description) {
   // Replace <a> tags with their text content
   let cleanText = description.replace(/<a\s+[^>]*>(.*?)<\/a>/gi, '$1');
 
-  // Strip any remaining HTML tags
-  cleanText = cleanText.replace(/<[^>]*>/g, '');
+  // Targeted HTML tag removal — safe for texts containing < and > (e.g., "se X < Y")
+  const KNOWN_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|div|p|br|sup|sub|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
+  cleanText = cleanText.replace(KNOWN_TAGS, '');
 
   // Decode HTML entities
   cleanText = decodeEntities(cleanText);
