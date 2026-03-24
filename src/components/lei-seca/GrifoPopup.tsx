@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState, useLayoutEffect, useRef } from 'react'
-import { useFloating, flip, shift, offset, autoUpdate, useDismiss, useInteractions, FloatingPortal } from '@floating-ui/react'
+import { useFloating, flip, shift, offset, hide, autoUpdate, useDismiss, useInteractions, FloatingPortal } from '@floating-ui/react'
 import { useGrifoPopupState, grifoPopupStore } from '@/stores/grifoPopupStore'
 import type { GrifoColor } from '@/types/grifo'
 import { GRIFO_COLORS, GRIFO_COLOR_NAMES } from '@/types/grifo'
@@ -9,17 +9,19 @@ import { GRIFO_COLORS, GRIFO_COLOR_NAMES } from '@/types/grifo'
 const COLOR_ORDER: GrifoColor[] = ['yellow', 'green', 'blue', 'pink', 'orange']
 
 interface GrifoPopupProps {
+  /** The scroll container element — popup portals here, not document.body */
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>
   onCreateGrifo: (color: GrifoColor) => void
   onUpdateColor: (grifoId: string, color: GrifoColor) => void
   onDeleteGrifo: (grifoId: string) => void
   onOpenNote: () => void
 }
 
-export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpenNote }: GrifoPopupProps) {
+export function GrifoPopup({ scrollContainerRef, onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpenNote }: GrifoPopupProps) {
   const popupState = useGrifoPopupState()
   const [showMore, setShowMore] = useState(false)
 
-  // Store the Range object — it moves with the DOM on scroll
+  // Store cloned Range — getBoundingClientRect() returns live coords on scroll
   const rangeRef = useRef<Range | null>(null)
   const [hasRange, setHasRange] = useState(false)
 
@@ -31,8 +33,6 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
     }
     const sel = window.getSelection()
     if (sel && sel.rangeCount > 0) {
-      rangeRef.current = sel.getRangeAt(0).cloneContents() ? sel.getRangeAt(0) : null
-      // Clone the range so it persists even if selection clears
       try {
         rangeRef.current = sel.getRangeAt(0).cloneRange()
       } catch {
@@ -42,7 +42,7 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
     }
   }, [popupState.isOpen, popupState.dispositivoId])
 
-  // Virtual element that reads from the live Range on every position calc
+  // Virtual element: live getBoundingClientRect from Range + contextElement = scroll container
   const virtualElement = hasRange ? {
     getBoundingClientRect: () => {
       if (!rangeRef.current) return new DOMRect()
@@ -52,11 +52,11 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
       if (!rangeRef.current) return [] as unknown as DOMRectList
       return rangeRef.current.getClientRects()
     },
-    // contextElement tells autoUpdate which scroll ancestor to watch
-    contextElement: rangeRef.current?.startContainer?.parentElement ?? undefined,
+    // contextElement = scroll container → autoUpdate watches the RIGHT scroll ancestor
+    contextElement: scrollContainerRef.current ?? undefined,
   } : undefined
 
-  const { refs, floatingStyles, context } = useFloating({
+  const { refs, floatingStyles, context, middlewareData } = useFloating({
     open: popupState.isOpen && hasRange,
     onOpenChange: (open) => { if (!open) grifoPopupStore.close() },
     placement: 'top',
@@ -64,12 +64,16 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
       offset(8),
       flip({ fallbackPlacements: ['bottom'] }),
       shift({ padding: 8 }),
+      hide(), // detects when reference is clipped by scroll container
     ],
     whileElementsMounted: autoUpdate,
     elements: {
       reference: virtualElement as any,
     },
   })
+
+  // Hide popup when reference scrolls out of view (via hide middleware)
+  const isReferenceHidden = middlewareData.hide?.referenceHidden
 
   const dismiss = useDismiss(context, {
     escapeKey: true,
@@ -124,10 +128,14 @@ export function GrifoPopup({ onCreateGrifo, onUpdateColor, onDeleteGrifo, onOpen
   const isEditing = !!popupState.existingGrifo
 
   return (
-    <FloatingPortal>
+    <FloatingPortal root={scrollContainerRef}>
       <div
         ref={refs.setFloating}
-        style={{ ...floatingStyles, zIndex: 60 }}
+        style={{
+          ...floatingStyles,
+          zIndex: 60,
+          visibility: isReferenceHidden ? 'hidden' : 'visible',
+        }}
         {...getFloatingProps()}
         className="bg-white/90 rounded-[10px] border border-black/[0.06] shadow-[0_4px_16px_rgba(0,0,0,0.08)] font-[Outfit,sans-serif] select-none"
         role="toolbar"
