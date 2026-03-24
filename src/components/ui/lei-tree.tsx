@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "motion/react";
 import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
 import { TYPE_LABELS } from "@/lib/lei-hierarchy";
 
@@ -109,22 +108,15 @@ export const LeiTree = memo(function LeiTree({ data, expanded, activePath, onTog
             </span>
           </button>
 
-          <AnimatePresence initial={false}>
-            {hasChildren && open && (
-              <motion.div
-                key="children"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
-                onAnimationStart={onAnimationStart}
-                onAnimationComplete={onAnimationSettled}
-                className="overflow-hidden"
-              >
-                {renderNodes(node.children!, level + 1)}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* CSS grid animation instead of framer-motion height: auto */}
+          <div
+            className="grid transition-[grid-template-rows] duration-200 ease-in-out"
+            style={{ gridTemplateRows: hasChildren && open ? '1fr' : '0fr' }}
+          >
+            <div className="overflow-hidden">
+              {hasChildren && node.children && renderNodes(node.children, level + 1)}
+            </div>
+          </div>
         </div>
       );
     });

@@ -278,9 +278,9 @@ export function SearchBreadcrumbDropdown({
     <div className="absolute left-0 right-0 top-full z-50 mt-[6px]">
       <div
         ref={scrollRef}
-        className="bg-white/95 rounded-xl border border-white/50 sm:max-h-[380px] max-h-[60vh] overflow-y-auto will-change-transform"
+        className="bg-[#fafcfb] rounded-xl border border-[#e8ede9] sm:max-h-[380px] max-h-[60vh] overflow-y-auto"
         style={{
-          boxShadow: '0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)',
         }}
       >
         {/* ---- HIERARCHY SECTION ---- */}
@@ -383,7 +383,7 @@ export function SearchBreadcrumbDropdown({
         )}
 
         {/* ---- FOOTER ---- */}
-        <div className="px-4 py-[6px] border-t border-[rgba(22,163,74,0.06)] text-[10px] text-[#b0c0b5] font-light flex gap-[14px] sticky bottom-0 bg-white/95 rounded-b-xl">
+        <div className="px-4 py-[6px] border-t border-[rgba(22,163,74,0.06)] text-[10px] text-[#b0c0b5] font-light flex gap-[14px] sticky bottom-0 bg-[#fafcfb] rounded-b-xl">
           <span className="hidden sm:flex gap-[14px]">
             <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded mr-[2px]">↑</kbd><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded">↓</kbd> navegar</span>
             <span><kbd className="font-mono text-[9px] bg-white/60 border border-black/[0.06] px-1 rounded mr-[2px]">→</kbd> expandir</span>

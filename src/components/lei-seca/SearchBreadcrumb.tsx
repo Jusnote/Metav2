@@ -219,9 +219,9 @@ export function SearchBreadcrumb({
       {/* ---- OPEN: Glass Search Input ---- */}
       {open && (
         <div
-          className="flex items-center gap-2 py-2 px-[14px] bg-white/65 backdrop-blur-[12px] rounded-[10px] border border-[rgba(22,163,74,0.2)]"
+          className="flex items-center gap-2 py-2 px-[14px] bg-[#fafcfb] rounded-[10px] border border-[rgba(22,163,74,0.2)]"
           style={{
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 0 3px rgba(22,163,74,0.06)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), 0 0 0 3px rgba(22,163,74,0.06)',
           }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-70">
