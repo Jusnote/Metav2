@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useCallback, memo, forwardRef } from "react";
+import React, { useState, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight } from "lucide-react";
 import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
+import { TYPE_LABELS } from "@/lib/lei-hierarchy";
 
 // -------- Types --------
 export type LeiTreeNode = {
@@ -28,23 +28,17 @@ export type LeiTreeNode = {
 export type LeiTreeProps = {
   data: LeiTreeNode[];
   expanded?: Set<string>;
+  activePath?: Set<string>;
   onToggle?: (id: string) => void;
   onSelectArtigo?: (artigoIndex: number) => void;
-  /** Called when an expand/collapse animation starts — used by TracingBeam to block measurement */
   onAnimationStart?: () => void;
-  /** Called when an expand/collapse animation finishes — used by TracingBeam to remeasure */
   onAnimationSettled?: () => void;
   hideChevrons?: boolean;
   className?: string;
 };
 
-// -------- Badge style (neutral for all levels) --------
-const badgeClass = "text-muted-foreground bg-muted";
-
-
 // -------- Component --------
-export const LeiTree = memo(function LeiTree({ data, expanded, onToggle, onSelectArtigo, onAnimationStart, onAnimationSettled, hideChevrons, className }: LeiTreeProps) {
-  // Internal expanded state if not controlled
+export const LeiTree = memo(function LeiTree({ data, expanded, activePath, onToggle, onSelectArtigo, onAnimationStart, onAnimationSettled, hideChevrons, className }: LeiTreeProps) {
   const [internalExpanded, setInternalExpanded] = useState<Set<string>>(new Set());
   const isExpanded = expanded || internalExpanded;
   const handleToggle = onToggle || ((id: string) => {
@@ -71,42 +65,48 @@ export const LeiTree = memo(function LeiTree({ data, expanded, onToggle, onSelec
 
       const open = isExpanded.has(node.id);
       const hasChildren = node.children && node.children.length > 0;
+      const isOnActivePath = activePath?.has(node.id);
 
       return (
-        <div key={node.id}>
+        <div key={node.id} className="relative" style={{ paddingLeft: level === 0 ? 0 : 22 }}>
+          {/* Vertical line connecting to children */}
+          {hasChildren && open && (
+            <div
+              className="absolute top-[18px] bottom-0 w-[1.5px]"
+              style={{ background: 'rgba(22,163,74,0.1)', left: 6 }}
+            />
+          )}
           <button
             data-tree-branch
             data-tree-level={level}
             onClick={() => handleToggle(node.id)}
-            className={cn(
-              "w-full flex items-start gap-2 py-1.5 px-2 text-left rounded-md transition-colors group",
-              "hover:bg-accent/50",
-              open && "bg-accent/30"
-            )}
-            style={{ paddingLeft: level === 0 ? 12 : level * 8 + 8 }}
+            className="w-full flex items-center gap-[7px] py-1 px-2 text-left rounded-md transition-colors duration-150 hover:bg-[rgba(22,163,74,0.04)] relative"
           >
-            {hasChildren && !hideChevrons && (
-              <ChevronRight
-                size={12}
-                className={cn(
-                  "shrink-0 transition-transform duration-200 text-muted-foreground/60 mt-0.5",
-                  open && "rotate-90"
-                )}
+            {/* Horizontal connector line (not on root level) */}
+            {level > 0 && (
+              <div
+                className="absolute w-[11px] h-[1.5px] top-1/2"
+                style={{ background: 'rgba(22,163,74,0.1)', left: -16 }}
               />
             )}
-            <div className="flex flex-col gap-0.5 min-w-0">
-              <span className={cn(
-                "text-[10px] font-semibold px-1.5 py-0.5 rounded tracking-wide w-fit",
-                badgeClass
-              )}>
-                {node.badge || node.type.toUpperCase()}
-              </span>
-              {node.sublabel && (
-                <span className="text-[10px] text-muted-foreground/50 leading-snug line-clamp-2 pl-0.5">
-                  {node.sublabel}
-                </span>
-              )}
-            </div>
+            {/* Circle node indicator */}
+            <div className={cn(
+              "w-[7px] h-[7px] rounded-full border-[1.5px] shrink-0 transition-all duration-150",
+              isOnActivePath
+                ? "border-[#16a34a] bg-[rgba(22,163,74,0.1)]"
+                : "border-[#b0c0b5] bg-white"
+            )} />
+            {/* Type label */}
+            <span className="text-[8.5px] font-semibold uppercase tracking-[0.5px] text-[#8a9a8f] shrink-0">
+              {TYPE_LABELS[node.type] ?? node.type}
+            </span>
+            {/* Node name */}
+            <span className={cn(
+              "text-xs text-[#3a4a40] truncate",
+              isOnActivePath && "text-[#16a34a] font-medium"
+            )}>
+              {node.sublabel || node.label}
+            </span>
           </button>
 
           <AnimatePresence initial={false}>
@@ -121,16 +121,14 @@ export const LeiTree = memo(function LeiTree({ data, expanded, onToggle, onSelec
                 onAnimationComplete={onAnimationSettled}
                 className="overflow-hidden"
               >
-                <div style={{ marginLeft: 4 }}>
-                  {renderNodes(node.children!, level + 1)}
-                </div>
+                {renderNodes(node.children!, level + 1)}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       );
     });
-  }, [isExpanded, handleToggle, onSelectArtigo, onAnimationStart, onAnimationSettled, hideChevrons]);
+  }, [isExpanded, handleToggle, onSelectArtigo, onAnimationStart, onAnimationSettled, hideChevrons, activePath]);
 
   return (
     <div role="tree" className={cn("text-sm", className)}>
@@ -139,55 +137,46 @@ export const LeiTree = memo(function LeiTree({ data, expanded, onToggle, onSelec
   );
 });
 
-// -------- Artigo node (memoized, subscribes to active index directly) --------
+// -------- Artigo node (connected tree dot styling) --------
 const ArtigoNode = memo(function ArtigoNode({ node, level, onSelect }: {
   node: LeiTreeNode;
   level: number;
   onSelect?: (index: number) => void;
 }) {
-  // Subscribe to external store — only THIS node re-renders when its active state changes
   const activeIndex = useActiveArtigoIndex();
   const isActive = node.artigoIndex === activeIndex;
 
   return (
-    <div style={{ paddingLeft: level === 0 ? 12 : level * 8 + 8 }} data-artigo-index={node.artigoIndex} data-tree-level={level}>
-      {/* Epígrafe acima do artigo */}
-      {node.epigrafe && (
-        <div className="text-[10px] font-medium text-muted-foreground/70 px-2 pt-1.5 pb-0.5 truncate">
-          {node.epigrafe}
-        </div>
-      )}
-
-      {/* Card do artigo */}
+    <div
+      style={{ paddingLeft: level === 0 ? 0 : 22 }}
+      data-artigo-index={node.artigoIndex}
+      data-tree-level={level}
+      className="relative"
+    >
       <button
         onClick={() => node.artigoIndex !== undefined && onSelect?.(node.artigoIndex)}
         className={cn(
-          "w-full flex flex-col gap-0.5 py-1.5 px-2 pl-3 text-left rounded-md transition-colors group",
+          "w-full flex items-center gap-[5px] py-[2px] px-2 text-left transition-all duration-150 text-[11px]",
           isActive
-            ? "bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200"
-            : "hover:bg-accent/50 text-foreground",
-          node.isRevogado && "opacity-50"
+            ? "text-[#16a34a] font-medium"
+            : "text-[#7a8a80] hover:text-[#3a5540]"
         )}
       >
-        <div className="flex items-center gap-2">
-          <span className={cn(
-            "text-xs font-semibold shrink-0",
-            isActive && "text-blue-700 dark:text-blue-300",
-            node.isRevogado && "line-through"
-          )}>
-            {node.label}
-          </span>
-          {node.extra}
-        </div>
-
-        {/* Preview abaixo */}
-        {node.preview && (
-          <p className={cn(
-            "text-[11px] text-muted-foreground line-clamp-1 leading-snug",
-            node.isRevogado && "line-through"
-          )}>
-            {node.preview}
-          </p>
+        {/* Connector line */}
+        {level > 0 && (
+          <div
+            className="absolute w-[7px] h-[1.5px] top-1/2"
+            style={{ background: 'rgba(22,163,74,0.08)', left: -8 }}
+          />
+        )}
+        {/* Dot */}
+        <div className={cn(
+          "w-1 h-1 rounded-full shrink-0",
+          isActive ? "bg-[#4ade80]" : "bg-[#d5e4d9]"
+        )} />
+        <span className="truncate">{node.label}</span>
+        {node.epigrafe && (
+          <span className="text-[#9aaa9f] font-light truncate">— {node.epigrafe}</span>
         )}
       </button>
     </div>
