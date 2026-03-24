@@ -67,6 +67,45 @@ CREATE INDEX idx_disp_lei_tipo ON dispositivos(lei_id, tipo);
 -- Note: deferred — some values may not parse cleanly. Do after data audit.
 ```
 
+### Rollback Plan
+
+If the migration fails or needs to be reverted:
+
+```sql
+-- Revert parent-child columns
+ALTER TABLE dispositivos DROP COLUMN IF EXISTS parent_id;
+ALTER TABLE dispositivos DROP COLUMN IF EXISTS artigo_id;
+ALTER TABLE dispositivos DROP COLUMN IF EXISTS depth;
+DROP INDEX IF EXISTS idx_disp_parent;
+DROP INDEX IF EXISTS idx_disp_artigo;
+
+-- Revert doc_id to INT (only if no values exceed INT32)
+-- ALTER TABLE leis ALTER COLUMN doc_id TYPE INT;
+
+-- Revert search_vector to portuguese (loses accent-insensitive search)
+ALTER TABLE leis DROP COLUMN search_vector;
+ALTER TABLE leis ADD COLUMN search_vector TSVECTOR GENERATED ALWAYS AS (
+  to_tsvector('portuguese', coalesce(titulo,'') || ' ' || coalesce(apelido,'') || ' ' || coalesce(ementa,''))
+) STORED;
+ALTER TABLE dispositivos DROP COLUMN search_vector;
+ALTER TABLE dispositivos ADD COLUMN search_vector TSVECTOR GENERATED ALWAYS AS (
+  to_tsvector('portuguese', coalesce(texto,'') || ' ' || coalesce(epigrafe,''))
+) STORED;
+CREATE INDEX idx_disp_search ON dispositivos USING GIN(search_vector);
+CREATE INDEX idx_lei_search ON leis USING GIN(search_vector);
+
+-- Revert CASCADE to RESTRICT
+ALTER TABLE dispositivos DROP CONSTRAINT dispositivos_lei_id_fkey;
+ALTER TABLE dispositivos ADD CONSTRAINT dispositivos_lei_id_fkey
+  FOREIGN KEY (lei_id) REFERENCES leis(id);
+
+-- Revert composite index
+DROP INDEX IF EXISTS idx_disp_lei_tipo;
+CREATE INDEX idx_disp_tipo ON dispositivos(tipo);
+```
+
+**Run the rollback BEFORE re-uploading data** if reverting. The parent_id/artigo_id columns can be dropped without data loss — they're computed, not source data.
+
 ### process.js Changes
 
 #### 1. Parent-child calculation (stack-based)
@@ -162,7 +201,20 @@ cleanText = cleanText.replace(KNOWN_TAGS, '');
 cleanText = cleanText.replace(/\s*>\s*$/, '');
 ```
 
-**Note:** The existing `link-extractor.js` line 102 also uses a blanket `/<[^>]*>/g` strip. This should be replaced with the same targeted approach during implementation. At 1M laws, blanket stripping WILL corrupt mathematical/comparative expressions like `se X < Y` in tax/technical laws.
+#### 3b. Fix blanket HTML strip in link-extractor.js (MANDATORY)
+
+The existing `lib/link-extractor.js` line 102 has the same dangerous blanket strip:
+
+```javascript
+// BEFORE (line 102 of link-extractor.js) — DANGEROUS at scale:
+cleanText = cleanText.replace(/<[^>]*>/g, '');
+
+// AFTER — targeted whitelist (same as above):
+const KNOWN_TAGS = /(<\/?(a|span|b|i|em|strong|strike|font|div|p|br|sup|sub|table|tr|td|th|thead|tbody)\b[^>]*>)/gi;
+cleanText = cleanText.replace(KNOWN_TAGS, '');
+```
+
+**This fix is NOT optional.** At 1M laws, the blanket strip WILL corrupt mathematical/comparative expressions like `"se X < Y"` in tax/technical laws. The link-extractor runs on EVERY item — this is the highest-volume code path in the pipeline.
 
 #### 4. Date parsing safety
 
@@ -186,6 +238,25 @@ Current regex only catches "Lei nº X". Add support for:
 // In annotation-regex.js extractLeiRef():
 const RE_LEI_REF = /(?:Lei|Decreto|Medida\s+Provis[oó]ria|Emenda\s+Constitucional|Lei\s+Complementar)\s+(?:n[oº]?\s*\.?\s*)(\d+[\.\d]*)\s*(?:[,/]\s*(?:de\s+)?)?(\d{4})?/i;
 ```
+
+#### 6. Fix stats.revogados counter
+
+The current code counts revogados during the first pass (before exclusions), resulting in an off-by-2 count. Fix: compute stats from the final `dispositivos` array instead:
+
+```javascript
+// BEFORE (in process.js, inside the first loop):
+// if (item.revoked) revogados++;
+
+// AFTER (after building the dispositivos array):
+const stats = {
+  total: dispositivos.length,
+  artigos: dispositivos.filter(d => d.tipo === 'ARTIGO').length,
+  revogados: dispositivos.filter(d => d.revogado).length,
+  flagged: flagged.length,
+};
+```
+
+This guarantees the stats match the actual data that goes to the DB.
 
 ### upload.js Changes
 
