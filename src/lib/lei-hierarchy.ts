@@ -167,3 +167,48 @@ export function resolvePathToPosicao(
   )
   return match?.posicao ?? null
 }
+
+// ---- Active path resolution (for auto-expand) ----
+
+/**
+ * Given the active artigo index, find all ancestor tree node IDs
+ * that must be expanded to make the active artigo visible in the tree.
+ * Returns a Set<string> of node IDs (accumulated paths).
+ */
+export function resolveActivePathIds(
+  dispositivos: Dispositivo[],
+  activeIndex: number,
+  hierarquia: HierarquiaNode[]
+): Set<string> {
+  const ids = new Set<string>()
+  const dispositivo = dispositivos[activeIndex]
+  if (!dispositivo?.path) return ids
+
+  function walk(nodes: HierarquiaNode[], parentPath: string) {
+    for (const node of nodes) {
+      const fullPath = parentPath ? `${parentPath}/${node.path}` : node.path
+      if (dispositivo.path === fullPath || dispositivo.path!.startsWith(fullPath + '/')) {
+        ids.add(fullPath)
+        if (node.filhos?.length) {
+          walk(node.filhos, fullPath)
+        }
+        return
+      }
+    }
+  }
+  walk(hierarquia, '')
+  return ids
+}
+
+// ---- Shared constants ----
+
+/** Mapping from LeiTreeNode.type to display label */
+export const TYPE_LABELS: Record<string, string> = {
+  parte: 'Parte',
+  livro: 'Livro',
+  titulo: 'Tít',
+  subtitulo: 'Subtít',
+  capitulo: 'Cap',
+  secao: 'Seç',
+  subsecao: 'Subseç',
+}
