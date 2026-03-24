@@ -37,7 +37,9 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados 
   if (item.tipo === 'INCISO') return <Inciso item={item} leiSecaMode={leiSecaMode} />
   if (item.tipo === 'ALINEA') return <Alinea item={item} leiSecaMode={leiSecaMode} />
   if (item.tipo === 'PENA') return <Pena item={item} />
-  if (item.tipo === 'EMENTA' || item.tipo === 'PREAMBULO') return <GenericDispositivo item={item} />
+  // EMENTA, PREAMBULO, and junk EPIGRAFEs ("ÍNDICE", ".", "*") — hide from reader
+  if (item.tipo === 'EMENTA' || item.tipo === 'PREAMBULO') return null
+  if (item.tipo === 'EPIGRAFE' && /^(ÍNDICE|índice|\.|[*])$/i.test(item.texto.trim())) return null
 
   return <GenericDispositivo item={item} />
 }
