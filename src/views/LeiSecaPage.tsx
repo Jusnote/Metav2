@@ -138,8 +138,12 @@ export default function LeiSecaPage() {
   // Popup callbacks
   const handleCreateGrifo = useCallback((color: GrifoColor) => {
     const s = grifoPopupStore.getSnapshot();
-    if (!s.dispositivoId || !currentLeiId) return;
-    createGrifo({
+    console.log('[GRIFO DEBUG 1] handleCreateGrifo called', { color, dispositivoId: s.dispositivoId, currentLeiId, startOffset: s.startOffset, endOffset: s.endOffset, textoGrifado: s.textoGrifado });
+    if (!s.dispositivoId || !currentLeiId) {
+      console.log('[GRIFO DEBUG 1] BAILED — dispositivoId or currentLeiId missing');
+      return;
+    }
+    const tempId = createGrifo({
       lei_id: currentLeiId,
       dispositivo_id: s.dispositivoId,
       start_offset: s.startOffset,
@@ -147,6 +151,7 @@ export default function LeiSecaPage() {
       texto_grifado: s.textoGrifado,
       color,
     });
+    console.log('[GRIFO DEBUG 2] createGrifo returned tempId:', tempId);
   }, [createGrifo, currentLeiId]);
 
   const handleUpdateColor = useCallback((id: string, color: GrifoColor) => {

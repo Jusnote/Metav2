@@ -92,7 +92,11 @@ export function DispositivoList({
               item={entry.item}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
-              grifos={grifosByDispositivo?.get(entry.item.id) ?? []}
+              grifos={(() => {
+                const g = grifosByDispositivo?.get(entry.item.id) ?? []
+                if (g.length > 0) console.log('[GRIFO DEBUG 3] DispositivoList passing', g.length, 'grifos to item', entry.item.id)
+                return g
+              })()}
               onGrifoClick={onGrifoClick}
             />
           </div>
