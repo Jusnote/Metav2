@@ -35,16 +35,13 @@ export function SearchBreadcrumb({
   const [input, setInput] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(-1)
 
-  // Refs for dropdown keyboard actions
   const confirmSelectionRef = useRef<(() => void) | null>(null)
   const expandSelectionRef = useRef<(() => void) | null>(null)
   const collapseSelectionRef = useRef<(() => void) | null>(null)
 
-  // Reset selection when input changes
   useEffect(() => { setSelectedIndex(-1) }, [input])
-
-  // Sync open state to parent
   useEffect(() => { onOpenChange?.(open) }, [open, onOpenChange])
+
   const [debouncedTerm, setDebouncedTerm] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -52,13 +49,11 @@ export function SearchBreadcrumb({
 
   const activeIndex = useActiveArtigoIndex()
 
-  // Breadcrumb segments
   const segments = useMemo(
     () => resolveBreadcrumb(dispositivos, activeIndex, currentLei.hierarquia ?? []),
     [dispositivos, activeIndex, currentLei.hierarquia]
   )
 
-  // Debounce search
   useEffect(() => {
     clearTimeout(timerRef.current)
     if (input.length >= 2) {
@@ -69,10 +64,8 @@ export function SearchBreadcrumb({
     return () => clearTimeout(timerRef.current)
   }, [input])
 
-  // API search
   const { hits, total, isSearching } = useBusca(debouncedTerm, currentLei.id)
 
-  // Ctrl+F / Cmd+F opens
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'f' && (e.ctrlKey || e.metaKey)) {
@@ -85,7 +78,6 @@ export function SearchBreadcrumb({
     return () => document.removeEventListener('keydown', handler)
   }, [])
 
-  // Click outside closes
   useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
@@ -97,7 +89,6 @@ export function SearchBreadcrumb({
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
 
-  // Escape closes + keyboard navigation (↑↓ Enter → ←)
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -156,85 +147,120 @@ export function SearchBreadcrumb({
   const hasInput = input.length > 0
   const totalArtigos = currentLei.stats?.totalArtigos ?? totalDispositivos
 
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone/.test(navigator.userAgent)
+
   return (
     <div ref={containerRef} className="relative font-[Outfit,sans-serif]">
-      {/* ---- CLOSED: Breadcrumb ---- */}
+      {/* ---- CLOSED: Glass Breadcrumb ---- */}
       {!open && (
         <button
           onClick={handleOpen}
-          className="w-full flex items-center gap-[6px] sm:py-[14px] py-[10px] cursor-pointer transition-opacity hover:opacity-80"
+          className="w-full flex items-center gap-2 py-2 px-[14px] cursor-pointer transition-opacity hover:opacity-80 bg-white/65 backdrop-blur-[12px] rounded-[10px] border border-white/50"
+          style={{
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)',
+          }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c8c8c8" strokeWidth="1.5" strokeLinecap="round" className="flex-shrink-0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-50">
             <circle cx="11" cy="11" r="7" />
             <path d="m21 21-4.35-4.35" />
           </svg>
 
           {segments.length > 0 ? (
-            <>
-              {segments.map((seg, i) => (
-                <span key={seg.path} className="flex items-center gap-[6px]">
-                  {i > 0 && <span className="text-[9px] text-[#ddd]">›</span>}
-                  <span className={`text-[11px] font-light ${
-                    i === segments.length - 1 ? 'text-[#888] font-normal' : 'text-[#c0c0c0]'
-                  }`}>
-                    <span className="hidden sm:inline">{seg.label}</span>
-                    <span className="sm:hidden">{abbreviateLabel(seg.label)}</span>
+            <span className="flex items-center gap-2 min-w-0 overflow-hidden">
+              {/* Desktop: all segments */}
+              <span className="hidden sm:contents">
+                {segments.map((seg, i) => (
+                  <span key={seg.path} className="flex items-center gap-2 shrink-0">
+                    {i > 0 && <span className="w-[3px] h-[3px] rounded-full bg-[#c5d4c9] shrink-0" />}
+                    <span className={`text-[11.5px] ${
+                      i === segments.length - 1 ? 'text-[#3a5540] font-medium' : 'text-[#8a9a8f]'
+                    }`}>
+                      {seg.label}
+                    </span>
                   </span>
-                </span>
-              ))}
-            </>
+                ))}
+              </span>
+              {/* Mobile: ellipsis + last 2 */}
+              <span className="sm:hidden contents">
+                {segments.length > 2 && (
+                  <>
+                    <span className="text-[10.5px] text-[#b0c0b5]">...</span>
+                    <span className="w-[2.5px] h-[2.5px] rounded-full bg-[#c5d4c9] shrink-0" />
+                  </>
+                )}
+                {segments.slice(segments.length > 2 ? -2 : 0).map((seg, i) => (
+                  <span key={seg.path} className="flex items-center gap-2 shrink-0">
+                    {i > 0 && <span className="w-[2.5px] h-[2.5px] rounded-full bg-[#c5d4c9] shrink-0" />}
+                    <span className={`text-[10.5px] ${
+                      i === (segments.length > 2 ? 1 : segments.length - 1) ? 'text-[#3a5540] font-medium' : 'text-[#8a9a8f]'
+                    }`}>
+                      {abbreviateLabel(seg.label)}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </span>
           ) : (
-            <span className="text-[11px] text-[#c0c0c0] font-light">Buscar na lei...</span>
+            <span className="text-[11.5px] text-[#8a9a8f] font-light">Buscar na lei...</span>
           )}
 
-          <span className="ml-auto flex items-center gap-2 flex-shrink-0">
-            <span className="text-[9px] text-[#ddd] font-mono bg-[#f8f8f8] px-[6px] py-[1px] rounded hidden sm:inline">Ctrl+F</span>
-            <span className="text-[10px] text-[#ddd] font-light tabular-nums">
+          <span className="ml-auto flex items-center gap-2 shrink-0 pl-3">
+            <span className="text-[10px] text-[#9aaa9f] tabular-nums">
               <span className="hidden sm:inline">{activeIndex + 1} / {totalArtigos}</span>
               <span className="sm:hidden">{activeIndex + 1}/{totalArtigos}</span>
+            </span>
+            <span className="text-[9px] text-[#9aaa9f] bg-white/60 border border-black/[0.06] px-[6px] py-[1px] rounded font-mono hidden sm:inline">
+              {isMac ? '⌘F' : 'Ctrl+F'}
             </span>
           </span>
         </button>
       )}
 
-      {/* ---- OPEN: Search input ---- */}
+      {/* ---- OPEN: Glass Search Input ---- */}
       {open && (
-        <div className="sm:py-[14px] py-[10px]">
-          <div className="flex items-center gap-2 px-[14px] py-2 bg-[#fafafa] border border-[#e8e8e8] sm:rounded-t-[10px] rounded-[8px] sm:border-b-0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2c3338" strokeWidth="2" strokeLinecap="round" className="flex-shrink-0">
-              <circle cx="11" cy="11" r="7" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Buscar artigo, tema, palavra..."
-              className="flex-1 text-[12px] outline-none text-[#333] placeholder:text-[#bbb] bg-transparent font-[Outfit,sans-serif] min-w-0"
-            />
-            {hasInput && (
-              <>
-                {isSearching && <span className="text-[9px] text-[#b0b0b0] font-light flex-shrink-0">buscando...</span>}
-                {!isSearching && debouncedTerm.length >= 2 && (
-                  <span className="text-[9px] text-[#b0b0b0] font-light flex-shrink-0">{total} resultado{total !== 1 ? 's' : ''}</span>
-                )}
-                <button
-                  onClick={handleClear}
-                  className="w-4 h-4 flex items-center justify-center text-[#ccc] hover:bg-[#eee] rounded-full text-[14px] flex-shrink-0 transition-colors"
-                >
-                  ×
-                </button>
-              </>
-            )}
-            {!hasInput && (
-              <span className="text-[9px] text-[#ccc] font-light flex-shrink-0">esc</span>
-            )}
-          </div>
+        <div
+          className="flex items-center gap-2 py-2 px-[14px] bg-white/65 backdrop-blur-[12px] rounded-[10px] border border-[rgba(22,163,74,0.2)]"
+          style={{
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 0 3px rgba(22,163,74,0.06)',
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-70">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Buscar artigo, tema, palavra..."
+            className="hidden sm:block flex-1 text-[12.5px] outline-none text-[#2a3a30] placeholder:text-[#a0b0a5] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
+          />
+          <input
+            ref={el => { if (el && !inputRef.current) (inputRef as React.MutableRefObject<HTMLInputElement>).current = el }}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Buscar..."
+            className="sm:hidden flex-1 text-[12.5px] outline-none text-[#2a3a30] placeholder:text-[#a0b0a5] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
+          />
+          {hasInput && (
+            <>
+              {isSearching && <span className="text-[9.5px] text-[#9aaa9f] font-light shrink-0">buscando...</span>}
+              {!isSearching && debouncedTerm.length >= 2 && (
+                <span className="text-[9.5px] text-[#9aaa9f] font-light shrink-0">{total} resultado{total !== 1 ? 's' : ''}</span>
+              )}
+              <button
+                onClick={handleClear}
+                className="w-4 h-4 flex items-center justify-center text-[#b0c0b5] hover:bg-[rgba(22,163,74,0.06)] rounded-full text-[14px] shrink-0 transition-colors"
+              >
+                ×
+              </button>
+            </>
+          )}
+          {!hasInput && (
+            <span className="text-[9px] text-[#b0c0b5] font-light shrink-0">esc</span>
+          )}
         </div>
       )}
-
-      {/* Separator (visible in both states) */}
-      <div className="h-px" style={{ background: 'linear-gradient(90deg, #f0f0f0, transparent)' }} />
 
       {/* ---- DROPDOWN ---- */}
       {open && (
