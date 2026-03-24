@@ -74,9 +74,12 @@ export function GrifoPopup({ scrollContainerRef, onCreateGrifo, onUpdateColor, o
       shift({ padding: 8 }),
       hide(),
     ],
-    whileElementsMounted: (...args) => autoUpdate(...args, {
-      animationFrame: true,  // 60fps — frame-perfect like TipTap
-    }),
+    whileElementsMounted: (reference, floating, update) =>
+      autoUpdate(reference, floating, update, {
+        animationFrame: false,
+        elementResize: true,
+        ancestorScroll: true,
+      }),
     elements: {
       reference: virtualElement as any,
     },
@@ -140,6 +143,7 @@ export function GrifoPopup({ scrollContainerRef, onCreateGrifo, onUpdateColor, o
         ref={refs.setFloating}
         style={{
           ...floatingStyles,
+          transform: floatingStyles.transform ? `${floatingStyles.transform} translateZ(0)` : '',
           zIndex: 60,
           visibility: isReferenceHidden ? 'hidden' : 'visible',
         }}
