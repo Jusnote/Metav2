@@ -152,6 +152,9 @@ export function GrifoPopup({ scrollContainerRef, onCreateGrifo, onUpdateColor, o
         className="bg-white/95 rounded-[10px] border border-black/[0.06] shadow-[0_4px_16px_rgba(0,0,0,0.08)] font-[Outfit,sans-serif] select-none"
         role="toolbar"
         aria-label="Opções de grifo"
+        onPointerDown={() => console.log('[POPUP] pointerdown on container')}
+        onMouseDown={() => console.log('[POPUP] mousedown on container')}
+        onClick={() => console.log('[POPUP] click on container')}
       >
         <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2">
           {sortedColors.map((color, i) => {
