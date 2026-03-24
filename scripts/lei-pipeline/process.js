@@ -163,8 +163,9 @@ function processLei(leiDir) {
   // Build subtitle indexes for accurate classification
   const subtitleIndexes = buildSubtitleIndexes(allItems, structural);
 
-  // Build hierarchy tree
-  const hierarquia = buildHierarchy(structural);
+  // Build hierarchy tree (exclude revoked structural items to avoid duplicates like "Parte Geral" 1940 + "PARTE GERAL" 1984)
+  const activeStructural = structural.filter(s => !s.revoked);
+  const hierarquia = buildHierarchy(activeStructural);
 
   // Build path map (index → path string)
   const pathMap = buildPathMap(structural, allItems);
