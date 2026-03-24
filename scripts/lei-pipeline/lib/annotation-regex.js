@@ -38,10 +38,10 @@ export function classifyAnnotation(text) {
  * @returns {string|null}
  */
 export function extractLeiRef(text) {
-  const match = text.match(/Lei\s+(?:n[ºo°]?\s*)?(\d+[\.\d]*)\s*(?:,\s*de\s+|\s*\/\s*)(\d{4})/i);
+  const match = text.match(/(?:Lei|Decreto|Medida\s+Provis[oó]ria|Emenda\s+Constitucional|Lei\s+Complementar)\s+(?:n[oº]?\s*\.?\s*)(\d+[\.\d]*)\s*(?:[,/]\s*(?:de\s+)?)?(\d{4})?/i);
   if (match) {
     const numero = match[1].replace(/\./g, '');
-    return `${numero}/${match[2]}`;
+    return match[2] ? `${numero}/${match[2]}` : numero;
   }
   return null;
 }
