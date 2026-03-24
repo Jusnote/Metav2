@@ -28,6 +28,10 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados 
     pena: rawItem.pena ? normalizeOrdinals(rawItem.pena) : null,
   }), [rawItem])
 
+  // Hide non-content items from reader
+  if (item.tipo === 'EMENTA' || item.tipo === 'PREAMBULO') return null
+  if (item.tipo === 'EPIGRAFE' && /^(ÍNDICE|índice|\.|[*])$/i.test(item.texto.trim())) return null
+
   if (item.revogado && !showRevogados) return <RevogadoCollapsed item={item} />
 
   if (STRUCTURAL.includes(item.tipo)) return <EstruturaHeader item={item} />
@@ -37,9 +41,6 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados 
   if (item.tipo === 'INCISO') return <Inciso item={item} leiSecaMode={leiSecaMode} />
   if (item.tipo === 'ALINEA') return <Alinea item={item} leiSecaMode={leiSecaMode} />
   if (item.tipo === 'PENA') return <Pena item={item} />
-  // EMENTA, PREAMBULO, and junk EPIGRAFEs ("ÍNDICE", ".", "*") — hide from reader
-  if (item.tipo === 'EMENTA' || item.tipo === 'PREAMBULO') return null
-  if (item.tipo === 'EPIGRAFE' && /^(ÍNDICE|índice|\.|[*])$/i.test(item.texto.trim())) return null
 
   return <GenericDispositivo item={item} />
 }
