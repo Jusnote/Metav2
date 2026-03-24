@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { DispositivoList } from "@/components/lei-seca/dispositivos/DispositivoList";
 import { LeiToolbar } from "@/components/lei-seca/LeiToolbar";
@@ -13,7 +13,6 @@ import { ReadingProgressBar } from "@/components/lei-seca/ReadingProgressBar";
 import { useReadingProgressTracker } from "@/hooks/useReadingProgress";
 import { SearchBreadcrumb } from "@/components/lei-seca/SearchBreadcrumb";
 import { useActiveArtigoIndex } from "@/stores/activeArtigoStore";
-import type { VirtuosoHandle } from "react-virtuoso";
 
 const StudyCompanionPanel = dynamic(
   () =>
@@ -37,10 +36,7 @@ export default function LeiSecaPage() {
   const {
     dispositivos,
     totalDispositivos,
-    loadMore,
-    hasMore,
     isLoading,
-    isLoadingMore,
     error,
     currentLei,
     currentLeiId,
@@ -52,11 +48,9 @@ export default function LeiSecaPage() {
   } = useLeiSeca();
 
   const commentsOpen = useLeiCommentsOpen();
-  const virtuosoRef = useRef<VirtuosoHandle | null>(null);
 
   useKeyboardNav({
     dispositivos,
-    virtuosoRef,
     toggleLeiSecaMode,
     toggleRevogados,
   });
@@ -71,52 +65,40 @@ export default function LeiSecaPage() {
     if (currentLeiId) leiCommentsStore.setLeiId(currentLeiId);
   }, [currentLeiId]);
 
-  // Update active artigo index as user scrolls
-  const handleRangeChanged = useCallback(
-    (startIndex: number) => {
-      if (dispositivos[startIndex]) {
-        activeArtigoStore.setActiveArtigoIndex(startIndex);
-      }
-    },
-    [dispositivos]
-  );
-
   // Scroll to a dispositivo by posicao (used by SearchBreadcrumb)
   const handleScrollToDispositivo = useCallback(
     (posicao: number) => {
-      const index = dispositivos.findIndex(d => d.posicao === posicao);
-      if (index >= 0 && virtuosoRef.current) {
-        virtuosoRef.current.scrollToIndex({ index, align: 'start', behavior: 'smooth' });
+      const el = document.querySelector(`[data-posicao="${posicao}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    []
+  );
+
+  // Scroll to a dispositivo by array index (used by SearchBreadcrumb tree nav)
+  const handleSelectArtigoIndex = useCallback(
+    (index: number) => {
+      const item = dispositivos[index];
+      if (item) {
+        const el = document.querySelector(`[data-posicao="${item.posicao}"]`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     },
     [dispositivos]
   );
-
-  // Scroll to a dispositivo by virtuoso index (used by SearchBreadcrumb)
-  const handleSelectArtigoIndex = useCallback(
-    (index: number) => {
-      if (virtuosoRef.current) {
-        virtuosoRef.current.scrollToIndex({ index, align: 'start', behavior: 'smooth' })
-      }
-    },
-    []
-  )
 
   // Scroll to a dispositivo by slug (used by LeiCommentsPanel)
   const scrollToCommentSlug = useCallback(
     (slug: string) => {
-      const index = dispositivos.findIndex(
-        (d) => d.id === slug || d.path === slug
-      );
-      if (index >= 0 && virtuosoRef.current) {
-        virtuosoRef.current.scrollToIndex({
-          index,
-          align: "start",
-          behavior: "smooth",
-        });
+      const el = document.querySelector(`[data-id="${slug}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     },
-    [dispositivos]
+    []
   );
 
   if (isLoading) {
@@ -151,7 +133,7 @@ export default function LeiSecaPage() {
       <ReadingProgressBar />
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
-        {/* Virtuoso list area — full width so scrollbar stays at right edge */}
+        {/* List area — full width so scrollbar stays at right edge */}
         <div className="flex-1 flex flex-col bg-white relative">
           {/* SearchBreadcrumb: aligned with text column, overflow-visible for dropdown */}
           <div className="max-w-[820px] mx-auto px-5 w-full relative z-20">
@@ -164,18 +146,12 @@ export default function LeiSecaPage() {
               onOpenChange={setSearchOpen}
             />
           </div>
-          {/* DispositivoList: overflow-hidden stays here */}
-          <div className={`flex-1 overflow-hidden transition-opacity duration-200 ${searchOpen ? 'opacity-15' : ''}`}>
+          {/* DispositivoList: scrollable container */}
+          <div className={`flex-1 overflow-y-auto transition-opacity duration-200 ${searchOpen ? 'opacity-15' : ''}`}>
             <DispositivoList
               dispositivos={dispositivos}
-              totalCount={totalDispositivos}
-              loadMore={loadMore}
-              hasMore={hasMore}
-              isLoadingMore={isLoadingMore}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
-              onRangeChanged={handleRangeChanged}
-              virtuosoRef={virtuosoRef}
             />
           </div>
         </div>

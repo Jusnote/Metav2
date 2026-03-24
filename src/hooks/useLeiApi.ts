@@ -1,5 +1,4 @@
 import { useQuery } from 'urql'
-import { useState, useEffect, useCallback, useRef } from 'react'
 import { LEIS_QUERY, LEI_QUERY, DISPOSITIVOS_QUERY, BUSCA_QUERY } from '@/lib/lei-queries'
 import type { Lei, Dispositivo, LeisConnection, DispositivosConnection, BuscaResult } from '@/types/lei-api'
 
@@ -36,16 +35,10 @@ export function useDispositivos(leiId: string | null, incluirRevogados = false) 
     pause: !leiId,
   })
 
-  const dispositivos = result.data?.dispositivos.nodes ?? []
-  const totalCount = result.data?.dispositivos.totalCount ?? 0
-
   return {
-    dispositivos,
-    totalCount,
-    loadMore: () => {},  // No-op: everything loaded at once
-    hasMore: false,
+    dispositivos: result.data?.dispositivos.nodes ?? [],
+    totalCount: result.data?.dispositivos.totalCount ?? 0,
     isLoading: result.fetching,
-    isLoadingMore: false,
   }
 }
 

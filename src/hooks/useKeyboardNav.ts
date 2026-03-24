@@ -1,18 +1,15 @@
 import { useEffect, useCallback } from 'react'
-import type { VirtuosoHandle } from 'react-virtuoso'
 import type { Dispositivo } from '@/types/lei-api'
 import { activeArtigoStore } from '@/stores/activeArtigoStore'
 
 interface UseKeyboardNavOptions {
   dispositivos: Dispositivo[]
-  virtuosoRef: React.RefObject<VirtuosoHandle | null>
   toggleLeiSecaMode: () => void
   toggleRevogados: () => void
 }
 
 export function useKeyboardNav({
   dispositivos,
-  virtuosoRef,
   toggleLeiSecaMode,
   toggleRevogados,
 }: UseKeyboardNavOptions) {
@@ -35,7 +32,13 @@ export function useKeyboardNav({
         const current = activeArtigoStore.getSnapshot()
         const next = findNextArtigo(current, 1)
         if (next >= 0) {
-          virtuosoRef.current?.scrollToIndex({ index: next, align: 'start', behavior: 'smooth' })
+          const targetItem = dispositivos[next]
+          if (targetItem) {
+            const el = document.querySelector(`[data-posicao="${targetItem.posicao}"]`)
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          }
         }
       }
 
@@ -43,7 +46,13 @@ export function useKeyboardNav({
         const current = activeArtigoStore.getSnapshot()
         const prev = findNextArtigo(current, -1)
         if (prev >= 0) {
-          virtuosoRef.current?.scrollToIndex({ index: prev, align: 'start', behavior: 'smooth' })
+          const targetItem = dispositivos[prev]
+          if (targetItem) {
+            const el = document.querySelector(`[data-posicao="${targetItem.posicao}"]`)
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          }
         }
       }
 
@@ -58,5 +67,5 @@ export function useKeyboardNav({
 
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [findNextArtigo, virtuosoRef, toggleLeiSecaMode, toggleRevogados])
+  }, [findNextArtigo, dispositivos, toggleLeiSecaMode, toggleRevogados])
 }

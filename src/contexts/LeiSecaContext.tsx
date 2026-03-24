@@ -27,13 +27,10 @@ interface LeiSecaContextType {
   dispositivos: Dispositivo[];
   totalDispositivos: number;
   isLoading: boolean;
-  isLoadingMore: boolean;
   error: any;
 
   // Navigation
   handleLeiChange: (id: string) => void;
-  loadMore: () => void;
-  hasMore: boolean;
 
   // UI State
   leiSecaMode: boolean;
@@ -93,8 +90,8 @@ function LeiSecaProviderInner({ children }: { children: React.ReactNode }) {
   const [showRevogados, setShowRevogados] = useState(false);
   const [immersiveMode, setImmersiveMode] = useState(false);
 
-  // Dispositivos with pagination — pass showRevogados
-  const { dispositivos, totalCount, loadMore, hasMore, isLoading: dispLoading, isLoadingMore } =
+  // Dispositivos — all loaded at once, pass showRevogados
+  const { dispositivos, totalCount, isLoading: dispLoading } =
     useDispositivos(currentLeiId || null, showRevogados);
 
   // Study Companion Panel state
@@ -135,11 +132,8 @@ function LeiSecaProviderInner({ children }: { children: React.ReactNode }) {
     dispositivos,
     totalDispositivos: totalCount,
     isLoading,
-    isLoadingMore,
     error: null,
     handleLeiChange,
-    loadMore,
-    hasMore,
     leiSecaMode,
     toggleLeiSecaMode,
     showRevogados,
@@ -159,7 +153,7 @@ function LeiSecaProviderInner({ children }: { children: React.ReactNode }) {
     closeNoteBar,
   }), [
     leis, currentLeiId, currentLei, dispositivos, totalCount,
-    isLoading, isLoadingMore, handleLeiChange, loadMore, hasMore,
+    isLoading, handleLeiChange,
     leiSecaMode, toggleLeiSecaMode, showRevogados, toggleRevogados,
     immersiveMode, toggleImmersiveMode,
     focusedProvision, companionTab, companionOpen, aiSelectedText,
