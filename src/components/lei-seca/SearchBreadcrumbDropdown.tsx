@@ -82,10 +82,21 @@ export function SearchBreadcrumbDropdown({
   const activeIndex = useActiveArtigoIndex()
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Auto-expand active path on mount
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(() =>
-    resolveActivePathIds(dispositivos, activeIndex, hierarquia)
+  // Compute active path once — used for both initial expand AND tree highlighting
+  const activePathIds = useMemo(
+    () => resolveActivePathIds(dispositivos, activeIndex, hierarquia),
+    [dispositivos, activeIndex, hierarquia]
   )
+
+  // Auto-expand active path on mount (reuses activePathIds, no double traversal)
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(() => new Set())
+  const [didInit, setDidInit] = useState(false)
+  useEffect(() => {
+    if (!didInit && activePathIds.size > 0) {
+      setExpandedSections(activePathIds)
+      setDidInit(true)
+    }
+  }, [activePathIds, didInit])
 
   // Responsive state
   const [isMobile, setIsMobile] = useState(false)
@@ -110,12 +121,6 @@ export function SearchBreadcrumbDropdown({
   const baseTree = useMemo(
     () => hierarquiaToTreeNodes(hierarquia),
     [hierarquia]
-  )
-
-  // Active path IDs for highlighting ancestors in the connected tree
-  const activePathIds = useMemo(
-    () => resolveActivePathIds(dispositivos, activeIndex, hierarquia),
-    [dispositivos, activeIndex, hierarquia]
   )
 
   // Inject artigos into expanded nodes

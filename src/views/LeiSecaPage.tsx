@@ -147,7 +147,7 @@ export default function LeiSecaPage() {
             />
           </div>
           {/* DispositivoList: scrollable container */}
-          <div className={`flex-1 overflow-y-auto transition-opacity duration-200 ${searchOpen ? 'opacity-15' : ''}`}>
+          <div className={`flex-1 overflow-y-auto transition-opacity duration-100 ${searchOpen ? 'opacity-15' : ''}`}>
             <DispositivoList
               dispositivos={dispositivos}
               leiSecaMode={leiSecaMode}

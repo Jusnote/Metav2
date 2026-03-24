@@ -34,24 +34,52 @@ export function injectArtigosIntoTree(
   dispositivos: Dispositivo[],
   expandedIds: Set<string>
 ): LeiTreeNode[] {
+  // Build index once: path → artigos (O(m) upfront, O(1) per lookup)
+  const artigosByPath = buildArtigoIndex(dispositivos)
+
+  return _injectArtigos(treeNodes, artigosByPath, expandedIds)
+}
+
+// Pre-built index: Map<path, {id, numero, texto, epigrafe, globalIndex}[]>
+type ArtigoEntry = { id: string; numero: string | null; texto: string; epigrafe: string | null; globalIndex: number }
+let _cachedDispositivos: Dispositivo[] | null = null
+let _cachedIndex: Map<string, ArtigoEntry[]> | null = null
+
+function buildArtigoIndex(dispositivos: Dispositivo[]): Map<string, ArtigoEntry[]> {
+  // Cache: same dispositivos array → same index (referential equality)
+  if (_cachedDispositivos === dispositivos && _cachedIndex) return _cachedIndex
+
+  const map = new Map<string, ArtigoEntry[]>()
+  for (let i = 0; i < dispositivos.length; i++) {
+    const d = dispositivos[i]
+    if (d.tipo !== 'ARTIGO' || !d.path) continue
+    let arr = map.get(d.path)
+    if (!arr) { arr = []; map.set(d.path, arr) }
+    arr.push({ id: d.id, numero: d.numero, texto: d.texto, epigrafe: d.epigrafe, globalIndex: i })
+  }
+  _cachedDispositivos = dispositivos
+  _cachedIndex = map
+  return map
+}
+
+function _injectArtigos(
+  treeNodes: LeiTreeNode[],
+  artigosByPath: Map<string, ArtigoEntry[]>,
+  expandedIds: Set<string>
+): LeiTreeNode[] {
   return treeNodes.map(node => {
     const children = node.children
-      ? injectArtigosIntoTree(node.children, dispositivos, expandedIds)
+      ? _injectArtigos(node.children, artigosByPath, expandedIds)
       : undefined
 
     const cleanPath = node.id.replace(/--\d+$/, '')
     const isLeaf = !children || children.length === 0
     const isExpanded = expandedIds.has(node.id)
+    const pathArtigos = artigosByPath.get(cleanPath)
+    const hasArtigos = pathArtigos && pathArtigos.length > 0
 
-    // For leaf nodes: check if artigos exist for this path.
-    // If they do, we need to signal that this node IS expandable
-    // (by giving it a placeholder child) even before the user expands it.
-    // Otherwise LeiTree won't show the chevron → user can never expand → artigos never appear.
     if (isLeaf) {
-      const hasArtigos = dispositivos.some(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
-
       if (hasArtigos && !isExpanded) {
-        // Not expanded yet: add a placeholder child so the chevron shows
         return {
           ...node,
           children: [{
@@ -64,40 +92,31 @@ export function injectArtigosIntoTree(
       }
 
       if (hasArtigos && isExpanded) {
-        // Expanded: inject actual artigos
-        const artigos = dispositivos
-          .filter(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
-          .map((d) => ({
-            id: `artigo-${d.id}`,
-            type: 'artigo' as const,
-            label: `Art. ${d.numero ?? '?'}`,
-            preview: d.texto.slice(0, 60),
-            artigoIndex: dispositivos.indexOf(d),
-            children: undefined,
-          }))
-
         return {
           ...node,
-          children: artigos,
+          children: pathArtigos.map(a => ({
+            id: `artigo-${a.id}`,
+            type: 'artigo' as const,
+            label: `Art. ${a.numero ?? '?'}`,
+            preview: a.texto.slice(0, 60),
+            artigoIndex: a.globalIndex,
+            children: undefined,
+          })),
         }
       }
     }
 
-    // Non-leaf nodes: inject artigos only if expanded AND this is the deepest level
-    if (isExpanded) {
+    if (isExpanded && hasArtigos) {
       const hasStructuralChildren = children?.some(c => c.type !== 'artigo') ?? false
       if (!hasStructuralChildren) {
-        const artigos = dispositivos
-          .filter(d => d.tipo === 'ARTIGO' && d.path === cleanPath)
-          .map((d) => ({
-            id: `artigo-${d.id}`,
-            type: 'artigo' as const,
-            label: `Art. ${d.numero ?? '?'}`,
-            preview: d.texto.slice(0, 60),
-            artigoIndex: dispositivos.indexOf(d),
-            children: undefined,
-          }))
-
+        const artigos = pathArtigos.map(a => ({
+          id: `artigo-${a.id}`,
+          type: 'artigo' as const,
+          label: `Art. ${a.numero ?? '?'}`,
+          preview: a.texto.slice(0, 60),
+          artigoIndex: a.globalIndex,
+          children: undefined,
+        }))
         if (artigos.length > 0) {
           return {
             ...node,

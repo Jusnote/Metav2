@@ -110,7 +110,7 @@ export const LeiTree = memo(function LeiTree({ data, expanded, activePath, onTog
 
           {/* CSS grid animation instead of framer-motion height: auto */}
           <div
-            className="grid transition-[grid-template-rows] duration-200 ease-in-out"
+            className="grid transition-[grid-template-rows] duration-[120ms] ease-out"
             style={{ gridTemplateRows: hasChildren && open ? '1fr' : '0fr' }}
           >
             <div className="overflow-hidden">
