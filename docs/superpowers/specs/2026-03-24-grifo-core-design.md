@@ -160,6 +160,69 @@ Rendered segments:
   [31+]   plain
 ```
 
+## Production Guards
+
+### Selection isolation: text vs annotation spans
+
+**Problem:** Dispositivo components render texto + annotation `<span>` in the same inline flow. If user selects text that extends into the annotation `(Redação dada pela Lei nº...)`, `selection.toString()` includes characters that don't exist in `Dispositivo.texto`. Offsets become invalid.
+
+**Solution:** Wrap the dispositivo texto in a `<span data-texto>` container, separate from annotations. The selection→offset algorithm clamps to this container:
+```tsx
+// In Artigo.tsx:
+<span data-texto><GrifoText texto={item.texto} ... /></span>
+{!leiSecaMode && item.anotacoes && ...annotation span...}
+```
+`grifo-anchoring.ts` finds the `[data-texto]` ancestor (not `[data-id]`) when computing offsets. This guarantees offsets always reference only the dispositivo text.
+
+### normalizeOrdinals is immutable
+
+`normalizeOrdinals()` in `src/lib/lei-text-utils.ts` MUST NOT be modified without a grifo offset migration. All grifo offsets reference the normalized output. Add a code comment:
+```typescript
+// WARNING: This function is immutable. Changing its behavior will invalidate
+// all stored grifo offsets in Supabase. If you need to change normalization,
+// write a migration to re-anchor existing grifos.
+```
+Add to "What Does NOT Change" section.
+
+### Stable Map references for memoization
+
+`grifosByDispositivo` Map must return **stable array references** per dispositivo_id. If grifos for a dispositivo haven't changed, the array reference must be the same (===). Otherwise GrifoText `useMemo` recalculates on every render.
+
+Implementation: `useGrifos` maintains a `useRef<Map<string, Grifo[]>>` cache. On state update, only replace arrays where grifos actually changed (shallow compare by grifo IDs). This ensures GrifoText memo works correctly even with 200+ grifos.
+
+### Popup trigger guards
+
+Popup only appears when ALL conditions are true:
+1. Selection is non-empty (`selection.toString().trim().length > 3`)
+2. Selection is within a `[data-texto]` container
+3. No scroll happened in the last 300ms (prevents accidental long-press during momentum scroll on mobile)
+4. Range is saved to `grifoPopupStore` immediately on popup open — all subsequent operations (color click, note) use stored range, never re-read `getSelection()` (which may have cleared by then)
+
+### Copy clipboard: strip marks
+
+`useCopyWithReference` must strip `<mark>` elements from the HTML clipboard format when copying text that contains grifos. The plain text clipboard is unaffected (marks are inline, `selection.toString()` returns clean text). Add to the hook:
+```typescript
+// Strip grifo marks from HTML clipboard
+const html = selectedHtml.replace(/<\/?mark[^>]*>/g, '')
+```
+
+### Tab concurrency: re-fetch on focus
+
+Without Supabase Realtime, stale data between tabs is possible. Mitigate by re-fetching grifos when the tab regains visibility:
+```typescript
+useEffect(() => {
+  const handler = () => {
+    if (document.visibilityState === 'visible') refetchGrifos()
+  }
+  document.addEventListener('visibilitychange', handler)
+  return () => document.removeEventListener('visibilitychange', handler)
+}, [refetchGrifos])
+```
+
+### Flush on unload: preserve pending deletes
+
+`beforeunload` and route-change flush send pending creates/updates to Supabase immediately. However, **pending deletes are NOT flushed** — they are cancelled, preserving the grifo. Rationale: if user deleted by accident and navigated before the undo toast expired, it's safer to keep the grifo than to lose it silently.
+
 ## Prerequisites: Add `data-id` to all dispositivo components
 
 **CRITICAL:** Currently only `Artigo.tsx` has `data-id={item.id}`. The selection→offset algorithm requires `[data-id]` on every dispositivo container to identify which dispositivo contains the selection.
@@ -177,12 +240,14 @@ Add `data-id={item.id}` to:
 
 ```
 1. window.getSelection().getRangeAt(0)
-2. Find ancestor element with [data-id] attribute (dispositivo container)
-3. Walk text nodes from container start to range.startContainer using TreeWalker
-4. Count characters to get start_offset relative to normalized Dispositivo.texto
-5. Same for end_offset via range.endContainer + range.endOffset
-6. Extract texto_grifado = selection.toString()
-7. Validate: texto_grifado must be non-empty and len > 0
+2. Find ancestor element with [data-texto] attribute (texto container, NOT annotation)
+3. Clamp range to [data-texto] boundaries (discard any selection extending into annotation spans)
+4. Walk text nodes within [data-texto] using TreeWalker(SHOW_TEXT) from container start to range.startContainer
+5. Count characters to get start_offset relative to normalized Dispositivo.texto
+6. Same for end_offset via range.endContainer + range.endOffset
+7. Find parent [data-id] to get dispositivo_id
+8. Extract texto_grifado from clamped range
+9. Validate: texto_grifado.trim().length > 3
 ```
 
 ### Cross-dispositivo selection
@@ -519,14 +584,15 @@ Uses `useSyncExternalStore` pattern (same as `activeArtigoStore`, `annotationSto
 
 | File | Change |
 |------|--------|
-| `src/components/lei-seca/dispositivos/Artigo.tsx` | Replace `<BoldPrefix>` with `<GrifoText>`, keep `data-id` |
-| `src/components/lei-seca/dispositivos/Paragrafo.tsx` | Add `data-id={item.id}`, replace text with `<GrifoText>` |
-| `src/components/lei-seca/dispositivos/Inciso.tsx` | Add `data-id={item.id}`, replace text with `<GrifoText>` |
-| `src/components/lei-seca/dispositivos/Alinea.tsx` | Add `data-id={item.id}`, replace text with `<GrifoText>` |
-| `src/components/lei-seca/dispositivos/Pena.tsx` | Add `data-id={item.id}`, replace text with `<GrifoText>` |
-| `src/components/lei-seca/dispositivos/GenericDispositivo.tsx` | Add `data-id={item.id}`, replace text with `<GrifoText>` |
+| `src/components/lei-seca/dispositivos/Artigo.tsx` | Replace `<BoldPrefix>` with `<span data-texto><GrifoText></span>`, keep `data-id` |
+| `src/components/lei-seca/dispositivos/Paragrafo.tsx` | Add `data-id`, wrap text in `<span data-texto><GrifoText></span>` |
+| `src/components/lei-seca/dispositivos/Inciso.tsx` | Add `data-id`, wrap text in `<span data-texto><GrifoText></span>` |
+| `src/components/lei-seca/dispositivos/Alinea.tsx` | Add `data-id`, wrap text in `<span data-texto><GrifoText></span>` |
+| `src/components/lei-seca/dispositivos/Pena.tsx` | Add `data-id`, wrap text in `<span data-texto><GrifoText></span>` |
+| `src/components/lei-seca/dispositivos/GenericDispositivo.tsx` | Add `data-id`, wrap text in `<span data-texto><GrifoText></span>` |
 | `src/components/lei-seca/dispositivos/DispositivoRenderer.tsx` | Pass grifos from Map to each component |
 | `src/views/LeiSecaPage.tsx` | Call `useGrifos(leiId)`, render `<GrifoPopup>`, register keyboard shortcuts, flush on route change |
+| `src/hooks/useCopyWithReference.ts` | Strip `<mark>` from HTML clipboard when copying grifoed text |
 
 ## Performance
 
@@ -559,6 +625,9 @@ Uses `useSyncExternalStore` pattern (same as `activeArtigoStore`, `annotationSto
 8. **Edge cases** — grifo at start of text, end of text, entire text, single character
 9. **BoldPrefix boundary** — grifo spanning across bold prefix → correct `<strong>` + `<mark>` nesting
 10. **Normalized text** — offsets computed against normalizeOrdinals output
+11. **Selection clamping** — selection extending into annotation span → clamped to texto container
+12. **Selection too short** — selection < 4 chars → rejected, no grifo created
+13. **TreeWalker across `<strong>` boundary** — correctly counts chars inside and outside bold elements
 
 ### Integration tests (`useGrifos`)
 
@@ -569,7 +638,9 @@ Uses `useSyncExternalStore` pattern (same as `activeArtigoStore`, `annotationSto
 5. **Batch create** — cross-dispositivo creates multiple grifos atomically
 6. **Debounced flush** — rapid creates batched into single Supabase call
 7. **Error rollback** — Supabase failure reverts optimistic update
-8. **Flush on unmount** — pending mutations sent on component unmount
+8. **Flush on unmount** — pending creates/updates sent, pending deletes cancelled
+9. **Re-fetch on tab focus** — stale grifos refreshed on visibilitychange
+10. **Copy with marks** — HTML clipboard strips `<mark>` tags, plain text unaffected
 
 ## What Does NOT Change
 
@@ -581,7 +652,24 @@ Uses `useSyncExternalStore` pattern (same as `activeArtigoStore`, `annotationSto
 - Copy with reference (useCopyWithReference)
 - Cadernos system (separate, provision-level)
 - API calls (useLeiApi hooks)
-- normalizeOrdinals function (used as-is, offsets reference its output)
+- normalizeOrdinals function (IMMUTABLE — changing it invalidates all grifo offsets)
+- useCopyWithReference (modified only to strip `<mark>` from HTML clipboard)
+
+## Known Considerations (defer until reported)
+
+These are edge cases we're aware of but intentionally not addressing in this spec. Resolve if users report them:
+
+1. **Grifo on revogado substituído** — If a revoked dispositivo is replaced by a new version with a different ID, grifos on the old ID become permanent orphans. Fix when it happens: migration script to re-map IDs.
+
+2. **Pena dispositivo ID stability** — Pena items may have unstable IDs from the API. Monitor if grifos on Pena devices lose anchoring. Fix: use `posicao` as secondary identifier.
+
+3. **Immersive mode z-index** — Popup z-60 should work in immersive mode (no header to conflict), but test when immersive mode is used with grifos.
+
+4. **VoiceOver/TalkBack on mobile** — `role="toolbar"` may not trap focus for screen readers on mobile. If accessibility reports come in, upgrade to `role="dialog"` with `aria-modal`.
+
+5. **Reference links inside grifos** — Some dispositivos have `<a>` cross-reference links in text. A grifo spanning a link needs `<mark>` wrapping `<a>` (valid HTML). CSS must preserve link styles inside marks.
+
+6. **Large texto_grifado** — If user highlights 500+ character artigos, `texto_grifado` field grows. With 200 grifos this is ~50KB per lei query. Acceptable for now; add `texto_grifado` truncation (500 chars) if performance degrades on 3G.
 
 ## Visual Reference
 
