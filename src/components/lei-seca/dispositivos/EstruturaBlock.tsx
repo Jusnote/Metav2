@@ -3,45 +3,66 @@ import type { Dispositivo } from '@/types/lei-api'
 /**
  * Renders a group of consecutive structural items as a compact block.
  *
+ * Rules:
+ *   - PARTE always renders alone with borders (never groups with others)
+ *   - LIVRO + TITULO join on one line: "LIVRO I — TÍTULO I"
+ *   - CAPITULO/SECAO/SUBSECAO on the next line
+ *   - Only the LAST subtitulo shows (most specific description)
+ *
  * Examples:
- *   LIVRO I + TITULO I + CAPITULO I + SUBTITULO →
+ *   LIVRO I + sub + TITULO I + sub + CAPITULO I + sub →
  *     "LIVRO I — TÍTULO I"
  *     "CAPÍTULO I"
- *     "Da Personalidade e da Capacidade"
+ *     "Da Personalidade e da Capacidade"   (only last sub)
  *
- *   CAPITULO II + SUBTITULO →
+ *   CAPITULO II + sub →
  *     "CAPÍTULO II"
  *     "Das Lesões Corporais"
- *
- *   TITULO II + SUBTITULO →
- *     "TÍTULO II — Do Crime"
  */
 
-const HIGH_LEVEL = new Set(['PARTE', 'LIVRO', 'TITULO'])
-const MID_LEVEL = new Set(['CAPITULO', 'SECAO', 'SUBSECAO'])
-
 export function EstruturaBlock({ items }: { items: Dispositivo[] }) {
-  // Separate by role
-  const highItems = items.filter(d => HIGH_LEVEL.has(d.tipo))
-  const midItems = items.filter(d => MID_LEVEL.has(d.tipo))
+  // PARTE always renders alone
+  const hasParte = items.some(d => d.tipo === 'PARTE')
+  if (hasParte) {
+    const parteItem = items.find(d => d.tipo === 'PARTE')!
+    const rest = items.filter(d => d.tipo !== 'PARTE')
+
+    return (
+      <>
+        <div className="text-center my-[52px] py-4 border-t border-b border-[#eee]" data-posicao={parteItem.posicao}>
+          <div className="font-[Outfit,sans-serif] text-[13px] font-semibold text-[#444] tracking-[1.5px] uppercase">
+            {parteItem.texto}
+          </div>
+        </div>
+        {rest.length > 0 && <EstruturaBlock items={rest} />}
+      </>
+    )
+  }
+
+  // Separate items by role
+  const livroTitulo = items.filter(d => d.tipo === 'LIVRO' || d.tipo === 'TITULO')
+  const capSecao = items.filter(d => d.tipo === 'CAPITULO' || d.tipo === 'SECAO' || d.tipo === 'SUBSECAO')
   const subtitulos = items.filter(d => d.tipo === 'SUBTITULO')
 
-  // Build high-level line: "LIVRO I — TÍTULO I" or just "TÍTULO II"
-  const highLine = highItems.map(d => d.texto).join(' — ')
+  // High line: "LIVRO I — TÍTULO I" (without their subtitles)
+  const highLine = livroTitulo.map(d => d.texto).join(' — ')
 
-  // Build mid-level line: "CAPÍTULO I" or "SEÇÃO I"
-  const midLine = midItems.map(d => d.texto).join(' — ')
+  // Mid line: "CAPÍTULO I"
+  const midLine = capSecao.map(d => d.texto).join(' — ')
 
-  // Subtitle: "Da Personalidade e da Capacidade"
-  const subLine = subtitulos.map(d => d.texto).join(' · ')
+  // Only the LAST subtitulo (most specific description)
+  const lastSub = subtitulos.length > 0 ? subtitulos[subtitulos.length - 1].texto : null
 
-  // If only a PARTE, render it specially
-  if (items.length === 1 && items[0].tipo === 'PARTE') {
+  // Edge case: only subtitulo(s), no structural parent
+  if (!highLine && !midLine && lastSub) {
     return (
-      <div className="text-center my-[52px] py-4 border-t border-b border-[#eee]" data-posicao={items[0].posicao}>
-        <div className="font-[Outfit,sans-serif] text-[13px] font-semibold text-[#444] tracking-[1.5px] uppercase">
-          {items[0].texto}
+      <div className="text-center mb-7" data-posicao={items[0].posicao}>
+        <div className="font-[Outfit,sans-serif] text-[13px] text-[#999] italic">
+          {lastSub}
         </div>
+        {items.slice(1).map(d => (
+          <span key={d.id} data-posicao={d.posicao} className="hidden" />
+        ))}
       </div>
     )
   }
@@ -57,24 +78,19 @@ export function EstruturaBlock({ items }: { items: Dispositivo[] }) {
 
       {/* Mid level: CAPÍTULO (main, bolder) */}
       {midLine && (
-        <div className="font-[Outfit,sans-serif] text-[13px] font-semibold text-[#444] tracking-[1.5px] uppercase mt-0.5">
+        <div className={`font-[Outfit,sans-serif] text-[13px] font-semibold text-[#444] tracking-[1.5px] uppercase ${highLine ? 'mt-0.5' : ''}`}>
           {midLine}
         </div>
       )}
 
-      {/* Subtitle: Da Personalidade... (description, italic) */}
-      {subLine && (
+      {/* Last subtitle only (most specific description) */}
+      {lastSub && (
         <div className="font-[Outfit,sans-serif] text-[13px] text-[#999] italic mt-0.5">
-          {subLine}
+          {lastSub}
         </div>
       )}
 
-      {/* If no mid/sub, just show high level as main */}
-      {!midLine && !subLine && highLine && (
-        <div className="sr-only">structural block</div>
-      )}
-
-      {/* All data-posicao markers for each item in the group */}
+      {/* Hidden data-posicao markers for all items in the group */}
       {items.slice(1).map(d => (
         <span key={d.id} data-posicao={d.posicao} className="hidden" />
       ))}
