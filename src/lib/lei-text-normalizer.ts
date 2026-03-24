@@ -10,6 +10,9 @@
  *
  * Does NOT touch "X o" in the middle of sentences (could be false positive).
  */
+// WARNING: This function is immutable. Changing its behavior will invalidate
+// all stored grifo offsets in Supabase. If you need to change normalization,
+// write a migration to re-anchor existing grifos first.
 export function normalizeOrdinals(text: string): string {
   return text
     // § followed by number + space + o → always ordinal
