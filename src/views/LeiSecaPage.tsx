@@ -61,8 +61,7 @@ export default function LeiSecaPage() {
 
   useCopyWithReference(dispositivos, currentLei);
 
-  const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId)
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId);
 
   // Selection handler — opens grifo popup on text selection
   const lastScrollRef = useRef(0);
@@ -247,7 +246,7 @@ export default function LeiSecaPage() {
             />
           </div>
           {/* DispositivoList: scrollable container */}
-          <div ref={scrollContainerRef} className={`flex-1 overflow-y-auto transition-opacity duration-100 ${searchOpen ? 'opacity-15' : ''}`}>
+          <div className={`flex-1 overflow-y-auto transition-opacity duration-100 ${searchOpen ? 'opacity-15' : ''}`}>
             <DispositivoList
               dispositivos={dispositivos}
               leiSecaMode={leiSecaMode}
@@ -275,7 +274,6 @@ export default function LeiSecaPage() {
         )}
       </div>
       <GrifoPopup
-        scrollContainerRef={scrollContainerRef}
         onCreateGrifo={handleCreateGrifo}
         onUpdateColor={handleUpdateColor}
         onDeleteGrifo={handleDeleteGrifo}
