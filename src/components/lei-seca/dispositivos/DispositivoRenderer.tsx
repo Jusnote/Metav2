@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
@@ -71,22 +71,63 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
         />
       )}
 
-      {/* Saved notes (collapsed) — each in its own card */}
-      {!noteOpenGrifo && grifosWithNotes.map(g => (
+      {/* Saved notes — badge counter (collapsed) or expanded cards */}
+      {!noteOpenGrifo && grifosWithNotes.length > 0 && (
+        <NoteBadge grifos={grifosWithNotes} />
+      )}
+    </>
+  )
+}
+
+function NoteBadge({ grifos }: { grifos: Grifo[] }) {
+  const [expanded, setExpanded] = useState(false)
+
+  if (!expanded) {
+    // Collapsed: pill badge with color dots
+    return (
+      <button
+        onClick={() => setExpanded(true)}
+        className="flex items-center gap-[6px] mt-1 mb-1 px-2 py-[3px] text-[10px] text-[#8a9a8f] font-[Outfit,sans-serif] bg-[#f5f7f6] border border-[#e8ede9] rounded-full cursor-pointer transition-colors hover:bg-[#eef2ef] hover:text-[#3a5540]"
+      >
+        <span>📝</span>
+        <span>{grifos.length} {grifos.length === 1 ? 'nota' : 'notas'}</span>
+        <span className="flex gap-[2px]">
+          {grifos.map(g => (
+            <span
+              key={g.id}
+              className="w-[5px] h-[5px] rounded-full"
+              style={{ background: GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.6)') }}
+            />
+          ))}
+        </span>
+      </button>
+    )
+  }
+
+  // Expanded: individual cards
+  return (
+    <div className="mt-1 mb-1 font-[Outfit,sans-serif]">
+      <button
+        onClick={() => setExpanded(false)}
+        className="flex items-center gap-[6px] mb-1 px-2 py-[3px] text-[10px] text-[#3a5540] font-medium bg-[#eef2ef] border border-[#e8ede9] rounded-full cursor-pointer transition-colors hover:bg-[#e5ebe6]"
+      >
+        <span>📝</span>
+        <span>{grifos.length} {grifos.length === 1 ? 'nota' : 'notas'} ▴</span>
+      </button>
+      {grifos.map(g => (
         <button
           key={g.id}
           onClick={() => grifoPopupStore.openNote(g.id)}
-          className="w-full text-left flex items-start gap-2 px-3 py-2 mt-1 text-[11.5px] text-[#5a6a60] leading-[1.5] font-[Outfit,sans-serif] bg-[#fafcfb] rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.03)] transition-colors hover:bg-[#f3f6f4]"
+          className="w-full text-left flex items-start gap-2 px-3 py-[6px] mb-[2px] text-[11px] text-[#5a6a60] leading-[1.5] bg-[#fafcfb] rounded-md transition-colors hover:bg-[#f3f6f4] cursor-pointer"
           style={{ borderLeft: `3px solid ${GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.5)')}` }}
         >
-          <span className="text-[11px] text-[#8a9a8f] mt-[1px] shrink-0">📝</span>
           <span className="flex-1">{g.note}</span>
-          <span className="text-[9px] text-[#b0c0b5] shrink-0 mt-[2px]">
+          <span className="text-[9px] text-[#b0c0b5] shrink-0 mt-[1px]">
             {formatTimeAgo(g.updated_at)}
           </span>
         </button>
       ))}
-    </>
+    </div>
   )
 }
 
