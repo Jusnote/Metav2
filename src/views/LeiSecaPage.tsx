@@ -94,10 +94,9 @@ export default function LeiSecaPage() {
       const startIdx = textoContent.indexOf(selText);
       if (startIdx === -1) return;
 
-      const { activeTool } = grifoPopupStore.getSnapshot();
+      const { activeTool, activeStyle } = grifoPopupStore.getSnapshot();
 
       if (activeTool !== 'cursor' && currentLeiId) {
-        // Color tool active → grifo instantly, no popup
         createGrifo({
           lei_id: currentLeiId,
           dispositivo_id: dispositivoId,
@@ -105,8 +104,9 @@ export default function LeiSecaPage() {
           end_offset: startIdx + selText.length,
           texto_grifado: selText,
           color: activeTool,
+          style: activeStyle,
         });
-        sel.removeAllRanges(); // clear selection after highlighting
+        sel.removeAllRanges();
       }
       // cursor tool → normal selection, no action
     };

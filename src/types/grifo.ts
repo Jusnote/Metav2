@@ -1,4 +1,5 @@
 export type GrifoColor = 'yellow' | 'green' | 'blue' | 'pink' | 'orange'
+export type GrifoStyle = 'highlight' | 'underline'
 
 export interface Grifo {
   id: string
@@ -9,6 +10,7 @@ export interface Grifo {
   end_offset: number
   texto_grifado: string
   color: GrifoColor
+  style: GrifoStyle
   note: string | null
   tags: string[]
   orphan: boolean
@@ -23,6 +25,15 @@ export interface CreateGrifoParams {
   end_offset: number
   texto_grifado: string
   color: GrifoColor
+  style: GrifoStyle
+}
+
+export const GRIFO_UNDERLINE_COLORS: Record<GrifoColor, string> = {
+  yellow: 'rgba(250, 204, 21, 0.7)',
+  green:  'rgba(74, 222, 128, 0.6)',
+  blue:   'rgba(96, 165, 250, 0.6)',
+  pink:   'rgba(244, 114, 182, 0.6)',
+  orange: 'rgba(251, 146, 60, 0.6)',
 }
 
 export interface GrifoSegment {

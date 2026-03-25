@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { fontSizeStore, useFontSize } from '@/stores/fontSizeStore'
 import { useLeiSeca } from '@/contexts/LeiSecaContext'
-import { grifoPopupStore, useActiveTool } from '@/stores/grifoPopupStore'
+import { grifoPopupStore, useActiveTool, useActiveStyle } from '@/stores/grifoPopupStore'
 import type { GrifoColor } from '@/types/grifo'
 import { GRIFO_COLORS, GRIFO_COLOR_NAMES } from '@/types/grifo'
 
@@ -17,6 +17,7 @@ export function LeiToolbar() {
   } = useLeiSeca()
   const fontSize = useFontSize()
   const activeTool = useActiveTool()
+  const activeStyle = useActiveStyle()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -72,6 +73,33 @@ export function LeiToolbar() {
               />
             </button>
           ))}
+
+          {/* Style divider + toggle */}
+          <div className="w-px h-4 bg-[#ddd] mx-[2px]" />
+          <button
+            onClick={() => grifoPopupStore.setActiveStyle('highlight')}
+            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all text-[11px] font-semibold ${
+              activeStyle === 'highlight'
+                ? 'bg-white shadow-sm text-[#333]'
+                : 'text-[#999] hover:bg-white/50'
+            }`}
+            aria-label="Marca-texto"
+            title="Marca-texto"
+          >
+            ▬
+          </button>
+          <button
+            onClick={() => grifoPopupStore.setActiveStyle('underline')}
+            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all text-[11px] font-semibold ${
+              activeStyle === 'underline'
+                ? 'bg-white shadow-sm text-[#333]'
+                : 'text-[#999] hover:bg-white/50'
+            }`}
+            aria-label="Sublinhado"
+            title="Sublinhado"
+          >
+            U̲
+          </button>
         </div>
 
         <div className="flex-1" />

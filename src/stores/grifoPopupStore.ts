@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import type { Grifo, GrifoColor } from '@/types/grifo'
+import type { Grifo, GrifoColor, GrifoStyle } from '@/types/grifo'
 
 interface GrifoPopupState {
   isOpen: boolean
@@ -10,7 +10,8 @@ interface GrifoPopupState {
   existingGrifo: Grifo | null
   lastColor: GrifoColor
   noteOpenGrifoId: string | null
-  activeTool: GrifoColor | 'cursor'  // toolbar active tool
+  activeTool: GrifoColor | 'cursor'
+  activeStyle: GrifoStyle
 }
 
 const STORAGE_KEY = 'lei-seca:last-grifo-color'
@@ -34,6 +35,7 @@ let state: GrifoPopupState = {
   lastColor: loadLastColor(),
   noteOpenGrifoId: null,
   activeTool: 'cursor' as GrifoColor | 'cursor',
+  activeStyle: 'highlight' as GrifoStyle,
 }
 
 const listeners = new Set<() => void>()
@@ -96,6 +98,11 @@ export const grifoPopupStore = {
     emitChange()
   },
 
+  setActiveStyle(style: GrifoStyle) {
+    state = { ...state, activeStyle: style }
+    emitChange()
+  },
+
   openNote(grifoId: string) {
     state = { ...state, isOpen: false, existingGrifo: null, noteOpenGrifoId: grifoId }
     emitChange()
@@ -118,6 +125,20 @@ export function useGrifoPopupState(): GrifoPopupState {
     grifoPopupStore.subscribe,
     grifoPopupStore.getSnapshot,
     () => ({ ...state, isOpen: false }),
+  )
+}
+
+/** Subscribe ONLY to activeStyle */
+let prevStyle: GrifoStyle = 'highlight'
+export function useActiveStyle(): GrifoStyle {
+  return useSyncExternalStore(
+    grifoPopupStore.subscribe,
+    () => {
+      const s = state.activeStyle
+      if (s !== prevStyle) prevStyle = s
+      return prevStyle
+    },
+    () => 'highlight' as const,
   )
 }
 

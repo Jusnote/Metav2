@@ -81,6 +81,7 @@ export function useGrifos(leiId: string | null): UseGrifosReturn {
           end_offset: g.end_offset,
           texto_grifado: g.texto_grifado,
           color: g.color,
+          style: g.style,
           note: g.note,
         })))
         .select()
