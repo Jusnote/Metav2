@@ -74,7 +74,7 @@ export default function LeiSecaPage() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      // Ignore mouseup inside the grifo popup (let button clicks complete)
+      // Ignore mouseup inside toolbars
       if ((e.target as HTMLElement).closest?.('[role="toolbar"]')) return;
 
       if (Date.now() - lastScrollRef.current < 300) return;
@@ -93,60 +93,59 @@ export default function LeiSecaPage() {
       const selText = sel.toString();
       const startIdx = textoContent.indexOf(selText);
       if (startIdx === -1) return;
-      grifoPopupStore.openNew({
-        dispositivoId,
-        startOffset: startIdx,
-        endOffset: startIdx + selText.length,
-        textoGrifado: selText,
-      });
+
+      const { activeTool } = grifoPopupStore.getSnapshot();
+
+      if (activeTool !== 'cursor' && currentLeiId) {
+        // Color tool active → grifo instantly, no popup
+        createGrifo({
+          lei_id: currentLeiId,
+          dispositivo_id: dispositivoId,
+          start_offset: startIdx,
+          end_offset: startIdx + selText.length,
+          texto_grifado: selText,
+          color: activeTool,
+        });
+        sel.removeAllRanges(); // clear selection after highlighting
+      }
+      // cursor tool → normal selection, no action
     };
     document.addEventListener('mouseup', handler);
     return () => document.removeEventListener('mouseup', handler);
-  }, []);
+  }, [createGrifo, currentLeiId]);
 
-  // Keyboard shortcuts Alt+1..5
+  // Keyboard shortcuts Alt+0..5 — switch active tool
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (!e.altKey) return;
-      const colors: Record<string, GrifoColor> = { '1': 'yellow', '2': 'green', '3': 'blue', '4': 'pink', '5': 'orange' };
-      const color = colors[e.key];
-      if (!color) return;
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed || sel.toString().trim().length <= 3) return;
+      const toolMap: Record<string, GrifoColor | 'cursor'> = {
+        '0': 'cursor', '1': 'yellow', '2': 'green', '3': 'blue', '4': 'pink', '5': 'orange'
+      };
+      const tool = toolMap[e.key];
+      if (!tool) return;
       e.preventDefault();
-      // Trigger same flow as popup color click
-      const s = grifoPopupStore.getSnapshot();
-      if (s.isOpen && s.dispositivoId && currentLeiId) {
-        createGrifo({
-          lei_id: currentLeiId,
-          dispositivo_id: s.dispositivoId,
-          start_offset: s.startOffset,
-          end_offset: s.endOffset,
-          texto_grifado: s.textoGrifado,
-          color,
-        });
-        grifoPopupStore.setLastColor(color);
-        grifoPopupStore.close();
-      }
+      grifoPopupStore.setActiveTool(tool);
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [createGrifo, currentLeiId]);
-
-  // Grifo click handler
-  const handleGrifoClick = useCallback((grifo: Grifo, _rect: DOMRect) => {
-    grifoPopupStore.openExisting(grifo);
   }, []);
+
+  // Grifo click handler — Ctrl+click deletes, normal click opens edit popup
+  const handleGrifoClick = useCallback((grifo: Grifo, _rect: DOMRect) => {
+    // Check if Ctrl/Cmd was held during the click
+    const lastEvent = window.event as MouseEvent | undefined;
+    if (lastEvent?.ctrlKey || lastEvent?.metaKey) {
+      deleteGrifo(grifo.id);
+      return;
+    }
+    grifoPopupStore.openExisting(grifo);
+  }, [deleteGrifo]);
 
   // Popup callbacks
   const handleCreateGrifo = useCallback((color: GrifoColor) => {
     const s = grifoPopupStore.getSnapshot();
-    console.log('[GRIFO DEBUG 1] handleCreateGrifo called', { color, dispositivoId: s.dispositivoId, currentLeiId, startOffset: s.startOffset, endOffset: s.endOffset, textoGrifado: s.textoGrifado });
-    if (!s.dispositivoId || !currentLeiId) {
-      console.log('[GRIFO DEBUG 1] BAILED — dispositivoId or currentLeiId missing');
-      return;
-    }
-    const tempId = createGrifo({
+    if (!s.dispositivoId || !currentLeiId) return;
+    createGrifo({
       lei_id: currentLeiId,
       dispositivo_id: s.dispositivoId,
       start_offset: s.startOffset,
@@ -154,7 +153,6 @@ export default function LeiSecaPage() {
       texto_grifado: s.textoGrifado,
       color,
     });
-    console.log('[GRIFO DEBUG 2] createGrifo returned tempId:', tempId);
   }, [createGrifo, currentLeiId]);
 
   const handleUpdateColor = useCallback((id: string, color: GrifoColor) => {

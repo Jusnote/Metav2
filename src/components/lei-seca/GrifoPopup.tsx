@@ -77,7 +77,6 @@ export function GrifoPopup({ scrollContainerRef, onCreateGrifo, onUpdateColor, o
   }, [popupState.isOpen, popupState.existingGrifo])
 
   const handleColorClick = useCallback((color: GrifoColor) => {
-    console.log('[GRIFO] color clicked:', color)
     grifoPopupStore.setLastColor(color)
     if (popupState.existingGrifo) {
       onUpdateColor(popupState.existingGrifo.id, color)

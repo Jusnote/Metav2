@@ -10,6 +10,7 @@ interface GrifoPopupState {
   existingGrifo: Grifo | null
   lastColor: GrifoColor
   noteOpenGrifoId: string | null
+  activeTool: GrifoColor | 'cursor'  // toolbar active tool
 }
 
 const STORAGE_KEY = 'lei-seca:last-grifo-color'
@@ -32,6 +33,7 @@ let state: GrifoPopupState = {
   existingGrifo: null,
   lastColor: loadLastColor(),
   noteOpenGrifoId: null,
+  activeTool: 'cursor' as GrifoColor | 'cursor',
 }
 
 const listeners = new Set<() => void>()
@@ -85,6 +87,15 @@ export const grifoPopupStore = {
     emitChange()
   },
 
+  setActiveTool(tool: GrifoColor | 'cursor') {
+    state = { ...state, activeTool: tool }
+    if (tool !== 'cursor') {
+      state.lastColor = tool as GrifoColor
+      localStorage.setItem(STORAGE_KEY, tool)
+    }
+    emitChange()
+  },
+
   openNote(grifoId: string) {
     state = { ...state, isOpen: false, existingGrifo: null, noteOpenGrifoId: grifoId }
     emitChange()
@@ -107,6 +118,20 @@ export function useGrifoPopupState(): GrifoPopupState {
     grifoPopupStore.subscribe,
     grifoPopupStore.getSnapshot,
     () => ({ ...state, isOpen: false }),
+  )
+}
+
+/** Subscribe ONLY to activeTool — for toolbar color display */
+let prevTool: GrifoColor | 'cursor' = 'cursor'
+export function useActiveTool(): GrifoColor | 'cursor' {
+  return useSyncExternalStore(
+    grifoPopupStore.subscribe,
+    () => {
+      const tool = state.activeTool
+      if (tool !== prevTool) prevTool = tool
+      return prevTool
+    },
+    () => 'cursor' as const,
   )
 }
 

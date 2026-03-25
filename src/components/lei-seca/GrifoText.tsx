@@ -36,11 +36,6 @@ export const GrifoText = memo(function GrifoText({
     onGrifoClick(grifo, rect)
   }, [onGrifoClick])
 
-  // Debug: track when grifos are received
-  if (grifos.length > 0) {
-    console.log('[GrifoText] rendering with', grifos.length, 'grifos, segments:', segments.length)
-  }
-
   // If no grifos, render with BoldPrefix logic only (fast path)
   if (grifos.length === 0) {
     if (boldEnd > 0) {

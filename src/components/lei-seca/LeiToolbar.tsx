@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import { fontSizeStore, useFontSize } from '@/stores/fontSizeStore'
 import { useLeiSeca } from '@/contexts/LeiSecaContext'
+import { grifoPopupStore, useActiveTool } from '@/stores/grifoPopupStore'
+import type { GrifoColor } from '@/types/grifo'
+import { GRIFO_COLORS, GRIFO_COLOR_NAMES } from '@/types/grifo'
+
+const TOOL_COLORS: GrifoColor[] = ['yellow', 'green', 'blue', 'pink', 'orange']
 
 export function LeiToolbar() {
   const {
@@ -11,6 +16,7 @@ export function LeiToolbar() {
     showRevogados, toggleRevogados,
   } = useLeiSeca()
   const fontSize = useFontSize()
+  const activeTool = useActiveTool()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -26,6 +32,47 @@ export function LeiToolbar() {
             <option key={l.id} value={l.id}>{l.apelido ?? l.titulo}</option>
           ))}
         </select>
+
+        {/* Grifo color palette */}
+        <div className="flex items-center gap-[2px] bg-[#f4f4f4] rounded-full px-1 py-[3px]">
+          {/* Cursor tool (no highlighting) */}
+          <button
+            onClick={() => grifoPopupStore.setActiveTool('cursor')}
+            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+              activeTool === 'cursor'
+                ? 'bg-white shadow-sm scale-110'
+                : 'hover:bg-white/50'
+            }`}
+            aria-label="Seleção normal"
+            title="Seleção normal (Alt+0)"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={activeTool === 'cursor' ? '#333' : '#aaa'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
+            </svg>
+          </button>
+
+          {/* Color tools */}
+          {TOOL_COLORS.map(color => (
+            <button
+              key={color}
+              onClick={() => grifoPopupStore.setActiveTool(color)}
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                activeTool === color
+                  ? 'bg-white shadow-sm scale-110'
+                  : 'hover:bg-white/50'
+              }`}
+              aria-label={GRIFO_COLOR_NAMES[color]}
+              title={`${GRIFO_COLOR_NAMES[color]} (Alt+${TOOL_COLORS.indexOf(color) + 1})`}
+            >
+              <div
+                className="w-3.5 h-3.5 rounded-full"
+                style={{
+                  background: GRIFO_COLORS[color].replace(/[\d.]+\)$/, activeTool === color ? '0.8)' : '0.5)'),
+                }}
+              />
+            </button>
+          ))}
+        </div>
 
         <div className="flex-1" />
 
