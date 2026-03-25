@@ -109,3 +109,17 @@ export function useGrifoPopupState(): GrifoPopupState {
     () => ({ ...state, isOpen: false }),
   )
 }
+
+/** Subscribe ONLY to noteOpenGrifoId — doesn't re-render on popup open/close */
+let prevNoteId: string | null = null
+export function useNoteOpenGrifoId(): string | null {
+  return useSyncExternalStore(
+    grifoPopupStore.subscribe,
+    () => {
+      const id = state.noteOpenGrifoId
+      if (id !== prevNoteId) prevNoteId = id
+      return prevNoteId
+    },
+    () => null,
+  )
+}

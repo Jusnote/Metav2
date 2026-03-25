@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
-import { useGrifoPopupState } from '@/stores/grifoPopupStore'
+import { useNoteOpenGrifoId } from '@/stores/grifoPopupStore'
 import { DispositivoRenderer } from './DispositivoRenderer'
 import { EstruturaBlock } from './EstruturaBlock'
 import { useFontSize } from '@/stores/fontSizeStore'
@@ -69,7 +69,7 @@ export function DispositivoList({
 }: DispositivoListProps) {
   const fontSize = useFontSize()
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
-  const { noteOpenGrifoId } = useGrifoPopupState()
+  const noteOpenGrifoId = useNoteOpenGrifoId()
 
   return (
     <div
