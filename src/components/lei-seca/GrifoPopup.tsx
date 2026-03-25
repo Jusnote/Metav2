@@ -143,6 +143,25 @@ export function GrifoPopup({ scrollContainerRef, onCreateGrifo, onUpdateColor, o
           )
         })}
 
+        {/* Delete button — only when editing existing grifo */}
+        {isEditing && (
+          <>
+            <div className="w-px h-4 bg-black/[0.06] mx-0.5" />
+            <button
+              type="button"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={handleDelete}
+              className="rounded-full cursor-pointer transition-colors hover:bg-red-50 flex items-center justify-center p-1.5 sm:p-1"
+              aria-label="Apagar grifo"
+              title="Apagar"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </>
+        )}
+
         <div className="w-px h-4 bg-black/[0.06] mx-0.5" />
 
         <button
