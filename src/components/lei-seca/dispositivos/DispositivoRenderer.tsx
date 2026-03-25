@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
-import { useGrifoPopupState, grifoPopupStore } from '@/stores/grifoPopupStore'
+import { grifoPopupStore } from '@/stores/grifoPopupStore'
 import { GrifoNoteInline } from '@/components/lei-seca/GrifoNoteInline'
 import { GRIFO_COLORS } from '@/types/grifo'
 import { EstruturaHeader } from './EstruturaHeader'
@@ -24,17 +24,16 @@ interface Props {
   grifos?: Grifo[]
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
   onSaveNote?: (grifoId: string, note: string) => void
+  noteOpenGrifoId?: string | null
 }
 
-export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote }: Props) {
+export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId }: Props) {
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
     texto: normalizeOrdinals(rawItem.texto),
     epigrafe: rawItem.epigrafe ? normalizeOrdinals(rawItem.epigrafe) : null,
     pena: rawItem.pena ? normalizeOrdinals(rawItem.pena) : null,
   }), [rawItem])
-
-  const popupState = useGrifoPopupState()
 
   if (item.tipo === 'EMENTA' || item.tipo === 'PREAMBULO') return null
   if (item.tipo === 'EPIGRAFE' && /^(ÍNDICE|índice|\.|[*])$/i.test(item.texto.trim())) return null
@@ -47,7 +46,7 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
   // Find grifos with notes for this dispositivo (for saved note display)
   const grifosWithNotes = grifos.filter(g => g.note)
   // Find grifo with note editor open
-  const noteOpenGrifo = grifos.find(g => g.id === popupState.noteOpenGrifoId)
+  const noteOpenGrifo = grifos.find(g => g.id === noteOpenGrifoId)
 
   let content: React.ReactNode = null
   if (item.tipo === 'ARTIGO') content = <Artigo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
