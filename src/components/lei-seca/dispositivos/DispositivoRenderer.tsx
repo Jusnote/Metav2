@@ -72,43 +72,21 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
         />
       )}
 
-      {/* Saved notes (collapsed) — only when editor is NOT open */}
-      {!noteOpenGrifo && grifosWithNotes.length > 0 && (
-        <div className={`font-[Outfit,sans-serif] ${
-          grifosWithNotes.length > 1
-            ? 'bg-[#fafcfb] rounded-lg my-1 shadow-[0_1px_4px_rgba(0,0,0,0.03)] overflow-hidden'
-            : ''
-        }`}>
-          {grifosWithNotes.map((g, i) => (
-            <button
-              key={g.id}
-              onClick={() => grifoPopupStore.openNote(g.id)}
-              className={`w-full text-left flex items-start gap-2 px-3 py-2 text-[11.5px] text-[#5a6a60] leading-[1.5] transition-colors hover:bg-[#f3f6f4] ${
-                grifosWithNotes.length === 1
-                  ? 'bg-[#fafcfb] rounded-lg my-1 shadow-[0_1px_4px_rgba(0,0,0,0.03)]'
-                  : i > 0 ? 'border-t border-black/[0.03]' : ''
-              }`}
-              style={grifosWithNotes.length === 1
-                ? { borderLeft: `3px solid ${GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.5)')}` }
-                : undefined
-              }
-            >
-              {/* Color bar for grouped notes */}
-              {grifosWithNotes.length > 1 && (
-                <div
-                  className="absolute left-0 top-0 bottom-0 w-[3px]"
-                  style={{ background: GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.6)'), position: 'absolute' }}
-                />
-              )}
-              <span className="text-[11px] text-[#8a9a8f] mt-[1px] shrink-0">📝</span>
-              <span className="flex-1">{g.note}</span>
-              <span className="text-[9px] text-[#b0c0b5] shrink-0 mt-[2px] group-hover:hidden">
-                {formatTimeAgo(g.updated_at)}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Saved notes (collapsed) — each in its own card */}
+      {!noteOpenGrifo && grifosWithNotes.map(g => (
+        <button
+          key={g.id}
+          onClick={() => grifoPopupStore.openNote(g.id)}
+          className="w-full text-left flex items-start gap-2 px-3 py-2 mt-1 text-[11.5px] text-[#5a6a60] leading-[1.5] font-[Outfit,sans-serif] bg-[#fafcfb] rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.03)] transition-colors hover:bg-[#f3f6f4]"
+          style={{ borderLeft: `3px solid ${GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.5)')}` }}
+        >
+          <span className="text-[11px] text-[#8a9a8f] mt-[1px] shrink-0">📝</span>
+          <span className="flex-1">{g.note}</span>
+          <span className="text-[9px] text-[#b0c0b5] shrink-0 mt-[2px]">
+            {formatTimeAgo(g.updated_at)}
+          </span>
+        </button>
+      ))}
     </>
   )
 }
