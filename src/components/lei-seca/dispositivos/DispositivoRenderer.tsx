@@ -2,6 +2,9 @@ import { useMemo } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
+import { useGrifoPopupState, grifoPopupStore } from '@/stores/grifoPopupStore'
+import { GrifoNoteInline } from '@/components/lei-seca/GrifoNoteInline'
+import { GRIFO_COLORS } from '@/types/grifo'
 import { EstruturaHeader } from './EstruturaHeader'
 import { Epigrafe } from './Epigrafe'
 import { Artigo } from './Artigo'
@@ -20,10 +23,10 @@ interface Props {
   showRevogados?: boolean
   grifos?: Grifo[]
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
+  onSaveNote?: (grifoId: string, note: string) => void
 }
 
-export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados, grifos = [], onGrifoClick }: Props) {
-  // Normalize ordinals once per render (§ 2 o → § 2º, Art. 3 o → Art. 3º)
+export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote }: Props) {
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
     texto: normalizeOrdinals(rawItem.texto),
@@ -31,7 +34,8 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
     pena: rawItem.pena ? normalizeOrdinals(rawItem.pena) : null,
   }), [rawItem])
 
-  // Hide non-content items from reader
+  const popupState = useGrifoPopupState()
+
   if (item.tipo === 'EMENTA' || item.tipo === 'PREAMBULO') return null
   if (item.tipo === 'EPIGRAFE' && /^(ÍNDICE|índice|\.|[*])$/i.test(item.texto.trim())) return null
 
@@ -39,11 +43,85 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
 
   if (STRUCTURAL.includes(item.tipo)) return <EstruturaHeader item={item} />
   if (item.tipo === 'EPIGRAFE') return <Epigrafe item={item} />
-  if (item.tipo === 'ARTIGO') return <Artigo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
-  if (item.tipo === 'PARAGRAFO' || item.tipo === 'CAPUT') return <Paragrafo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
-  if (item.tipo === 'INCISO') return <Inciso item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
-  if (item.tipo === 'ALINEA') return <Alinea item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
-  if (item.tipo === 'PENA') return <Pena item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 
-  return <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
+  // Find grifos with notes for this dispositivo (for saved note display)
+  const grifosWithNotes = grifos.filter(g => g.note)
+  // Find grifo with note editor open
+  const noteOpenGrifo = grifos.find(g => g.id === popupState.noteOpenGrifoId)
+
+  let content: React.ReactNode = null
+  if (item.tipo === 'ARTIGO') content = <Artigo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  else if (item.tipo === 'PARAGRAFO' || item.tipo === 'CAPUT') content = <Paragrafo item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  else if (item.tipo === 'INCISO') content = <Inciso item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  else if (item.tipo === 'ALINEA') content = <Alinea item={item} leiSecaMode={leiSecaMode} grifos={grifos} onGrifoClick={onGrifoClick} />
+  else if (item.tipo === 'PENA') content = <Pena item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
+  else content = <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
+
+  return (
+    <>
+      {content}
+
+      {/* Note editor (open) */}
+      {noteOpenGrifo && onSaveNote && (
+        <GrifoNoteInline
+          grifoId={noteOpenGrifo.id}
+          color={noteOpenGrifo.color}
+          initialNote={noteOpenGrifo.note}
+          onSave={onSaveNote}
+          onCancel={() => grifoPopupStore.closeNote()}
+        />
+      )}
+
+      {/* Saved notes (collapsed) — only when editor is NOT open */}
+      {!noteOpenGrifo && grifosWithNotes.length > 0 && (
+        <div className={`font-[Outfit,sans-serif] ${
+          grifosWithNotes.length > 1
+            ? 'bg-[#fafcfb] rounded-lg my-1 shadow-[0_1px_4px_rgba(0,0,0,0.03)] overflow-hidden'
+            : ''
+        }`}>
+          {grifosWithNotes.map((g, i) => (
+            <button
+              key={g.id}
+              onClick={() => grifoPopupStore.openNote(g.id)}
+              className={`w-full text-left flex items-start gap-2 px-3 py-2 text-[11.5px] text-[#5a6a60] leading-[1.5] transition-colors hover:bg-[#f3f6f4] ${
+                grifosWithNotes.length === 1
+                  ? 'bg-[#fafcfb] rounded-lg my-1 shadow-[0_1px_4px_rgba(0,0,0,0.03)]'
+                  : i > 0 ? 'border-t border-black/[0.03]' : ''
+              }`}
+              style={grifosWithNotes.length === 1
+                ? { borderLeft: `3px solid ${GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.5)')}` }
+                : undefined
+              }
+            >
+              {/* Color bar for grouped notes */}
+              {grifosWithNotes.length > 1 && (
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-[3px]"
+                  style={{ background: GRIFO_COLORS[g.color].replace(/[\d.]+\)$/, '0.6)'), position: 'absolute' }}
+                />
+              )}
+              <span className="text-[11px] text-[#8a9a8f] mt-[1px] shrink-0">📝</span>
+              <span className="flex-1">{g.note}</span>
+              <span className="text-[9px] text-[#b0c0b5] shrink-0 mt-[2px] group-hover:hidden">
+                {formatTimeAgo(g.updated_at)}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+function formatTimeAgo(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diff = now - then
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'agora'
+  if (mins < 60) return `${mins}min`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  const days = Math.floor(hours / 24)
+  return `${days}d`
 }

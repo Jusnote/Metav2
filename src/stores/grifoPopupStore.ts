@@ -9,6 +9,7 @@ interface GrifoPopupState {
   textoGrifado: string
   existingGrifo: Grifo | null
   lastColor: GrifoColor
+  noteOpenGrifoId: string | null
 }
 
 const STORAGE_KEY = 'lei-seca:last-grifo-color'
@@ -30,6 +31,7 @@ let state: GrifoPopupState = {
   textoGrifado: '',
   existingGrifo: null,
   lastColor: loadLastColor(),
+  noteOpenGrifoId: null,
 }
 
 const listeners = new Set<() => void>()
@@ -83,8 +85,19 @@ export const grifoPopupStore = {
     emitChange()
   },
 
+  openNote(grifoId: string) {
+    state = { ...state, isOpen: false, existingGrifo: null, noteOpenGrifoId: grifoId }
+    emitChange()
+  },
+
+  closeNote() {
+    if (!state.noteOpenGrifoId) return
+    state = { ...state, noteOpenGrifoId: null }
+    emitChange()
+  },
+
   reset() {
-    state = { ...state, isOpen: false, dispositivoId: null, existingGrifo: null }
+    state = { ...state, isOpen: false, dispositivoId: null, existingGrifo: null, noteOpenGrifoId: null }
     emitChange()
   },
 }

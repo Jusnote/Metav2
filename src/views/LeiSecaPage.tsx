@@ -165,6 +165,11 @@ export default function LeiSecaPage() {
     deleteGrifo(id);
   }, [deleteGrifo]);
 
+  const handleSaveNote = useCallback((grifoId: string, note: string) => {
+    updateGrifo(grifoId, { note: note || null });
+    grifoPopupStore.closeNote();
+  }, [updateGrifo]);
+
   const activeIndex = useActiveArtigoIndex();
   useReadingProgressTracker(currentLeiId, dispositivos, totalDispositivos, activeIndex);
 
@@ -262,6 +267,7 @@ export default function LeiSecaPage() {
               showRevogados={showRevogados}
               grifosByDispositivo={grifosByDispositivo}
               onGrifoClick={handleGrifoClick}
+              onSaveNote={handleSaveNote}
             />
           </div>
         </div>
@@ -287,7 +293,23 @@ export default function LeiSecaPage() {
         onCreateGrifo={handleCreateGrifo}
         onUpdateColor={handleUpdateColor}
         onDeleteGrifo={handleDeleteGrifo}
-        onOpenNote={() => { /* TODO: wire inline note in sub-project integration */ }}
+        onOpenNote={() => {
+          const s = grifoPopupStore.getSnapshot()
+          if (s.existingGrifo) {
+            grifoPopupStore.openNote(s.existingGrifo.id)
+          } else if (s.dispositivoId && currentLeiId) {
+            // Create grifo first with last color, then open note
+            const tempId = createGrifo({
+              lei_id: currentLeiId,
+              dispositivo_id: s.dispositivoId,
+              start_offset: s.startOffset,
+              end_offset: s.endOffset,
+              texto_grifado: s.textoGrifado,
+              color: s.lastColor,
+            })
+            grifoPopupStore.openNote(tempId)
+          }
+        }}
       />
     </div>
   );

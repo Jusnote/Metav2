@@ -13,6 +13,7 @@ interface DispositivoListProps {
   showRevogados?: boolean
   grifosByDispositivo?: Map<string, Grifo[]>
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
+  onSaveNote?: (grifoId: string, note: string) => void
 }
 
 type RenderItem =
@@ -63,6 +64,7 @@ export function DispositivoList({
   showRevogados,
   grifosByDispositivo,
   onGrifoClick,
+  onSaveNote,
 }: DispositivoListProps) {
   const fontSize = useFontSize()
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
@@ -92,12 +94,9 @@ export function DispositivoList({
               item={entry.item}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
-              grifos={(() => {
-                const g = grifosByDispositivo?.get(entry.item.id) ?? []
-                if (g.length > 0) console.log('[GRIFO DEBUG 3] DispositivoList passing', g.length, 'grifos to item', entry.item.id)
-                return g
-              })()}
+              grifos={grifosByDispositivo?.get(entry.item.id) ?? []}
               onGrifoClick={onGrifoClick}
+              onSaveNote={onSaveNote}
             />
           </div>
         )
