@@ -160,7 +160,7 @@ export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
                 category={cat}
                 selectedCount={counts[cat.key]}
                 isOpen={openPopover === cat.key}
-                onClick={() => handlePillClick(cat.key)}
+                onClick={() => {}} // Radix PopoverTrigger handles open/close
                 onClear={() => handleClearCategory(cat.key)}
                 isMobile={isMobile}
               />
@@ -188,7 +188,7 @@ export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
               category={ADVANCED_CATEGORY}
               selectedCount={counts[ADVANCED_CATEGORY.key]}
               isOpen={openPopover === ADVANCED_CATEGORY.key}
-              onClick={() => handlePillClick(ADVANCED_CATEGORY.key)}
+              onClick={() => {}} // Radix PopoverTrigger handles open/close
               onClear={() => handleClearCategory(ADVANCED_CATEGORY.key)}
               isMobile={isMobile}
               dashed

@@ -46,14 +46,7 @@ export default function QuestoesPage() {
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
       {/* Sticky search + filter bar */}
-      <div
-        className="sticky top-0 z-20 px-2 pt-3"
-        style={{
-          background: 'rgba(240,242,245,0.92)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-        }}
-      >
+      <div className="sticky top-0 z-20 px-2 pt-3 pb-2">
         <QuestoesSearchBar />
         <QuestoesFilterBar onPopoverChange={setHasOpenPopover} />
       </div>

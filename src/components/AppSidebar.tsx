@@ -60,8 +60,6 @@ const mainNavigation: NavItem[] = [
     label: "Questões",
     href: "/questoes",
     icon: <IconHelpCircle className="h-5 w-5" />,
-    customPanel: true,
-    panelWidth: 320,
   },
   {
     label: "Lei Seca",
