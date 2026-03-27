@@ -1,0 +1,209 @@
+"use client";
+
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Search } from "lucide-react";
+
+import { useQuestoesContext } from "@/contexts/QuestoesContext";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+// ---------------------------------------------------------------------------
+// QuestoesSearchBar
+// ---------------------------------------------------------------------------
+// Native <input> search bar replacing SmartSearchBarPlate.
+// Features: debounced search, IA toggle, filter badge, Cmd+K shortcut,
+// slash detection for future filter dropdown (Task 9).
+// ---------------------------------------------------------------------------
+
+const DEBOUNCE_MS = 500;
+
+export function QuestoesSearchBar() {
+  const { searchQuery, setSearchQuery, activeFilterCount } =
+    useQuestoesContext();
+  const isMobile = useIsMobile();
+
+  // ---- local state ----
+  const [inputValue, setInputValue] = useState(searchQuery);
+  const [semanticMode, setSemanticMode] = useState(false);
+  const [slashActive, setSlashActive] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep local input in sync when context searchQuery resets externally
+  useEffect(() => {
+    setInputValue(searchQuery);
+  }, [searchQuery]);
+
+  // ---- debounced commit to context ----
+  const commitSearch = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+    },
+    [setSearchQuery],
+  );
+
+  const scheduleCommit = useCallback(
+    (value: string) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => commitSearch(value), DEBOUNCE_MS);
+    },
+    [commitSearch],
+  );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
+  // ---- input handler ----
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      setInputValue(val);
+
+      // Slash detection: if the user just typed "/" as the first char or after space
+      if (val.endsWith("/")) {
+        setSlashActive(true);
+      } else {
+        setSlashActive(false);
+      }
+
+      scheduleCommit(val);
+    },
+    [scheduleCommit],
+  );
+
+  // ---- Enter submits immediately ----
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        commitSearch(inputValue);
+      }
+    },
+    [commitSearch, inputValue],
+  );
+
+  // ---- Global Cmd+K / Ctrl+K shortcut ----
+  useEffect(() => {
+    function onGlobalKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onGlobalKeyDown);
+    return () => document.removeEventListener("keydown", onGlobalKeyDown);
+  }, []);
+
+  // ---- placeholder ----
+  const placeholder = isMobile
+    ? "Buscar..."
+    : "Buscar questoes ou digite / para filtros...";
+
+  return (
+    <div
+      style={{
+        height: 44,
+        background: "#fff",
+        border: "1px solid #e2e5ea",
+        borderBottom: "none",
+        borderRadius: "14px 14px 0 0",
+        padding: "0 16px",
+        gap: 10,
+        display: "flex",
+        alignItems: "center",
+      }}
+      className="questoes-search-bar focus-within:border-[#E8930C] focus-within:shadow-[0_0_0_3px_rgba(232,147,12,0.06)]"
+    >
+      {/* Search icon */}
+      <Search size={16} color="#888" style={{ flexShrink: 0 }} />
+
+      {/* Native input */}
+      <input
+        ref={inputRef}
+        type="text"
+        value={inputValue}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        style={{
+          flex: 1,
+          border: "none",
+          outline: "none",
+          background: "transparent",
+          fontSize: 14,
+          color: "#1a1a1a",
+          minWidth: 0,
+        }}
+      />
+
+      {/* IA toggle */}
+      <button
+        type="button"
+        onClick={() => setSemanticMode((prev) => !prev)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          padding: "4px 10px",
+          fontSize: 12,
+          fontWeight: 500,
+          borderRadius: 8,
+          cursor: "pointer",
+          transition: "all 150ms ease",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+          border: semanticMode ? "1px solid #7C3AED" : "1px solid #e0e0e0",
+          color: semanticMode ? "#7C3AED" : "#888",
+          background: semanticMode ? "#F4F0FF" : "transparent",
+        }}
+      >
+        <span style={{ fontSize: 13 }}>&#x2728;</span> IA
+      </button>
+
+      {/* Active filter count badge */}
+      {activeFilterCount > 0 && (
+        <span
+          style={{
+            fontSize: 8,
+            color: "#E8930C",
+            background: "#FEF3C7",
+            borderRadius: 8,
+            padding: "2px 7px",
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}
+        </span>
+      )}
+
+      {/* Cmd+K shortcut badge — desktop only */}
+      {!isMobile && (
+        <kbd
+          style={{
+            fontSize: 10,
+            fontFamily: "monospace",
+            background: "#f5f6f8",
+            border: "1px solid #e8eaed",
+            borderRadius: 4,
+            padding: "2px 6px",
+            color: "#888",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+            lineHeight: 1.4,
+          }}
+        >
+          &#8984;K
+        </kbd>
+      )}
+    </div>
+  );
+}
+
+export default QuestoesSearchBar;
