@@ -36,7 +36,7 @@ const SLASH_MODE_INITIAL: SlashMode = {
 export function QuestoesSearchBar() {
   const { searchQuery, setSearchQuery, activeFilterCount, toggleFilter } =
     useQuestoesContext();
-  const isMobile = useIsMobile();
+  const isMobile = useIsSmall();
 
   // ---- local state ----
   const [inputValue, setInputValue] = useState(searchQuery);
