@@ -11,7 +11,7 @@ import { QuestoesAdvancedPopover } from "./QuestoesAdvancedPopover";
 import { QuestoesFilterSheet } from "./QuestoesFilterSheet";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsSmall } from "@/hooks/use-small";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -63,7 +63,7 @@ function countForCategory(
 export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
   const { filters, clearFilters, removeFilter, activeFilterCount } =
     useQuestoesContext();
-  const isMobile = useIsMobile();
+  const isMobile = useIsSmall();
 
   // Which pill's popover is currently open (null = none)
   const [openPopover, setOpenPopover] = useState<string | null>(null);
