@@ -23,15 +23,22 @@ export interface QuestoesFilterPillProps {
 // Component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterPill({
-  category,
-  selectedCount,
-  isOpen,
-  onClick,
-  onClear,
-  isMobile = false,
-  dashed = false,
-}: QuestoesFilterPillProps) {
+export const QuestoesFilterPill = React.forwardRef<
+  HTMLButtonElement,
+  QuestoesFilterPillProps
+>(function QuestoesFilterPill(
+  {
+    category,
+    selectedCount,
+    isOpen,
+    onClick,
+    onClear,
+    isMobile = false,
+    dashed = false,
+    ...restProps
+  },
+  ref,
+) {
   const Icon = category.icon;
   const isActive = selectedCount > 0;
 
@@ -68,8 +75,10 @@ export function QuestoesFilterPill({
 
   return (
     <button
+      ref={ref}
       type="button"
       onClick={onClick}
+      {...restProps}
       style={pillStyle}
       className={[
         "group inline-flex items-center gap-1.5 cursor-pointer select-none",
@@ -137,4 +146,4 @@ export function QuestoesFilterPill({
       )}
     </button>
   );
-}
+});
