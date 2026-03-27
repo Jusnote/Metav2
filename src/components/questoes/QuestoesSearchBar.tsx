@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsSmall } from "@/hooks/use-small";
 import { FILTER_CATEGORIES, type FilterCategoryConfig } from "./filter-config";
 import { QuestoesSlashDropdown } from "./QuestoesSlashDropdown";
 import { QuestoesSlashFilterDropdown } from "./QuestoesSlashFilterDropdown";
