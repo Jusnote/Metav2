@@ -19,6 +19,10 @@ import type { QuestoesFilters } from "@/contexts/QuestoesContext";
 export interface QuestoesFilterSheetProps {
   open: boolean;
   onClose: () => void;
+  /** When true, uses "Adicionar filtro" title and auto-closes after one selection. */
+  slashMode?: boolean;
+  /** If provided in slash mode, skip category list and drill directly into this category. */
+  slashInitialCategory?: FilterCategoryConfig | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -148,9 +152,11 @@ interface InnerListProps {
   category: FilterCategoryConfig;
   onBack: () => void;
   onClose: () => void;
+  /** When true (slash mode), auto-close sheet after selecting one value. */
+  autoCloseOnSelect?: boolean;
 }
 
-function InnerListView({ category, onBack, onClose }: InnerListProps) {
+function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerListProps) {
   const { filters, toggleFilter } = useQuestoesContext();
   const { dicionario } = useFiltrosDicionario();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -179,8 +185,11 @@ function InnerListView({ category, onBack, onClose }: InnerListProps) {
         category.key as keyof QuestoesFilters,
         coerceValue(category.key, String(item.value)),
       );
+      if (autoCloseOnSelect) {
+        onClose();
+      }
     },
-    [category.key, toggleFilter],
+    [category.key, toggleFilter, autoCloseOnSelect, onClose],
   );
 
   // Focus search on mount
@@ -400,9 +409,10 @@ function InnerListView({ category, onBack, onClose }: InnerListProps) {
 interface CategoriesViewProps {
   onDrill: (cat: FilterCategoryConfig) => void;
   onClose: () => void;
+  slashMode?: boolean;
 }
 
-function CategoriesView({ onDrill, onClose }: CategoriesViewProps) {
+function CategoriesView({ onDrill, onClose, slashMode: isSlashMode }: CategoriesViewProps) {
   const { filters, setFilter, clearFilters, activeFilterCount } =
     useQuestoesContext();
   const { dicionario } = useFiltrosDicionario();
@@ -446,7 +456,7 @@ function CategoriesView({ onDrill, onClose }: CategoriesViewProps) {
             color: "#1f2937",
           }}
         >
-          Filtros
+          {isSlashMode ? "Adicionar filtro" : "Filtros"}
         </span>
         <button
           type="button"
@@ -667,7 +677,7 @@ function CategoriesView({ onDrill, onClose }: CategoriesViewProps) {
 // Main sheet component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterSheet({ open, onClose }: QuestoesFilterSheetProps) {
+export function QuestoesFilterSheet({ open, onClose, slashMode: isSlashMode, slashInitialCategory }: QuestoesFilterSheetProps) {
   const [drillCategory, setDrillCategory] =
     useState<FilterCategoryConfig | null>(null);
 
@@ -677,6 +687,13 @@ export function QuestoesFilterSheet({ open, onClose }: QuestoesFilterSheetProps)
   // Track whether we're actually rendered (for exit animation)
   const [visible, setVisible] = useState(false);
   const [animating, setAnimating] = useState(false);
+
+  // When opening in slash mode with initial category, drill directly
+  useEffect(() => {
+    if (open && isSlashMode && slashInitialCategory) {
+      setDrillCategory(slashInitialCategory);
+    }
+  }, [open, isSlashMode, slashInitialCategory]);
 
   // Open
   useEffect(() => {
@@ -783,7 +800,7 @@ export function QuestoesFilterSheet({ open, onClose }: QuestoesFilterSheetProps)
               overflow: drillCategory ? "hidden" : "auto",
             }}
           >
-            <CategoriesView onDrill={handleDrill} onClose={onClose} />
+            <CategoriesView onDrill={handleDrill} onClose={onClose} slashMode={isSlashMode} />
           </div>
 
           {/* Inner list view */}
@@ -802,6 +819,7 @@ export function QuestoesFilterSheet({ open, onClose }: QuestoesFilterSheetProps)
                 category={drillCategory}
                 onBack={handleBack}
                 onClose={onClose}
+                autoCloseOnSelect={isSlashMode}
               />
             </div>
           )}

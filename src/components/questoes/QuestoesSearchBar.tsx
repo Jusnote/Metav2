@@ -6,9 +6,10 @@ import { Search } from "lucide-react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { FilterCategoryConfig } from "./filter-config";
+import { FILTER_CATEGORIES, type FilterCategoryConfig } from "./filter-config";
 import { QuestoesSlashDropdown } from "./QuestoesSlashDropdown";
 import { QuestoesSlashFilterDropdown } from "./QuestoesSlashFilterDropdown";
+import { QuestoesFilterSheet } from "./QuestoesFilterSheet";
 
 // ---------------------------------------------------------------------------
 // QuestoesSearchBar
@@ -41,6 +42,16 @@ export function QuestoesSearchBar() {
   const [inputValue, setInputValue] = useState(searchQuery);
   const [semanticMode, setSemanticMode] = useState(false);
   const [slashMode, setSlashMode] = useState<SlashMode>(SLASH_MODE_INITIAL);
+  const [inputFocused, setInputFocused] = useState(false);
+
+  // Mobile slash mode — keyboard accessory bar
+  const [mobileSlashActive, setMobileSlashActive] = useState(false);
+  const [mobileSlashCategory, setMobileSlashCategory] =
+    useState<FilterCategoryConfig | null>(null);
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+
+  // Suggestion categories for mobile keyboard bar
+  const MOBILE_SUGGESTIONS = FILTER_CATEGORIES.slice(0, 3); // banca, materia, ano
 
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -241,6 +252,31 @@ export function QuestoesSearchBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [slashMode.active, resetSlashMode]);
 
+  // ---- mobile keyboard bar handlers ----
+  const handleMobileSlashTap = useCallback(() => {
+    if (mobileSlashActive) {
+      // Already active — deactivate
+      setMobileSlashActive(false);
+      setMobileSlashCategory(null);
+    } else {
+      setMobileSlashActive(true);
+    }
+  }, [mobileSlashActive]);
+
+  const handleMobileSuggestionTap = useCallback(
+    (cat: FilterCategoryConfig) => {
+      setMobileSlashCategory(cat);
+      setMobileSheetOpen(true);
+    },
+    [],
+  );
+
+  const handleMobileSheetClose = useCallback(() => {
+    setMobileSheetOpen(false);
+    setMobileSlashActive(false);
+    setMobileSlashCategory(null);
+  }, []);
+
   // ---- placeholder ----
   const placeholder = isMobile
     ? "Buscar..."
@@ -276,6 +312,11 @@ export function QuestoesSearchBar() {
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onFocus={() => setInputFocused(true)}
+          onBlur={() => {
+            // Delay to allow tap events on the keyboard bar to fire first
+            setTimeout(() => setInputFocused(false), 150);
+          }}
           placeholder={placeholder}
           style={{
             flex: 1,
@@ -365,6 +406,88 @@ export function QuestoesSearchBar() {
           query={slashMode.query}
           onSelect={handleSlashValueSelect}
           onClose={resetSlashMode}
+        />
+      )}
+
+      {/* ---- Mobile keyboard accessory bar ---- */}
+      {isMobile && inputFocused && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 44,
+            background: "#d1d3d9",
+            display: "flex",
+            alignItems: "center",
+            padding: "0 8px",
+            gap: 6,
+            zIndex: 45,
+          }}
+        >
+          {/* Slash button */}
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault(); // prevent input blur
+              handleMobileSlashTap();
+            }}
+            style={{
+              fontSize: 16,
+              padding: "4px 12px",
+              borderRadius: 8,
+              background: mobileSlashActive ? "#E8930C" : "#fff",
+              color: mobileSlashActive ? "#fff" : "#E8930C",
+              fontWeight: 700,
+              border: "2px solid #E8930C",
+              cursor: "pointer",
+              lineHeight: 1.2,
+              flexShrink: 0,
+            }}
+          >
+            /
+          </button>
+
+          {/* Suggestion buttons — shown when slash is active */}
+          {mobileSlashActive &&
+            MOBILE_SUGGESTIONS.map((cat) => {
+              const isActive = mobileSlashCategory?.key === cat.key;
+              return (
+                <button
+                  key={cat.key}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // prevent input blur
+                    handleMobileSuggestionTap(cat);
+                  }}
+                  style={{
+                    fontSize: 12,
+                    padding: "6px 14px",
+                    borderRadius: 8,
+                    background: isActive ? "#E8930C" : "#fff",
+                    color: isActive ? "#fff" : "#374151",
+                    fontWeight: 500,
+                    border: "none",
+                    cursor: "pointer",
+                    lineHeight: 1.2,
+                    flexShrink: 0,
+                  }}
+                >
+                  {cat.label.toLowerCase()}
+                </button>
+              );
+            })}
+        </div>
+      )}
+
+      {/* ---- Mobile slash filter sheet ---- */}
+      {isMobile && (
+        <QuestoesFilterSheet
+          open={mobileSheetOpen}
+          onClose={handleMobileSheetClose}
+          slashMode
+          slashInitialCategory={mobileSlashCategory}
         />
       )}
     </div>
