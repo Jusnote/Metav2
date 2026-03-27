@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useState } from "react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
-import { SmartSearchBar, type SmartSearchPayload } from "@/components/SmartSearchBarPlate";
-import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
+import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
+import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
+import { QuestoesFilterOverlay } from "@/components/questoes/QuestoesFilterOverlay";
 import { VirtualizedQuestionList } from "@/components/questoes/VirtualizedQuestionList";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,69 +30,36 @@ const TAB_LABELS: Record<StatusTab, string> = {
   marcadas: "Marcadas",
 };
 
-// Stable empty array — avoids creating new reference on every render
-const EMPTY_BUSCAS: never[] = [];
-
 export default function QuestoesPage() {
   const {
-    filters: contextFilters,
     statusTab,
     setStatusTab,
     sortBy,
     setSortBy,
-    setSearchQuery,
-    toggleFilter,
     viewMode,
     setViewMode,
   } = useQuestoesContext();
 
-  // Handle SmartSearchBar submission
-  // Usa addIfMissing em vez de toggle para não remover filtros que já estão ativos
-  const handleSearch = useCallback(
-    (payload: SmartSearchPayload) => {
-      const { query, filters } = payload;
-
-      // Set text query
-      if (query && query !== '*') {
-        setSearchQuery(query);
-      }
-
-      // Adiciona filtro apenas se ainda não está no contexto (evita toggle indesejado)
-      if (filters.materia && !contextFilters.materias.includes(filters.materia))
-        toggleFilter('materias', filters.materia);
-      if (filters.banca && !contextFilters.bancas.includes(filters.banca))
-        toggleFilter('bancas', filters.banca);
-      if (filters.ano && !contextFilters.anos.includes(Number(filters.ano)))
-        toggleFilter('anos', Number(filters.ano));
-      if (filters.orgao && !contextFilters.orgaos.includes(filters.orgao))
-        toggleFilter('orgaos', filters.orgao);
-      if (filters.cargo && !contextFilters.cargos.includes(filters.cargo))
-        toggleFilter('cargos', filters.cargo);
-      if (filters.assunto && !contextFilters.assuntos.includes(filters.assunto))
-        toggleFilter('assuntos', filters.assunto);
-    },
-    [setSearchQuery, toggleFilter, contextFilters]
-  );
+  // Track if any popover is open (for overlay)
+  const [hasOpenPopover, setHasOpenPopover] = useState(false);
 
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
-      {/* Search bar - compact, always visible */}
-      <div className="px-2 pt-3 pb-2">
-        <SmartSearchBar
-          onSearch={handleSearch}
-          loading={false}
-          hasResults={true}
-          buscasRecentes={EMPTY_BUSCAS}
-        />
-      </div>
-
-      {/* Filter chips */}
-      <div className="px-2 pb-2">
-        <FilterChipsBidirectional />
+      {/* Sticky search + filter bar */}
+      <div
+        className="sticky top-0 z-20 px-2 pt-3"
+        style={{
+          background: 'rgba(240,242,245,0.92)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
+      >
+        <QuestoesSearchBar />
+        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} />
       </div>
 
       {/* Tabs + Sort */}
-      <div className="flex items-center justify-between px-2 pb-2 gap-2">
+      <div className="flex items-center justify-between px-2 pb-2 pt-2 gap-2">
         <Tabs
           value={statusTab}
           onValueChange={(v) => setStatusTab(v as StatusTab)}
@@ -155,9 +123,11 @@ export default function QuestoesPage() {
         </div>
       </div>
 
-      {/* Virtualized question list */}
+      {/* Questions with overlay */}
       <div className="flex-1 min-h-0 px-2">
-        <VirtualizedQuestionList />
+        <QuestoesFilterOverlay visible={hasOpenPopover}>
+          <VirtualizedQuestionList />
+        </QuestoesFilterOverlay>
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { LeiSecaSidebar } from "./lei-seca/LeiSecaSidebar";
 import { DocumentsOrganizationSidebar } from "./DocumentsOrganizationSidebar";
-import { QuestoesFilterSidebar } from "./questoes/QuestoesFilterSidebar";
+
 import { CadernosSidebar } from "./cadernos/CadernosSidebar";
 
 // -------- Navigation config --------
@@ -254,7 +254,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   {panelItem.customPanel ? (
                     /* Custom panel content based on route */
                     panelItem.href === "/questoes" ? (
-                      <QuestoesFilterSidebar />
+                      null
                     ) : panelItem.href === "/lei-seca" ? (
                       <LeiSecaSidebar />
                     ) : panelItem.href === "/documents-organization" ? (

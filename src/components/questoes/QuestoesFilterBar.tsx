@@ -1,14 +1,24 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   FILTER_CATEGORIES,
   ADVANCED_CATEGORY,
 } from "./filter-config";
 import { QuestoesFilterPill } from "./QuestoesFilterPill";
+import { QuestoesFilterPopover } from "./QuestoesFilterPopover";
+import { QuestoesAdvancedPopover } from "./QuestoesAdvancedPopover";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
+interface QuestoesFilterBarProps {
+  onPopoverChange?: (open: boolean) => void;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -49,13 +59,18 @@ function countForCategory(
 // Component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterBar() {
+export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
   const { filters, clearFilters, removeFilter, activeFilterCount } =
     useQuestoesContext();
   const isMobile = useIsMobile();
 
   // Which pill's popover is currently open (null = none)
   const [openPopover, setOpenPopover] = useState<string | null>(null);
+
+  // Notify parent when popover open state changes
+  useEffect(() => {
+    onPopoverChange?.(openPopover !== null);
+  }, [openPopover, onPopoverChange]);
 
   const togglePopover = useCallback((key: string) => {
     setOpenPopover((prev) => (prev === key ? null : key));
@@ -105,29 +120,40 @@ export function QuestoesFilterBar() {
           : "flex-wrap",
       ].join(" ")}
     >
-      {/* Standard category pills */}
+      {/* Standard category pills wrapped in popovers */}
       {FILTER_CATEGORIES.map((cat) => (
-        <QuestoesFilterPill
+        <QuestoesFilterPopover
           key={cat.key}
           category={cat}
-          selectedCount={counts[cat.key]}
-          isOpen={openPopover === cat.key}
-          onClick={() => togglePopover(cat.key)}
-          onClear={() => handleClearCategory(cat.key)}
-          isMobile={isMobile}
-        />
+          open={openPopover === cat.key}
+          onOpenChange={(open) => setOpenPopover(open ? cat.key : null)}
+        >
+          <QuestoesFilterPill
+            category={cat}
+            selectedCount={counts[cat.key]}
+            isOpen={openPopover === cat.key}
+            onClick={() => togglePopover(cat.key)}
+            onClear={() => handleClearCategory(cat.key)}
+            isMobile={isMobile}
+          />
+        </QuestoesFilterPopover>
       ))}
 
-      {/* Advanced pill (dashed border when inactive) */}
-      <QuestoesFilterPill
-        category={ADVANCED_CATEGORY}
-        selectedCount={counts[ADVANCED_CATEGORY.key]}
-        isOpen={openPopover === ADVANCED_CATEGORY.key}
-        onClick={() => togglePopover(ADVANCED_CATEGORY.key)}
-        onClear={() => handleClearCategory(ADVANCED_CATEGORY.key)}
-        isMobile={isMobile}
-        dashed
-      />
+      {/* Advanced pill wrapped in advanced popover (dashed border when inactive) */}
+      <QuestoesAdvancedPopover
+        open={openPopover === ADVANCED_CATEGORY.key}
+        onOpenChange={(open) => setOpenPopover(open ? ADVANCED_CATEGORY.key : null)}
+      >
+        <QuestoesFilterPill
+          category={ADVANCED_CATEGORY}
+          selectedCount={counts[ADVANCED_CATEGORY.key]}
+          isOpen={openPopover === ADVANCED_CATEGORY.key}
+          onClick={() => togglePopover(ADVANCED_CATEGORY.key)}
+          onClear={() => handleClearCategory(ADVANCED_CATEGORY.key)}
+          isMobile={isMobile}
+          dashed
+        />
+      </QuestoesAdvancedPopover>
 
       {/* "Limpar" link - only visible when filters are active */}
       {activeFilterCount > 0 && (
