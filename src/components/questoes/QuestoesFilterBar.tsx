@@ -8,6 +8,7 @@ import {
 import { QuestoesFilterPill } from "./QuestoesFilterPill";
 import { QuestoesFilterPopover } from "./QuestoesFilterPopover";
 import { QuestoesAdvancedPopover } from "./QuestoesAdvancedPopover";
+import { QuestoesFilterSheet } from "./QuestoesFilterSheet";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -67,6 +68,9 @@ export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
   // Which pill's popover is currently open (null = none)
   const [openPopover, setOpenPopover] = useState<string | null>(null);
 
+  // Mobile bottom sheet state
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   // Notify parent when popover open state changes
   useEffect(() => {
     onPopoverChange?.(openPopover !== null);
@@ -101,70 +105,116 @@ export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
     [removeFilter],
   );
 
+  // On mobile, pill click opens the bottom sheet instead of inline popover
+  const handlePillClick = useCallback(
+    (key: string) => {
+      if (isMobile) {
+        setSheetOpen(true);
+      } else {
+        togglePopover(key);
+      }
+    },
+    [isMobile, togglePopover],
+  );
+
   return (
-    <div
-      style={{
-        background: "linear-gradient(180deg, #f6f7f9, #eef0f3)",
-        border: "1px solid #e2e5ea",
-        borderTop: "1px solid #eaecf0",
-        borderRadius: "0 0 14px 14px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.03)",
-        gap: "6px",
-        padding: "8px 12px",
-      }}
-      className={[
-        "flex items-center",
-        // Horizontal scroll on mobile, hide scrollbar
-        isMobile
-          ? "overflow-x-auto scrollbar-hide"
-          : "flex-wrap",
-      ].join(" ")}
-    >
-      {/* Standard category pills wrapped in popovers */}
-      {FILTER_CATEGORIES.map((cat) => (
-        <QuestoesFilterPopover
-          key={cat.key}
-          category={cat}
-          open={openPopover === cat.key}
-          onOpenChange={(open) => setOpenPopover(open ? cat.key : null)}
-        >
-          <QuestoesFilterPill
-            category={cat}
-            selectedCount={counts[cat.key]}
-            isOpen={openPopover === cat.key}
-            onClick={() => togglePopover(cat.key)}
-            onClear={() => handleClearCategory(cat.key)}
-            isMobile={isMobile}
-          />
-        </QuestoesFilterPopover>
-      ))}
-
-      {/* Advanced pill wrapped in advanced popover (dashed border when inactive) */}
-      <QuestoesAdvancedPopover
-        open={openPopover === ADVANCED_CATEGORY.key}
-        onOpenChange={(open) => setOpenPopover(open ? ADVANCED_CATEGORY.key : null)}
+    <>
+      <div
+        style={{
+          background: "linear-gradient(180deg, #f6f7f9, #eef0f3)",
+          border: "1px solid #e2e5ea",
+          borderTop: "1px solid #eaecf0",
+          borderRadius: "0 0 14px 14px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.03)",
+          gap: "6px",
+          padding: "8px 12px",
+        }}
+        className={[
+          "flex items-center",
+          // Horizontal scroll on mobile, hide scrollbar
+          isMobile
+            ? "overflow-x-auto scrollbar-hide"
+            : "flex-wrap",
+        ].join(" ")}
       >
-        <QuestoesFilterPill
-          category={ADVANCED_CATEGORY}
-          selectedCount={counts[ADVANCED_CATEGORY.key]}
-          isOpen={openPopover === ADVANCED_CATEGORY.key}
-          onClick={() => togglePopover(ADVANCED_CATEGORY.key)}
-          onClear={() => handleClearCategory(ADVANCED_CATEGORY.key)}
-          isMobile={isMobile}
-          dashed
-        />
-      </QuestoesAdvancedPopover>
+        {/* Standard category pills wrapped in popovers */}
+        {FILTER_CATEGORIES.map((cat) =>
+          isMobile ? (
+            <QuestoesFilterPill
+              key={cat.key}
+              category={cat}
+              selectedCount={counts[cat.key]}
+              isOpen={false}
+              onClick={() => handlePillClick(cat.key)}
+              onClear={() => handleClearCategory(cat.key)}
+              isMobile={isMobile}
+            />
+          ) : (
+            <QuestoesFilterPopover
+              key={cat.key}
+              category={cat}
+              open={openPopover === cat.key}
+              onOpenChange={(open) => setOpenPopover(open ? cat.key : null)}
+            >
+              <QuestoesFilterPill
+                category={cat}
+                selectedCount={counts[cat.key]}
+                isOpen={openPopover === cat.key}
+                onClick={() => handlePillClick(cat.key)}
+                onClear={() => handleClearCategory(cat.key)}
+                isMobile={isMobile}
+              />
+            </QuestoesFilterPopover>
+          ),
+        )}
 
-      {/* "Limpar" link - only visible when filters are active */}
-      {activeFilterCount > 0 && (
-        <button
-          type="button"
-          onClick={clearFilters}
-          className="ml-auto shrink-0 text-[11px] font-medium text-gray-400 hover:text-red-500 transition-colors cursor-pointer whitespace-nowrap"
-        >
-          Limpar
-        </button>
+        {/* Advanced pill wrapped in advanced popover (dashed border when inactive) */}
+        {isMobile ? (
+          <QuestoesFilterPill
+            category={ADVANCED_CATEGORY}
+            selectedCount={counts[ADVANCED_CATEGORY.key]}
+            isOpen={false}
+            onClick={() => handlePillClick(ADVANCED_CATEGORY.key)}
+            onClear={() => handleClearCategory(ADVANCED_CATEGORY.key)}
+            isMobile={isMobile}
+            dashed
+          />
+        ) : (
+          <QuestoesAdvancedPopover
+            open={openPopover === ADVANCED_CATEGORY.key}
+            onOpenChange={(open) => setOpenPopover(open ? ADVANCED_CATEGORY.key : null)}
+          >
+            <QuestoesFilterPill
+              category={ADVANCED_CATEGORY}
+              selectedCount={counts[ADVANCED_CATEGORY.key]}
+              isOpen={openPopover === ADVANCED_CATEGORY.key}
+              onClick={() => handlePillClick(ADVANCED_CATEGORY.key)}
+              onClear={() => handleClearCategory(ADVANCED_CATEGORY.key)}
+              isMobile={isMobile}
+              dashed
+            />
+          </QuestoesAdvancedPopover>
+        )}
+
+        {/* "Limpar" link - only visible when filters are active */}
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="ml-auto shrink-0 text-[11px] font-medium text-gray-400 hover:text-red-500 transition-colors cursor-pointer whitespace-nowrap"
+          >
+            Limpar
+          </button>
+        )}
+      </div>
+
+      {/* Mobile bottom sheet */}
+      {isMobile && (
+        <QuestoesFilterSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+        />
       )}
-    </div>
+    </>
   );
 }
