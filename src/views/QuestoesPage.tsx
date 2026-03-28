@@ -3,6 +3,7 @@ import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
 import { QuestoesFilterOverlay } from "@/components/questoes/QuestoesFilterOverlay";
+import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
 import { VirtualizedQuestionList } from "@/components/questoes/VirtualizedQuestionList";
 import { Button } from "@/components/ui/button";
 import {
@@ -107,6 +108,11 @@ export default function QuestoesPage() {
           </div>
         </>
       )}
+
+      {/* Active filter chips bar */}
+      <div className="px-2">
+        <FilterChipsBidirectional />
+      </div>
 
       {/* Tabs + Sort */}
       <div className="flex items-center justify-between px-2 pb-2 pt-2 gap-2">
