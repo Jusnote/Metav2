@@ -126,7 +126,7 @@ interface QuestoesSearchBarProps {
 // ---------------------------------------------------------------------------
 
 export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps) {
-  const { searchQuery, setSearchQuery, filters, activeFilterCount, toggleFilter } =
+  const { searchQuery, setSearchQuery, filters, activeFilterCount, toggleFilter, triggerSearch } =
     useQuestoesContext();
   const isMobile = useIsSmall();
   const { dicionario } = useFiltrosDicionario();
@@ -251,9 +251,13 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
       if (debounceRef.current) clearTimeout(debounceRef.current);
       commitSearch(cleaned);
       resetSlash();
-      requestAnimationFrame(() => inputRef.current?.focus());
+      // Trigger search after filter applied
+      requestAnimationFrame(() => {
+        triggerSearch();
+        inputRef.current?.focus();
+      });
     },
-    [filteredItems, slash.matchedCategory, toggleFilter, stripSlashText, inputValue, commitSearch, resetSlash],
+    [filteredItems, slash.matchedCategory, toggleFilter, stripSlashText, inputValue, commitSearch, resetSlash, triggerSearch],
   );
 
   const handleValueClose = useCallback(() => {
@@ -464,11 +468,13 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
         return;
       }
 
-      // Not in slash mode
+      // Not in slash mode — Enter commits query + triggers search
       if (e.key === "Enter") {
         e.preventDefault();
         if (debounceRef.current) clearTimeout(debounceRef.current);
         commitSearch(inputValue);
+        // Trigger the actual search (draft → committed)
+        requestAnimationFrame(() => triggerSearch());
       }
     },
     [

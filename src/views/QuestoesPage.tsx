@@ -39,25 +39,24 @@ export default function QuestoesPage() {
     setSortBy,
     viewMode,
     setViewMode,
+    triggerSearch,
   } = useQuestoesContext();
 
   // Track if any popover is open (for overlay)
   const [hasOpenPopover, setHasOpenPopover] = useState(false);
 
-  // Ctrl+K overlay mode — shows filter bar as floating overlay
+  // Ctrl+K overlay
   const [ctrlKOpen, setCtrlKOpen] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const closeCtrlK = useCallback(() => {
     setCtrlKOpen(false);
     setHasOpenPopover(false);
   }, []);
 
-  // Explicit search trigger — for now the reactive system handles queries,
-  // so this is a UX signal (closes sheets, could scroll to results later).
+  // Buscar button → commits draft filters to query
   const handleSearch = useCallback(() => {
-    // future: force re-trigger or scroll to results
-  }, []);
+    triggerSearch();
+  }, [triggerSearch]);
 
   // Global Ctrl+K listener
   useEffect(() => {

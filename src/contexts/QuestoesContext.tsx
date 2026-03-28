@@ -22,13 +22,20 @@ export type StatusTab = 'todas' | 'nao_resolvidas' | 'erradas' | 'marcadas';
 export type SortOption = 'recentes' | 'dificuldade' | 'menos_resolvidas' | 'relevancia';
 
 export interface QuestoesContextValue {
-  // Filtros (bidirecional sidebar <-> main)
+  // Draft filtros (what user is editing — NOT yet submitted)
   filters: QuestoesFilters;
   setFilter: <K extends keyof QuestoesFilters>(key: K, value: QuestoesFilters[K]) => void;
   toggleFilter: (key: keyof QuestoesFilters, value: string | number) => void;
   removeFilter: (key: keyof QuestoesFilters, value?: string | number) => void;
   clearFilters: () => void;
   activeFilterCount: number;
+
+  // Committed filtros (what the query actually uses — submitted via triggerSearch)
+  committedFilters: QuestoesFilters;
+  committedQuery: string;
+
+  // Trigger search — copies draft → committed
+  triggerSearch: () => void;
 
   // Pagination
   page: number;
@@ -162,36 +169,51 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
   // Initialize from URL
   const initial = searchParamsToFilters(searchParams);
 
+  // Draft state (what user is editing)
   const [filters, setFilters] = useState<QuestoesFilters>(initial.filters);
   const [searchQuery, setSearchQuery] = useState(initial.searchQuery);
+
+  // Committed state (what the query uses — only updated via triggerSearch)
+  const [committedFilters, setCommittedFilters] = useState<QuestoesFilters>(initial.filters);
+  const [committedQuery, setCommittedQuery] = useState(initial.searchQuery);
+
   const [statusTab, setStatusTab] = useState<StatusTab>(initial.statusTab);
   const [sortBy, setSortBy] = useState<SortOption>(initial.sortBy);
   const [viewMode, setViewMode] = useState<ViewMode>('lista');
   const [page, setPageRaw] = useState(1);
 
-  // Reset page to 1 when filters/search/tab/sort change
-  const prevFiltersRef = useRef(filters);
-  const prevSearchRef = useRef(searchQuery);
+  // triggerSearch: copy draft → committed
+  const triggerSearch = useCallback(() => {
+    startTransition(() => {
+      setCommittedFilters(filters);
+      setCommittedQuery(searchQuery);
+      setPageRaw(1);
+    });
+  }, [filters, searchQuery]);
+
+  // Reset page to 1 when committed state or tab/sort change
+  const prevCommittedRef = useRef(committedFilters);
+  const prevCommittedQueryRef = useRef(committedQuery);
   const prevTabRef = useRef(statusTab);
   const prevSortRef = useRef(sortBy);
   useEffect(() => {
     if (
-      prevFiltersRef.current !== filters ||
-      prevSearchRef.current !== searchQuery ||
+      prevCommittedRef.current !== committedFilters ||
+      prevCommittedQueryRef.current !== committedQuery ||
       prevTabRef.current !== statusTab ||
       prevSortRef.current !== sortBy
     ) {
       setPageRaw(1);
-      prevFiltersRef.current = filters;
-      prevSearchRef.current = searchQuery;
+      prevCommittedRef.current = committedFilters;
+      prevCommittedQueryRef.current = committedQuery;
       prevTabRef.current = statusTab;
       prevSortRef.current = sortBy;
     }
-  }, [filters, searchQuery, statusTab, sortBy]);
+  }, [committedFilters, committedQuery, statusTab, sortBy]);
 
   const setPage = useCallback((p: number) => setPageRaw(p), []);
 
-  // Sync state → URL (debounced to avoid double render cycles)
+  // Sync committed state → URL (only when search is actually triggered)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -199,12 +221,12 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
     }
 
     const timer = setTimeout(() => {
-      const params = filtersToSearchParams(filters, { searchQuery, statusTab, sortBy });
+      const params = filtersToSearchParams(committedFilters, { searchQuery: committedQuery, statusTab, sortBy });
       setSearchParams(params, { replace: true });
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [filters, searchQuery, statusTab, sortBy, setSearchParams]);
+  }, [committedFilters, committedQuery, statusTab, sortBy, setSearchParams]);
 
   const setFilter = useCallback(<K extends keyof QuestoesFilters>(key: K, value: QuestoesFilters[K]) => {
     startTransition(() => {
@@ -249,6 +271,8 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
     startTransition(() => {
       setFilters(defaultFilters);
       setSearchQuery('');
+      setCommittedFilters(defaultFilters);
+      setCommittedQuery('');
     });
   }, []);
 
@@ -261,6 +285,9 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
     removeFilter,
     clearFilters,
     activeFilterCount,
+    committedFilters,
+    committedQuery,
+    triggerSearch,
     page,
     setPage,
     viewMode,
@@ -271,7 +298,7 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
     setSortBy,
     searchQuery,
     setSearchQuery,
-  }), [filters, setFilter, toggleFilter, removeFilter, clearFilters, activeFilterCount, page, setPage, viewMode, statusTab, sortBy, searchQuery]);
+  }), [filters, setFilter, toggleFilter, removeFilter, clearFilters, activeFilterCount, committedFilters, committedQuery, triggerSearch, page, setPage, viewMode, statusTab, sortBy, searchQuery]);
 
   return (
     <QuestoesContext.Provider value={value}>
