@@ -44,16 +44,21 @@ export default function QuestoesPage() {
   // Track if any popover is open (for overlay)
   const [hasOpenPopover, setHasOpenPopover] = useState(false);
 
-  // Slash command → open pill popover
+  // Slash command → open pill popover + stream search
   const [slashCategory, setSlashCategory] = useState<string | null>(null);
   const [slashSearch, setSlashSearch] = useState("");
+  const [slashSelectSignal, setSlashSelectSignal] = useState(0);
 
   const handleSlashFilter = useCallback((categoryKey: string, valueQuery: string) => {
     setSlashCategory(categoryKey);
     setSlashSearch(valueQuery);
   }, []);
 
-  const handleSlashHandled = useCallback(() => {
+  const handleSlashSelect = useCallback(() => {
+    setSlashSelectSignal(prev => prev + 1);
+  }, []);
+
+  const handleSlashClose = useCallback(() => {
     setSlashCategory(null);
     setSlashSearch("");
   }, []);
@@ -86,8 +91,8 @@ export default function QuestoesPage() {
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
       {/* Normal search + filter bar — scrolls with page (NOT sticky) */}
       <div className="px-2 pt-3 pb-2">
-        <QuestoesSearchBar onSlashFilter={handleSlashFilter} />
-        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} slashOpenCategory={slashCategory} slashInitialSearch={slashSearch} onSlashHandled={handleSlashHandled} />
+        <QuestoesSearchBar onSlashFilter={handleSlashFilter} onSlashSelect={handleSlashSelect} onSlashClose={handleSlashClose} />
+        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} slashOpenCategory={slashCategory} slashInitialSearch={slashSearch} onSlashHandled={handleSlashClose} slashSelectFirst={slashSelectSignal} />
       </div>
 
       {/* Ctrl+K floating overlay — appears when user presses Ctrl+K */}

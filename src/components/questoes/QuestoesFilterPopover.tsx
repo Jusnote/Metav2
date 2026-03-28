@@ -34,8 +34,10 @@ export interface QuestoesFilterPopoverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
-  /** Pre-fill the search input (from slash command) */
+  /** Pre-fill / live-update the search input (from slash command) */
   initialSearch?: string;
+  /** Incrementing number — each bump selects the first filtered item */
+  selectFirstSignal?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -259,6 +261,7 @@ export function QuestoesFilterPopover({
   onOpenChange,
   children,
   initialSearch,
+  selectFirstSignal,
 }: QuestoesFilterPopoverProps) {
   const { filters, toggleFilter, setFilter } = useQuestoesContext();
   const { dicionario } = useFiltrosDicionario();
@@ -285,17 +288,35 @@ export function QuestoesFilterPopover({
     }, DEBOUNCE_MS);
   }, []);
 
-  // --- Pre-fill search from slash command ---
+  // --- Live-update search from slash command ---
   useEffect(() => {
-    if (open && initialSearch) {
+    if (open && initialSearch !== undefined) {
       setRawQuery(initialSearch);
       setDebouncedQuery(initialSearch);
     }
+  }, [open, initialSearch]);
+
+  // --- Reset search on close ---
+  useEffect(() => {
     if (!open) {
       setRawQuery("");
       setDebouncedQuery("");
     }
-  }, [open, initialSearch]);
+  }, [open]);
+
+  // --- Select first filtered item when signaled (space/enter/comma in slash mode) ---
+  const prevSignalRef = useRef(selectFirstSignal);
+  useEffect(() => {
+    if (selectFirstSignal !== undefined && selectFirstSignal !== prevSignalRef.current) {
+      prevSignalRef.current = selectFirstSignal;
+      // Toggle the first item in filtered list
+      if (filteredItems.length > 0) {
+        const item = filteredItems[0];
+        const val = category.key === "anos" ? Number(item.value) : item.value;
+        toggleFilter(category.key as keyof QuestoesFilters, val as string | number);
+      }
+    }
+  }, [selectFirstSignal, filteredItems, category.key, toggleFilter]);
 
   // --- Filtered items ---
   const filteredItems = useMemo(() => {
