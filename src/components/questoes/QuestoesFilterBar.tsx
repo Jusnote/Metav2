@@ -19,6 +19,7 @@ import { useIsSmall } from "@/hooks/use-small";
 
 interface QuestoesFilterBarProps {
   onPopoverChange?: (open: boolean) => void;
+  onSearch?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -60,7 +61,7 @@ function countForCategory(
 // Component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
+export function QuestoesFilterBar({ onPopoverChange, onSearch }: QuestoesFilterBarProps) {
   const { filters, clearFilters, removeFilter, activeFilterCount } =
     useQuestoesContext();
   const isMobile = useIsSmall();
@@ -213,6 +214,7 @@ export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
         <QuestoesFilterSheet
           open={sheetOpen}
           onClose={() => setSheetOpen(false)}
+          onSearch={onSearch}
         />
       )}
     </>

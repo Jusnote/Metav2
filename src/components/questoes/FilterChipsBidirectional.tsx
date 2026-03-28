@@ -15,7 +15,13 @@ const BOOLEAN_KEYS = [
 
 const SCROLL_AMOUNT = 160;
 
-export const FilterChipsBidirectional = React.memo(function FilterChipsBidirectional() {
+interface FilterChipsBidirectionalProps {
+  onSearch?: () => void;
+}
+
+export const FilterChipsBidirectional = React.memo(function FilterChipsBidirectional({
+  onSearch,
+}: FilterChipsBidirectionalProps) {
   const ctx = useQuestoesOptional();
   const isMobile = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -247,6 +253,42 @@ export const FilterChipsBidirectional = React.memo(function FilterChipsBidirecti
       >
         limpar
       </span>
+
+      {/* Buscar button — rightmost, merges with bar */}
+      <button
+        type="button"
+        onClick={onSearch}
+        style={{
+          height: 30,
+          padding: "0 14px",
+          background: "#E8930C",
+          color: "white",
+          fontSize: 11,
+          fontWeight: 600,
+          borderRadius: "0 50px 50px 0",
+          cursor: "pointer",
+          flexShrink: 0,
+          display: "flex",
+          alignItems: "center",
+          gap: 5,
+          border: "none",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Buscar
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          stroke="white"
+          strokeWidth="2.5"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
     </div>
   );
 });

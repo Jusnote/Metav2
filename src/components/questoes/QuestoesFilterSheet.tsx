@@ -23,6 +23,8 @@ export interface QuestoesFilterSheetProps {
   slashMode?: boolean;
   /** If provided in slash mode, skip category list and drill directly into this category. */
   slashInitialCategory?: FilterCategoryConfig | null;
+  /** Called when user taps the "Buscar" button in the footer. */
+  onSearch?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -410,9 +412,10 @@ interface CategoriesViewProps {
   onDrill: (cat: FilterCategoryConfig) => void;
   onClose: () => void;
   slashMode?: boolean;
+  onSearch?: () => void;
 }
 
-function CategoriesView({ onDrill, onClose, slashMode: isSlashMode }: CategoriesViewProps) {
+function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: CategoriesViewProps) {
   const { filters, setFilter, clearFilters, activeFilterCount } =
     useQuestoesContext();
   const { dicionario } = useFiltrosDicionario();
@@ -458,21 +461,39 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode }: Categories
         >
           {isSlashMode ? "Adicionar filtro" : "Filtros"}
         </span>
-        <button
-          type="button"
-          onClick={onClose}
-          className="cursor-pointer"
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#E8930C",
-            background: "none",
-            border: "none",
-            padding: 0,
-          }}
-        >
-          Pronto
-        </button>
+        {activeFilterCount > 0 ? (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="cursor-pointer"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#E8930C",
+              background: "none",
+              border: "none",
+              padding: 0,
+            }}
+          >
+            Limpar tudo
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#E8930C",
+              background: "none",
+              border: "none",
+              padding: 0,
+            }}
+          >
+            Pronto
+          </button>
+        )}
       </div>
 
       {/* Category rows */}
@@ -625,49 +646,55 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode }: Categories
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer — full-width amber Buscar button */}
       <div
-        className="flex items-center justify-between shrink-0"
+        className="shrink-0"
         style={{
           padding: "10px 16px",
-          paddingBottom: "max(10px, env(safe-area-inset-bottom, 10px))",
+          paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))",
           borderTop: "1px solid #f0f1f3",
           background: "#fafbfc",
         }}
       >
-        <span
+        <button
+          type="button"
+          onClick={() => {
+            onSearch?.();
+            onClose();
+          }}
           style={{
-            fontSize: 11,
-            fontWeight: 500,
-            color: activeFilterCount > 0 ? "#E8930C" : "#a0a4ac",
+            width: "100%",
+            height: 42,
+            background: "#E8930C",
+            color: "white",
+            fontSize: 14,
+            fontWeight: 600,
+            borderRadius: 12,
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
           }}
         >
-          {standardCount > 0 && (
-            <>{standardCount} filtro{standardCount !== 1 ? "s" : ""}</>
-          )}
-          {standardCount > 0 && advCount > 0 && " + "}
-          {advCount > 0 && (
-            <>{advCount} avanc.</>
-          )}
-          {activeFilterCount === 0 && "Nenhum filtro ativo"}
-        </span>
-        {activeFilterCount > 0 && (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="cursor-pointer"
-            style={{
-              fontSize: 11,
-              fontWeight: 500,
-              color: "#E8930C",
-              background: "none",
-              border: "none",
-              padding: 0,
-            }}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            Limpar tudo
-          </button>
-        )}
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          {activeFilterCount > 0
+            ? `Buscar ${activeFilterCount} filtro${activeFilterCount !== 1 ? "s" : ""}`
+            : "Buscar"}
+        </button>
       </div>
     </div>
   );
@@ -677,7 +704,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode }: Categories
 // Main sheet component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterSheet({ open, onClose, slashMode: isSlashMode, slashInitialCategory }: QuestoesFilterSheetProps) {
+export function QuestoesFilterSheet({ open, onClose, slashMode: isSlashMode, slashInitialCategory, onSearch }: QuestoesFilterSheetProps) {
   const [drillCategory, setDrillCategory] =
     useState<FilterCategoryConfig | null>(null);
 
@@ -800,7 +827,7 @@ export function QuestoesFilterSheet({ open, onClose, slashMode: isSlashMode, sla
               overflow: drillCategory ? "hidden" : "auto",
             }}
           >
-            <CategoriesView onDrill={handleDrill} onClose={onClose} slashMode={isSlashMode} />
+            <CategoriesView onDrill={handleDrill} onClose={onClose} slashMode={isSlashMode} onSearch={onSearch} />
           </div>
 
           {/* Inner list view */}

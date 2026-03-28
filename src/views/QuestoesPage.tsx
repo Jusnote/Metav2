@@ -53,6 +53,12 @@ export default function QuestoesPage() {
     setHasOpenPopover(false);
   }, []);
 
+  // Explicit search trigger — for now the reactive system handles queries,
+  // so this is a UX signal (closes sheets, could scroll to results later).
+  const handleSearch = useCallback(() => {
+    // future: force re-trigger or scroll to results
+  }, []);
+
   // Global Ctrl+K listener
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -77,7 +83,7 @@ export default function QuestoesPage() {
       {/* Normal search + filter bar — scrolls with page (NOT sticky) */}
       <div className="px-2 pt-3 pb-2">
         <QuestoesSearchBar />
-        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} />
+        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
       </div>
 
       {/* Ctrl+K floating overlay — appears when user presses Ctrl+K */}
@@ -103,7 +109,7 @@ export default function QuestoesPage() {
               }}
             >
               <QuestoesSearchBar autoFocus />
-              <QuestoesFilterBar onPopoverChange={setHasOpenPopover} />
+              <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
             </div>
           </div>
         </>
@@ -111,7 +117,7 @@ export default function QuestoesPage() {
 
       {/* Active filter chips bar */}
       <div className="px-2">
-        <FilterChipsBidirectional />
+        <FilterChipsBidirectional onSearch={handleSearch} />
       </div>
 
       {/* Tabs + Sort */}
