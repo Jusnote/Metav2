@@ -737,7 +737,8 @@ export const QuestionCard = React.memo(function QuestionCard({
           removeHighlightOnClick={true}
         >
           <div
-            className="prose prose-sm prose-zinc dark:prose-invert max-w-none text-zinc-900 dark:text-zinc-100 leading-[1.65] text-[17px] [&_p]:text-[17px] [&_p]:leading-[1.65] [&_p]:my-1 text-left"
+            className="prose prose-sm prose-zinc dark:prose-invert max-w-none text-[#2c3e50] dark:text-zinc-100 leading-[1.8] text-[16px] [&_p]:text-[16px] [&_p]:leading-[1.8] [&_p]:my-1 text-left"
+            style={{ fontFamily: "'Source Serif 4', serif", wordSpacing: '0.02em' }}
             dangerouslySetInnerHTML={sanitizedQuestion}
           />
         </TextHighlighter>
@@ -810,7 +811,8 @@ export const QuestionCard = React.memo(function QuestionCard({
                     className="pt-px leading-[1.5] flex-1"
                   >
                     <div
-                      className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 transition-colors duration-200 ${classes.text}`}
+                      className={`prose prose-sm dark:prose-invert max-w-none text-[14.5px] [&_p]:text-[14.5px] [&_p]:my-0.5 leading-[1.7] [&_p]:leading-[1.7] transition-colors duration-200 ${classes.text}`}
+                      style={{ fontFamily: "'Source Serif 4', serif", wordSpacing: '0.02em' }}
                       dangerouslySetInnerHTML={alt.html}
                     />
                   </TextHighlighter>
