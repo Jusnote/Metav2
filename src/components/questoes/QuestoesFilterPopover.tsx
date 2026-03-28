@@ -304,6 +304,20 @@ export function QuestoesFilterPopover({
     }
   }, [open]);
 
+  // --- Select first filtered item when signaled (space/enter/comma in slash mode) ---
+  const prevSignalRef = useRef(selectFirstSignal);
+  useEffect(() => {
+    if (selectFirstSignal !== undefined && selectFirstSignal !== prevSignalRef.current) {
+      prevSignalRef.current = selectFirstSignal;
+      // Toggle the first item in filtered list
+      if (filteredItems.length > 0) {
+        const item = filteredItems[0];
+        const val = category.key === "anos" ? Number(item.value) : item.value;
+        toggleFilter(category.key as keyof QuestoesFilters, val as string | number);
+      }
+    }
+  }, [selectFirstSignal, filteredItems, category.key, toggleFilter]);
+
   // --- Filtered items ---
   const filteredItems = useMemo(() => {
     if (!debouncedQuery.trim()) return allItems;
@@ -312,19 +326,6 @@ export function QuestoesFilterPopover({
       item.label.toLowerCase().includes(q),
     );
   }, [allItems, debouncedQuery]);
-
-  // --- Select first filtered item when signaled (space/enter/comma in slash mode) ---
-  const prevSignalRef = useRef(selectFirstSignal);
-  useEffect(() => {
-    if (selectFirstSignal !== undefined && selectFirstSignal !== prevSignalRef.current) {
-      prevSignalRef.current = selectFirstSignal;
-      if (filteredItems.length > 0) {
-        const item = filteredItems[0];
-        const val = category.key === "anos" ? Number(item.value) : item.value;
-        toggleFilter(category.key as keyof QuestoesFilters, val as string | number);
-      }
-    }
-  }, [selectFirstSignal, filteredItems, category.key, toggleFilter]);
 
   // --- Selection set (as strings for uniform comparison) ---
   const selectedValues = getSelectedValues(category.key, filters);
