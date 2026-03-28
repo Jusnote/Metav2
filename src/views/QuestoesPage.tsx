@@ -90,7 +90,7 @@ export default function QuestoesPage() {
           />
           {/* Floating bar */}
           <div
-            className="fixed top-4 left-1/2 z-50 w-full max-w-3xl px-4"
+            className="fixed top-4 left-1/2 z-50 w-full max-w-5xl px-4"
             style={{ transform: "translateX(-50%)" }}
           >
             <div
