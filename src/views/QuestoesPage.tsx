@@ -30,6 +30,60 @@ const TAB_LABELS: Record<StatusTab, string> = {
   marcadas: "Marcadas",
 };
 
+// ---------------------------------------------------------------------------
+// Smart Header hook — hides on scroll down, reveals on scroll up
+// ---------------------------------------------------------------------------
+function useSmartHeader() {
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    const scrollContainer = document.querySelector("[data-questoes-scroll]");
+    const target = scrollContainer || window;
+
+    function getScrollY() {
+      if (scrollContainer) return scrollContainer.scrollTop;
+      return window.scrollY;
+    }
+
+    function onScroll() {
+      if (ticking.current) return;
+      ticking.current = true;
+
+      requestAnimationFrame(() => {
+        const currentY = getScrollY();
+        const delta = currentY - lastScrollY.current;
+
+        if (delta > 8) {
+          // Scrolling down — hide
+          setVisible(false);
+        } else if (delta < -8) {
+          // Scrolling up — show
+          setVisible(true);
+        }
+
+        // Always show when near top
+        if (currentY < 60) {
+          setVisible(true);
+        }
+
+        lastScrollY.current = currentY;
+        ticking.current = false;
+      });
+    }
+
+    target.addEventListener("scroll", onScroll, { passive: true });
+    return () => target.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return visible;
+}
+
+// ---------------------------------------------------------------------------
+// QuestoesPage
+// ---------------------------------------------------------------------------
+
 export default function QuestoesPage() {
   const {
     statusTab,
@@ -43,16 +97,18 @@ export default function QuestoesPage() {
   // Track if any popover is open (for overlay)
   const [hasOpenPopover, setHasOpenPopover] = useState(false);
 
-  // Ctrl+K overlay mode — shows filter bar as floating overlay
+  // Smart header — hides on scroll down, reveals on scroll up
+  const headerVisible = useSmartHeader();
+
+  // Ctrl+K spotlight overlay
   const [ctrlKOpen, setCtrlKOpen] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const closeCtrlK = useCallback(() => {
     setCtrlKOpen(false);
     setHasOpenPopover(false);
   }, []);
 
-  // Global Ctrl+K listener
+  // Global Ctrl+K / Esc listener
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -68,36 +124,49 @@ export default function QuestoesPage() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [ctrlKOpen, closeCtrlK]);
 
-  // The bar is visible either when at top of page (normal flow) or via Ctrl+K overlay
-  const showOverlay = ctrlKOpen || hasOpenPopover;
+  // Keep header visible when a popover is open
+  const showHeader = headerVisible || hasOpenPopover;
 
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
-      {/* Normal search + filter bar — scrolls with page (NOT sticky) */}
-      <div className="px-2 pt-3 pb-2">
+      {/* Smart Header — sticky, slides up/down based on scroll direction */}
+      <div
+        className="sticky top-0 z-20 px-2 pt-3 pb-2"
+        style={{
+          transform: showHeader ? "translateY(0)" : "translateY(-100%)",
+          transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          background: "rgba(240,242,245,0.95)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
+      >
         <QuestoesSearchBar />
         <QuestoesFilterBar onPopoverChange={setHasOpenPopover} />
       </div>
 
-      {/* Ctrl+K floating overlay — appears when user presses Ctrl+K */}
+      {/* Ctrl+K Spotlight — floating overlay from any scroll position */}
       {ctrlKOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop with blur */}
           <div
-            className="fixed inset-0 z-40"
-            style={{ background: "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)" }}
+            className="fixed inset-0 z-40 animate-in fade-in duration-200"
+            style={{
+              background: "rgba(0,0,0,0.4)",
+              backdropFilter: "blur(4px)",
+              WebkitBackdropFilter: "blur(4px)",
+            }}
             onClick={closeCtrlK}
           />
-          {/* Floating bar */}
+          {/* Floating search + filter bar */}
           <div
-            className="fixed top-4 left-1/2 z-50 w-full max-w-5xl px-4"
+            className="fixed top-6 left-1/2 z-50 w-full max-w-5xl px-4 animate-in slide-in-from-top-4 fade-in duration-200"
             style={{ transform: "translateX(-50%)" }}
           >
             <div
               style={{
                 background: "white",
                 borderRadius: 16,
-                boxShadow: "0 20px 60px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1)",
+                boxShadow: "0 24px 80px rgba(0,0,0,0.25), 0 8px 24px rgba(0,0,0,0.12)",
                 overflow: "hidden",
               }}
             >
