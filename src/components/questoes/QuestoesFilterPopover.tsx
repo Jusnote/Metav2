@@ -420,9 +420,6 @@ export function QuestoesFilterPopover({
   // Max count for progress bars (placeholder - would be filled by real data)
   const maxCount = 0;
 
-  // Is this popover driven by slash command? (initialSearch is defined)
-  const isSlashMode = initialSearch !== undefined;
-
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -431,14 +428,6 @@ export function QuestoesFilterPopover({
         sideOffset={6}
         align="start"
         onKeyDown={handleKeyDown}
-        onOpenAutoFocus={(e) => {
-          // When opened via slash, keep focus on the main search input
-          if (isSlashMode) e.preventDefault();
-        }}
-        onInteractOutside={(e) => {
-          // In slash mode, don't close when clicking the main search input
-          if (isSlashMode) e.preventDefault();
-        }}
         className="p-0 outline-none"
         style={{
           width: 400,
@@ -449,38 +438,32 @@ export function QuestoesFilterPopover({
           background: "#fff",
         }}
       >
-        {/* ---- Search input (disabled in slash mode — main input controls text) ---- */}
+        {/* ---- Search input ---- */}
         <div className="px-3 pt-3 pb-1.5">
           <div
             className="flex items-center gap-2 rounded-[8px] border px-2.5 py-1.5 transition-colors"
             style={{
-              borderColor: isSlashMode ? "#E8930C" : "#e0e3e8",
+              borderColor: "#e0e3e8",
             }}
           >
             <Search size={14} className="text-gray-400 shrink-0" />
-            {isSlashMode ? (
-              <span className="flex-1 text-[12px] text-gray-700" style={{ lineHeight: "20px" }}>
-                {rawQuery || <span className="text-gray-400">digitando no input...</span>}
-              </span>
-            ) : (
-              <input
-                ref={searchRef}
-                type="text"
-                value={rawQuery}
-                onChange={handleSearchChange}
-                placeholder={`Buscar ${category.label.toLowerCase()}...`}
-                className="flex-1 bg-transparent text-[12px] text-gray-700 placeholder:text-gray-400 outline-none"
-                style={{ lineHeight: "20px" }}
-                onFocus={(e) => {
-                  const parent = e.currentTarget.parentElement;
-                  if (parent) parent.style.borderColor = "#E8930C";
-                }}
-                onBlur={(e) => {
-                  const parent = e.currentTarget.parentElement;
-                  if (parent) parent.style.borderColor = "#e0e3e8";
-                }}
-              />
-            )}
+            <input
+              ref={searchRef}
+              type="text"
+              value={rawQuery}
+              onChange={handleSearchChange}
+              placeholder={`Buscar ${category.label.toLowerCase()}...`}
+              className="flex-1 bg-transparent text-[12px] text-gray-700 placeholder:text-gray-400 outline-none"
+              style={{ lineHeight: "20px" }}
+              onFocus={(e) => {
+                const parent = e.currentTarget.parentElement;
+                if (parent) parent.style.borderColor = "#E8930C";
+              }}
+              onBlur={(e) => {
+                const parent = e.currentTarget.parentElement;
+                if (parent) parent.style.borderColor = "#e0e3e8";
+              }}
+            />
           </div>
         </div>
 
