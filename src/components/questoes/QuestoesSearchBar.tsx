@@ -34,12 +34,8 @@ const SLASH_MODE_INITIAL: SlashMode = {
 interface QuestoesSearchBarProps {
   /** Auto-focus the input on mount (used by Ctrl+K overlay) */
   autoFocus?: boolean;
-  /** Called continuously while in slash mode — opens popover and streams search query */
+  /** Called when slash command resolves to a category (+ optional value query) */
   onSlashFilter?: (categoryKey: string, valueQuery: string) => void;
-  /** Called when user confirms a value (space/enter/comma) — select first match */
-  onSlashSelect?: () => void;
-  /** Called when slash mode ends (escape, no match, etc.) */
-  onSlashClose?: () => void;
 }
 
 /** Fuzzy match a typed string against category labels. Returns best match or null. */
@@ -59,7 +55,7 @@ function matchCategory(text: string): FilterCategoryConfig | null {
   return null;
 }
 
-export function QuestoesSearchBar({ autoFocus = false, onSlashFilter, onSlashSelect, onSlashClose }: QuestoesSearchBarProps) {
+export function QuestoesSearchBar({ autoFocus = false, onSlashFilter }: QuestoesSearchBarProps) {
   const { searchQuery, setSearchQuery, activeFilterCount, toggleFilter } =
     useQuestoesContext();
   const isMobile = useIsSmall();
@@ -132,72 +128,67 @@ export function QuestoesSearchBar({ autoFocus = false, onSlashFilter, onSlashSel
 
   // (slash category/value selection now handled via onSlashFilter callback → opens pill popover)
 
-  // ---- parse slash text: returns { catText, valueQuery, matched } ----
-  const parseSlash = useCallback((afterSlash: string) => {
-    const firstSpace = afterSlash.indexOf(" ");
-    if (firstSpace === -1) {
-      // Still typing category name
-      return { catText: afterSlash, valueQuery: "", matched: matchCategory(afterSlash) };
-    }
-    const catText = afterSlash.slice(0, firstSpace);
-    const valueQuery = afterSlash.slice(firstSpace + 1);
-    return { catText, valueQuery, matched: matchCategory(catText) };
-  }, []);
-
   // ---- input handler ----
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
       setInputValue(val);
 
+      // Find last `/` position
       const slashIdx = val.lastIndexOf("/");
 
       if (slashIdx !== -1) {
         const afterSlash = val.slice(slashIdx + 1);
-        const { catText, valueQuery, matched } = parseSlash(afterSlash);
-        const hasSpace = afterSlash.includes(" ");
 
-        if (hasSpace && !matched) {
-          // Typed space but no category match → treat as normal search
-          resetSlashMode();
-          onSlashClose?.();
-          scheduleCommit(val);
-          return;
+        // Check if there's a space — means category is "confirmed"
+        const spaceIdx = afterSlash.indexOf(" ");
+
+        if (spaceIdx !== -1) {
+          // Text before space = category attempt, text after = value query
+          const catText = afterSlash.slice(0, spaceIdx);
+          const valueQuery = afterSlash.slice(spaceIdx + 1);
+          const matched = matchCategory(catText);
+
+          if (matched && onSlashFilter) {
+            // Category matched! Open the popover with value query
+            onSlashFilter(matched.key, valueQuery);
+
+            // Clean the `/...` from the input
+            const cleaned = val.slice(0, slashIdx).trimEnd();
+            setInputValue(cleaned);
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+            commitSearch(cleaned);
+            resetSlashMode();
+            return;
+          } else {
+            // No category match — treat as normal search
+            resetSlashMode();
+            scheduleCommit(val);
+            return;
+          }
         }
 
-        // Update slash mode
-        setSlashMode({ active: true, category: matched, query: afterSlash });
-
-        if (matched && hasSpace) {
-          // Category confirmed + typing value → stream to popover
-          onSlashFilter?.(matched.key, valueQuery);
-        } else if (matched && !hasSpace) {
-          // Category matched but no space yet → open popover with empty search
-          onSlashFilter?.(matched.key, "");
-        }
-
-        // Don't commit text search while in slash mode
+        // No space yet — just track slash mode for visual hint
+        setSlashMode({ active: true, category: matchCategory(afterSlash), query: afterSlash });
+        // Don't commit search while in slash mode
         return;
+      } else {
+        // No `/` in the input — exit slash mode
+        if (slashMode.active) {
+          resetSlashMode();
+        }
       }
 
-      // No `/` → exit slash mode
-      if (slashMode.active) {
-        resetSlashMode();
-        onSlashClose?.();
-      }
       scheduleCommit(val);
     },
-    [scheduleCommit, slashMode.active, resetSlashMode, onSlashFilter, onSlashClose, parseSlash],
+    [scheduleCommit, slashMode.active, resetSlashMode, onSlashFilter, commitSearch],
   );
 
   // ---- key handler ----
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (slashMode.active && slashMode.category) {
-        const afterSlash = inputValue.slice(inputValue.lastIndexOf("/") + 1);
-        const hasSpace = afterSlash.includes(" ");
-        const valueQuery = hasSpace ? afterSlash.slice(afterSlash.indexOf(" ") + 1) : "";
-
+      // If in slash mode, let the dropdowns handle arrow/enter/escape via their own keydown
+      if (slashMode.active) {
         if (e.key === "Escape") {
           e.preventDefault();
           const cleaned = stripSlashText(inputValue);
@@ -205,45 +196,35 @@ export function QuestoesSearchBar({ autoFocus = false, onSlashFilter, onSlashSel
           if (debounceRef.current) clearTimeout(debounceRef.current);
           commitSearch(cleaned);
           resetSlashMode();
-          onSlashClose?.();
           return;
         }
 
-        // Enter or comma with a value typed → select first match
-        if ((e.key === "Enter" || e.key === ",") && hasSpace && valueQuery.trim()) {
-          e.preventDefault();
-          // Tell parent to select first match in popover
-          onSlashSelect?.();
-
-          if (e.key === ",") {
-            // Stay in slash mode for more selections — reset value portion
-            const slashIdx = inputValue.lastIndexOf("/");
-            const catText = afterSlash.slice(0, afterSlash.indexOf(" "));
-            setInputValue(inputValue.slice(0, slashIdx) + "/" + catText + " ");
-            onSlashFilter?.(slashMode.category.key, "");
-          } else {
-            // Enter → done, clean input
-            const cleaned = stripSlashText(inputValue);
-            setInputValue(cleaned);
-            if (debounceRef.current) clearTimeout(debounceRef.current);
-            commitSearch(cleaned);
+        if (e.key === "Backspace") {
+          // If slash is the only remaining char after the base text, cancel
+          const slashIdx = inputValue.lastIndexOf("/");
+          if (slashIdx !== -1 && inputValue.slice(slashIdx) === "/") {
+            // The `/` will be removed by the native input; just reset
             resetSlashMode();
-            onSlashClose?.();
+          } else if (slashMode.category && slashMode.query === "") {
+            // Category selected but no query typed yet — go back to category picker
+            e.preventDefault();
+            setSlashMode({ active: true, category: null, query: "" });
           }
           return;
         }
 
+        // For Enter and arrow keys, we don't prevent default here — the dropdown
+        // components handle those via their own onKeyDown that propagates from the wrapper.
         return;
       }
 
-      // Not in slash mode — Enter submits search
       if (e.key === "Enter") {
         e.preventDefault();
         if (debounceRef.current) clearTimeout(debounceRef.current);
         commitSearch(inputValue);
       }
     },
-    [commitSearch, inputValue, slashMode, stripSlashText, resetSlashMode, onSlashClose, onSlashSelect, onSlashFilter],
+    [commitSearch, inputValue, slashMode, stripSlashText, resetSlashMode],
   );
 
   // ---- Forward keyboard events to dropdown ----

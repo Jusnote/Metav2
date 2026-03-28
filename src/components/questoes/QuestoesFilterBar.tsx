@@ -21,12 +21,10 @@ interface QuestoesFilterBarProps {
   onPopoverChange?: (open: boolean) => void;
   /** Externally open a specific category popover (from slash command) */
   slashOpenCategory?: string | null;
-  /** Live search text streamed from slash command */
+  /** Initial search text for the popover (from slash value query) */
   slashInitialSearch?: string;
   /** Called after the slash-opened popover closes */
   onSlashHandled?: () => void;
-  /** Signal to select the first match in the open popover */
-  slashSelectFirst?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -68,7 +66,7 @@ function countForCategory(
 // Component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterBar({ onPopoverChange, slashOpenCategory, slashInitialSearch, onSlashHandled, slashSelectFirst }: QuestoesFilterBarProps) {
+export function QuestoesFilterBar({ onPopoverChange, slashOpenCategory, slashInitialSearch, onSlashHandled }: QuestoesFilterBarProps) {
   const { filters, clearFilters, removeFilter, activeFilterCount } =
     useQuestoesContext();
   const isMobile = useIsSmall();
@@ -174,7 +172,6 @@ export function QuestoesFilterBar({ onPopoverChange, slashOpenCategory, slashIni
                 if (!open && slashOpenCategory === cat.key) onSlashHandled?.();
               }}
               initialSearch={slashOpenCategory === cat.key ? slashInitialSearch : undefined}
-              selectFirstSignal={slashOpenCategory === cat.key ? slashSelectFirst : undefined}
             >
               <QuestoesFilterPill
                 category={cat}
