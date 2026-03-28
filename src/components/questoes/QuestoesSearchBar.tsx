@@ -33,7 +33,12 @@ const SLASH_MODE_INITIAL: SlashMode = {
   query: "",
 };
 
-export function QuestoesSearchBar() {
+interface QuestoesSearchBarProps {
+  /** Auto-focus the input on mount (used by Ctrl+K overlay) */
+  autoFocus?: boolean;
+}
+
+export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps) {
   const { searchQuery, setSearchQuery, activeFilterCount, toggleFilter } =
     useQuestoesContext();
   const isMobile = useIsSmall();
@@ -60,6 +65,13 @@ export function QuestoesSearchBar() {
   useEffect(() => {
     setInputValue(searchQuery);
   }, [searchQuery]);
+
+  // Auto-focus when mounted in Ctrl+K overlay
+  useEffect(() => {
+    if (autoFocus) {
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }, [autoFocus]);
 
   // ---- debounced commit to context ----
   const commitSearch = useCallback(
@@ -222,17 +234,7 @@ export function QuestoesSearchBar() {
     [],
   );
 
-  // ---- Global Cmd+K / Ctrl+K shortcut ----
-  useEffect(() => {
-    function onGlobalKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-    }
-    document.addEventListener("keydown", onGlobalKeyDown);
-    return () => document.removeEventListener("keydown", onGlobalKeyDown);
-  }, []);
+  // Note: Ctrl+K is handled by QuestoesPage (opens overlay mode)
 
   // ---- Close slash mode on click outside ----
   const containerRef = useRef<HTMLDivElement>(null);
