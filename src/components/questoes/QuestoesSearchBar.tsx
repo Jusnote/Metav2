@@ -1,52 +1,140 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
 import { useIsSmall } from "@/hooks/use-small";
-import { FILTER_CATEGORIES, type FilterCategoryConfig } from "./filter-config";
-import { QuestoesSlashDropdown } from "./QuestoesSlashDropdown";
-import { QuestoesSlashFilterDropdown } from "./QuestoesSlashFilterDropdown";
+import { useFiltrosDicionario } from "@/hooks/useFiltrosDicionario";
+import {
+  FILTER_CATEGORIES,
+  getCategoryItems,
+  type FilterCategoryConfig,
+} from "./filter-config";
+import { QuestoesSlashInlineDropdown } from "./QuestoesSlashInlineDropdown";
+import { useFilterKeyboardNav } from "./use-filter-keyboard-nav";
 import { QuestoesFilterSheet } from "./QuestoesFilterSheet";
 
 // ---------------------------------------------------------------------------
 // QuestoesSearchBar
 // ---------------------------------------------------------------------------
-// Native <input> search bar replacing SmartSearchBarPlate.
+// Native <input> search bar with inline slash autocomplete.
 // Features: debounced search, IA toggle, filter badge, Cmd+K shortcut,
-// slash command for category filter dropdown.
+// slash command with mirror-div ghost text + inline dropdown.
 // ---------------------------------------------------------------------------
 
 const DEBOUNCE_MS = 500;
+const MAX_VISIBLE_ITEMS = 12;
 
-interface SlashMode {
+// ---------------------------------------------------------------------------
+// Slash state machine
+// ---------------------------------------------------------------------------
+
+interface SlashState {
   active: boolean;
-  category: FilterCategoryConfig | null;
-  query: string;
+  phase: "category" | "value";
+  categoryText: string; // what user typed for category (e.g. "ban")
+  matchedCategory: FilterCategoryConfig | null;
+  valueText: string; // what user typed for value (e.g. "ces")
+  selectedInSession: string[]; // values selected via comma in current slash session
 }
 
-const SLASH_MODE_INITIAL: SlashMode = {
+const SLASH_INITIAL: SlashState = {
   active: false,
-  category: null,
-  query: "",
+  phase: "category",
+  categoryText: "",
+  matchedCategory: null,
+  valueText: "",
+  selectedInSession: [],
 };
+
+// ---------------------------------------------------------------------------
+// Fuzzy category matching
+// ---------------------------------------------------------------------------
+
+/**
+ * Match typed text against FILTER_CATEGORIES labels.
+ * Returns the best match if the label starts with or contains the typed text.
+ */
+function fuzzyMatchCategory(
+  text: string,
+): FilterCategoryConfig | null {
+  if (!text) return null;
+  const t = text.toLowerCase().trim();
+  if (!t) return null;
+
+  // Exact start match first
+  for (const cat of FILTER_CATEGORIES) {
+    if (cat.label.toLowerCase().startsWith(t)) return cat;
+  }
+
+  // Also try matching the key (e.g. "bancas" for "ban")
+  for (const cat of FILTER_CATEGORIES) {
+    if (cat.key.toLowerCase().startsWith(t)) return cat;
+  }
+
+  // Partial match (contains)
+  for (const cat of FILTER_CATEGORIES) {
+    if (cat.label.toLowerCase().includes(t)) return cat;
+  }
+
+  return null;
+}
+
+/**
+ * Compute ghost text for category completion.
+ * If user typed "ban" and matched "Bancas", ghost = "cas"
+ */
+function categoryGhostText(
+  typed: string,
+  matched: FilterCategoryConfig | null,
+): string {
+  if (!matched || !typed) return "";
+  const label = matched.label.toLowerCase();
+  const t = typed.toLowerCase();
+  if (label.startsWith(t)) {
+    return matched.label.slice(t.length).toLowerCase();
+  }
+  // Try key
+  const key = matched.key.toLowerCase();
+  if (key.startsWith(t)) {
+    return matched.key.slice(t.length).toLowerCase();
+  }
+  return "";
+}
+
+/**
+ * Coerce value to the correct type for the category.
+ * `anos` expects numbers; everything else expects strings.
+ */
+function coerceValue(categoryKey: string, value: string): string | number {
+  return categoryKey === "anos" ? Number(value) : value;
+}
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
 
 interface QuestoesSearchBarProps {
   /** Auto-focus the input on mount (used by Ctrl+K overlay) */
   autoFocus?: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps) {
-  const { searchQuery, setSearchQuery, activeFilterCount, toggleFilter } =
+  const { searchQuery, setSearchQuery, filters, activeFilterCount, toggleFilter } =
     useQuestoesContext();
   const isMobile = useIsSmall();
+  const { dicionario } = useFiltrosDicionario();
 
   // ---- local state ----
   const [inputValue, setInputValue] = useState(searchQuery);
   const [semanticMode, setSemanticMode] = useState(false);
-  const [slashMode, setSlashMode] = useState<SlashMode>(SLASH_MODE_INITIAL);
+  const [slash, setSlash] = useState<SlashState>(SLASH_INITIAL);
   const [inputFocused, setInputFocused] = useState(false);
 
   // Mobile slash mode — keyboard accessory bar
@@ -97,53 +185,95 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
   }, []);
 
   // ---- slash helpers ----
-  const resetSlashMode = useCallback(() => {
-    setSlashMode(SLASH_MODE_INITIAL);
+  const resetSlash = useCallback(() => {
+    setSlash(SLASH_INITIAL);
   }, []);
 
   /** Remove the `/...` portion from the input value and return the clean text. */
   const stripSlashText = useCallback((val: string): string => {
-    // Remove everything from the last `/` onwards
     const slashIdx = val.lastIndexOf("/");
     if (slashIdx === -1) return val;
     return val.slice(0, slashIdx).trimEnd();
   }, []);
 
-  // ---- slash category selected ----
-  const handleSlashCategorySelect = useCallback(
-    (category: FilterCategoryConfig) => {
-      setSlashMode({ active: true, category, query: "" });
-      // Focus back to input for typing the filter value query
-      requestAnimationFrame(() => inputRef.current?.focus());
-    },
-    [],
-  );
+  // ---- Filtered items for value phase ----
+  const allCategoryItems = useMemo(() => {
+    if (!slash.active || slash.phase !== "value" || !slash.matchedCategory)
+      return [];
+    return getCategoryItems(slash.matchedCategory.key, dicionario);
+  }, [slash.active, slash.phase, slash.matchedCategory, dicionario]);
 
-  // ---- slash value selected ----
-  const handleSlashValueSelect = useCallback(
-    (value: string | number) => {
-      if (!slashMode.category) return;
+  const filteredItems = useMemo(() => {
+    if (!allCategoryItems.length) return [];
+    const q = slash.valueText.trim().toLowerCase();
+    if (!q) return allCategoryItems.slice(0, MAX_VISIBLE_ITEMS);
+    return allCategoryItems
+      .filter((item) => item.label.toLowerCase().includes(q))
+      .slice(0, MAX_VISIBLE_ITEMS);
+  }, [allCategoryItems, slash.valueText]);
 
-      // Apply the filter
+  // ---- Selected values set ----
+  const selectedSet = useMemo(() => {
+    if (!slash.matchedCategory) return new Set<string>();
+    const key = slash.matchedCategory.key as keyof QuestoesFilters;
+    const raw = filters[key];
+    if (Array.isArray(raw)) return new Set(raw.map(String));
+    return new Set<string>();
+  }, [slash.matchedCategory, filters]);
+
+  // ---- Value ghost text ----
+  const valueGhostText = useMemo(() => {
+    if (slash.phase !== "value" || !slash.valueText.trim()) return "";
+    if (filteredItems.length === 0) return "";
+    const first = filteredItems[0];
+    const t = slash.valueText.toLowerCase();
+    const label = first.label.toLowerCase();
+    if (label.startsWith(t)) {
+      return first.label.slice(t.length);
+    }
+    return "";
+  }, [slash.phase, slash.valueText, filteredItems]);
+
+  // ---- Keyboard nav for value items ----
+  const handleValueSelect = useCallback(
+    (index: number) => {
+      const item = filteredItems[index];
+      if (!item || !slash.matchedCategory) return;
+
       toggleFilter(
-        slashMode.category.key as keyof QuestoesFilters,
-        value,
+        slash.matchedCategory.key as keyof QuestoesFilters,
+        coerceValue(slash.matchedCategory.key, String(item.value)),
       );
 
-      // Remove `/...` text from input
+      // Clear entire slash text and exit
       const cleaned = stripSlashText(inputValue);
       setInputValue(cleaned);
       if (debounceRef.current) clearTimeout(debounceRef.current);
       commitSearch(cleaned);
-
-      // Reset slash mode
-      resetSlashMode();
-
-      // Re-focus input
+      resetSlash();
       requestAnimationFrame(() => inputRef.current?.focus());
     },
-    [slashMode.category, toggleFilter, stripSlashText, inputValue, commitSearch, resetSlashMode],
+    [filteredItems, slash.matchedCategory, toggleFilter, stripSlashText, inputValue, commitSearch, resetSlash],
   );
+
+  const handleValueClose = useCallback(() => {
+    const cleaned = stripSlashText(inputValue);
+    setInputValue(cleaned);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    commitSearch(cleaned);
+    resetSlash();
+  }, [stripSlashText, inputValue, commitSearch, resetSlash]);
+
+  const {
+    highlightedIndex,
+    setHighlightedIndex,
+    handleKeyDown: navKeyDown,
+  } = useFilterKeyboardNav({
+    itemCount: filteredItems.length,
+    onSelect: handleValueSelect,
+    onClose: handleValueClose,
+    enabled: slash.active && slash.phase === "value",
+  });
 
   // ---- input handler ----
   const handleChange = useCallback(
@@ -157,81 +287,201 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
       if (slashIdx !== -1) {
         const afterSlash = val.slice(slashIdx + 1);
 
-        if (slashMode.active && slashMode.category) {
-          // Already have a category — update the query
-          setSlashMode((prev) => ({ ...prev, query: afterSlash }));
-        } else if (!slashMode.category) {
-          // No category yet — show category picker
-          setSlashMode({ active: true, category: null, query: afterSlash });
+        // Check if there's a space — means value phase
+        const spaceIdx = afterSlash.indexOf(" ");
+
+        if (spaceIdx === -1) {
+          // No space — category phase
+          const matched = fuzzyMatchCategory(afterSlash);
+          setSlash({
+            active: true,
+            phase: "category",
+            categoryText: afterSlash,
+            matchedCategory: matched,
+            valueText: "",
+            selectedInSession: [],
+          });
+        } else {
+          // Has space — value phase
+          const catPart = afterSlash.slice(0, spaceIdx);
+          const valuePart = afterSlash.slice(spaceIdx + 1);
+          const matched = fuzzyMatchCategory(catPart);
+
+          if (!matched) {
+            // No category match — exit slash mode, treat as normal search
+            setSlash(SLASH_INITIAL);
+            scheduleCommit(val);
+            return;
+          }
+
+          setSlash((prev) => ({
+            active: true,
+            phase: "value",
+            categoryText: catPart,
+            matchedCategory: matched,
+            valueText: valuePart,
+            selectedInSession: prev.selectedInSession,
+          }));
         }
 
         // Don't commit search while in slash mode
         return;
       } else {
         // No `/` in the input — exit slash mode
-        if (slashMode.active) {
-          resetSlashMode();
+        if (slash.active) {
+          resetSlash();
         }
       }
 
       scheduleCommit(val);
     },
-    [scheduleCommit, slashMode.active, slashMode.category, resetSlashMode],
+    [scheduleCommit, slash.active, resetSlash],
+  );
+
+  // ---- Select item and continue (comma behavior) ----
+  const selectAndContinue = useCallback(
+    (index: number) => {
+      const item = filteredItems[index];
+      if (!item || !slash.matchedCategory) return;
+
+      toggleFilter(
+        slash.matchedCategory.key as keyof QuestoesFilters,
+        coerceValue(slash.matchedCategory.key, String(item.value)),
+      );
+
+      // Clear value portion from input, keep /category
+      const slashIdx = inputValue.lastIndexOf("/");
+      if (slashIdx === -1) return;
+      const afterSlash = inputValue.slice(slashIdx + 1);
+      const spaceIdx = afterSlash.indexOf(" ");
+      const catPart = spaceIdx >= 0 ? afterSlash.slice(0, spaceIdx) : afterSlash;
+
+      const newVal = inputValue.slice(0, slashIdx) + "/" + catPart + " ";
+      setInputValue(newVal);
+
+      setSlash((prev) => ({
+        ...prev,
+        valueText: "",
+        selectedInSession: [...prev.selectedInSession, String(item.value)],
+      }));
+
+      requestAnimationFrame(() => inputRef.current?.focus());
+    },
+    [filteredItems, slash.matchedCategory, toggleFilter, inputValue],
+  );
+
+  // ---- Toggle from dropdown click ----
+  const handleDropdownToggle = useCallback(
+    (value: string | number) => {
+      if (!slash.matchedCategory) return;
+      toggleFilter(
+        slash.matchedCategory.key as keyof QuestoesFilters,
+        value,
+      );
+    },
+    [slash.matchedCategory, toggleFilter],
   );
 
   // ---- key handler ----
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      // If in slash mode, let the dropdowns handle arrow/enter/escape via their own keydown
-      if (slashMode.active) {
-        if (e.key === "Escape") {
-          e.preventDefault();
-          const cleaned = stripSlashText(inputValue);
-          setInputValue(cleaned);
-          if (debounceRef.current) clearTimeout(debounceRef.current);
-          commitSearch(cleaned);
-          resetSlashMode();
-          return;
-        }
-
-        if (e.key === "Backspace") {
-          // If slash is the only remaining char after the base text, cancel
-          const slashIdx = inputValue.lastIndexOf("/");
-          if (slashIdx !== -1 && inputValue.slice(slashIdx) === "/") {
-            // The `/` will be removed by the native input; just reset
-            resetSlashMode();
-          } else if (slashMode.category && slashMode.query === "") {
-            // Category selected but no query typed yet — go back to category picker
+      if (slash.active) {
+        // Category phase
+        if (slash.phase === "category") {
+          if (e.key === "Escape") {
             e.preventDefault();
-            setSlashMode({ active: true, category: null, query: "" });
+            const cleaned = stripSlashText(inputValue);
+            setInputValue(cleaned);
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+            commitSearch(cleaned);
+            resetSlash();
+            return;
           }
+
+          if (e.key === "Tab" || (e.key === " " && slash.matchedCategory)) {
+            // Complete category and enter value phase
+            if (slash.matchedCategory) {
+              e.preventDefault();
+              const slashIdx = inputValue.lastIndexOf("/");
+              const catLabel = slash.matchedCategory.label.toLowerCase();
+              const newVal = inputValue.slice(0, slashIdx) + "/" + catLabel + " ";
+              setInputValue(newVal);
+              setSlash((prev) => ({
+                ...prev,
+                phase: "value",
+                categoryText: catLabel,
+                valueText: "",
+              }));
+            }
+            return;
+          }
+
+          if (e.key === "Backspace") {
+            const slashIdx = inputValue.lastIndexOf("/");
+            if (slashIdx !== -1 && inputValue.slice(slashIdx) === "/") {
+              resetSlash();
+            }
+            return;
+          }
+
           return;
         }
 
-        // For Enter and arrow keys, we don't prevent default here — the dropdown
-        // components handle those via their own onKeyDown that propagates from the wrapper.
+        // Value phase — forward arrow/enter/esc to nav hook
+        if (slash.phase === "value") {
+          if (e.key === "," && filteredItems.length > 0) {
+            e.preventDefault();
+            selectAndContinue(highlightedIndex);
+            return;
+          }
+
+          if (e.key === "Backspace") {
+            // If no valueText and we're at the space after category, go back to category phase
+            if (slash.valueText === "") {
+              e.preventDefault();
+              const slashIdx = inputValue.lastIndexOf("/");
+              if (slashIdx !== -1) {
+                const catPart = slash.categoryText;
+                const newVal = inputValue.slice(0, slashIdx) + "/" + catPart;
+                setInputValue(newVal);
+                setSlash((prev) => ({
+                  ...prev,
+                  phase: "category",
+                  valueText: "",
+                }));
+              }
+              return;
+            }
+            // Otherwise let normal backspace happen (handled by change handler)
+            return;
+          }
+
+          // Forward to keyboard nav (ArrowUp, ArrowDown, Enter, Escape)
+          navKeyDown(e);
+          return;
+        }
+
         return;
       }
 
+      // Not in slash mode
       if (e.key === "Enter") {
         e.preventDefault();
         if (debounceRef.current) clearTimeout(debounceRef.current);
         commitSearch(inputValue);
       }
     },
-    [commitSearch, inputValue, slashMode, stripSlashText, resetSlashMode],
-  );
-
-  // ---- Forward keyboard events to dropdown ----
-  // The dropdowns use useFilterKeyboardNav which expects onKeyDown on a wrapper.
-  // We capture key events from the input and forward them by wrapping in a
-  // container that the dropdowns can use.
-  const wrapperKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      // The keyboard events bubble from the input through the wrapper to the dropdowns.
-      // No action needed here — handled by the dropdown containers.
-    },
-    [],
+    [
+      commitSearch,
+      inputValue,
+      slash,
+      stripSlashText,
+      resetSlash,
+      filteredItems.length,
+      highlightedIndex,
+      selectAndContinue,
+      navKeyDown,
+    ],
   );
 
   // Note: Ctrl+K is handled by QuestoesPage (opens overlay mode)
@@ -239,25 +489,53 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
   // ---- Close slash mode on click outside ----
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!slashMode.active) return;
+    if (!slash.active) return;
 
     function handleClickOutside(e: MouseEvent) {
       if (
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
-        resetSlashMode();
+        resetSlash();
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [slashMode.active, resetSlashMode]);
+  }, [slash.active, resetSlash]);
+
+  // ---- Mirror div computation ----
+  const mirrorContent = useMemo(() => {
+    if (!slash.active) return null;
+
+    const slashIdx = inputValue.lastIndexOf("/");
+    if (slashIdx === -1) return null;
+
+    const beforeSlash = inputValue.slice(0, slashIdx);
+    const afterSlash = inputValue.slice(slashIdx + 1);
+
+    if (slash.phase === "category") {
+      const ghost = categoryGhostText(slash.categoryText, slash.matchedCategory);
+      return { beforeSlash, categoryText: afterSlash, valueText: "", ghost, hasMatch: !!slash.matchedCategory };
+    }
+
+    // Value phase
+    const spaceIdx = afterSlash.indexOf(" ");
+    const catPart = spaceIdx >= 0 ? afterSlash.slice(0, spaceIdx) : afterSlash;
+    const valPart = spaceIdx >= 0 ? afterSlash.slice(spaceIdx + 1) : "";
+
+    return {
+      beforeSlash,
+      categoryText: catPart,
+      valueText: valPart,
+      ghost: valueGhostText,
+      hasMatch: filteredItems.length > 0,
+    };
+  }, [slash, inputValue, valueGhostText, filteredItems.length]);
 
   // ---- mobile keyboard bar handlers ----
   const handleMobileSlashTap = useCallback(() => {
     if (mobileSlashActive) {
-      // Already active — deactivate
       setMobileSlashActive(false);
       setMobileSlashCategory(null);
     } else {
@@ -284,52 +562,109 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
     ? "Buscar..."
     : "Buscar questoes ou digite / para filtros...";
 
+  // ---- Is the input border in slash mode (amber) ----
+  const inSlashMode = slash.active;
+
   return (
-    <div
-      ref={containerRef}
-      style={{ position: "relative" }}
-      onKeyDown={wrapperKeyDown}
-    >
+    <div ref={containerRef} style={{ position: "relative" }}>
       <div
         style={{
           height: 44,
           background: "#fff",
-          border: "1px solid #e2e5ea",
-          borderBottom: "none",
-          borderRadius: "14px 14px 0 0",
+          border: inSlashMode ? "1.5px solid #E8930C" : "1px solid #e2e5ea",
+          borderBottom: inSlashMode ? "none" : "none",
+          borderRadius: inSlashMode ? "14px 14px 0 0" : "14px 14px 0 0",
           padding: "0 16px",
           gap: 10,
           display: "flex",
           alignItems: "center",
+          position: "relative",
+          transition: "border-color 150ms ease",
         }}
-        className="questoes-search-bar focus-within:border-[#E8930C] focus-within:shadow-[0_0_0_3px_rgba(232,147,12,0.06)]"
+        className={
+          inSlashMode
+            ? "questoes-search-bar"
+            : "questoes-search-bar focus-within:border-[#E8930C] focus-within:shadow-[0_0_0_3px_rgba(232,147,12,0.06)]"
+        }
       >
         {/* Search icon */}
-        <Search size={16} color="#888" style={{ flexShrink: 0 }} />
-
-        {/* Native input */}
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => {
-            // Delay to allow tap events on the keyboard bar to fire first
-            setTimeout(() => setInputFocused(false), 150);
-          }}
-          placeholder={placeholder}
-          style={{
-            flex: 1,
-            border: "none",
-            outline: "none",
-            background: "transparent",
-            fontSize: 14,
-            color: "#1a1a1a",
-            minWidth: 0,
-          }}
+        <Search
+          size={16}
+          color={inSlashMode ? "#E8930C" : "#888"}
+          style={{ flexShrink: 0, transition: "color 150ms ease" }}
         />
+
+        {/* Input container with mirror */}
+        <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
+          {/* Mirror div — shows colored text behind transparent input */}
+          {mirrorContent && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                alignItems: "center",
+                pointerEvents: "none",
+                fontSize: 14,
+                fontFamily: "inherit",
+                whiteSpace: "pre",
+                overflow: "hidden",
+              }}
+              aria-hidden="true"
+            >
+              <span style={{ color: "#333" }}>{mirrorContent.beforeSlash}</span>
+              <span style={{ color: "#E8930C", fontWeight: 600 }}>
+                /{mirrorContent.categoryText}
+              </span>
+              {slash.phase === "value" && (
+                <>
+                  <span style={{ color: "#E8930C" }}> </span>
+                  <span
+                    style={{
+                      color: mirrorContent.hasMatch ? "#D4A06A" : "#999",
+                      fontWeight: mirrorContent.hasMatch ? 500 : 400,
+                    }}
+                  >
+                    {mirrorContent.valueText}
+                  </span>
+                </>
+              )}
+              {mirrorContent.ghost && (
+                <span style={{ color: "#d0d3d9" }}>{mirrorContent.ghost}</span>
+              )}
+            </div>
+          )}
+
+          {/* Actual input */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => {
+              // Delay to allow tap events on the keyboard bar / dropdown to fire first
+              setTimeout(() => setInputFocused(false), 200);
+            }}
+            placeholder={inSlashMode ? "" : placeholder}
+            style={{
+              width: "100%",
+              border: "none",
+              outline: "none",
+              background: "transparent",
+              fontSize: 14,
+              color: inSlashMode ? "transparent" : "#1a1a1a",
+              caretColor: inSlashMode ? "#E8930C" : undefined,
+              minWidth: 0,
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+        </div>
 
         {/* IA toggle */}
         <button
@@ -394,20 +729,31 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
         )}
       </div>
 
-      {/* ---- Slash command dropdowns ---- */}
-      {slashMode.active && !slashMode.category && (
-        <QuestoesSlashDropdown
-          onSelect={handleSlashCategorySelect}
-          onClose={resetSlashMode}
+      {/* ---- Slash inline dropdown ---- */}
+      {slash.active && slash.phase === "category" && (
+        <QuestoesSlashInlineDropdown
+          mode="categories"
+          categories={FILTER_CATEGORIES}
+          matchedCategory={slash.matchedCategory}
+          items={[]}
+          selectedValues={new Set()}
+          highlightedIndex={0}
+          onToggle={() => {}}
+          onHover={() => {}}
         />
       )}
 
-      {slashMode.active && slashMode.category && (
-        <QuestoesSlashFilterDropdown
-          category={slashMode.category}
-          query={slashMode.query}
-          onSelect={handleSlashValueSelect}
-          onClose={resetSlashMode}
+      {slash.active && slash.phase === "value" && slash.matchedCategory && (
+        <QuestoesSlashInlineDropdown
+          mode="values"
+          category={slash.matchedCategory}
+          items={filteredItems}
+          selectedValues={selectedSet}
+          highlightedIndex={highlightedIndex}
+          searchText={slash.valueText}
+          onToggle={handleDropdownToggle}
+          onHover={setHighlightedIndex}
+          onRemoveSelected={handleDropdownToggle}
         />
       )}
 
