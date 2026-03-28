@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
@@ -44,9 +44,22 @@ export default function QuestoesPage() {
   // Track if any popover is open (for overlay)
   const [hasOpenPopover, setHasOpenPopover] = useState(false);
 
-  // Ctrl+K overlay mode — shows filter bar as floating overlay
+  // Slash command → open pill popover
+  const [slashCategory, setSlashCategory] = useState<string | null>(null);
+  const [slashSearch, setSlashSearch] = useState("");
+
+  const handleSlashFilter = useCallback((categoryKey: string, valueQuery: string) => {
+    setSlashCategory(categoryKey);
+    setSlashSearch(valueQuery);
+  }, []);
+
+  const handleSlashHandled = useCallback(() => {
+    setSlashCategory(null);
+    setSlashSearch("");
+  }, []);
+
+  // Ctrl+K overlay
   const [ctrlKOpen, setCtrlKOpen] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const closeCtrlK = useCallback(() => {
     setCtrlKOpen(false);
@@ -69,15 +82,12 @@ export default function QuestoesPage() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [ctrlKOpen, closeCtrlK]);
 
-  // The bar is visible either when at top of page (normal flow) or via Ctrl+K overlay
-  const showOverlay = ctrlKOpen || hasOpenPopover;
-
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
       {/* Normal search + filter bar — scrolls with page (NOT sticky) */}
       <div className="px-2 pt-3 pb-2">
-        <QuestoesSearchBar />
-        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} />
+        <QuestoesSearchBar onSlashFilter={handleSlashFilter} />
+        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} slashOpenCategory={slashCategory} slashInitialSearch={slashSearch} onSlashHandled={handleSlashHandled} />
       </div>
 
       {/* Ctrl+K floating overlay — appears when user presses Ctrl+K */}

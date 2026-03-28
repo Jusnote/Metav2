@@ -7,8 +7,6 @@ import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import type { QuestoesFilters } from "@/contexts/QuestoesContext";
 import { useIsSmall } from "@/hooks/use-small";
 import { FILTER_CATEGORIES, type FilterCategoryConfig } from "./filter-config";
-import { QuestoesSlashDropdown } from "./QuestoesSlashDropdown";
-import { QuestoesSlashFilterDropdown } from "./QuestoesSlashFilterDropdown";
 import { QuestoesFilterSheet } from "./QuestoesFilterSheet";
 
 // ---------------------------------------------------------------------------
@@ -36,9 +34,28 @@ const SLASH_MODE_INITIAL: SlashMode = {
 interface QuestoesSearchBarProps {
   /** Auto-focus the input on mount (used by Ctrl+K overlay) */
   autoFocus?: boolean;
+  /** Called when slash command resolves to a category (+ optional value query) */
+  onSlashFilter?: (categoryKey: string, valueQuery: string) => void;
 }
 
-export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps) {
+/** Fuzzy match a typed string against category labels. Returns best match or null. */
+function matchCategory(text: string): FilterCategoryConfig | null {
+  if (!text) return null;
+  const lower = text.toLowerCase().trim();
+  if (!lower) return null;
+
+  // Exact prefix match first
+  for (const cat of FILTER_CATEGORIES) {
+    if (cat.label.toLowerCase().startsWith(lower)) return cat;
+  }
+  // Also match the key (e.g. "bancas" -> Banca)
+  for (const cat of FILTER_CATEGORIES) {
+    if (cat.key.toLowerCase().startsWith(lower)) return cat;
+  }
+  return null;
+}
+
+export function QuestoesSearchBar({ autoFocus = false, onSlashFilter }: QuestoesSearchBarProps) {
   const { searchQuery, setSearchQuery, activeFilterCount, toggleFilter } =
     useQuestoesContext();
   const isMobile = useIsSmall();
@@ -109,41 +126,7 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
     return val.slice(0, slashIdx).trimEnd();
   }, []);
 
-  // ---- slash category selected ----
-  const handleSlashCategorySelect = useCallback(
-    (category: FilterCategoryConfig) => {
-      setSlashMode({ active: true, category, query: "" });
-      // Focus back to input for typing the filter value query
-      requestAnimationFrame(() => inputRef.current?.focus());
-    },
-    [],
-  );
-
-  // ---- slash value selected ----
-  const handleSlashValueSelect = useCallback(
-    (value: string | number) => {
-      if (!slashMode.category) return;
-
-      // Apply the filter
-      toggleFilter(
-        slashMode.category.key as keyof QuestoesFilters,
-        value,
-      );
-
-      // Remove `/...` text from input
-      const cleaned = stripSlashText(inputValue);
-      setInputValue(cleaned);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      commitSearch(cleaned);
-
-      // Reset slash mode
-      resetSlashMode();
-
-      // Re-focus input
-      requestAnimationFrame(() => inputRef.current?.focus());
-    },
-    [slashMode.category, toggleFilter, stripSlashText, inputValue, commitSearch, resetSlashMode],
-  );
+  // (slash category/value selection now handled via onSlashFilter callback → opens pill popover)
 
   // ---- input handler ----
   const handleChange = useCallback(
@@ -157,14 +140,36 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
       if (slashIdx !== -1) {
         const afterSlash = val.slice(slashIdx + 1);
 
-        if (slashMode.active && slashMode.category) {
-          // Already have a category — update the query
-          setSlashMode((prev) => ({ ...prev, query: afterSlash }));
-        } else if (!slashMode.category) {
-          // No category yet — show category picker
-          setSlashMode({ active: true, category: null, query: afterSlash });
+        // Check if there's a space — means category is "confirmed"
+        const spaceIdx = afterSlash.indexOf(" ");
+
+        if (spaceIdx !== -1) {
+          // Text before space = category attempt, text after = value query
+          const catText = afterSlash.slice(0, spaceIdx);
+          const valueQuery = afterSlash.slice(spaceIdx + 1);
+          const matched = matchCategory(catText);
+
+          if (matched && onSlashFilter) {
+            // Category matched! Open the popover with value query
+            onSlashFilter(matched.key, valueQuery);
+
+            // Clean the `/...` from the input
+            const cleaned = val.slice(0, slashIdx).trimEnd();
+            setInputValue(cleaned);
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+            commitSearch(cleaned);
+            resetSlashMode();
+            return;
+          } else {
+            // No category match — treat as normal search
+            resetSlashMode();
+            scheduleCommit(val);
+            return;
+          }
         }
 
+        // No space yet — just track slash mode for visual hint
+        setSlashMode({ active: true, category: matchCategory(afterSlash), query: afterSlash });
         // Don't commit search while in slash mode
         return;
       } else {
@@ -176,7 +181,7 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
 
       scheduleCommit(val);
     },
-    [scheduleCommit, slashMode.active, slashMode.category, resetSlashMode],
+    [scheduleCommit, slashMode.active, resetSlashMode, onSlashFilter, commitSearch],
   );
 
   // ---- key handler ----
@@ -394,21 +399,30 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
         )}
       </div>
 
-      {/* ---- Slash command dropdowns ---- */}
-      {slashMode.active && !slashMode.category && (
-        <QuestoesSlashDropdown
-          onSelect={handleSlashCategorySelect}
-          onClose={resetSlashMode}
-        />
-      )}
-
+      {/* ---- Slash hint: shows matched category as user types ---- */}
       {slashMode.active && slashMode.category && (
-        <QuestoesSlashFilterDropdown
-          category={slashMode.category}
-          query={slashMode.query}
-          onSelect={handleSlashValueSelect}
-          onClose={resetSlashMode}
-        />
+        <div
+          style={{
+            position: "absolute",
+            top: 48,
+            left: 16,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "4px 10px",
+            background: "white",
+            border: "1px solid #e8eaed",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            fontSize: 12,
+            color: "#555",
+            zIndex: 10,
+          }}
+        >
+          <span style={{ color: "#E8930C", fontWeight: 600 }}>/</span>
+          <span style={{ fontWeight: 500 }}>{slashMode.category.label}</span>
+          <span style={{ color: "#bbb", fontSize: 10 }}>espaco para filtrar</span>
+        </div>
       )}
 
       {/* ---- Mobile keyboard accessory bar ---- */}
