@@ -19,12 +19,6 @@ import { useIsSmall } from "@/hooks/use-small";
 
 interface QuestoesFilterBarProps {
   onPopoverChange?: (open: boolean) => void;
-  /** Externally open a specific category popover (from slash command) */
-  slashOpenCategory?: string | null;
-  /** Initial search text for the popover (from slash value query) */
-  slashInitialSearch?: string;
-  /** Called after the slash-opened popover closes */
-  onSlashHandled?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,7 +60,7 @@ function countForCategory(
 // Component
 // ---------------------------------------------------------------------------
 
-export function QuestoesFilterBar({ onPopoverChange, slashOpenCategory, slashInitialSearch, onSlashHandled }: QuestoesFilterBarProps) {
+export function QuestoesFilterBar({ onPopoverChange }: QuestoesFilterBarProps) {
   const { filters, clearFilters, removeFilter, activeFilterCount } =
     useQuestoesContext();
   const isMobile = useIsSmall();
@@ -81,13 +75,6 @@ export function QuestoesFilterBar({ onPopoverChange, slashOpenCategory, slashIni
   useEffect(() => {
     onPopoverChange?.(openPopover !== null);
   }, [openPopover, onPopoverChange]);
-
-  // Open popover from slash command
-  useEffect(() => {
-    if (slashOpenCategory) {
-      setOpenPopover(slashOpenCategory);
-    }
-  }, [slashOpenCategory]);
 
   const togglePopover = useCallback((key: string) => {
     setOpenPopover((prev) => (prev === key ? null : key));
@@ -167,11 +154,7 @@ export function QuestoesFilterBar({ onPopoverChange, slashOpenCategory, slashIni
               key={cat.key}
               category={cat}
               open={openPopover === cat.key}
-              onOpenChange={(open) => {
-                setOpenPopover(open ? cat.key : null);
-                if (!open && slashOpenCategory === cat.key) onSlashHandled?.();
-              }}
-              initialSearch={slashOpenCategory === cat.key ? slashInitialSearch : undefined}
+              onOpenChange={(open) => setOpenPopover(open ? cat.key : null)}
             >
               <QuestoesFilterPill
                 category={cat}

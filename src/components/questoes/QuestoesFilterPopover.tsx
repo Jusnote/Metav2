@@ -34,8 +34,6 @@ export interface QuestoesFilterPopoverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
-  /** Pre-fill the search input (from slash command) */
-  initialSearch?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -258,7 +256,6 @@ export function QuestoesFilterPopover({
   open,
   onOpenChange,
   children,
-  initialSearch,
 }: QuestoesFilterPopoverProps) {
   const { filters, toggleFilter, setFilter } = useQuestoesContext();
   const { dicionario } = useFiltrosDicionario();
@@ -284,18 +281,6 @@ export function QuestoesFilterPopover({
       setDebouncedQuery(val);
     }, DEBOUNCE_MS);
   }, []);
-
-  // --- Pre-fill search from slash command ---
-  useEffect(() => {
-    if (open && initialSearch) {
-      setRawQuery(initialSearch);
-      setDebouncedQuery(initialSearch);
-    }
-    if (!open) {
-      setRawQuery("");
-      setDebouncedQuery("");
-    }
-  }, [open, initialSearch]);
 
   // --- Filtered items ---
   const filteredItems = useMemo(() => {
