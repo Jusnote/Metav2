@@ -115,7 +115,7 @@ export default function QuestoesPage() {
       </div>
 
       {/* Tabs + Sort */}
-      <div className="flex items-center justify-between px-2 pb-2 pt-2 gap-2">
+      <div className="flex items-center justify-between px-2 pb-8 pt-2 gap-2">
         <Tabs
           value={statusTab}
           onValueChange={(v) => setStatusTab(v as StatusTab)}
