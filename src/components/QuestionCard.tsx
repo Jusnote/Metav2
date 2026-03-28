@@ -622,17 +622,29 @@ export const QuestionCard = React.memo(function QuestionCard({
       {/* ── BANNER / HEADER (preserved) ── */}
       <header className="qc-banner px-4 py-2">
 
-        {/* Row 1: Subject breadcrumb + status tags + counter + ID + bookmark */}
-        <div className="flex items-center justify-between gap-3 mb-1.5">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span
-              className="text-[11px] font-semibold tracking-[0.04em] uppercase text-zinc-800 dark:text-zinc-200 shrink-0"
-              title={subject}
-            >
-              {subject}
-            </span>
-            <span className="text-zinc-300 dark:text-zinc-600 text-[11px] shrink-0">·</span>
-            <span className="text-[11px] font-normal text-zinc-500 dark:text-zinc-400 truncate" title={subtopic}>{subtopic}</span>
+        {/* Row 1: Materia / Assunto inside highlighted box */}
+        <div className="flex items-center gap-2 mb-1.5">
+          <div className="qc-prova-box flex items-center gap-3 min-w-0 flex-1 px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/30 rounded-md border-l-2 border-l-amber-400/40 dark:border-l-amber-500/30">
+            {/* Icon */}
+            <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/40 rounded-full">
+              <GraduationCap className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+            </div>
+
+            {/* Materia */}
+            <div className="flex-shrink-0">
+              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Materia</p>
+              <p className="text-[12px] font-semibold text-zinc-800 dark:text-zinc-200 leading-none">{subject}</p>
+            </div>
+
+            {/* Separator */}
+            <div className="w-px self-stretch my-1 bg-zinc-200 dark:bg-zinc-700" />
+
+            {/* Assunto */}
+            <div className="min-w-0 flex-1">
+              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Assunto</p>
+              <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-200 truncate leading-none" title={subtopic}>{subtopic}</p>
+            </div>
+
             {caracteristicas?.anulada && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-red-300/40 text-red-500/70 shrink-0">
                 Anulada
@@ -644,9 +656,19 @@ export const QuestionCard = React.memo(function QuestionCard({
               </span>
             )}
           </div>
+        </div>
+
+        {/* Row 2: Banca · Ano · Prova (plain text) + counter + ID + bookmark + difficulty + tools */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">{institution}</span>
+            <span className="text-zinc-300 dark:text-zinc-600 text-[11px] shrink-0">·</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 shrink-0">{year}</span>
+            <span className="text-zinc-300 dark:text-zinc-600 text-[11px] shrink-0">·</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate" title={exam}>{exam}</span>
+          </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
-
             {/* Counter + ID */}
             <span className="text-[11px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
               Q <span className="font-semibold text-zinc-800 dark:text-zinc-200">{questionNumber}</span>
@@ -668,50 +690,16 @@ export const QuestionCard = React.memo(function QuestionCard({
                 }`}
               />
             </button>
-          </div>
-        </div>
 
-        {/* Row 2: Banca / Ano / Prova inside single box + difficulty */}
-        <div className="flex items-center gap-2">
-          <div className="qc-prova-box flex items-center gap-3 min-w-0 flex-1 px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/30 rounded-md border-l-2 border-l-amber-400/40 dark:border-l-amber-500/30">
-            {/* Icon */}
-            <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/40 rounded-full">
-              <GraduationCap className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
-            </div>
-
-            {/* Banca */}
-            <div className="flex-shrink-0">
-              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Banca</p>
-              <p className="text-[12px] font-semibold text-zinc-800 dark:text-zinc-200 leading-none">{institution}</p>
-            </div>
-
-            {/* Separator */}
-            <div className="w-px self-stretch my-1 bg-zinc-200 dark:bg-zinc-700" />
-
-            {/* Ano */}
-            <div className="flex-shrink-0">
-              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Ano</p>
-              <p className="text-[12px] font-semibold text-zinc-800 dark:text-zinc-200 leading-none">{year}</p>
-            </div>
-
-            {/* Separator */}
-            <div className="w-px self-stretch my-1 bg-zinc-200 dark:bg-zinc-700" />
-
-            {/* Prova */}
-            <div className="min-w-0 flex-1">
-              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Prova</p>
-              <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-200 truncate leading-none" title={exam}>{exam}</p>
-            </div>
-          </div>
-
-          {/* Difficulty + Highlight tools */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {/* Difficulty */}
             {difficulty && (
-              <div className="flex items-center gap-1 mr-1" title={`Dificuldade: ${difficulty.label}`}>
+              <div className="flex items-center gap-1 ml-1" title={`Dificuldade: ${difficulty.label}`}>
                 <span className={`w-2 h-2 rounded-full ${difficulty.dot}`} />
                 <span className={`text-[10px] font-semibold ${difficulty.color}`}>{difficulty.label}</span>
               </div>
             )}
+
+            {/* Highlight tools */}
             <button
               type="button"
               onClick={() => setHighlightMode('highlight')}
