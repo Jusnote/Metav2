@@ -44,8 +44,32 @@ Quando o aluno cola imagem (Ctrl+V) ou faz upload:
 - Frontend intercepta o paste/upload.
 - Upload silencioso para Supabase Storage (bucket `comment-media`).
 - Insere apenas a URL no JSON do Plate.
-- Limites: 5MB imagem, 10MB áudio, 50MB vídeo.
-- Formatos: jpg/png/gif/webp, mp3/ogg, mp4/webm + YouTube/Vimeo embed via URL.
+
+**Imagens:**
+- Frontend comprime client-side via `browser-image-compression` → converte para .webp, max 300kb.
+- Print de tela Retina de 5MB vira ~200kb antes de sair do navegador.
+- Formatos aceitos: jpg/png/gif/webp.
+
+**Áudio (Voice Notes):**
+- Upload de arquivo .mp3 genérico BLOQUEADO (anti-pirataria).
+- Gravador in-app via botão de microfone no editor.
+- Usa `MediaRecorder` API nativa do browser com codec Opus (`audio/webm`).
+- Limite hard-coded: **3 minutos** por gravação (~500kb max com Opus).
+- Gravação para sozinha ao atingir o limite.
+- Resultado: experiência WhatsApp, arquivos ultra leves, sem upload de aula pirata.
+
+**Vídeo:**
+- Upload direto (.mp4): **exclusivo para Professores/Admins**. Limite 50MB.
+- Alunos: apenas embed de YouTube/Vimeo via URL (zero upload, zero storage).
+
+**Resumo de permissões de mídia:**
+
+| Mídia | Aluno | Professor | Admin |
+|-------|-------|-----------|-------|
+| Imagem (upload comprimido) | ✅ | ✅ | ✅ |
+| Áudio (gravador in-app, 3min) | ✅ | ✅ | ✅ |
+| Vídeo (upload .mp4) | — | ✅ | ✅ |
+| Vídeo (embed YouTube/Vimeo) | ✅ | ✅ | ✅ |
 
 ### 2.3 Flat Reply (1 nível de profundidade)
 
@@ -82,6 +106,28 @@ O aluno seleciona texto no enunciado → tooltip "💬 Comentar sobre isso" → 
 - O trecho citado aparece **só dentro do comentário** como blockquote azul.
 - No banco: `quoted_text` (texto selecionado) salvo no comentário.
 - Se enunciado mudar, a citação ainda vive no blockquote do comentário.
+
+### 2.7 Mobile
+
+**Abertura:** No mobile, clicar 💬 ou ✏️ no footer do card abre um **bottom sheet fullscreen** (não inline). O card fica atrás — o aluno sabe qual questão está comentando. Swipe down fecha.
+
+**Layout do sheet:**
+- Header: "Comentários · Q1" (ou "Minha Anotação · Q1") + botão fechar
+- Toggle comunidade/nota dentro do sheet (mesmo padrão desktop)
+- Lista de comentários scrolla verticalmente
+- Editor abre dentro do sheet quando clica "Escrever"
+
+**Editor no mobile:**
+- `FixedToolbar` compacta no topo do editor: uma linha só com scroll horizontal (`overflow-x-auto`)
+- Ícones: bold, italic, imagem, mic (gravador), LaTeX, tabela, link — arrasta pro lado os que não cabem
+- `FloatingToolbar` aparece ao selecionar texto (bold, italic, link, strikethrough)
+- Ambos são componentes nativos do Plate.js, já responsivos
+- Teclado do celular + toolbar + editor = espaço suficiente no sheet fullscreen
+
+**Gravador de áudio no mobile:**
+- Botão mic na toolbar → sheet expande indicador de gravação (waveform + timer + stop)
+- Auto-para em 3 minutos
+- Preview com play antes de publicar
 
 ## 3. Roles & Permissions
 
@@ -278,7 +324,9 @@ src/components/questoes/comments/
 ├── ModerationBadge.tsx            — Badges visuais
 ├── PostToCommunityCTA.tsx         — "Postar na Comunidade" (ponte nota → comunidade)
 ├── QuoteTooltip.tsx               — Tooltip "Comentar sobre isso" ao selecionar texto
-└── QuotedTextBlock.tsx            — Blockquote azul com trecho citado
+├── QuotedTextBlock.tsx            — Blockquote azul com trecho citado
+├── VoiceRecordButton.tsx          — Botão mic na toolbar: grava via MediaRecorder (Opus, 3min max)
+└── VoiceRecordIndicator.tsx       — Waveform + timer + stop durante gravação
 
 src/components/questoes/comments/moderation/
 ├── TimeoutModal.tsx               — Silenciar 24h/7d
@@ -306,10 +354,15 @@ useMyNoteBadges(questionIds[])     — Batch sync SWR para badges na listagem
 **Plugins habilitados:**
 - Texto: bold, italic, underline, strikethrough, code
 - Blocos: paragraph, heading (h3), blockquote, list, code-block, table
-- Mídia: image (upload), audio, video, media-embed (YouTube/Vimeo)
+- Mídia: image (upload comprimido client-side), voice-record (gravador in-app, mic, 3min Opus), video (professor: upload .mp4 / aluno: embed YouTube/Vimeo)
 - Math: equation (LaTeX inline e block)
 - Menção: @mention (autocomplete de usuários da thread)
 - Link: autodetect URL
+
+**Toolbar:**
+- Desktop: `FixedToolbar` no topo do editor com todos os botões
+- Mobile: `FixedToolbar` compacta, uma linha com scroll horizontal (`overflow-x-auto`)
+- Ambos: `FloatingToolbar` aparece ao selecionar texto (bold, italic, link, strike)
 
 **Não habilitados:** column, excalidraw, AI, TOC, toggle, date, tag.
 
