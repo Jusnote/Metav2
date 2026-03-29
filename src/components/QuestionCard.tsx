@@ -616,10 +616,7 @@ export const QuestionCard = React.memo(function QuestionCard({
   return (
     <article ref={articleRef} className="qc-card-enter text-left">
 
-      {/* ── Violet accent separator ── */}
-      <div className="h-[2px] bg-gradient-to-r from-[#E8930C]/40 via-[#E8930C]/60 to-transparent dark:from-[#E8930C]/30 dark:via-[#E8930C]/50 dark:to-transparent" />
-
-      {/* ── BANNER / HEADER (preserved) ── */}
+      {/* ── BANNER / HEADER ── */}
       <header className="qc-banner px-4 py-2">
 
         {/* Row 1: Materia / Assunto inside highlighted box */}
@@ -727,6 +724,9 @@ export const QuestionCard = React.memo(function QuestionCard({
           </div>
         </div>
       </header>
+
+      {/* ── Thin separator between header and body ── */}
+      <div className="mx-4 h-px bg-zinc-100 dark:bg-zinc-800" />
 
       {/* ── QUESTION BODY ── */}
       <div className="px-5 pt-3 pb-5" ref={questionBodyRef}>
