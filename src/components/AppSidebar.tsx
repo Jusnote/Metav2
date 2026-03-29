@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { DocumentsOrganizationSidebar } from "./DocumentsOrganizationSidebar";
-import { QuestoesFilterSidebar } from "./questoes/QuestoesFilterSidebar";
+
 import { CadernosSidebar } from "./cadernos/CadernosSidebar";
 
 // -------- Navigation config --------
@@ -59,8 +59,6 @@ const mainNavigation: NavItem[] = [
     label: "Questões",
     href: "/questoes",
     icon: <IconHelpCircle className="h-5 w-5" />,
-    customPanel: true,
-    panelWidth: 320,
   },
   {
     label: "Lei Seca",
@@ -251,7 +249,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                   {panelItem.customPanel ? (
                     /* Custom panel content based on route */
                     panelItem.href === "/questoes" ? (
-                      <QuestoesFilterSidebar />
+                      null
                     ) : panelItem.href === "/lei-seca" ? (
                       null
                     ) : panelItem.href === "/documents-organization" ? (

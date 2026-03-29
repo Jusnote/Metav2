@@ -87,7 +87,7 @@ function PaginationBar({
 }
 
 export function VirtualizedQuestionList() {
-  const { filters, searchQuery, statusTab, sortBy, page, setPage, viewMode } = useQuestoesContext();
+  const { committedFilters, committedQuery, statusTab, sortBy, page, setPage, viewMode } = useQuestoesContext();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const {
@@ -99,8 +99,8 @@ export function VirtualizedQuestionList() {
     isPlaceholderData,
     isSemantic,
     isExactSearch,
-  } = useQuestoesV2(filters, {
-    query: searchQuery || undefined,
+  } = useQuestoesV2(committedFilters, {
+    query: committedQuery || undefined,
     tab: statusTab,
     sortBy,
     page,

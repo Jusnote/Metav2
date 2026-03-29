@@ -1,6 +1,8 @@
-import { useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
-import { SmartSearchBar, type SmartSearchPayload } from "@/components/SmartSearchBarPlate";
+import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
+import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
+import { QuestoesFilterOverlay } from "@/components/questoes/QuestoesFilterOverlay";
 import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
 import { VirtualizedQuestionList } from "@/components/questoes/VirtualizedQuestionList";
 import { Button } from "@/components/ui/button";
@@ -29,69 +31,96 @@ const TAB_LABELS: Record<StatusTab, string> = {
   marcadas: "Marcadas",
 };
 
-// Stable empty array — avoids creating new reference on every render
-const EMPTY_BUSCAS: never[] = [];
-
 export default function QuestoesPage() {
   const {
-    filters: contextFilters,
     statusTab,
     setStatusTab,
     sortBy,
     setSortBy,
-    setSearchQuery,
-    toggleFilter,
     viewMode,
     setViewMode,
+    triggerSearch,
   } = useQuestoesContext();
 
-  // Handle SmartSearchBar submission
-  // Usa addIfMissing em vez de toggle para não remover filtros que já estão ativos
-  const handleSearch = useCallback(
-    (payload: SmartSearchPayload) => {
-      const { query, filters } = payload;
+  // Track if any popover is open (for overlay)
+  const [hasOpenPopover, setHasOpenPopover] = useState(false);
 
-      // Set text query
-      if (query && query !== '*') {
-        setSearchQuery(query);
+  // Ctrl+K overlay
+  const [ctrlKOpen, setCtrlKOpen] = useState(false);
+
+  const closeCtrlK = useCallback(() => {
+    setCtrlKOpen(false);
+    setHasOpenPopover(false);
+  }, []);
+
+  // Buscar button → commits draft filters to query
+  const handleSearch = useCallback(() => {
+    triggerSearch();
+  }, [triggerSearch]);
+
+  // Global Ctrl+K listener
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setCtrlKOpen(true);
       }
+      if (e.key === "Escape" && ctrlKOpen) {
+        e.preventDefault();
+        closeCtrlK();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [ctrlKOpen, closeCtrlK]);
 
-      // Adiciona filtro apenas se ainda não está no contexto (evita toggle indesejado)
-      if (filters.materia && !contextFilters.materias.includes(filters.materia))
-        toggleFilter('materias', filters.materia);
-      if (filters.banca && !contextFilters.bancas.includes(filters.banca))
-        toggleFilter('bancas', filters.banca);
-      if (filters.ano && !contextFilters.anos.includes(Number(filters.ano)))
-        toggleFilter('anos', Number(filters.ano));
-      if (filters.orgao && !contextFilters.orgaos.includes(filters.orgao))
-        toggleFilter('orgaos', filters.orgao);
-      if (filters.cargo && !contextFilters.cargos.includes(filters.cargo))
-        toggleFilter('cargos', filters.cargo);
-      if (filters.assunto && !contextFilters.assuntos.includes(filters.assunto))
-        toggleFilter('assuntos', filters.assunto);
-    },
-    [setSearchQuery, toggleFilter, contextFilters]
-  );
+  // The bar is visible either when at top of page (normal flow) or via Ctrl+K overlay
+  const showOverlay = ctrlKOpen || hasOpenPopover;
 
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
-      {/* Search bar - compact, always visible */}
+      {/* Normal search + filter bar — scrolls with page (NOT sticky) */}
       <div className="px-2 pt-3 pb-2">
-        <SmartSearchBar
-          onSearch={handleSearch}
-          loading={false}
-          hasResults={true}
-          buscasRecentes={EMPTY_BUSCAS}
-        />
+        <QuestoesSearchBar />
+        <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
       </div>
 
-      {/* Filter chips */}
-      <div className="px-2 pb-2">
-        <FilterChipsBidirectional />
+      {/* Ctrl+K floating overlay — appears when user presses Ctrl+K */}
+      {ctrlKOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)" }}
+            onClick={closeCtrlK}
+          />
+          {/* Floating bar */}
+          <div
+            className="fixed top-4 left-1/2 z-50 w-full max-w-5xl px-4"
+            style={{ transform: "translateX(-50%)" }}
+          >
+            <div
+              style={{
+                background: "white",
+                borderRadius: 16,
+                boxShadow: "0 20px 60px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1)",
+                overflow: "hidden",
+              }}
+            >
+              <QuestoesSearchBar autoFocus />
+              <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Active filter chips bar */}
+      <div className="px-2">
+        <FilterChipsBidirectional onSearch={handleSearch} />
       </div>
 
       {/* Tabs + Sort */}
-      <div className="flex items-center justify-between px-2 pb-2 gap-2">
+      <div className="flex items-center justify-between px-2 pb-8 pt-2 gap-2">
         <Tabs
           value={statusTab}
           onValueChange={(v) => setStatusTab(v as StatusTab)}
@@ -155,9 +184,11 @@ export default function QuestoesPage() {
         </div>
       </div>
 
-      {/* Virtualized question list */}
+      {/* Questions with overlay (dim when popover open from normal bar) */}
       <div className="flex-1 min-h-0 px-2">
-        <VirtualizedQuestionList />
+        <QuestoesFilterOverlay visible={hasOpenPopover && !ctrlKOpen}>
+          <VirtualizedQuestionList />
+        </QuestoesFilterOverlay>
       </div>
     </div>
   );
