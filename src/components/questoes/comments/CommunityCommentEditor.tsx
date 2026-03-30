@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 
-import { BoldIcon, ItalicIcon, UnderlineIcon, StrikethroughIcon, Code2Icon, Heading3Icon, QuoteIcon } from 'lucide-react';
+import { BoldIcon, ItalicIcon, UnderlineIcon, StrikethroughIcon, Code2Icon, Heading3Icon, QuoteIcon, SquareCodeIcon, FilmIcon } from 'lucide-react';
 import { type Value } from 'platejs';
 import { KEYS } from 'platejs';
+import { insertMedia } from '@platejs/media';
 import { Plate, usePlateEditor, useEditorRef } from 'platejs/react';
 
 import { CommentEditorKit } from './comment-editor-plugins';
@@ -13,6 +14,8 @@ import { Editor, EditorContainer } from '@/components/ui/editor';
 import { FixedToolbar } from '@/components/ui/fixed-toolbar';
 import { MarkToolbarButton } from '@/components/ui/mark-toolbar-button';
 import { LinkToolbarButton } from '@/components/ui/link-toolbar-button';
+import { MediaToolbarButton } from '@/components/ui/media-toolbar-button';
+import { TableToolbarButton } from '@/components/ui/table-toolbar-button';
 import { NumberedListToolbarButton, BulletedListToolbarButton } from '@/components/ui/list-toolbar-button';
 import { ToolbarButton, ToolbarGroup } from '@/components/ui/toolbar';
 import { InlineEquationToolbarButton } from '@/components/ui/equation-toolbar-button';
@@ -25,11 +28,8 @@ import { cn } from '@/lib/utils';
 export interface CommunityCommentEditorProps {
   questionId: number;
   mode: 'new' | 'reply' | 'edit' | 'note';
-  /** "@Name" shown above editor in reply mode */
   replyToName?: string;
-  /** Existing content_json to populate the editor (edit mode) */
   initialValue?: Value;
-  /** Draft context key, e.g. 'new', 'reply_abc123', 'edit_abc123', 'note' */
   draftContext?: string;
   onSubmit: (content_json: Record<string, unknown>, content_text: string) => void | Promise<void>;
   onCancel: () => void;
@@ -59,18 +59,13 @@ function isEditorEmpty(value: Value): boolean {
 const EMPTY_VALUE: Value = [{ type: 'p', children: [{ text: '' }] }];
 
 // ---------------------------------------------------------------------------
-// Block toggle buttons (H3, Blockquote) — must live inside <Plate>
+// Block toggle buttons — must live inside <Plate>
 // ---------------------------------------------------------------------------
 
 function H3ToolbarButton() {
   const editor = useEditorRef();
   return (
-    <ToolbarButton
-      tooltip="Heading 3"
-      onClick={() => {
-        editor.tf.toggleBlock(KEYS.h3);
-      }}
-    >
+    <ToolbarButton tooltip="Heading 3" onClick={() => editor.tf.toggleBlock(KEYS.h3)}>
       <Heading3Icon className="size-4" />
     </ToolbarButton>
   );
@@ -79,19 +74,35 @@ function H3ToolbarButton() {
 function BlockquoteToolbarButton() {
   const editor = useEditorRef();
   return (
-    <ToolbarButton
-      tooltip="Citação"
-      onClick={() => {
-        editor.tf.toggleBlock(KEYS.blockquote);
-      }}
-    >
+    <ToolbarButton tooltip="Citação" onClick={() => editor.tf.toggleBlock(KEYS.blockquote)}>
       <QuoteIcon className="size-4" />
     </ToolbarButton>
   );
 }
 
+function CodeBlockToolbarButton() {
+  const editor = useEditorRef();
+  return (
+    <ToolbarButton tooltip="Bloco de código" onClick={() => editor.tf.toggleBlock(KEYS.codeBlock)}>
+      <SquareCodeIcon className="size-4" />
+    </ToolbarButton>
+  );
+}
+
+function EmbedVideoToolbarButton() {
+  const editor = useEditorRef();
+  return (
+    <ToolbarButton
+      tooltip="Embed vídeo (YouTube, Vimeo)"
+      onClick={() => insertMedia(editor, { select: true, type: KEYS.mediaEmbed })}
+    >
+      <FilmIcon className="size-4" />
+    </ToolbarButton>
+  );
+}
+
 // ---------------------------------------------------------------------------
-// Main component (wrapper that sets up the editor instance)
+// Main component
 // ---------------------------------------------------------------------------
 
 export function CommunityCommentEditor({
@@ -107,28 +118,26 @@ export function CommunityCommentEditor({
 }: CommunityCommentEditorProps) {
   const { draft, setDraft, clearDraft } = useCommentDraft(questionId, draftContext);
 
-  // Resolve starting value: prop > draft > empty
   const startingValue = React.useMemo<Value>(() => {
     if (initialValue && initialValue.length > 0) return initialValue;
     if (draft?.content_json) {
       try {
         const parsed = draft.content_json as unknown as Value;
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
     }
     return EMPTY_VALUE;
-  }, []); // intentionally once at mount — eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [currentValue, setCurrentValue] = React.useState<Value>(startingValue);
 
+  // Unique ID per editor — crucial for multiple editors on the same page
   const editor = usePlateEditor({
+    id: `comment-editor-${questionId}-${draftContext}`,
     plugins: CommentEditorKit,
     value: startingValue,
   });
 
-  // Debounced draft save on editor change
   const handleChange = React.useCallback(
     (value: Value) => {
       setCurrentValue(value);
@@ -141,7 +150,7 @@ export function CommunityCommentEditor({
   const handleSubmit = async () => {
     if (isEditorEmpty(currentValue) || isSubmitting) return;
     const text = extractPlainText(currentValue);
-    const content_json = currentValue as unknown as Record<string, unknown>; // Value[] → opaque JSON
+    const content_json = currentValue as unknown as Record<string, unknown>;
     clearDraft();
     await onSubmit(content_json, text);
   };
@@ -163,23 +172,28 @@ export function CommunityCommentEditor({
     : 'Escreva um comentário…';
 
   return (
-    <div className="flex flex-col rounded-lg border border-border bg-background">
+    <Plate editor={editor} onChange={({ value }) => handleChange(value)}>
       {/* Reply context banner */}
       {mode === 'reply' && replyToName && (
-        <div className="flex items-center gap-1.5 rounded-t-lg border-b border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 border-b border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground rounded-t-lg">
           <span>Respondendo a</span>
           <span className="font-medium text-foreground">@{replyToName}</span>
         </div>
       )}
 
-      <Plate editor={editor} onChange={({ value }) => handleChange(value)}>
-        {/* Compact fixed toolbar */}
-        <FixedToolbar
-          className={cn(
-            'rounded-none border-b border-border bg-background/95',
-            mode === 'reply' && replyToName ? '' : 'rounded-t-lg'
-          )}
-        >
+      {/*
+        EditorContainer is the scroll container.
+        variant="comment" base classes: relative w-full overflow-y-auto
+        Toolbar INSIDE the container with sticky so it stays visible on scroll.
+        Popovers use Radix Portal (render on <body>) — never clipped by overflow.
+        Resize handles use position:absolute inside the editor — overflow-y-auto allows them.
+      */}
+      <EditorContainer
+        variant="comment"
+        className="max-h-[400px] rounded-lg border border-border bg-background"
+      >
+        {/* Sticky toolbar inside scroll container */}
+        <FixedToolbar className="sticky top-0 z-50 rounded-t-lg border-b border-border bg-background/95">
           <ToolbarGroup>
             <MarkToolbarButton nodeType={KEYS.bold} tooltip="Negrito">
               <BoldIcon className="size-4" />
@@ -201,6 +215,7 @@ export function CommunityCommentEditor({
           <ToolbarGroup>
             <H3ToolbarButton />
             <BlockquoteToolbarButton />
+            <CodeBlockToolbarButton />
           </ToolbarGroup>
 
           <ToolbarGroup>
@@ -209,56 +224,57 @@ export function CommunityCommentEditor({
           </ToolbarGroup>
 
           <ToolbarGroup>
+            <MediaToolbarButton nodeType={KEYS.img} />
+            <EmbedVideoToolbarButton />
+            <TableToolbarButton />
+          </ToolbarGroup>
+
+          <ToolbarGroup>
             <InlineEquationToolbarButton />
             <LinkToolbarButton />
           </ToolbarGroup>
         </FixedToolbar>
 
-        {/* Editor area */}
-        <EditorContainer
+        {/* Editor content area */}
+        <Editor
           variant="comment"
-          className="min-h-[80px] max-h-[300px] overflow-y-auto px-3 py-2"
-        >
-          <Editor
-            variant="comment"
-            placeholder={placeholder ?? defaultPlaceholder}
-            className="min-h-[60px]"
-          />
-        </EditorContainer>
+          placeholder={placeholder ?? defaultPlaceholder}
+          className="min-h-[80px] px-3 py-2"
+        />
+      </EditorContainer>
 
-        {/* Footer: actions */}
-        <div className="flex items-center justify-end gap-2 rounded-b-lg border-t border-border px-3 py-2">
-          <button
-            type="button"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className="cursor-pointer text-sm text-zinc-500 hover:text-zinc-700 disabled:opacity-50"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isEmpty || isSubmitting}
-            className={cn(
-              'rounded-md px-4 py-1.5 text-sm font-medium text-white transition-opacity',
-              'disabled:cursor-not-allowed disabled:opacity-40',
-              isEditMode
-                ? 'bg-zinc-700 hover:bg-zinc-800'
-                : 'bg-[#2563EB] hover:bg-blue-700'
-            )}
-          >
-            {isSubmitting ? (
-              <span className="flex items-center gap-1.5">
-                <span className="size-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                {submitLabel}…
-              </span>
-            ) : (
-              submitLabel
-            )}
-          </button>
-        </div>
-      </Plate>
-    </div>
+      {/* Footer: actions — outside EditorContainer to not scroll */}
+      <div className="flex items-center justify-end gap-2 rounded-b-lg border border-t-0 border-border bg-background px-3 py-2">
+        <button
+          type="button"
+          onClick={handleCancel}
+          disabled={isSubmitting}
+          className="cursor-pointer text-sm text-zinc-500 hover:text-zinc-700 disabled:opacity-50"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isEmpty || isSubmitting}
+          className={cn(
+            'rounded-md px-4 py-1.5 text-sm font-medium text-white transition-opacity',
+            'disabled:cursor-not-allowed disabled:opacity-40',
+            isEditMode
+              ? 'bg-zinc-700 hover:bg-zinc-800'
+              : 'bg-[#2563EB] hover:bg-blue-700'
+          )}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center gap-1.5">
+              <span className="size-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              {submitLabel}…
+            </span>
+          ) : (
+            submitLabel
+          )}
+        </button>
+      </div>
+    </Plate>
   );
 }

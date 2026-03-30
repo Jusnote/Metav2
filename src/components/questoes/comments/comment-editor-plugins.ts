@@ -9,41 +9,52 @@ import { ExitBreakKit } from '@/components/exit-break-kit';
 import { LinkKit } from '@/components/link-kit';
 import { ListKit } from '@/components/list-kit';
 import { MathKit } from '@/components/math-kit';
+import { MediaKit } from '@/components/media-kit';
 import { MentionKit } from '@/components/mention-kit';
+import { TableKit } from '@/components/table-kit';
+
+// Base (static) kits — no React hooks, safe for PlateStatic
+import { BaseBasicBlocksKit } from '@/components/basic-blocks-base-kit';
+import { BaseBasicMarksKit } from '@/components/basic-marks-base-kit';
+import { BaseCodeBlockKit } from '@/components/code-block-base-kit';
+import { BaseLinkKit } from '@/components/link-base-kit';
+import { BaseListKit } from '@/components/list-base-kit';
+import { BaseMathKit } from '@/components/math-base-kit';
+import { BaseMediaKit } from '@/components/media-base-kit';
+import { BaseMentionKit } from '@/components/mention-base-kit';
+import { BaseTableKit } from '@/components/table-base-kit';
 
 /**
- * Minimal Plate plugin subset for question comment/note editors.
- *
- * Includes: paragraph, headings, blockquote, code-block, bold, italic,
- * underline, strikethrough, code, math (inline + block), link, mention,
- * lists, exit-break, trailing-block.
- *
- * Excludes: AI, copilot, DND, table, column, excalidraw, TOC, toggle, date,
- * tag, media, slash commands, font, align, line-height, suggestion,
- * discussion, comment, docx, markdown, block-menu, cursor-overlay,
- * block-placeholder, emoji, toolbar plugins.
+ * Full Plate plugin set for question comment/note editors (interactive).
+ * Uses the same MediaKit as the main editor — resize handles, captions,
+ * upload placeholder, preview dialog all included.
  */
 export const CommentEditorKit = [
-  // Block elements
   ...BasicBlocksKit,
   ...CodeBlockKit,
-
-  // Inline elements + marks
   ...MathKit,
   ...LinkKit,
   ...MentionKit,
   ...BasicMarksKit,
-
-  // Block style
   ...ListKit,
-
-  // Editing behaviour
+  ...MediaKit,
+  ...TableKit,
   ...ExitBreakKit,
   TrailingBlockPlugin,
 ];
 
 /**
- * Same plugin set used for PlateStatic rendering (JSON → HTML).
- * Toolbars are not included in CommentEditorKit, so this is identical.
+ * Static plugin set for PlateStatic rendering (JSON → read-only HTML).
+ * Uses Base* plugins with static components — NO React hooks.
  */
-export const CommentStaticKit = CommentEditorKit;
+export const CommentStaticKit = [
+  ...BaseBasicBlocksKit,
+  ...BaseCodeBlockKit,
+  ...BaseMathKit,
+  ...BaseLinkKit,
+  ...BaseMentionKit,
+  ...BaseBasicMarksKit,
+  ...BaseListKit,
+  ...BaseMediaKit,
+  ...BaseTableKit,
+];

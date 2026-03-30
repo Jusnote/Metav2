@@ -13,6 +13,7 @@ import {
 import { cva } from 'class-variance-authority';
 import { Link, Trash2Icon } from 'lucide-react';
 import {
+  useEditorContainerRef,
   useEditorRef,
   useEditorSelector,
   useElement,
@@ -69,6 +70,7 @@ export function MediaToolbar({
 
   const element = useElement();
   const { props: buttonProps } = useRemoveNodeButton({ element });
+  const containerRef = useEditorContainerRef();
 
   return (
     <Popover open={open} modal={false}>
@@ -77,6 +79,7 @@ export function MediaToolbar({
       <PopoverContent
         className="w-auto p-1"
         onOpenAutoFocus={(e) => e.preventDefault()}
+        container={containerRef?.current}
       >
         {isEditing ? (
           <div className="flex w-[330px] flex-col">

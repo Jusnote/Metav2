@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { type Value } from 'platejs';
-import { usePlateEditor } from 'platejs/react';
+import { type Value, createSlateEditor } from 'platejs';
 
 import { cn } from '@/lib/utils';
 import { EditorStatic } from '@/components/ui/editor-static';
@@ -15,10 +14,10 @@ interface CommunityCommentStaticProps {
 }
 
 export function CommunityCommentStatic({ value, className }: CommunityCommentStaticProps) {
-  const editor = usePlateEditor({
-    plugins: CommentStaticKit,
-    value,
-  });
+  const editor = useMemo(
+    () => createSlateEditor({ plugins: CommentStaticKit, value }),
+    [value]
+  );
 
   return (
     <EditorStatic
