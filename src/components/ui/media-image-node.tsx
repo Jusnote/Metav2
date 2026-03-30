@@ -8,7 +8,7 @@ import type { PlateElementProps } from 'platejs/react';
 import { useDraggable } from '@platejs/dnd';
 import { Image, ImagePlugin, useMediaState } from '@platejs/media/react';
 import { ResizableProvider, useResizableValue } from '@platejs/resizable';
-import { PlateElement, withHOC } from 'platejs/react';
+import { PlateElement, useEditorRef, withHOC } from 'platejs/react';
 
 import { cn } from '@/lib/utils';
 
@@ -23,7 +23,11 @@ import {
 export const ImageElement = withHOC(
   ResizableProvider,
   function ImageElement(props: PlateElementProps<TImageElement>) {
-    const { align = 'center', focused, readOnly, selected } = useMediaState();
+    const editor = useEditorRef();
+    const isCompactEditor = editor.id?.startsWith('comment-editor-') || editor.id?.startsWith('note-editor-');
+    const mediaState = useMediaState();
+    const align = props.element.align ?? (isCompactEditor ? 'left' : 'center');
+    const { focused, readOnly, selected } = mediaState;
     const width = useResizableValue('width');
 
     const { isDragging, handleRef } = useDraggable({

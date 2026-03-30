@@ -8,6 +8,18 @@ import { EditorStatic } from '@/components/ui/editor-static';
 
 import { CommentStaticKit } from './comment-editor-plugins';
 
+const MEDIA_TYPES = new Set(['img', 'video', 'media_embed']);
+
+/** Inject align:'left' on media nodes that have no explicit align (comment default) */
+function applyCommentDefaults(value: Value): Value {
+  return value.map((node: any) => {
+    if (MEDIA_TYPES.has(node.type) && !node.align) {
+      return { ...node, align: 'left' };
+    }
+    return node;
+  }) as Value;
+}
+
 interface CommunityCommentStaticProps {
   value: Value;
   className?: string;
@@ -15,7 +27,7 @@ interface CommunityCommentStaticProps {
 
 export function CommunityCommentStatic({ value, className }: CommunityCommentStaticProps) {
   const editor = useMemo(
-    () => createSlateEditor({ plugins: CommentStaticKit, value }),
+    () => createSlateEditor({ plugins: CommentStaticKit, value: applyCommentDefaults(value) }),
     [value]
   );
 

@@ -11,7 +11,7 @@ import { useDraggable } from '@platejs/dnd';
 import { parseTwitterUrl, parseVideoUrl } from '@platejs/media';
 import { useMediaState } from '@platejs/media/react';
 import { ResizableProvider, useResizableValue } from '@platejs/resizable';
-import { PlateElement, useEditorMounted, withHOC } from 'platejs/react';
+import { PlateElement, useEditorMounted, useEditorRef, withHOC } from 'platejs/react';
 
 import { cn } from '@/lib/utils';
 
@@ -27,16 +27,19 @@ export const VideoElement = withHOC(
   function VideoElement(
     props: PlateElementProps<TVideoElement & TResizableProps>
   ) {
+    const editor = useEditorRef();
+    const isCompactEditor = editor.id?.startsWith('comment-editor-') || editor.id?.startsWith('note-editor-');
+    const mediaState = useMediaState({
+      urlParsers: [parseTwitterUrl, parseVideoUrl],
+    });
+    const align = props.element.align ?? (isCompactEditor ? 'left' : 'center');
     const {
-      align = 'center',
       embed,
       isUpload,
       isYoutube,
       readOnly,
       unsafeUrl,
-    } = useMediaState({
-      urlParsers: [parseTwitterUrl, parseVideoUrl],
-    });
+    } = mediaState;
     const width = useResizableValue('width');
 
     const isEditorMounted = useEditorMounted();
