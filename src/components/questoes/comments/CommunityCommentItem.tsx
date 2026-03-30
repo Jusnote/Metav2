@@ -80,22 +80,30 @@ export function CommunityCommentItem({
   const avatarGradient = getAvatarColor(authorName);
   const isAuthor = !!currentUserId && currentUserId === comment.user_id;
 
+  const avatarSize = isReply
+    ? 'w-[22px] h-[22px] rounded-full text-[9px]'
+    : 'w-7 h-7 rounded-full text-[11px]';
+  const avatarImgSize = isReply
+    ? 'w-[22px] h-[22px] rounded-full'
+    : 'w-7 h-7 rounded-full';
+
   // Deleted state
   if (comment.is_deleted) {
     return (
-      <div className="flex gap-3 py-2">
-        <div className="h-8 w-8 shrink-0" />
-        <p className="text-sm italic text-zinc-400">[Comentário removido]</p>
+      <div className="flex gap-2.5 py-2.5">
+        <div className={cn('shrink-0', isReply ? 'w-[22px] h-[22px]' : 'w-7 h-7')} />
+        <p className="text-[13px] italic text-zinc-400">[Comentário removido]</p>
       </div>
     );
   }
 
   return (
-    <div className="group relative flex gap-3 py-2">
+    <div className="group relative flex gap-2.5 py-2.5">
       {/* Avatar */}
       <div
         className={cn(
-          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[11px] font-semibold text-white shadow-sm',
+          'flex shrink-0 items-center justify-center bg-gradient-to-br font-semibold text-white',
+          avatarSize,
           avatarGradient,
         )}
         aria-hidden="true"
@@ -105,7 +113,7 @@ export function CommunityCommentItem({
           <img
             src={comment.author_avatar_url}
             alt={authorName}
-            className="h-8 w-8 rounded-full object-cover"
+            className={cn('object-cover', avatarImgSize)}
           />
         ) : (
           initials
@@ -116,14 +124,19 @@ export function CommunityCommentItem({
       <div className="min-w-0 flex-1">
         {/* Header row */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
               {authorName}
             </span>
-            <span className="text-zinc-400">·</span>
-            <span className="text-zinc-400">{relativeTime(comment.created_at)}</span>
+            {(comment.is_pinned || comment.is_endorsed) && (
+              <>
+                {comment.is_pinned && <PinnedBadge />}
+                {comment.is_endorsed && <EndorsedBadge />}
+              </>
+            )}
+            <span className="text-[11px] text-zinc-300">{relativeTime(comment.created_at)}</span>
             {comment.edit_count > 0 && (
-              <span className="italic text-zinc-400">(editado)</span>
+              <span className="text-[11px] italic text-zinc-300">(editado)</span>
             )}
           </div>
 
@@ -142,16 +155,8 @@ export function CommunityCommentItem({
           </div>
         </div>
 
-        {/* Badges */}
-        {(comment.is_pinned || comment.is_endorsed) && (
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            {comment.is_pinned && <PinnedBadge />}
-            {comment.is_endorsed && <EndorsedBadge />}
-          </div>
-        )}
-
         {/* Comment body */}
-        <div className="mt-1">
+        <div className="mt-1 text-[13px] leading-[1.55] text-zinc-600 dark:text-zinc-400">
           <CommunityCommentStatic
             value={comment.content_json as unknown as Value}
           />
@@ -159,13 +164,13 @@ export function CommunityCommentItem({
 
         {/* Quoted text */}
         {comment.quoted_text && (
-          <blockquote className="mt-2 rounded-r border-l-2 border-blue-400 bg-blue-50/50 py-1.5 pl-3 pr-2 text-xs text-zinc-600 dark:bg-blue-950/20 dark:text-zinc-400">
+          <blockquote className="mt-2 rounded-md bg-zinc-50 px-2.5 py-1.5 text-xs italic text-zinc-400 dark:bg-zinc-800/50">
             {comment.quoted_text}
           </blockquote>
         )}
 
         {/* Actions row */}
-        <div className="mt-2 flex items-center gap-3">
+        <div className="mt-2 flex items-center gap-3.5">
           <CommentVoteButton
             commentId={comment.id}
             questionId={questionId}
@@ -176,7 +181,7 @@ export function CommunityCommentItem({
             <button
               type="button"
               onClick={() => onReply(comment.id)}
-              className="text-xs text-zinc-500 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300"
+              className="text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
             >
               Responder
             </button>

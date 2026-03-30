@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { ChevronDownIcon, MessageSquarePlusIcon } from 'lucide-react';
+import { ChevronDownIcon, MessageCircleIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuestionComments } from '@/hooks/useQuestionComments';
 import { useCommentMutations } from '@/hooks/useCommentMutations';
@@ -66,8 +66,8 @@ type ActiveEditor =
 
 function CommentSkeleton() {
   return (
-    <div className="flex gap-3 py-3 animate-pulse">
-      <div className="h-8 w-8 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+    <div className="flex gap-2.5 py-2.5 animate-pulse">
+      <div className="h-7 w-7 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-800" />
       <div className="flex-1 space-y-2">
         <div className="h-3 w-32 rounded bg-zinc-200 dark:bg-zinc-800" />
         <div className="h-3 w-full rounded bg-zinc-200 dark:bg-zinc-800" />
@@ -94,7 +94,7 @@ function SortDropdown({ value, onChange }: SortDropdownProps) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+        className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
       >
         <span>{SORT_LABELS[value]}</span>
         <ChevronDownIcon className="size-3.5 text-zinc-400" />
@@ -309,15 +309,21 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
     <div className="flex flex-col gap-0">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 pb-3">
-        <SortDropdown value={sortOption} onChange={setSortOption} />
+        <div className="flex items-center gap-1.5">
+          <MessageCircleIcon className="size-3.5 text-blue-600" />
+          <span className="text-[13px] font-semibold text-blue-600">
+            {(comments ?? []).filter((c) => c.root_id === null && !c.is_deleted).length} comentários
+          </span>
+          <span className="text-zinc-300">·</span>
+          <SortDropdown value={sortOption} onChange={setSortOption} />
+        </div>
 
         <button
           type="button"
           onClick={() => openEditor({ type: 'new' })}
-          className="flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
-          <MessageSquarePlusIcon className="size-3.5" />
-          <span>Escrever comentário</span>
+          Escrever comentário
         </button>
       </div>
 
@@ -346,8 +352,8 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
 
       {/* Comment threads */}
       {!isLoading && sortedRoots.length > 0 && (
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-          {sortedRoots.map((root) => {
+        <div>
+          {sortedRoots.map((root, index) => {
             const replies = repliesByRoot[root.id] ?? [];
             const isEditingThis =
               activeEditor?.type === 'edit' && activeEditor.commentId === root.id;
@@ -362,7 +368,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
             if (root.is_deleted && replies.length > 0) {
               // Deleted root with replies — show collapsed thread
               return (
-                <div key={root.id} className="py-1">
+                <div key={root.id} className={index > 0 ? 'border-t border-zinc-100 dark:border-zinc-800/50' : ''}>
                   <DeletedRootWithReplies
                     rootId={root.id}
                     replies={replies}
@@ -377,7 +383,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
             }
 
             return (
-              <div key={root.id} className="py-1">
+              <div key={root.id} className={index > 0 ? 'border-t border-zinc-100 dark:border-zinc-800/50' : ''}>
                 {/* Root comment (or inline edit editor) */}
                 {isEditingThis ? (
                   <CommunityCommentEditor
@@ -416,7 +422,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
 
                 {/* Reply editor below this thread */}
                 {isReplyingToThis && activeEditor?.type === 'reply' && (
-                  <div className="ml-10 mt-2">
+                  <div className="ml-[38px] mt-2">
                     <CommunityCommentEditor
                       questionId={questionId}
                       mode="reply"
@@ -439,7 +445,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
       {/* Empty state */}
       {!isLoading && sortedRoots.length === 0 && (
         <div className="flex flex-col items-center gap-2 py-10 text-center text-zinc-400">
-          <MessageSquarePlusIcon className="size-8 opacity-40" />
+          <MessageCircleIcon className="size-8 opacity-40" />
           <p className="text-sm">Nenhum comentário. Seja o primeiro!</p>
         </div>
       )}

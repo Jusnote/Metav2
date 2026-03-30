@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowBigUp } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToggleUpvote } from '@/hooks/useToggleUpvote';
 
@@ -37,18 +37,19 @@ export function CommentVoteButton({
       )}
       aria-label={hasUpvoted ? 'Remover voto' : 'Votar'}
     >
-      <ArrowBigUp
+      <ChevronUp
         className={cn(
-          'h-4 w-4 transition-colors',
+          'h-[13px] w-[13px] transition-colors',
           hasUpvoted
-            ? 'fill-[#2563EB] stroke-[#2563EB]'
-            : 'fill-transparent stroke-zinc-400',
+            ? 'text-blue-600'
+            : 'text-zinc-400',
         )}
+        strokeWidth={hasUpvoted ? 2.5 : 2}
       />
       <span
         className={cn(
           'tabular-nums',
-          hasUpvoted ? 'text-[#2563EB]' : 'text-zinc-500',
+          hasUpvoted ? 'font-medium text-blue-600' : 'text-zinc-400',
         )}
       >
         {upvoteCount}

@@ -37,17 +37,17 @@ export function CommunityCommentReplies({
   if (replies.length === 0) return null;
 
   return (
-    <div className="ml-10 border-l-2 border-zinc-100 pl-4 dark:border-zinc-800">
+    <div className="ml-[38px]">
       {!expanded ? (
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="py-1 text-xs text-zinc-500 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300"
+          className="py-1 text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
         >
           Ver {replies.length} respostas
         </button>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-1">
           {replies.map((reply) => (
             <CommunityCommentItem
               key={reply.id}

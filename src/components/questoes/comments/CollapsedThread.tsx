@@ -16,7 +16,7 @@ interface CollapsedThreadProps {
 
 export function CollapsedThread({ replyCount, expanded, onToggle }: CollapsedThreadProps) {
   return (
-    <div className="ml-10">
+    <div className="ml-[38px]">
       <button
         type="button"
         onClick={onToggle}
