@@ -3,8 +3,8 @@ import * as React from 'react';
 import type {
   SlateElementProps,
   TCaptionElement,
+  TMediaEmbedElement,
   TResizableProps,
-  TVideoElement,
 } from 'platejs';
 
 import { NodeApi } from 'platejs';
@@ -22,44 +22,35 @@ function getVimeoId(url: string): string | null {
   return match?.[1] ?? null;
 }
 
-export function VideoElementStatic(
-  props: SlateElementProps<TVideoElement & TCaptionElement & TResizableProps>
+export function MediaEmbedElementStatic(
+  props: SlateElementProps<TMediaEmbedElement & TCaptionElement & TResizableProps>
 ) {
   const { align = 'center', caption, url, width } = props.element;
 
   const youtubeId = url ? getYouTubeId(url) : null;
   const vimeoId = url ? getVimeoId(url) : null;
+  const embedUrl = youtubeId
+    ? `https://www.youtube.com/embed/${youtubeId}`
+    : vimeoId
+    ? `https://player.vimeo.com/video/${vimeoId}`
+    : url;
 
   return (
     <SlateElement className="py-2.5" {...props}>
       <div style={{ textAlign: align }}>
         <figure
           className="group relative m-0 inline-block cursor-default"
-          style={{ width }}
+          style={{ width: width ?? '100%' }}
         >
-          {youtubeId ? (
+          <div className="relative aspect-video w-full overflow-hidden rounded-sm">
             <iframe
-              className="aspect-video w-full rounded-sm border-0"
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              title="YouTube video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              className="absolute inset-0 size-full border-0"
+              src={embedUrl}
+              title="Embedded media"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
             />
-          ) : vimeoId ? (
-            <iframe
-              className="aspect-video w-full rounded-sm border-0"
-              src={`https://player.vimeo.com/video/${vimeoId}`}
-              title="Vimeo video"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <video
-              className="w-full max-w-full rounded-sm object-cover px-0"
-              src={url}
-              controls
-            />
-          )}
+          </div>
           {caption && <figcaption>{NodeApi.string(caption[0])}</figcaption>}
         </figure>
       </div>

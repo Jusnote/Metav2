@@ -10,7 +10,7 @@ import type { PlateElementProps } from 'platejs/react';
 import { parseTwitterUrl, parseVideoUrl } from '@platejs/media';
 import { MediaEmbedPlugin, useMediaState } from '@platejs/media/react';
 import { ResizableProvider, useResizableValue } from '@platejs/resizable';
-import { PlateElement, withHOC } from 'platejs/react';
+import { PlateElement, useEditorRef, withHOC } from 'platejs/react';
 
 import { cn } from '@/lib/utils';
 
@@ -25,8 +25,13 @@ import {
 export const MediaEmbedElement = withHOC(
   ResizableProvider,
   function MediaEmbedElement(props: PlateElementProps<TMediaEmbedElement>) {
+    const editor = useEditorRef();
+    const isCompactEditor = editor.id?.startsWith('comment-editor-') || editor.id?.startsWith('note-editor-');
+    const mediaState = useMediaState({
+      urlParsers: [parseTwitterUrl, parseVideoUrl],
+    });
+    const align = props.element.align ?? (isCompactEditor ? 'left' : 'center');
     const {
-      align = 'center',
       embed,
       focused,
       isTweet,
@@ -34,9 +39,7 @@ export const MediaEmbedElement = withHOC(
       isYoutube,
       readOnly,
       selected,
-    } = useMediaState({
-      urlParsers: [parseTwitterUrl, parseVideoUrl],
-    });
+    } = mediaState;
     const width = useResizableValue('width');
     const provider = embed?.provider;
 
