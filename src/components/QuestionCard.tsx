@@ -18,6 +18,7 @@ import {
   Highlighter,
   Strikethrough,
 } from 'lucide-react';
+import { QuestionCommentsSection } from '@/components/questoes/comments/QuestionCommentsSection';
 
 // ============================================================
 // TYPES
@@ -65,7 +66,6 @@ interface QuestionCardProps {
   taxaAcertoGlobal?: number;
   gabaritoComentado?: string | null;
   onBookmark?: (questaoId: number, saved: boolean) => void;
-  onSaveNote?: (questaoId: number, note: string) => void;
   onReportError?: (questaoId: number) => void;
   initialBookmarked?: boolean;
 }
@@ -85,7 +85,6 @@ function sanitizeHtml(html: string) {
 }
 
 const bookmarkKey = (id: number) => `questao_bookmark_${id}`;
-const noteKey = (id: number) => `questao_note_${id}`;
 
 type HighlightMode = 'highlight' | 'strike';
 
@@ -94,7 +93,7 @@ const HIGHLIGHT_STYLES: Record<HighlightMode, { className: string }> = {
   strike:    { className: 'qc-strike-mark' },
 };
 
-type ExpandableTab = 'gabarito' | 'anotacoes' | 'estatisticas' | null;
+type ExpandableTab = 'gabarito' | 'estatisticas' | 'comunidade' | 'nota' | null;
 
 // ============================================================
 // HELPERS
@@ -171,43 +170,6 @@ function GabaritoComentadoSection({ html }: { html?: string | null }) {
       <p className="text-xs text-zinc-400 dark:text-zinc-500">
         Gabarito comentado ainda nao disponivel para esta questao.
       </p>
-    </div>
-  );
-}
-
-/** Personal notes with localStorage persistence */
-function AnotacoesSection({ questaoId, onSaveNote }: { questaoId: number; onSaveNote?: (id: number, note: string) => void }) {
-  const [note, setNote] = useState(() => {
-    if (typeof window === 'undefined') return '';
-    return localStorage.getItem(noteKey(questaoId)) || '';
-  });
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = useCallback(() => {
-    localStorage.setItem(noteKey(questaoId), note);
-    setSaved(true);
-    onSaveNote?.(questaoId, note);
-    setTimeout(() => setSaved(false), 1500);
-  }, [note, questaoId, onSaveNote]);
-
-  return (
-    <div className="px-5 py-3">
-      <textarea
-        value={note}
-        onChange={(e) => { setNote(e.target.value); setSaved(false); }}
-        placeholder="Escreva suas anotacoes sobre esta questao..."
-        className="w-full min-h-[80px] p-2.5 text-xs text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg resize-y focus:outline-none focus:ring-1 focus:ring-amber-500/30 placeholder:text-zinc-400"
-        rows={3}
-      />
-      <div className="flex items-center justify-end gap-2 mt-1.5">
-        {saved && <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">Salvo!</span>}
-        <button
-          onClick={handleSave}
-          className="px-3 py-1 text-[11px] font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-md hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
-        >
-          Salvar
-        </button>
-      </div>
     </div>
   );
 }
@@ -291,7 +253,6 @@ export const QuestionCard = React.memo(function QuestionCard({
   taxaAcertoGlobal,
   gabaritoComentado,
   onBookmark,
-  onSaveNote,
   onReportError,
   initialBookmarked,
 }: QuestionCardProps) {
@@ -874,16 +835,6 @@ export const QuestionCard = React.memo(function QuestionCard({
             </button>
 
             <button
-              onClick={() => toggleTab('anotacoes')}
-              className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
-                activeTab === 'anotacoes' ? 'text-zinc-900 bg-zinc-100 dark:text-zinc-100 dark:bg-zinc-800' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
-              }`}
-            >
-              <PenLine className="w-[15px] h-[15px]" />
-              <span className="hidden sm:inline">Anotacoes</span>
-            </button>
-
-            <button
               onClick={() => toggleTab('estatisticas')}
               className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'estatisticas' ? 'text-zinc-900 bg-zinc-100 dark:text-zinc-100 dark:bg-zinc-800' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
@@ -895,9 +846,27 @@ export const QuestionCard = React.memo(function QuestionCard({
 
             <span className="w-0.5 h-3 bg-zinc-200 dark:bg-zinc-700 mx-1 rounded-full" />
 
-            <button className="qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-all duration-200">
+            <button
+              onClick={() => toggleTab('comunidade')}
+              className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'comunidade'
+                  ? 'text-[#2563EB] bg-[#EFF6FF] dark:text-blue-400 dark:bg-blue-950/30'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+            >
               <MessageCircle className="w-[15px] h-[15px]" />
               <span>{commentsCount}</span>
+            </button>
+
+            <button
+              onClick={() => toggleTab('nota')}
+              className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'nota'
+                  ? 'text-[#D97706] bg-[#FFFBEB] dark:text-amber-400 dark:bg-amber-950/30'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+            >
+              <PenLine className="w-[15px] h-[15px]" />
             </button>
 
             <button
@@ -964,8 +933,13 @@ export const QuestionCard = React.memo(function QuestionCard({
         {activeTab && (
           <div className="border-t border-zinc-100 dark:border-zinc-800/50 qc-stats-enter">
             {activeTab === 'gabarito' && <GabaritoComentadoSection html={gabaritoComentado} />}
-            {activeTab === 'anotacoes' && <AnotacoesSection questaoId={questaoId} onSaveNote={onSaveNote} />}
             {activeTab === 'estatisticas' && <EstatisticasSection resposta={resposta} taxaAcertoGlobal={taxaAcertoGlobal} />}
+            {(activeTab === 'comunidade' || activeTab === 'nota') && (
+              <QuestionCommentsSection
+                questionId={questaoId}
+                activeSection={activeTab}
+              />
+            )}
           </div>
         )}
       </footer>
