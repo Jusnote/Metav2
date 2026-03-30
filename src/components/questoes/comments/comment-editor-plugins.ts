@@ -6,6 +6,8 @@ import { BasicBlocksKit } from '@/components/basic-blocks-kit';
 import { BasicMarksKit } from '@/components/basic-marks-kit';
 import { CodeBlockKit } from '@/components/code-block-kit';
 import { ExitBreakKit } from '@/components/exit-break-kit';
+import { FontKit } from '@/components/font-kit';
+import { IndentKit } from '@/components/indent-kit';
 import { LinkKit } from '@/components/link-kit';
 import { ListKit } from '@/components/list-kit';
 import { MathKit } from '@/components/math-kit';
@@ -17,6 +19,8 @@ import { TableKit } from '@/components/table-kit';
 import { BaseBasicBlocksKit } from '@/components/basic-blocks-base-kit';
 import { BaseBasicMarksKit } from '@/components/basic-marks-base-kit';
 import { BaseCodeBlockKit } from '@/components/code-block-base-kit';
+import { BaseFontKit } from '@/components/font-base-kit';
+import { BaseIndentKit } from '@/components/indent-base-kit';
 import { BaseLinkKit } from '@/components/link-base-kit';
 import { BaseListKit } from '@/components/list-base-kit';
 import { BaseMathKit } from '@/components/math-base-kit';
@@ -36,6 +40,8 @@ export const CommentEditorKit = [
   ...LinkKit,
   ...MentionKit,
   ...BasicMarksKit,
+  ...FontKit,
+  ...IndentKit,
   ...ListKit,
   ...MediaKit,
   ...TableKit,
@@ -54,6 +60,8 @@ export const CommentStaticKit = [
   ...BaseLinkKit,
   ...BaseMentionKit,
   ...BaseBasicMarksKit,
+  ...BaseFontKit,
+  ...BaseIndentKit,
   ...BaseListKit,
   ...BaseMediaKit,
   ...BaseTableKit,

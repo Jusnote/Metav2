@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { BoldIcon, ItalicIcon, UnderlineIcon, StrikethroughIcon, Code2Icon, Heading3Icon, QuoteIcon, SquareCodeIcon, FilmIcon } from 'lucide-react';
+import { BoldIcon, ItalicIcon, UnderlineIcon, StrikethroughIcon, Code2Icon, Heading3Icon, QuoteIcon, SquareCodeIcon, FilmIcon, BaselineIcon, PaintBucketIcon } from 'lucide-react';
 import { type Value } from 'platejs';
 import { KEYS } from 'platejs';
 import { insertMedia } from '@platejs/media';
@@ -12,6 +12,9 @@ import { CommentEditorKit } from './comment-editor-plugins';
 import { useCommentDraft } from '@/hooks/useCommentDraft';
 import { Editor, EditorContainer } from '@/components/ui/editor';
 import { FixedToolbar } from '@/components/ui/fixed-toolbar';
+import { FontColorToolbarButton } from '@/components/ui/font-color-toolbar-button';
+import { UndoToolbarButton, RedoToolbarButton } from '@/components/ui/history-toolbar-button';
+import { IndentToolbarButton, OutdentToolbarButton } from '@/components/ui/indent-toolbar-button';
 import { MarkToolbarButton } from '@/components/ui/mark-toolbar-button';
 import { LinkToolbarButton } from '@/components/ui/link-toolbar-button';
 import { MediaToolbarButton } from '@/components/ui/media-toolbar-button';
@@ -221,17 +224,34 @@ export function CommunityCommentEditor({
           <ToolbarGroup>
             <NumberedListToolbarButton />
             <BulletedListToolbarButton />
+            <IndentToolbarButton />
+            <OutdentToolbarButton />
+          </ToolbarGroup>
+
+          <ToolbarGroup>
+            <FontColorToolbarButton nodeType={KEYS.color} tooltip="Cor do texto">
+              <BaselineIcon className="size-4" />
+            </FontColorToolbarButton>
+            <FontColorToolbarButton nodeType={KEYS.backgroundColor} tooltip="Cor de fundo">
+              <PaintBucketIcon className="size-4" />
+            </FontColorToolbarButton>
           </ToolbarGroup>
 
           <ToolbarGroup>
             <MediaToolbarButton nodeType={KEYS.img} />
             <EmbedVideoToolbarButton />
+            <MediaToolbarButton nodeType={KEYS.file} />
             <TableToolbarButton />
           </ToolbarGroup>
 
           <ToolbarGroup>
             <InlineEquationToolbarButton />
             <LinkToolbarButton />
+          </ToolbarGroup>
+
+          <ToolbarGroup>
+            <UndoToolbarButton />
+            <RedoToolbarButton />
           </ToolbarGroup>
         </FixedToolbar>
 
