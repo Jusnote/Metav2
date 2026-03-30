@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ChevronDownIcon, MessageSquarePlusIcon } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useQuestionComments } from '@/hooks/useQuestionComments';
 import { useCommentMutations } from '@/hooks/useCommentMutations';
 import type { QuestionComment, CommentSortOption } from '@/types/question-comments';
@@ -56,7 +57,7 @@ function sortRoots(roots: QuestionComment[], option: CommentSortOption): Questio
 
 type ActiveEditor =
   | { type: 'new' }
-  | { type: 'reply'; commentId: string }
+  | { type: 'reply'; commentId: string; replyToId: string }
   | { type: 'edit'; commentId: string };
 
 // ---------------------------------------------------------------------------
@@ -181,10 +182,20 @@ function DeletedRootWithReplies({
 // Main component
 // ---------------------------------------------------------------------------
 
-export function CommunityComments({ questionId, currentUserId }: CommunityCommentsProps) {
+export function CommunityComments({ questionId, currentUserId: externalUserId }: CommunityCommentsProps) {
   const { data: comments, isLoading } = useQuestionComments(questionId);
   const { createComment, editComment, deleteComment, isCreating, isEditing, isDeleting } =
     useCommentMutations(questionId);
+
+  // Resolve currentUserId from Supabase auth if not passed as prop
+  const [resolvedUserId, setResolvedUserId] = useState<string | undefined>(externalUserId);
+  useEffect(() => {
+    if (externalUserId) { setResolvedUserId(externalUserId); return; }
+    supabase.auth.getUser().then(({ data }) => {
+      setResolvedUserId(data.user?.id);
+    });
+  }, [externalUserId]);
+  const currentUserId = resolvedUserId;
 
   const [sortOption, setSortOption] = useState<CommentSortOption>('top');
   const [activeEditor, setActiveEditor] = useState<ActiveEditor | null>(null);
@@ -221,10 +232,10 @@ export function CommunityComments({ questionId, currentUserId }: CommunityCommen
 
   const handleReply = useCallback(
     (commentId: string) => {
-      // Always reply at root level — find the root for this comment
+      // Reply at root level but track the actual comment being replied to
       const comment = comments?.find((c) => c.id === commentId);
       const rootId = comment?.root_id ?? commentId; // if it's already a root, use itself
-      openEditor({ type: 'reply', commentId: rootId });
+      openEditor({ type: 'reply', commentId: rootId, replyToId: commentId });
     },
     [comments, openEditor]
   );
@@ -257,6 +268,7 @@ export function CommunityComments({ questionId, currentUserId }: CommunityCommen
   const handleSubmitReply = useCallback(
     async (
       rootId: string,
+      replyToId: string,
       content_json: Record<string, unknown>,
       content_text: string
     ) => {
@@ -265,7 +277,7 @@ export function CommunityComments({ questionId, currentUserId }: CommunityCommen
         content_json,
         content_text,
         root_id: rootId,
-        reply_to_id: rootId,
+        reply_to_id: replyToId,
       });
       closeEditor();
     },
@@ -286,9 +298,9 @@ export function CommunityComments({ questionId, currentUserId }: CommunityCommen
 
   // ---- Render helpers -----------------------------------------------------
 
-  const replyToNameFor = (rootId: string): string | undefined => {
-    const root = comments?.find((c) => c.id === rootId);
-    return root?.author_name ?? root?.author_email ?? undefined;
+  const replyToNameFor = (commentId: string): string | undefined => {
+    const comment = comments?.find((c) => c.id === commentId);
+    return comment?.author_name ?? comment?.author_email ?? undefined;
   };
 
   // -------------------------------------------------------------------------
@@ -372,7 +384,7 @@ export function CommunityComments({ questionId, currentUserId }: CommunityCommen
                     questionId={questionId}
                     mode="edit"
                     draftContext={`edit_${root.id}`}
-                    initialValue={root.content_json as any}
+                    initialValue={root.content_json as unknown as import('platejs').Value}
                     onSubmit={(content_json, content_text) =>
                       handleSubmitEdit(root.id, content_json, content_text)
                     }
@@ -403,15 +415,15 @@ export function CommunityComments({ questionId, currentUserId }: CommunityCommen
                 )}
 
                 {/* Reply editor below this thread */}
-                {isReplyingToThis && (
+                {isReplyingToThis && activeEditor?.type === 'reply' && (
                   <div className="ml-10 mt-2">
                     <CommunityCommentEditor
                       questionId={questionId}
                       mode="reply"
                       draftContext={`reply_${root.id}`}
-                      replyToName={replyToNameFor(root.id)}
+                      replyToName={replyToNameFor(activeEditor.replyToId)}
                       onSubmit={(content_json, content_text) =>
-                        handleSubmitReply(root.id, content_json, content_text)
+                        handleSubmitReply(root.id, activeEditor.replyToId, content_json, content_text)
                       }
                       onCancel={closeEditor}
                       isSubmitting={isCreating}

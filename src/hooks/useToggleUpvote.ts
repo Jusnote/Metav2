@@ -11,7 +11,8 @@ export function useToggleUpvote(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.rpc('toggle_upvote', {
+      // Note: RPC types not yet in generated database.ts — cast needed
+      const { error } = await (supabase as any).rpc('toggle_upvote', {
         p_comment_id: commentId,
         p_user_id: user.id,
       });

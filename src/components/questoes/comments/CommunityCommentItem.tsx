@@ -153,7 +153,7 @@ export function CommunityCommentItem({
         {/* Comment body */}
         <div className="mt-1">
           <CommunityCommentStatic
-            value={comment.content_json as Value}
+            value={comment.content_json as unknown as Value}
           />
         </div>
 

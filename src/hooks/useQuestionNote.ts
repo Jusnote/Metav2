@@ -12,7 +12,8 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await supabase
+      // Note: table types not yet in generated database.ts — cast needed
+      const { data, error } = await (supabase as any)
         .from('question_notes')
         .select('*')
         .eq('question_id', questionId!)
@@ -30,7 +31,8 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      // Note: table types not yet in generated database.ts — cast needed
+      const { data, error } = await (supabase as any)
         .from('question_notes')
         .upsert({
           user_id: user.id,
@@ -54,7 +56,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('question_notes')
         .delete()
         .eq('user_id', user.id)

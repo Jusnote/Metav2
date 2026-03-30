@@ -25,7 +25,8 @@ export function useCommentMutations(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      // Note: table types not yet in generated database.ts — cast needed
+      const { data, error } = await (supabase as any)
         .from('question_comments')
         .insert({
           question_id: params.question_id,
@@ -48,7 +49,7 @@ export function useCommentMutations(questionId: number) {
 
   const editComment = useMutation({
     mutationFn: async (params: EditCommentParams) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('question_comments')
         .update({
           content_json: params.content_json,
@@ -67,7 +68,7 @@ export function useCommentMutations(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.rpc('handle_soft_delete', {
+      const { error } = await (supabase as any).rpc('handle_soft_delete', {
         p_comment_id: commentId,
         p_user_id: user.id,
       });
