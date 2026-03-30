@@ -1,0 +1,254 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .phone {
+    width: 375px; margin: 0 auto;
+    border: 1px solid #ddd; border-radius: 24px;
+    overflow: hidden; background: #fff;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  }
+  .phone-notch { height: 28px; background: #000; border-radius: 0 0 20px 20px; width: 140px; margin: 0 auto; }
+  .phone-screen {
+    min-height: 520px; padding: 12px 16px;
+    font-family: 'Literata', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.85;
+    color: rgb(67, 80, 92);
+    text-align: justify;
+  }
+  .phone-screen b { font-weight: 700; color: #1a1a1a; }
+  .anot { font-size: 11px; font-weight: 300; color: #ccc; margin-left: 4px; }
+  .par { padding-left: 24px; margin-bottom: 6px; position: relative; }
+  .par::before { content: '›'; position: absolute; left: 12px; color: #d0d0d0; font-size: 13px; }
+  .inc { padding-left: 40px; margin-bottom: 5px; position: relative; font-size: 14px; }
+  .inc::before { content: '›'; position: absolute; left: 28px; color: #d8d8d8; font-size: 12px; }
+
+  .h-yellow { background: rgba(250, 204, 21, 0.3); border-radius: 2px; padding: 1px 0; position: relative; }
+  .h-green { background: rgba(74, 222, 128, 0.25); border-radius: 2px; padding: 1px 0; position: relative; }
+
+  .has-note::after {
+    content: '';
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(250, 204, 21, 0.8);
+    box-shadow: 0 0 0 1.5px #fff;
+  }
+  .has-note-green::after { background: rgba(74, 222, 128, 0.8); }
+
+  /* Editor mobile */
+  .note-editor-m {
+    background: #fafcfb;
+    border-radius: 8px;
+    margin: 6px 0 8px 0;
+    border-left: 3px solid rgba(250, 204, 21, 0.5);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+    font-family: 'Outfit', sans-serif;
+  }
+  .note-editor-m-body { padding: 10px 12px; }
+  .note-textarea-m {
+    width: 100%;
+    resize: none;
+    outline: none;
+    font-size: 13px;
+    font-family: 'Outfit', sans-serif;
+    color: #3a4a40;
+    background: transparent;
+    line-height: 1.6;
+    border: none;
+  }
+  .note-textarea-m::placeholder { color: #b0c0b5; }
+  .note-actions-m {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-cancel-m {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #8a9a8f;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    border-radius: 6px;
+    min-height: 44px;
+  }
+  .btn-save-m {
+    padding: 8px 20px;
+    font-size: 13px;
+    color: #fff;
+    background: #16a34a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    min-height: 44px;
+  }
+
+  /* Saved note mobile */
+  .note-saved-m {
+    background: #fafcfb;
+    border-radius: 8px;
+    margin: 6px 0 8px 0;
+    border-left: 3px solid rgba(250, 204, 21, 0.5);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    padding: 10px 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    color: #5a6a60;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 44px;
+  }
+  .note-saved-m-icon { font-size: 12px; color: #8a9a8f; margin-top: 1px; flex-shrink: 0; }
+  .note-saved-m-text { flex: 1; }
+  .note-saved-m-time { font-size: 9px; color: #b0c0b5; flex-shrink: 0; margin-top: 2px; }
+
+  /* Grouped mobile */
+  .notes-group-m {
+    background: #fafcfb;
+    border-radius: 8px;
+    margin: 6px 0 8px 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+  }
+  .notes-group-m-item {
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #5a6a60;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    position: relative;
+    min-height: 44px;
+  }
+  .notes-group-m-item + .notes-group-m-item { border-top: 1px solid rgba(0,0,0,0.03); }
+  .notes-group-m-item .color-bar {
+    width: 3px;
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+  }
+  .notes-group-m-item .note-text { flex: 1; padding-left: 4px; }
+  .notes-group-m-item .note-time { font-size: 9px; color: #b0c0b5; flex-shrink: 0; margin-top: 2px; }
+
+  .state-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #16a34a; margin-bottom: 8px; margin-top: 16px;
+    text-align: center;
+  }
+</style>
+
+<h2>Nota Inline — Mobile (375px)</h2>
+<p class="subtitle">Botões com min-height 44px, textarea maior, tap-friendly</p>
+
+<div style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
+
+  <!-- Mobile: Editor open -->
+  <div>
+    <div class="state-label">Editor aberto</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div style="margin-bottom: 0;">
+          <b>Art. 121.</b> Matar <span class="h-yellow">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+        </div>
+
+        <div class="note-editor-m">
+          <div class="note-editor-m-body">
+            <textarea class="note-textarea-m" rows="3" placeholder="Adicionar nota...">Cai muito em prova CESPE — atenção ao dolo eventual vs culpa consciente</textarea>
+            <div class="note-actions-m">
+              <button class="btn-cancel-m">Cancelar</button>
+              <button class="btn-save-m">Salvar</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 12px; font-family: Outfit; font-weight: 500; color: #666; margin-bottom: 4px;">Caso de diminuição de pena</div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile: Saved notes -->
+  <div>
+    <div class="state-label">Notas salvas</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div style="margin-bottom: 0;">
+          <b>Art. 121.</b> Matar <span class="h-yellow has-note">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+        </div>
+
+        <div class="note-saved-m">
+          <span class="note-saved-m-icon">📝</span>
+          <span class="note-saved-m-text">Cai muito em prova CESPE — atenção ao dolo eventual vs culpa consciente</span>
+          <span class="note-saved-m-time">há 2d</span>
+        </div>
+
+        <div class="par" style="margin-bottom: 0;">
+          <b>§ 2º</b> Se o <span class="h-green has-note has-note-green">homicídio é cometido</span>:
+        </div>
+
+        <div class="note-saved-m" style="border-left-color: rgba(74, 222, 128, 0.5); margin-left: 24px;">
+          <span class="note-saved-m-icon">📝</span>
+          <span class="note-saved-m-text">Qualificadoras — estudar cada inciso</span>
+          <span class="note-saved-m-time">há 1d</span>
+        </div>
+
+        <div class="inc">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+        <div class="inc">II — por motivo futil;</div>
+        <div class="inc">III — com emprego de veneno, fogo, explosivo...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile: Grouped notes -->
+  <div>
+    <div class="state-label">Múltiplas notas agrupadas</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div style="margin-bottom: 0;">
+          <b>Art. 121.</b> Matar <span class="h-yellow has-note">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+        </div>
+
+        <div class="par" style="margin-bottom: 0;">
+          <b>§ 2º</b> Se o <span class="h-green has-note has-note-green">homicídio é cometido</span>:
+        </div>
+
+        <div class="notes-group-m">
+          <div class="notes-group-m-item">
+            <div class="color-bar" style="background: rgba(250, 204, 21, 0.6);"></div>
+            <span class="note-text">Cai muito em prova CESPE — atenção ao dolo eventual</span>
+            <span class="note-time">há 2d</span>
+          </div>
+          <div class="notes-group-m-item">
+            <div class="color-bar" style="background: rgba(74, 222, 128, 0.6);"></div>
+            <span class="note-text">Qualificadoras — estudar cada inciso separadamente</span>
+            <span class="note-time">há 1d</span>
+          </div>
+        </div>
+
+        <div class="inc">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+        <div class="inc">II — por motivo futil;</div>
+        <div class="inc">III — com emprego de veneno, fogo, explosivo...</div>
+        <div class="inc">IV — à traição, de emboscada...</div>
+      </div>
+    </div>
+  </div>
+
+</div>

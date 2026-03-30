@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Question Card Header — Redesign</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #111; color: #ccc; }
+
+  h1 { font-size: 14px; color: #E8930C; text-align: center; padding: 24px 0 4px; font-weight: 600; letter-spacing: 1px; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 20px; font-weight: 300; }
+
+  .card { background: #1a1a1a; border-radius: 16px; border: 1px solid #2a2a2a; overflow: hidden; margin-bottom: 20px; max-width: 860px; margin-left: auto; margin-right: auto; }
+  .card-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #1e1e1e; }
+  .card-label { font-size: 12px; color: #ddd; font-weight: 500; }
+  .card-desc { font-size: 10px; color: #666; margin-left: auto; }
+  .card-body { padding: 20px; background: #f5f6f8; }
+
+  /* ========== QUESTION CARD ========== */
+  .qcard {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e8eaed;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  /* Top bar — highlighted with icon */
+  .qtop {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border-bottom: 1px solid #f0f1f3;
+  }
+
+  /* Icon area */
+  .qtop-icon {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+  .qtop-icon svg {
+    width: 16px; height: 16px;
+    stroke-width: 1.8; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* Separator between sections */
+  .qtop-sep {
+    width: 1px;
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+
+  /* Section in the top bar */
+  .qtop-section {
+    padding: 6px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .qtop-section-grow {
+    flex: 1;
+    min-width: 0;
+  }
+  .qtop-label {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .qtop-value {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Right side — difficulty + actions */
+  .qtop-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 12px;
+    flex-shrink: 0;
+  }
+  .diff { font-size: 10px; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+  .diff-easy { color: #22C55E; }
+  .diff-medium { color: #F59E0B; }
+  .diff-hard { color: #EF4444; }
+  .qaction { color: #ccc; cursor: pointer; transition: color 0.15s; }
+  .qaction:hover { color: #666; }
+  .qaction svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+  /* Bottom meta line */
+  .qmeta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 10px;
+    color: #999;
+    border-bottom: 1px solid #f5f6f8;
+  }
+  .qmeta-item { display: flex; align-items: center; gap: 4px; }
+  .qmeta-label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: #bbb; }
+  .qmeta-sep { color: #e0e3e8; font-size: 10px; }
+
+  /* Question number + bookmark */
+  .qnum {
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 14px;
+    font-size: 10px; color: #bbb;
+  }
+
+  /* Question body */
+  .qbody {
+    padding: 12px 14px 16px;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.75;
+  }
+
+  .steps { padding: 0 20px 40px; }
+</style>
+</head>
+<body>
+
+<h1>Question Card Header — Redesign</h1>
+<h2>Barra de cima com destaque: Materia | Assunto. Banca/Ano/Prova embaixo.</h2>
+
+<div class="steps">
+
+  <!-- OPTION A: Amber warm top bar -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">A) Amber Warm</span>
+      <span class="card-desc">Barra amber suave com icone de livro, separadores verticais</span>
+    </div>
+    <div class="card-body">
+      <div class="qcard">
+        <div class="qtop" style="background: #FFFBF5; border-bottom: 1px solid #f0e6d4;">
+          <div class="qtop-icon" style="background: #FEF3C7; border-right: 1px solid #f0e6d4;">
+            <svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #B45309;">Materia</span>
+            <span class="qtop-value" style="color: #78350F;">Dir. Constitucional Municipal</span>
+          </div>
+          <div class="qtop-sep" style="background: #f0e6d4;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #B45309;">Assunto</span>
+            <span class="qtop-value" style="color: #78350F;">Leis Organicas dos Demais Municipios</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-easy">● Facil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item"><span class="qmeta-label">Banca</span> Fenix Instituto</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Ano</span> 2026</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Prova</span> Pref. Mun. de Novo Horizonte (SC)</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 1/469.270</span>
+        </div>
+        <div class="qbody">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal em materia de organizacao territorial.</div>
+      </div>
+
+      <div class="qcard">
+        <div class="qtop" style="background: #FFFBF5; border-bottom: 1px solid #f0e6d4;">
+          <div class="qtop-icon" style="background: #FEF3C7; border-right: 1px solid #f0e6d4;">
+            <svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #B45309;">Materia</span>
+            <span class="qtop-value" style="color: #78350F;">Dir. Administrativo</span>
+          </div>
+          <div class="qtop-sep" style="background: #f0e6d4;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #B45309;">Assunto</span>
+            <span class="qtop-value" style="color: #78350F;">Atos Administrativos</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-hard">● Dificil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item"><span class="qmeta-label">Banca</span> CESPE</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Ano</span> 2024</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Prova</span> TJ-DFT — Analista Judiciario</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 2/469.270</span>
+        </div>
+        <div class="qbody">Acerca dos atos administrativos, julgue o item subsecutivo. A revogacao de um ato administrativo produz efeitos ex nunc, ou seja, nao retroage para atingir efeitos ja produzidos pelo ato revogado.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B: Neutral gray top bar -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">B) Neutral Gray</span>
+      <span class="card-desc">Barra cinza neutra, mais discreto, icone sutil</span>
+    </div>
+    <div class="card-body">
+      <div class="qcard">
+        <div class="qtop" style="background: #f8f9fb; border-bottom: 1px solid #eaecf0;">
+          <div class="qtop-icon" style="background: #eef0f3; border-right: 1px solid #e2e5ea;">
+            <svg viewBox="0 0 24 24" stroke="#888"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #999;">Materia</span>
+            <span class="qtop-value" style="color: #333;">Dir. Constitucional Municipal</span>
+          </div>
+          <div class="qtop-sep" style="background: #e2e5ea;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #999;">Assunto</span>
+            <span class="qtop-value" style="color: #333;">Leis Organicas dos Demais Municipios</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-easy">● Facil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item"><span class="qmeta-label">Banca</span> Fenix Instituto</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Ano</span> 2026</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Prova</span> Pref. Mun. de Novo Horizonte (SC)</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 1/469.270</span>
+        </div>
+        <div class="qbody">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal em materia de organizacao territorial.</div>
+      </div>
+
+      <div class="qcard">
+        <div class="qtop" style="background: #f8f9fb; border-bottom: 1px solid #eaecf0;">
+          <div class="qtop-icon" style="background: #eef0f3; border-right: 1px solid #e2e5ea;">
+            <svg viewBox="0 0 24 24" stroke="#888"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #999;">Materia</span>
+            <span class="qtop-value" style="color: #333;">Dir. Administrativo</span>
+          </div>
+          <div class="qtop-sep" style="background: #e2e5ea;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #999;">Assunto</span>
+            <span class="qtop-value" style="color: #333;">Atos Administrativos</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-hard">● Dificil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item"><span class="qmeta-label">Banca</span> CESPE</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Ano</span> 2024</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Prova</span> TJ-DFT — Analista Judiciario</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 2/469.270</span>
+        </div>
+        <div class="qbody">Acerca dos atos administrativos, julgue o item subsecutivo. A revogacao de um ato administrativo produz efeitos ex nunc.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C: Left accent bar -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">C) Left Accent Bar</span>
+      <span class="card-desc">Barra colorida na esquerda (3px), top limpo, metadados abaixo</span>
+    </div>
+    <div class="card-body">
+      <div class="qcard" style="border-left: 3px solid #E8930C;">
+        <div class="qtop" style="background: white; border-bottom: 1px solid #f0f1f3;">
+          <div class="qtop-icon" style="border-right: 1px solid #f0f1f3;">
+            <svg viewBox="0 0 24 24" stroke="#E8930C"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #E8930C;">Materia</span>
+            <span class="qtop-value" style="color: #333;">Dir. Constitucional Municipal</span>
+          </div>
+          <div class="qtop-sep" style="background: #f0f1f3;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #E8930C;">Assunto</span>
+            <span class="qtop-value" style="color: #333;">Leis Organicas dos Demais Municipios</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-easy">● Facil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item">Fenix Instituto</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item">2026</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item">Pref. Mun. de Novo Horizonte (SC)</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 1/469.270</span>
+        </div>
+        <div class="qbody">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal.</div>
+      </div>
+
+      <div class="qcard" style="border-left: 3px solid #E8930C;">
+        <div class="qtop" style="background: white; border-bottom: 1px solid #f0f1f3;">
+          <div class="qtop-icon" style="border-right: 1px solid #f0f1f3;">
+            <svg viewBox="0 0 24 24" stroke="#E8930C"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #E8930C;">Materia</span>
+            <span class="qtop-value" style="color: #333;">Dir. Administrativo</span>
+          </div>
+          <div class="qtop-sep" style="background: #f0f1f3;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #E8930C;">Assunto</span>
+            <span class="qtop-value" style="color: #333;">Atos Administrativos</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-hard">● Dificil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item">CESPE</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item">2024</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item">TJ-DFT — Analista Judiciario</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 2/469.270</span>
+        </div>
+        <div class="qbody">Acerca dos atos administrativos, julgue o item subsecutivo. A revogacao de um ato administrativo produz efeitos ex nunc.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION D: Glass top bar -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">D) Glass Top</span>
+      <span class="card-desc">Gradiente glass sutil no topo, mesmo estilo da filter bar</span>
+    </div>
+    <div class="card-body">
+      <div class="qcard">
+        <div class="qtop" style="background: linear-gradient(180deg, #f8f9fb, #f2f3f6); border-bottom: 1px solid #e8eaed;">
+          <div class="qtop-icon" style="background: rgba(232,147,12,0.08); border-right: 1px solid #e8eaed;">
+            <svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #999;">Materia</span>
+            <span class="qtop-value" style="color: #333;">Dir. Constitucional Municipal</span>
+          </div>
+          <div class="qtop-sep" style="background: #e2e5ea;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #999;">Assunto</span>
+            <span class="qtop-value" style="color: #333;">Leis Organicas dos Demais Municipios</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-easy">● Facil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item"><span class="qmeta-label">Banca</span> Fenix Instituto</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Ano</span> 2026</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Prova</span> Pref. Mun. de Novo Horizonte (SC)</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 1/469.270</span>
+        </div>
+        <div class="qbody">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal.</div>
+      </div>
+
+      <div class="qcard">
+        <div class="qtop" style="background: linear-gradient(180deg, #f8f9fb, #f2f3f6); border-bottom: 1px solid #e8eaed;">
+          <div class="qtop-icon" style="background: rgba(232,147,12,0.08); border-right: 1px solid #e8eaed;">
+            <svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="qtop-section">
+            <span class="qtop-label" style="color: #999;">Materia</span>
+            <span class="qtop-value" style="color: #333;">Dir. Administrativo</span>
+          </div>
+          <div class="qtop-sep" style="background: #e2e5ea;"></div>
+          <div class="qtop-section qtop-section-grow">
+            <span class="qtop-label" style="color: #999;">Assunto</span>
+            <span class="qtop-value" style="color: #333;">Atos Administrativos</span>
+          </div>
+          <div class="qtop-right">
+            <span class="diff diff-hard">● Dificil</span>
+            <span class="qaction"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+          </div>
+        </div>
+        <div class="qmeta">
+          <span class="qmeta-item"><span class="qmeta-label">Banca</span> CESPE</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Ano</span> 2024</span>
+          <span class="qmeta-sep">·</span>
+          <span class="qmeta-item"><span class="qmeta-label">Prova</span> TJ-DFT — Analista Judiciario</span>
+          <span style="margin-left:auto;font-size:10px;color:#ccc;">Q 2/469.270</span>
+        </div>
+        <div class="qbody">Acerca dos atos administrativos, julgue o item subsecutivo. A revogacao de um ato administrativo produz efeitos ex nunc.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Typography V2 — Source Serif 4 Refinements</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #111; color: #ccc; }
+
+  h1 { font-size: 14px; color: #E8930C; text-align: center; padding: 24px 0 4px; font-weight: 600; letter-spacing: 1px; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 20px; font-weight: 300; }
+
+  .card { background: #1a1a1a; border-radius: 16px; border: 1px solid #2a2a2a; overflow: hidden; margin-bottom: 20px; max-width: 860px; margin-left: auto; margin-right: auto; }
+  .card-header { display: flex; align-items: baseline; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #1e1e1e; }
+  .card-label { font-size: 12px; color: #ddd; font-weight: 500; }
+  .card-desc { font-size: 10px; color: #666; margin-left: auto; }
+  .card-specs { font-size: 9px; color: #444; padding: 6px 14px; border-bottom: 1px solid #1a1a1a; font-family: monospace; line-height: 1.6; }
+  .card-body { padding: 0; background: white; }
+
+  .qc { border-bottom: 1px solid #f0f1f3; }
+  .qc-accent { height: 2px; background: linear-gradient(to right, rgba(232,147,12,0.4), rgba(232,147,12,0.6), transparent); }
+  .qc-hdr { padding: 8px 20px; display: flex; align-items: center; gap: 8px; }
+  .qc-box { display: flex; align-items: center; gap: 12px; padding: 6px 10px; background: #fafafa; border-radius: 6px; border-left: 2px solid rgba(232,147,12,0.4); flex: 1; min-width: 0; }
+  .qc-icon { width: 24px; height: 24px; border-radius: 50%; background: #f4f4f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .qc-icon svg { width: 14px; height: 14px; stroke: #71717a; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .qc-lbl { font-size: 8px; font-weight: 600; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1; margin-bottom: 2px; }
+  .qc-val { font-size: 12px; font-weight: 600; color: #27272a; line-height: 1; }
+  .qc-val-m { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qc-sep { width: 1px; align-self: stretch; margin: 4px 0; background: #e4e4e7; }
+  .qc-meta { padding: 2px 20px 6px; font-size: 11px; color: #71717a; display: flex; align-items: center; gap: 6px; }
+  .qc-meta b { color: #52525b; }
+
+  .alt-list { padding: 0 20px 16px; }
+  .alt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    transition: background 0.12s; border: 1px solid transparent;
+  }
+  .alt:hover { background: #f8f9fb; border-color: #e8eaed; }
+  .alt-letter {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; flex-shrink: 0; font-size: 13px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .steps { padding: 0 20px 40px; }
+  .rec { display: inline-block; font-size: 8px; padding: 2px 6px; border-radius: 4px; background: rgba(232,147,12,0.15); color: #E8930C; font-weight: 600; margin-left: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<h1>Source Serif 4 — Refinamentos</h1>
+<h2>Variando cor, peso, espacamento, e combinacao com UI font</h2>
+
+<div class="steps">
+
+  <!-- ===== A: SS4 puro, cor quente ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">A) Cor Quente — #3d3529</span>
+      <span class="card-desc">Tom sepia sutil, menos cansativo que preto puro</span>
+    </div>
+    <div class="card-specs">enunciado: SS4 16px/1.85 weight:400 color:#3d3529 word-spacing:0.02em
+alternativas: SS4 14.5px/1.75 weight:400 color:#3d3529
+letter-circle: bg:#f4f0eb color:#6b5d4d (harmoniza com sepia)</div>
+    <div class="card-body">
+      <div class="qc">
+        <div class="qc-accent"></div>
+        <div class="qc-hdr">
+          <div class="qc-box"><div class="qc-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg></div><div><p class="qc-lbl">Materia</p><p class="qc-val">Dir. Penal</p></div><div class="qc-sep"></div><div style="flex:1;min-width:0;"><p class="qc-lbl">Assunto</p><p class="qc-val qc-val-m">Crimes Contra a Pessoa</p></div></div>
+        </div>
+        <div class="qc-meta"><b>CESPE</b> · 2024 · TJ-DFT — Analista Judiciario</div>
+        <div style="padding:14px 24px 18px;">
+          <p style="font-family:'Source Serif 4',serif;font-size:16px;line-height:1.85;color:#3d3529;word-spacing:0.02em;font-weight:400;">
+            Acerca dos crimes contra a pessoa previstos no Codigo Penal, julgue o item subsecutivo. O individuo que, com animus necandi, desfere golpes de faca contra outrem, causando-lhe a morte, pratica o crime de homicidio simples, previsto no art. 121 do CP, salvo se presentes as circunstancias qualificadoras.
+          </p>
+        </div>
+        <div class="alt-list">
+          <div class="alt"><span class="alt-letter" style="background:#f4f0eb;color:#6b5d4d;">A</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.75;color:#3d3529;padding-top:3px;word-spacing:0.02em;">Certo, pois o homicidio simples e a forma basica do crime contra a vida, independentemente do meio empregado pelo agente.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#f4f0eb;color:#6b5d4d;">B</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.75;color:#3d3529;padding-top:3px;word-spacing:0.02em;">Errado, pois o uso de faca configura meio cruel, qualificando automaticamente o homicidio nos termos do art. 121, §2º, III.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#f4f0eb;color:#6b5d4d;">C</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.75;color:#3d3529;padding-top:3px;word-spacing:0.02em;">Errado, pois a presenca de animus necandi exige a qualificacao do crime como homicidio doloso qualificado por motivo torpe.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== B: SS4 enunciado + Outfit alternativas ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">B) Hibrido SS4 + Outfit</span>
+      <span class="card-rec"><span class="rec">RECOMENDO</span></span>
+      <span class="card-desc">Serif no enunciado, geometric sans nas alternativas</span>
+    </div>
+    <div class="card-specs">enunciado: SS4 16px/1.85 weight:400 color:#2c3340
+alternativas: Outfit 14px/1.65 weight:400 color:#374151 (geometric sans, limpa)
+letter-circle: bg:#eef0f3 color:#4b5563 border:1px solid #e2e5ea</div>
+    <div class="card-body">
+      <div class="qc">
+        <div class="qc-accent"></div>
+        <div class="qc-hdr">
+          <div class="qc-box"><div class="qc-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg></div><div><p class="qc-lbl">Materia</p><p class="qc-val">Dir. Penal</p></div><div class="qc-sep"></div><div style="flex:1;min-width:0;"><p class="qc-lbl">Assunto</p><p class="qc-val qc-val-m">Crimes Contra a Pessoa</p></div></div>
+        </div>
+        <div class="qc-meta"><b>CESPE</b> · 2024 · TJ-DFT — Analista Judiciario</div>
+        <div style="padding:14px 24px 18px;">
+          <p style="font-family:'Source Serif 4',serif;font-size:16px;line-height:1.85;color:#2c3340;font-weight:400;">
+            Acerca dos crimes contra a pessoa previstos no Codigo Penal, julgue o item subsecutivo. O individuo que, com animus necandi, desfere golpes de faca contra outrem, causando-lhe a morte, pratica o crime de homicidio simples, previsto no art. 121 do CP, salvo se presentes as circunstancias qualificadoras.
+          </p>
+        </div>
+        <div class="alt-list">
+          <div class="alt"><span class="alt-letter" style="background:#eef0f3;color:#4b5563;border:1px solid #e2e5ea;">A</span><span style="font-family:'Outfit',sans-serif;font-size:14px;line-height:1.65;color:#374151;padding-top:4px;">Certo, pois o homicidio simples e a forma basica do crime contra a vida, independentemente do meio empregado pelo agente.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#eef0f3;color:#4b5563;border:1px solid #e2e5ea;">B</span><span style="font-family:'Outfit',sans-serif;font-size:14px;line-height:1.65;color:#374151;padding-top:4px;">Errado, pois o uso de faca configura meio cruel, qualificando automaticamente o homicidio nos termos do art. 121, §2º, III.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#eef0f3;color:#4b5563;border:1px solid #e2e5ea;">C</span><span style="font-family:'Outfit',sans-serif;font-size:14px;line-height:1.65;color:#374151;padding-top:4px;">Errado, pois a presenca de animus necandi exige a qualificacao do crime como homicidio doloso qualificado por motivo torpe.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== C: SS4 weight 300 (light), mais ar ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">C) SS4 Light — weight 300</span>
+      <span class="card-desc">Mais leve, mais elegante, mais respiro visual</span>
+    </div>
+    <div class="card-specs">enunciado: SS4 16.5px/1.9 weight:300 color:#1f2937
+alternativas: SS4 14.5px/1.8 weight:300 color:#374151
+mais padding, mais ar entre linhas</div>
+    <div class="card-body">
+      <div class="qc">
+        <div class="qc-accent"></div>
+        <div class="qc-hdr">
+          <div class="qc-box"><div class="qc-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg></div><div><p class="qc-lbl">Materia</p><p class="qc-val">Dir. Penal</p></div><div class="qc-sep"></div><div style="flex:1;min-width:0;"><p class="qc-lbl">Assunto</p><p class="qc-val qc-val-m">Crimes Contra a Pessoa</p></div></div>
+        </div>
+        <div class="qc-meta"><b>CESPE</b> · 2024 · TJ-DFT — Analista Judiciario</div>
+        <div style="padding:16px 28px 20px;">
+          <p style="font-family:'Source Serif 4',serif;font-size:16.5px;line-height:1.9;color:#1f2937;font-weight:300;">
+            Acerca dos crimes contra a pessoa previstos no Codigo Penal, julgue o item subsecutivo. O individuo que, com animus necandi, desfere golpes de faca contra outrem, causando-lhe a morte, pratica o crime de homicidio simples, previsto no art. 121 do CP, salvo se presentes as circunstancias qualificadoras.
+          </p>
+        </div>
+        <div class="alt-list" style="padding:0 24px 20px;">
+          <div class="alt" style="padding:12px 14px;"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">A</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.8;color:#374151;padding-top:3px;font-weight:300;">Certo, pois o homicidio simples e a forma basica do crime contra a vida, independentemente do meio empregado pelo agente.</span></div>
+          <div class="alt" style="padding:12px 14px;"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">B</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.8;color:#374151;padding-top:3px;font-weight:300;">Errado, pois o uso de faca configura meio cruel, qualificando automaticamente o homicidio nos termos do art. 121, §2º, III.</span></div>
+          <div class="alt" style="padding:12px 14px;"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">C</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.8;color:#374151;padding-top:3px;font-weight:300;">Errado, pois a presenca de animus necandi exige a qualificacao do crime como homicidio doloso qualificado por motivo torpe.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== D: SS4 + primeiro paragrafo em destaque ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">D) Contexto + Comando</span>
+      <span class="card-desc">Primeira frase (contexto) em cinza claro, comando em destaque</span>
+    </div>
+    <div class="card-specs">contexto: SS4 15px/1.75 weight:400 color:#6b7280 (cinza, secundario)
+comando: SS4 16px/1.85 weight:500 color:#1f2937 (destaque, o que importa)
+alternativas: SS4 14.5px/1.7 weight:400 color:#374151</div>
+    <div class="card-body">
+      <div class="qc">
+        <div class="qc-accent"></div>
+        <div class="qc-hdr">
+          <div class="qc-box"><div class="qc-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg></div><div><p class="qc-lbl">Materia</p><p class="qc-val">Dir. Penal</p></div><div class="qc-sep"></div><div style="flex:1;min-width:0;"><p class="qc-lbl">Assunto</p><p class="qc-val qc-val-m">Crimes Contra a Pessoa</p></div></div>
+        </div>
+        <div class="qc-meta"><b>CESPE</b> · 2024 · TJ-DFT — Analista Judiciario</div>
+        <div style="padding:14px 24px 18px;">
+          <p style="font-family:'Source Serif 4',serif;font-size:15px;line-height:1.75;color:#6b7280;font-weight:400;margin-bottom:6px;">
+            Acerca dos crimes contra a pessoa previstos no Codigo Penal, julgue o item subsecutivo.
+          </p>
+          <p style="font-family:'Source Serif 4',serif;font-size:16px;line-height:1.85;color:#1f2937;font-weight:500;">
+            O individuo que, com animus necandi, desfere golpes de faca contra outrem, causando-lhe a morte, pratica o crime de homicidio simples, previsto no art. 121 do CP, salvo se presentes as circunstancias qualificadoras.
+          </p>
+        </div>
+        <div class="alt-list">
+          <div class="alt"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">A</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.7;color:#374151;padding-top:3px;">Certo, pois o homicidio simples e a forma basica do crime contra a vida, independentemente do meio empregado pelo agente.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">B</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.7;color:#374151;padding-top:3px;">Errado, pois o uso de faca configura meio cruel, qualificando automaticamente o homicidio nos termos do art. 121, §2º, III.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">C</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.7;color:#374151;padding-top:3px;">Errado, pois a presenca de animus necandi exige a qualificacao do crime como homicidio doloso qualificado por motivo torpe.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== E: SS4 com max-width (measure otima) ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">E) Measure Otima — max-width 65ch</span>
+      <span class="card-desc">Limita largura do texto a ~65 caracteres por linha. Leitura ideal.</span>
+    </div>
+    <div class="card-specs">enunciado: SS4 16px/1.85 weight:400 color:#2c3e50 max-width:65ch
+alternativas: SS4 14.5px/1.75 weight:400 color:#374151 max-width:60ch
+texto centralizado no card</div>
+    <div class="card-body">
+      <div class="qc">
+        <div class="qc-accent"></div>
+        <div class="qc-hdr">
+          <div class="qc-box"><div class="qc-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg></div><div><p class="qc-lbl">Materia</p><p class="qc-val">Dir. Penal</p></div><div class="qc-sep"></div><div style="flex:1;min-width:0;"><p class="qc-lbl">Assunto</p><p class="qc-val qc-val-m">Crimes Contra a Pessoa</p></div></div>
+        </div>
+        <div class="qc-meta"><b>CESPE</b> · 2024 · TJ-DFT — Analista Judiciario</div>
+        <div style="padding:16px 24px 20px;">
+          <p style="font-family:'Source Serif 4',serif;font-size:16px;line-height:1.85;color:#2c3e50;font-weight:400;max-width:65ch;">
+            Acerca dos crimes contra a pessoa previstos no Codigo Penal, julgue o item subsecutivo. O individuo que, com animus necandi, desfere golpes de faca contra outrem, causando-lhe a morte, pratica o crime de homicidio simples, previsto no art. 121 do CP, salvo se presentes as circunstancias qualificadoras.
+          </p>
+        </div>
+        <div class="alt-list" style="padding:0 20px 20px;">
+          <div class="alt"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">A</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.75;color:#374151;padding-top:3px;max-width:60ch;">Certo, pois o homicidio simples e a forma basica do crime contra a vida, independentemente do meio empregado pelo agente.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">B</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.75;color:#374151;padding-top:3px;max-width:60ch;">Errado, pois o uso de faca configura meio cruel, qualificando automaticamente o homicidio nos termos do art. 121, §2º, III.</span></div>
+          <div class="alt"><span class="alt-letter" style="background:#f4f4f5;color:#52525b;">C</span><span style="font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.75;color:#374151;padding-top:3px;max-width:60ch;">Errado, pois a presenca de animus necandi exige a qualificacao do crime como homicidio doloso qualificado por motivo torpe.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

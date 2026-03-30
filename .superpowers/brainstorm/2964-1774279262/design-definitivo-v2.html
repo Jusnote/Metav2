@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Design Definitivo v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #ffffff;
+    color: #1d1d1f;
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+    font-optical-sizing: auto;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 56px 44px 80px;
+  }
+
+  /* ===== PARTE ===== */
+  .parte {
+    text-align: center;
+    margin: 52px 0 40px;
+    padding: 18px 0;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .parte span {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  /* ===== TITULO ===== */
+  .titulo {
+    text-align: center;
+    margin: 36px 0 4px;
+  }
+  .titulo-nome {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1d1d1f;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .titulo-desc {
+    font-size: 15px;
+    font-weight: 300;
+    color: #999;
+    margin-top: 3px;
+  }
+
+  /* ===== CAPITULO ===== */
+  .capitulo {
+    text-align: center;
+    margin: 32px 0 2px;
+  }
+  .capitulo-nome {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .capitulo-desc {
+    font-size: 14px;
+    font-weight: 300;
+    color: #999;
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .subtitulo-spacer {
+    margin-bottom: 28px;
+  }
+
+  /* ===== EPIGRAFE ===== */
+  .epigrafe {
+    margin-top: 32px;
+    margin-bottom: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  /* ===== ARTIGO ===== */
+  .artigo {
+    margin-bottom: 3px;
+    padding: 7px 0 7px 16px;
+    border-left: 2px solid #ddd;
+    transition: border-color 0.2s;
+  }
+  .artigo:hover {
+    border-color: #999;
+  }
+  .artigo-marker {
+    font-weight: 700;
+    color: #1d1d1f;
+  }
+
+  /* ===== PENA ===== */
+  .pena {
+    padding-left: 34px;
+    font-size: 14.5px;
+    font-weight: 300;
+    font-style: italic;
+    color: #aaa;
+    margin-bottom: 3px;
+  }
+
+  /* ===== ANOTACAO ===== */
+  .anotacao {
+    padding-left: 34px;
+    font-size: 12px;
+    font-weight: 300;
+    color: #c5c5c5;
+    margin-bottom: 6px;
+    transition: color 0.2s;
+  }
+  .anotacao:hover {
+    color: #888;
+  }
+
+  /* ===== PARAGRAFO ===== */
+  .paragrafo {
+    padding-left: 34px;
+    margin-bottom: 3px;
+  }
+  .paragrafo-marker {
+    font-weight: 600;
+  }
+
+  /* ===== INCISO ===== */
+  .inciso {
+    padding-left: 58px;
+    margin-bottom: 2px;
+  }
+  .inciso-num {
+    font-weight: 500;
+  }
+
+  /* ===== ALINEA ===== */
+  .alinea {
+    padding-left: 82px;
+    margin-bottom: 2px;
+    color: #333;
+  }
+  .alinea-num {
+    font-weight: 500;
+  }
+
+  /* ===== REVOGADO ===== */
+  .revogado {
+    padding-left: 34px;
+    margin-top: 6px;
+    margin-bottom: 3px;
+    text-decoration: line-through;
+    color: #ccc;
+  }
+
+  /* ===== SEPARADOR ===== */
+  .sep {
+    margin: 36px auto;
+    width: 40px;
+    height: 1px;
+    background: #e0e0e0;
+  }
+
+  /* ===== SELECTION ===== */
+  ::selection {
+    background: #d4e5ff;
+    color: #1d1d1f;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ===== PARTE ===== -->
+  <div class="parte">
+    <span>Parte Especial</span>
+  </div>
+
+  <!-- ===== TITULO I ===== -->
+  <div class="titulo">
+    <div class="titulo-nome">Título I</div>
+    <div class="titulo-desc">Dos crimes contra a pessoa</div>
+  </div>
+
+  <!-- ===== CAPITULO I ===== -->
+  <div class="capitulo">
+    <div class="capitulo-nome">Capítulo I</div>
+    <div class="capitulo-desc">Dos crimes contra a vida</div>
+  </div>
+  <div class="subtitulo-spacer"></div>
+
+  <!-- ===== ART. 121 ===== -->
+
+  <div class="epigrafe">Homicídio simples</div>
+
+  <div class="artigo">
+    <span class="artigo-marker">Art. 121.</span> Matar alguem:
+  </div>
+
+  <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+
+  <div class="anotacao">(Vide Lei nº 8.072, de 25.7.90)</div>
+
+  <div class="epigrafe">Caso de diminuição de pena</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 1º</span> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.
+  </div>
+
+  <div class="epigrafe">Homicídio qualificado</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 2º</span> Se o homicídio é cometido:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — por motivo futil;</div>
+  <div class="inciso"><span class="inciso-num">III</span> — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel, ou de que possa resultar perigo comum;</div>
+  <div class="inciso"><span class="inciso-num">IV</span> — à traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossivel a defesa do ofendido;</div>
+  <div class="inciso"><span class="inciso-num">V</span> — para assegurar a execução, a ocultação, a impunidade ou vantagem de outro crime:</div>
+
+  <div class="pena">Pena — reclusão, de doze a trinta anos.</div>
+
+  <div class="anotacao">(Redação dada pela Lei nº 13.104, de 2015)</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 2º-A</span> Considera-se que há razões de condição de sexo feminino quando o crime envolve:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — violência doméstica e familiar;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — menosprezo ou discriminação à condição de mulher.</div>
+
+  <div class="anotacao">(Incluído pela Lei nº 13.104, de 2015)</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 2º-B</span> A pena do homicídio contra menor de 14 (quatorze) anos é aumentada de:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — 1/3 (um terço) até a metade se a vítima é pessoa com deficiência ou com doença que acarrete condição limitante;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — 2/3 (dois terços) se o autor é ascendente, padrasto ou madrasta da vítima.</div>
+
+  <div class="revogado">§ 3º Se o homicídio é culposo:</div>
+
+  <div class="epigrafe">Homicídio culposo</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 3º</span> Se o homicídio é culposo:
+  </div>
+
+  <div class="pena">Pena — detenção, de um a três anos.</div>
+
+  <div class="epigrafe">Aumento de pena</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 4º</span> No homicídio culposo, a pena é aumentada de 1/3 (um terço), se o crime resulta de inobservância de regra técnica de profissão, arte ou ofício, ou se o agente deixa de prestar imediato socorro à vítima, não procura diminuir as conseqüências do seu ato, ou foge para evitar prisão em flagrante. Sendo doloso o homicídio, a pena é aumentada de 1/3 (um terço) se o crime é praticado contra pessoa menor de 14 (quatorze) ou maior de 60 (sessenta) anos.
+  </div>
+
+  <div class="anotacao">(Redação dada pela Lei nº 10.741, de 2003)</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 5º</span> Na hipótese de homicídio culposo, o juiz poderá deixar de aplicar a pena, se as conseqüências da infração atingirem o próprio agente de forma tão grave que a sanção penal se torne desnecessária.
+  </div>
+
+  <div class="anotacao">(Incluído pela Lei nº 6.416, de 24.5.1977)</div>
+
+  <!-- ===== SEPARADOR ===== -->
+  <div class="sep"></div>
+
+  <!-- ===== ART. 122 ===== -->
+
+  <div class="epigrafe">Induzimento, instigação ou auxílio a suicídio ou a automutilação</div>
+
+  <div class="artigo">
+    <span class="artigo-marker">Art. 122.</span> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação ou prestar-lhe auxílio material para que o faça:
+  </div>
+
+  <div class="pena">Pena — reclusão, de 6 (seis) meses a 2 (dois) anos.</div>
+
+  <div class="anotacao">(Redação dada pela Lei nº 13.968, de 2019)</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 1º</span> Se da automutilação ou da tentativa de suicídio resulta lesão corporal de natureza grave ou gravíssima:
+  </div>
+
+  <div class="pena">Pena — reclusão, de 1 (um) a 3 (três) anos.</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 2º</span> Se o suicídio se consuma ou se da automutilação resulta morte:
+  </div>
+
+  <div class="pena">Pena — reclusão, de 2 (dois) a 6 (seis) anos.</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 3º</span> A pena é duplicada:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — se o crime é praticado por motivo egoístico, torpe ou fútil;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — se a vítima é menor ou tem diminuída, por qualquer causa, a capacidade de resistência.</div>
+
+  <div class="anotacao">(Incluído pela Lei nº 13.968, de 2019)</div>
+
+  <!-- ===== SEPARADOR ===== -->
+  <div class="sep"></div>
+
+  <!-- ===== CAPITULO II ===== -->
+  <div class="capitulo">
+    <div class="capitulo-nome">Capítulo II</div>
+    <div class="capitulo-desc">Das lesões corporais</div>
+  </div>
+  <div class="subtitulo-spacer"></div>
+
+  <div class="epigrafe">Lesão corporal</div>
+
+  <div class="artigo">
+    <span class="artigo-marker">Art. 129.</span> Ofender a integridade corporal ou a saúde de outrem:
+  </div>
+
+  <div class="pena">Pena — detenção, de três meses a um ano.</div>
+
+  <div class="epigrafe">Lesão corporal de natureza grave</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 1º</span> Se resulta:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — Incapacidade para as ocupações habituais, por mais de trinta dias;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — perigo de vida;</div>
+  <div class="inciso"><span class="inciso-num">III</span> — debilidade permanente de membro, sentido ou função;</div>
+  <div class="inciso"><span class="inciso-num">IV</span> — aceleração de parto:</div>
+
+  <div class="pena">Pena — reclusão, de um a cinco anos.</div>
+
+  <div class="epigrafe">Lesão corporal de natureza gravíssima</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 2º</span> Se resulta:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — Incapacidade permanente para o trabalho;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — enfermidade incuravel;</div>
+  <div class="inciso"><span class="inciso-num">III</span> — perda ou inutilização do membro, sentido ou função;</div>
+  <div class="inciso"><span class="inciso-num">IV</span> — deformidade permanente;</div>
+  <div class="inciso"><span class="inciso-num">V</span> — aborto:</div>
+
+  <div class="pena">Pena — reclusão, de dois a oito anos.</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 3º</span> Se resulta morte e as circunstâncias evidenciam que o agente não quis o resultado, nem assumiu o risco de produzí-lo:
+  </div>
+
+  <div class="pena">Pena — reclusão, de quatro a doze anos.</div>
+
+  <div class="epigrafe">Diminuição de pena</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 4º</span> Se o agente comete o crime impelido por motivo de relevante valor social ou moral ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.
+  </div>
+
+  <div class="epigrafe">Substituição da pena</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 5º</span> O juiz, não sendo graves as lesões, pode ainda substituir a pena de detenção pela de multa:
+  </div>
+
+  <div class="inciso"><span class="inciso-num">I</span> — se ocorre qualquer das hipóteses do parágrafo anterior;</div>
+  <div class="inciso"><span class="inciso-num">II</span> — se as lesões são recíprocas.</div>
+
+  <div class="epigrafe">Lesão corporal culposa</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 6º</span> Se a lesão é culposa:
+  </div>
+
+  <div class="pena">Pena — detenção, de dois meses a um ano.</div>
+
+  <div class="epigrafe">Aumento de pena</div>
+
+  <div class="paragrafo">
+    <span class="paragrafo-marker">§ 7º</span> Aumenta-se a pena de 1/3 (um terço) se ocorrer qualquer das hipóteses dos §§ 4º e 6º do art. 121 deste Código.
+  </div>
+
+  <div class="anotacao">(Redação dada pela Lei nº 12.720, de 2012)</div>
+
+</div>
+
+</body>
+</html>

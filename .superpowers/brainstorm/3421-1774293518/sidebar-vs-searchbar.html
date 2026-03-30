@@ -1,0 +1,139 @@
+<h2>Sidebar lateral vs SearchBar na Toolbar</h2>
+<p class="subtitle">Qual padrão funciona melhor para navegar e buscar em uma lei com 500+ dispositivos?</p>
+
+<div class="split">
+  <!-- Option A: Sidebar -->
+  <div class="option" data-choice="a-sidebar" onclick="toggleSelect(this)" style="flex:1;padding:0;overflow:hidden;cursor:pointer">
+    <div class="letter">A</div>
+    <div class="content" style="width:100%">
+      <h3>Sidebar Lateral (sempre visível)</h3>
+      <div style="border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;margin-top:12px;background:#fff">
+        <!-- Toolbar -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #eee;font-size:11px;color:#888">
+          <span style="background:#f4f4f4;padding:4px 10px;border-radius:6px">CTB</span>
+          <span style="background:#43505c;color:white;padding:4px 10px;border-radius:20px">Lei Seca ✓</span>
+          <span style="background:#f4f4f4;padding:4px 10px;border-radius:20px">Revogados</span>
+        </div>
+        <!-- Main area -->
+        <div style="display:flex;min-height:320px">
+          <!-- Sidebar -->
+          <div style="width:220px;border-right:1px solid #eee;padding:10px;font-size:11px;flex-shrink:0">
+            <div style="font-weight:600;color:#333;margin-bottom:6px;font-size:12px">Código de Trânsito</div>
+            <div style="background:#f8f8f8;border:1px solid #e5e5e5;border-radius:6px;padding:6px 8px;margin-bottom:10px;display:flex;align-items:center;gap:4px">
+              <span style="color:#bbb">🔍</span>
+              <span style="color:#bbb;font-size:10px">Buscar na estrutura...</span>
+            </div>
+            <div style="border-left:2px solid #e5e5e5;padding-left:8px;margin-left:4px">
+              <div style="color:#43505c;font-weight:600;padding:3px 0">TÍTULO I</div>
+              <div style="color:#888;padding:2px 0 2px 12px">Capítulo I</div>
+              <div style="color:#888;padding:2px 0 2px 12px">Capítulo II</div>
+              <div style="color:#43505c;font-weight:600;padding:3px 0;margin-top:4px">TÍTULO II</div>
+              <div style="color:#888;padding:2px 0 2px 12px">Capítulo I</div>
+              <div style="color:#888;padding:2px 0 2px 12px;background:#f0f4ff;border-radius:4px">▸ Art. 45</div>
+              <div style="color:#888;padding:2px 0 2px 12px">Capítulo II</div>
+              <div style="color:#43505c;font-weight:600;padding:3px 0;margin-top:4px">TÍTULO III</div>
+              <div style="color:#888;padding:2px 0 2px 12px">Capítulo I</div>
+            </div>
+            <div style="margin-top:12px;padding-top:8px;border-top:1px solid #eee;color:#999;font-size:10px">
+              <div style="display:flex;justify-content:space-between"><span>Artigos</span><span style="color:#333;font-weight:500">341</span></div>
+              <div style="display:flex;justify-content:space-between;margin-top:2px"><span>Posição</span><span style="color:#333;font-weight:500">45 / 341</span></div>
+            </div>
+          </div>
+          <!-- Content -->
+          <div style="flex:1;padding:16px 24px;font-size:12px;color:#43505c;line-height:1.7">
+            <div style="color:#bbb;font-size:10px;margin-bottom:8px">TÍTULO II — Capítulo I</div>
+            <div style="margin-bottom:12px"><strong style="text-decoration:underline">Art. 45.</strong> Os sinais de trânsito classificam-se em:</div>
+            <div style="margin-bottom:8px;padding-left:20px"><strong>I</strong> — verticais;</div>
+            <div style="margin-bottom:8px;padding-left:20px"><strong>II</strong> — horizontais;</div>
+            <div style="margin-bottom:8px;padding-left:20px"><strong>III</strong> — dispositivos de sinalização auxiliar.</div>
+            <div style="margin-bottom:12px;margin-top:16px"><strong style="text-decoration:underline">Art. 46.</strong> ...</div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Árvore sempre visível — orientação constante</li>
+          <li>Posição na lei sempre clara (TracingBeam)</li>
+          <li>Já implementado (LeiSecaSidebar)</li>
+          <li>Padrão familiar (VS Code, docs)</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li><strong>~220px de espaço roubado do texto</strong></li>
+          <li>Busca full-text fica separada (ou duplicada)</li>
+          <li>Em telas pequenas vira overlay ou some</li>
+          <li>Duas buscas concorrentes confundem</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: SearchBar only -->
+  <div class="option" data-choice="b-searchbar" onclick="toggleSelect(this)" style="flex:1;padding:0;overflow:hidden;cursor:pointer">
+    <div class="letter">B</div>
+    <div class="content" style="width:100%">
+      <h3>SearchBar na Toolbar (dropdown on-demand)</h3>
+      <div style="border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;margin-top:12px;background:#fff">
+        <!-- Toolbar with search -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #eee;font-size:11px">
+          <span style="background:#f4f4f4;padding:4px 10px;border-radius:6px;color:#555">CTB</span>
+          <!-- Search bar open -->
+          <div style="flex:1;max-width:400px;position:relative">
+            <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid #e0e0e0;border-radius:12px 12px 0 0;background:white;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
+              <span style="color:#bbb">🔍</span>
+              <span style="color:#333;font-size:12px">art 45</span>
+              <span style="color:#999;font-size:9px;margin-left:auto">3 resultados</span>
+              <span style="color:#ccc;cursor:pointer">×</span>
+            </div>
+            <!-- Dropdown -->
+            <div style="position:absolute;left:0;right:0;top:100%;background:white;border:1px solid #e0e0e0;border-top:0;border-radius:0 0 12px 12px;box-shadow:0 8px 20px rgba(0,0,0,0.08);z-index:10;font-size:11px">
+              <div style="padding:6px 12px 3px;color:#bbb;font-size:9px;text-transform:uppercase;letter-spacing:1px">📁 Navegação — 1 item</div>
+              <div style="padding:5px 12px;background:#f8f8f8;color:#333">▸ <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">Art. 45</mark> — Sinalização</div>
+              <div style="height:1px;background:#f0f0f0;margin:4px 8px"></div>
+              <div style="padding:6px 12px 3px;color:#bbb;font-size:9px;text-transform:uppercase;letter-spacing:1px">📄 No texto — 2 resultados</div>
+              <div style="padding:5px 12px;color:#43505c;line-height:1.4">...classificam-se em: verticais, horizontais e <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">dispositivos</mark>...</div>
+              <div style="padding:5px 12px;color:#43505c;line-height:1.4">...infração prevista no <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">art. 45</mark> será punida...</div>
+              <div style="padding:6px 12px;border-top:1px solid #f4f4f4;color:#ccc;font-size:10px">↑↓ navegar · ⏎ ir para · esc fechar</div>
+            </div>
+          </div>
+          <span style="background:#43505c;color:white;padding:4px 10px;border-radius:20px;font-size:11px">Lei Seca ✓</span>
+          <span style="background:#f4f4f4;padding:4px 10px;border-radius:20px;color:#888;font-size:11px">Revogados</span>
+        </div>
+        <!-- Content: full width -->
+        <div style="min-height:320px;padding:20px 40px;font-size:12px;color:#43505c;line-height:1.7">
+          <div style="color:#bbb;font-size:10px;margin-bottom:8px">TÍTULO II — Capítulo I</div>
+          <div style="margin-bottom:12px"><strong style="text-decoration:underline">Art. 44.</strong> Ao ser o veículo apreendido, o condutor...</div>
+          <div style="margin-bottom:12px"><strong style="text-decoration:underline">Art. 45.</strong> Os sinais de trânsito classificam-se em:</div>
+          <div style="margin-bottom:8px;padding-left:20px"><strong>I</strong> — verticais;</div>
+          <div style="margin-bottom:8px;padding-left:20px"><strong>II</strong> — horizontais;</div>
+          <div style="margin-bottom:8px;padding-left:20px"><strong>III</strong> — dispositivos de sinalização auxiliar.</div>
+          <div style="margin-bottom:12px;margin-top:16px"><strong style="text-decoration:underline">Art. 46.</strong> ...</div>
+          <div style="margin-bottom:12px"><strong style="text-decoration:underline">Art. 47.</strong> ...</div>
+          <div style="margin-bottom:12px"><strong style="text-decoration:underline">Art. 48.</strong> ...</div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li><strong>100% da largura para o texto da lei</strong></li>
+          <li>Hierarquia + full-text unificados em um lugar</li>
+          <li>Interface limpa, sem distrações</li>
+          <li>Ctrl+F abre instantaneamente</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Sem orientação visual permanente (onde estou?)</li>
+          <li>Precisa abrir dropdown para navegar</li>
+          <li>Hierarquia flatten perde contexto de aninhamento</li>
+          <li>Bugs atuais (posição hardcoded, sem ↑↓)</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:24px;padding:16px 20px;background:#f8f9fa;border-radius:12px;border:1px solid #e5e5e5">
+  <h3 style="margin:0 0 8px;font-size:14px">🔑 A pergunta central</h3>
+  <p style="margin:0;font-size:13px;color:#555;line-height:1.6">
+    Para estudar lei seca, o que importa mais: <strong>ver onde você está na estrutura da lei o tempo todo</strong> (sidebar) ou <strong>ter máximo espaço para ler o texto</strong> (searchbar)?
+    <br><br>
+    Existe também uma <strong>Opção C: híbrida</strong> — searchbar na toolbar + mini-breadcrumb/indicador de posição que mostra "TÍTULO II › Cap. I › Art. 45" sem ocupar uma sidebar inteira.
+  </p>
+</div>

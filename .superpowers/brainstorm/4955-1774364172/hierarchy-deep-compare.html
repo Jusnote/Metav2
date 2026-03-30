@@ -1,0 +1,365 @@
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .demo-bg {
+    background: linear-gradient(170deg, #fbfcfb 0%, #f5f8f6 40%, #f0f4f1 100%);
+    padding: 16px;
+    border-radius: 12px;
+    position: relative; overflow: hidden;
+  }
+  .demo-bg::before {
+    content: ''; position: absolute; top: -40px; left: -20px;
+    width: 400px; height: 250px;
+    background: radial-gradient(ellipse at 20% 30%, rgba(22,163,74,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .demo-bg > * { position: relative; z-index: 1; }
+
+  .glass-dropdown {
+    font-family: 'Outfit', sans-serif;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .dd-label {
+    font-size: 9px; font-weight: 500; color: #8a9a8f;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 10px 16px 6px;
+  }
+
+  /* ========== B: Nested cards deep ========== */
+  .tree-b { padding: 4px 10px 8px; }
+  .gb {
+    border-radius: 7px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+  .gb-h {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 10px; cursor: pointer;
+    font-size: 11.5px; color: #4a5a50;
+    transition: background 120ms;
+  }
+  .gb-h:hover { background: rgba(22,163,74,0.03); }
+  .gb-h .ch { font-size: 8px; color: #b0c0b5; width: 10px; text-align: center; }
+  .gb-h .ch.open { transform: rotate(90deg); display: inline-block; }
+  .gb-h .nm { font-weight: 500; color: #3a4a40; }
+  .gb-h .ds { color: #8a9a8f; font-weight: 300; font-size: 11px; }
+  .gb-h .ct { margin-left: auto; font-size: 8.5px; color: #a0b0a5; background: rgba(22,163,74,0.06); padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+  .gb-c {
+    border-top: 1px solid rgba(0,0,0,0.03);
+    padding: 3px 6px 3px 14px;
+  }
+  .gb-c .gb { background: rgba(255,255,255,0.4); }
+  .gb-active > .gb-h { background: rgba(22,163,74,0.06); }
+  .gb-active > .gb-h .nm { color: #16a34a; }
+  .gb-art {
+    padding: 2px 10px 2px 8px;
+    font-size: 10.5px; color: #7a8a80; cursor: pointer;
+    border-radius: 4px; transition: all 120ms;
+  }
+  .gb-art:hover { background: rgba(22,163,74,0.04); }
+  .gb-art.cur { color: #16a34a; font-weight: 500; background: rgba(22,163,74,0.07); }
+
+  /* Problem indicator */
+  .problem-zone {
+    position: relative;
+  }
+  .problem-zone::after {
+    content: '← ~40px de texto restante';
+    position: absolute; right: -200px; top: 50%; transform: translateY(-50%);
+    font-size: 10px; color: #e74c3c; white-space: nowrap; font-weight: 400;
+  }
+
+  /* ========== C: Connected tree deep ========== */
+  .tree-c { padding: 6px 12px 8px 20px; }
+  .cn {
+    position: relative;
+    padding-left: 22px;
+  }
+  .cn::before {
+    content: ''; position: absolute;
+    left: 6px; top: 18px; bottom: 0;
+    width: 1.5px; background: rgba(22,163,74,0.1);
+  }
+  .cn:last-child::before { display: none; }
+  .cn-row {
+    display: flex; align-items: center; gap: 7px;
+    padding: 4px 8px; cursor: pointer;
+    transition: all 120ms; border-radius: 6px;
+    font-size: 12px; color: #4a5a50;
+    position: relative;
+  }
+  .cn-row:hover { background: rgba(22,163,74,0.04); }
+  .cn-row::before {
+    content: ''; position: absolute;
+    left: -16px; top: 50%;
+    width: 11px; height: 1.5px;
+    background: rgba(22,163,74,0.1);
+  }
+  .cc {
+    width: 7px; height: 7px; border-radius: 50%;
+    border: 1.5px solid #b0c0b5;
+    background: #fff; flex-shrink: 0;
+  }
+  .cn-row:hover .cc { border-color: #16a34a; }
+  .cn-row.active .cc {
+    border-color: #16a34a; background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+  }
+  .cn-type { font-size: 8.5px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #8a9a8f; flex-shrink: 0; }
+  .cn-name { color: #3a4a40; }
+  .cn-desc { font-size: 11px; color: #9aaa9f; font-weight: 300; }
+  .cn-row.active .cn-name { color: #16a34a; font-weight: 500; }
+
+  .cn-art {
+    position: relative; padding-left: 22px;
+    display: flex; align-items: center; gap: 5px;
+    padding-top: 2px; padding-bottom: 2px;
+    cursor: pointer; font-size: 11px; color: #7a8a80;
+    transition: all 120ms;
+  }
+  .cn-art::before {
+    content: ''; position: absolute;
+    left: -8px; top: 50%;
+    width: 7px; height: 1.5px;
+    background: rgba(22,163,74,0.08);
+  }
+  .cn-art:hover { color: #3a5540; }
+  .cn-art.cur { color: #16a34a; font-weight: 500; }
+  .cn-art-dot { width: 4px; height: 4px; border-radius: 50%; background: #d5e4d9; flex-shrink: 0; }
+  .cn-art.cur .cn-art-dot { background: #4ade80; }
+
+  .dd-footer {
+    display: flex; gap: 14px; padding: 6px 16px;
+    border-top: 1px solid rgba(22,163,74,0.06);
+    font-size: 10px; color: #b0c0b5; font-weight: 300;
+    background: rgba(255,255,255,0.4);
+  }
+
+  .verdict {
+    margin-top: 8px; padding: 12px 16px;
+    background: rgba(22,163,74,0.04); border-radius: 8px;
+    border-left: 3px solid #16a34a;
+    font-family: 'Outfit', sans-serif; font-size: 12px; color: #3a5540;
+    line-height: 1.6;
+  }
+  .verdict b { font-weight: 600; }
+</style>
+
+<h2>Hierarquia profunda — B vs C</h2>
+<p class="subtitle">Código Civil: Parte Especial > Livro I > Título I > Capítulo I > Seção I > Subseção I > Art. 1º</p>
+
+<!-- B: Nested cards deep -->
+<div class="section">
+  <div class="label">B — Nested cards com 7 níveis</div>
+  <div class="mockup">
+    <div class="mockup-header">O problema: cada nível come ~18px de padding</div>
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <div class="glass-dropdown" style="max-width: 480px;">
+          <div class="dd-label">Navegação</div>
+          <div class="tree-b">
+            <div class="gb">
+              <div class="gb-h">
+                <span class="ch open">›</span>
+                <span class="nm">Parte Especial</span>
+                <span class="ct">5 livros</span>
+              </div>
+              <div class="gb-c">
+                <div class="gb">
+                  <div class="gb-h">
+                    <span class="ch open">›</span>
+                    <span class="nm">Livro I</span>
+                    <span class="ds">— Do Direito das Obrigações</span>
+                    <span class="ct">10 títs</span>
+                  </div>
+                  <div class="gb-c">
+                    <div class="gb">
+                      <div class="gb-h">
+                        <span class="ch open">›</span>
+                        <span class="nm">Título I</span>
+                        <span class="ds">— Das modalidades</span>
+                        <span class="ct">4 caps</span>
+                      </div>
+                      <div class="gb-c">
+                        <div class="gb">
+                          <div class="gb-h">
+                            <span class="ch open">›</span>
+                            <span class="nm">Cap. I</span>
+                            <span class="ds">— Das obrigações de dar</span>
+                            <span class="ct">3 seções</span>
+                          </div>
+                          <div class="gb-c">
+                            <div class="gb gb-active">
+                              <div class="gb-h">
+                                <span class="ch open">›</span>
+                                <span class="nm">Seção I</span>
+                                <span class="ds">— Dar coisa certa</span>
+                              </div>
+                              <div class="gb-c problem-zone">
+                                <div class="gb gb-active">
+                                  <div class="gb-h" style="padding: 4px 6px;">
+                                    <span class="ch open">›</span>
+                                    <span class="nm" style="font-size: 10px;">Subseção I</span>
+                                  </div>
+                                  <div class="gb-c" style="padding: 2px 4px 2px 8px;">
+                                    <div class="gb-art cur" style="font-size: 9.5px;">Art. 233</div>
+                                    <div class="gb-art" style="font-size: 9.5px;">Art. 234</div>
+                                    <div class="gb-art" style="font-size: 9.5px;">Art. 235</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="gb">
+                              <div class="gb-h">
+                                <span class="ch">›</span>
+                                <span class="nm">Seção II</span>
+                                <span class="ds">— Dar coisa incerta</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="verdict">
+    <b>Problema:</b> 7 níveis × ~18px de padding = ~126px comidos. Num dropdown de 480px, sobram ~40px pro texto. Fontes ficam minúsculas, cards ficam esmagados. Funciona bem até 4 níveis, mas o CC tem até 7.
+  </div>
+</div>
+
+<!-- C: Connected tree deep -->
+<div class="section" style="margin-top: 24px;">
+  <div class="label">C — Connected tree com 7 níveis</div>
+  <div class="mockup">
+    <div class="mockup-header">Escala melhor: cada nível custa só ~22px, linhas conectam visualmente</div>
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <div class="glass-dropdown" style="max-width: 480px;">
+          <div class="dd-label">Navegação</div>
+          <div class="tree-c">
+            <!-- Parte Especial -->
+            <div class="cn">
+              <div class="cn-row">
+                <span class="cc" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                <span class="cn-type">Parte</span>
+                <span class="cn-name">Parte Especial</span>
+              </div>
+              <!-- Livro I -->
+              <div class="cn">
+                <div class="cn-row">
+                  <span class="cc" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                  <span class="cn-type">Livro I</span>
+                  <span class="cn-name">Do Direito das Obrigações</span>
+                </div>
+                <!-- Título I -->
+                <div class="cn">
+                  <div class="cn-row">
+                    <span class="cc" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                    <span class="cn-type">Tít. I</span>
+                    <span class="cn-name">Das modalidades</span>
+                  </div>
+                  <!-- Capítulo I -->
+                  <div class="cn">
+                    <div class="cn-row">
+                      <span class="cc" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                      <span class="cn-type">Cap. I</span>
+                      <span class="cn-name">Das obrigações de dar</span>
+                    </div>
+                    <!-- Seção I -->
+                    <div class="cn">
+                      <div class="cn-row">
+                        <span class="cc" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                        <span class="cn-type">Seção I</span>
+                        <span class="cn-name">Dar coisa certa</span>
+                      </div>
+                      <!-- Subseção I -->
+                      <div class="cn">
+                        <div class="cn-row active">
+                          <span class="cc"></span>
+                          <span class="cn-type">Subseção I</span>
+                          <span class="cn-name">Disposições gerais</span>
+                        </div>
+                        <!-- Artigos -->
+                        <div style="padding-left: 4px;">
+                          <div class="cn-art cur">
+                            <span class="cn-art-dot"></span>
+                            Art. 233 — A obrigação de dar coisa certa abrange...
+                          </div>
+                          <div class="cn-art">
+                            <span class="cn-art-dot"></span>
+                            Art. 234 — Se a coisa se perder sem culpa...
+                          </div>
+                          <div class="cn-art">
+                            <span class="cn-art-dot"></span>
+                            Art. 235 — Deteriorada a coisa, não sendo...
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Seção II -->
+                    <div class="cn">
+                      <div class="cn-row">
+                        <span class="cc"></span>
+                        <span class="cn-type">Seção II</span>
+                        <span class="cn-name">Dar coisa incerta</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Título II -->
+                <div class="cn">
+                  <div class="cn-row">
+                    <span class="cc"></span>
+                    <span class="cn-type">Tít. II</span>
+                    <span class="cn-name">Da transmissão das obrigações</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dd-footer">
+            <span style="font-size:10px; color: #b0c0b5;">↑↓ navegar · → expandir · ← colapsar · ⏎ ir · esc</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="verdict">
+    <b>Vantagem:</b> 7 níveis × ~22px = ~154px, mas sem bordas/padding extras de cards. Texto do artigo ainda tem ~260px+ de espaço. Linhas conectoras mostram pertencimento sem containers. Labels de tipo (Parte, Livro, Tít, Cap, Seção) dão hierarquia semântica. Escala de 2 a 7 níveis sem degradar.
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="options">
+    <div class="option" data-choice="c-tree" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>Ir com Connected Tree</h3>
+        <p>Escala melhor, mantém texto legível em qualquer profundidade, visual premium com linhas + circles</p>
+      </div>
+    </div>
+    <div class="option" data-choice="b-hybrid" onclick="toggleSelect(this)">
+      <div class="letter">B+C</div>
+      <div class="content">
+        <h3>Híbrido: cards nos top levels + tree nos deep</h3>
+        <p>Cards para Parte/Livro (2 primeiros), connected tree de Título pra baixo. Melhor dos dois mundos?</p>
+      </div>
+    </div>
+  </div>
+</div>

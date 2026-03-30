@@ -1,0 +1,127 @@
+<h2>Recomendação: SearchBar + Breadcrumb (Híbrida)</h2>
+<p class="subtitle">Máximo espaço para leitura + orientação permanente sem sidebar</p>
+
+<div class="mockup">
+  <div class="mockup-header">Lei Seca — Visão completa com breadcrumb</div>
+  <div class="mockup-body" style="padding:0;background:#fff">
+    <!-- Toolbar -->
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid #eee;font-size:11px;background:#fff">
+      <select style="font-size:11px;padding:4px 8px;border:1px solid #e5e5e5;border-radius:6px;color:#555;background:#fafafa;font-family:Outfit,sans-serif">
+        <option>Código de Trânsito Brasileiro</option>
+      </select>
+
+      <!-- Search bar (closed state) -->
+      <div style="flex:1;max-width:480px;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e5e5e5;border-radius:20px;background:white;cursor:pointer">
+        <span style="color:#bbb;font-size:13px">🔍</span>
+        <span style="color:#bbb;font-size:12px;flex:1">Buscar na lei...</span>
+        <span style="color:#ddd;font-size:9px;background:#f8f8f8;padding:2px 6px;border-radius:4px;font-family:monospace">Ctrl+F</span>
+      </div>
+
+      <button style="padding:4px 12px;border-radius:20px;background:#43505c;color:white;border:none;font-size:11px;font-family:Outfit,sans-serif">Lei Seca ✓</button>
+      <button style="padding:4px 12px;border-radius:20px;background:#f4f4f4;color:#888;border:none;font-size:11px;font-family:Outfit,sans-serif">Revogados</button>
+      <div style="display:flex;gap:4px;align-items:center">
+        <button style="width:24px;height:24px;border-radius:50%;background:#f4f4f4;border:none;font-size:10px;color:#888;font-weight:bold">A-</button>
+        <span style="font-size:10px;color:#ccc">16</span>
+        <button style="width:24px;height:24px;border-radius:50%;background:#f4f4f4;border:none;font-size:12px;color:#888;font-weight:bold">A+</button>
+      </div>
+      <span style="font-size:9px;color:#ddd">J/K · L · R</span>
+    </div>
+
+    <!-- Reading progress bar -->
+    <div style="height:2px;background:#f0f0f0">
+      <div style="height:2px;background:linear-gradient(90deg,#43505c,#6b7d8e);width:35%;border-radius:1px"></div>
+    </div>
+
+    <!-- ★ BREADCRUMB — the key addition ★ -->
+    <div style="display:flex;align-items:center;gap:6px;padding:5px 40px;background:#fafbfc;border-bottom:1px solid #f0f0f0;font-size:11px;font-family:Outfit,sans-serif">
+      <span style="color:#bbb">📍</span>
+      <span style="color:#999">TÍTULO II</span>
+      <span style="color:#ddd">›</span>
+      <span style="color:#999">Capítulo I — Da Sinalização</span>
+      <span style="color:#ddd">›</span>
+      <span style="color:#43505c;font-weight:600">Art. 45</span>
+      <span style="margin-left:auto;color:#ccc;font-size:10px">45 / 341</span>
+    </div>
+
+    <!-- Main content: FULL WIDTH -->
+    <div style="padding:24px 40px;font-size:13px;color:rgb(67,80,92);line-height:1.8;font-family:Literata,Georgia,serif;max-width:780px;margin:0 auto">
+      <div style="margin-bottom:16px">
+        <strong style="text-decoration:underline">Art. 44.</strong> Ao ser o veículo apreendido, será expedido ao condutor documento autorizando a circulação no prazo fixado pelo CONTRAN.
+      </div>
+      <div style="margin-bottom:16px;background:#f8f9ff;padding:12px 16px;border-radius:8px;border-left:3px solid #43505c">
+        <strong style="text-decoration:underline">Art. 45.</strong> Os sinais de trânsito classificam-se em:
+      </div>
+      <div style="margin-bottom:10px;padding-left:28px">
+        <strong>I</strong> — verticais;
+      </div>
+      <div style="margin-bottom:10px;padding-left:28px">
+        <strong>II</strong> — horizontais;
+      </div>
+      <div style="margin-bottom:10px;padding-left:28px">
+        <strong>III</strong> — dispositivos de sinalização auxiliar.
+      </div>
+      <div style="margin-bottom:16px;margin-top:24px">
+        <strong style="text-decoration:underline">Art. 46.</strong> O Anexo II deste Código estabelece os sinais de trânsito e seus significados.
+      </div>
+      <div style="margin-bottom:16px">
+        <strong style="text-decoration:underline">Art. 47.</strong> São válidos os sinais de trânsito regulamentados neste Código e seus anexos.
+      </div>
+      <div style="margin-bottom:16px">
+        <strong style="text-decoration:underline">Art. 48.</strong> As placas de sinalização deverão ser mantidas em perfeitas condições de visibilidade.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:24px">
+  <h3 style="font-size:14px;margin-bottom:16px">Como cada parte resolve cada necessidade:</h3>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+  <!-- Breadcrumb detail -->
+  <div style="background:#f8f9fa;border:1px solid #e5e5e5;border-radius:12px;padding:16px">
+    <div style="font-weight:600;font-size:13px;margin-bottom:8px">📍 Breadcrumb (30px de altura)</div>
+    <ul style="font-size:12px;color:#555;margin:0;padding-left:16px;line-height:1.8">
+      <li>Atualiza automaticamente ao scrollar (via activeArtigoStore)</li>
+      <li>Clicável: cada segmento abre o dropdown filtrado</li>
+      <li>Mostra posição: "45 / 341" alinhado à direita</li>
+      <li>Custo: <strong>0px de largura, ~30px de altura</strong></li>
+    </ul>
+  </div>
+  <!-- Search detail -->
+  <div style="background:#f8f9fa;border:1px solid #e5e5e5;border-radius:12px;padding:16px">
+    <div style="font-weight:600;font-size:13px;margin-bottom:8px">🔍 UnifiedSearchBar (corrigida)</div>
+    <ul style="font-size:12px;color:#555;margin:0;padding-left:16px;line-height:1.8">
+      <li>Ctrl+F vazio → árvore com indentação real</li>
+      <li>Ctrl+F com texto → hierarquia filtrada + full-text API</li>
+      <li>↑↓ para navegar, Enter para ir</li>
+      <li>Fix: posição correta (não hardcoded 0)</li>
+    </ul>
+  </div>
+</div>
+
+<h3 style="font-size:14px;margin-bottom:12px">O que muda no código:</h3>
+<div style="background:#1e1e1e;color:#d4d4d4;border-radius:12px;padding:16px;font-size:12px;font-family:'Fira Code',monospace;line-height:1.6;overflow-x:auto">
+  <div style="color:#6a9955">// Novo: BreadcrumbBar.tsx (~60 linhas)</div>
+  <div><span style="color:#569cd6">export function</span> <span style="color:#dcdcaa">BreadcrumbBar</span>() {</div>
+  <div style="padding-left:16px"><span style="color:#569cd6">const</span> activeIndex = <span style="color:#dcdcaa">useActiveArtigoIndex</span>()</div>
+  <div style="padding-left:16px"><span style="color:#569cd6">const</span> { dispositivos, currentLei } = <span style="color:#dcdcaa">useLeiSeca</span>()</div>
+  <div style="padding-left:16px"><span style="color:#6a9955">// Resolve: dispositivo → path → breadcrumb segments</span></div>
+  <div>}</div>
+  <br>
+  <div style="color:#6a9955">// Fix: UnifiedSearchBar.tsx</div>
+  <div style="color:#ce9178">- onClick={() => handleSelectHit(0)} <span style="color:#f44">// BUG: hardcoded</span></div>
+  <div style="color:#b5cea8">+ onClick={() => handleSelectByPath(item.path)} <span style="color:#6a9955">// resolve path → posição</span></div>
+  <br>
+  <div style="color:#6a9955">// Remove: LeiSecaSidebar.tsx (redundante)</div>
+  <div style="color:#ce9178">- sidebar hierarchy search (agora no SearchBar)</div>
+  <div style="color:#ce9178">- sidebar tree (substituído por breadcrumb + dropdown)</div>
+</div>
+
+<div style="margin-top:24px;padding:16px 20px;background:#e8f5e9;border-radius:12px;border:1px solid #c8e6c9">
+  <h3 style="margin:0 0 6px;font-size:14px;color:#2e7d32">Resultado final</h3>
+  <p style="margin:0;font-size:13px;color:#555;line-height:1.6">
+    <strong>100% da largura para texto</strong> + orientação permanente via breadcrumb + busca unificada via Ctrl+F.
+    Melhor dos dois mundos. Remove a sidebar redundante e corrige os bugs da searchbar atual.
+  </p>
+</div>

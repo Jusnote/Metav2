@@ -1,0 +1,255 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .demo-bg {
+    background: linear-gradient(170deg, #fbfcfb 0%, #f5f8f6 40%, #f0f4f1 100%);
+    padding: 24px 20px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-bg::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -20px;
+    width: 400px; height: 250px;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(22,163,74,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.025) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .demo-bg > * { position: relative; z-index: 1; }
+
+  /* Shared glass bar */
+  .glass-bar {
+    font-family: 'Outfit', sans-serif;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.03),
+      0 4px 16px rgba(0,0,0,0.02),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+    transition: all 200ms;
+  }
+
+  .glass-input {
+    flex: 1; border: none; outline: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12.5px; font-weight: 400;
+    color: #2a3a30; background: transparent;
+    min-width: 0;
+  }
+  .glass-input::placeholder { color: #a0b0a5; font-weight: 300; }
+
+  /* Dropdown */
+  .glass-dropdown {
+    font-family: 'Outfit', sans-serif;
+    margin-top: 6px;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow:
+      0 4px 24px rgba(0,0,0,0.06),
+      0 12px 48px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    max-height: 380px;
+  }
+
+  .dd-section-label {
+    font-size: 9px; font-weight: 500; color: #8a9a8f;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 10px 16px 4px;
+  }
+  .dd-section-label span { font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+  /* Tree items */
+  .tree-branch {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 16px; cursor: pointer;
+    transition: background 120ms;
+    font-size: 12px; color: #5a6a60;
+  }
+  .tree-branch:hover { background: rgba(22,163,74,0.04); }
+  .tree-branch .chev { font-size: 8px; color: #b0c0b5; transition: transform 200ms; width: 12px; text-align: center; }
+  .tree-branch .chev.open { transform: rotate(90deg); }
+  .tree-branch.active { color: #16a34a; font-weight: 500; }
+
+  .tree-artigo {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 16px 4px 38px; cursor: pointer;
+    font-size: 11.5px; color: #7a8a80;
+    transition: all 120ms;
+  }
+  .tree-artigo:hover { background: rgba(22,163,74,0.04); color: #3a5540; }
+  .tree-artigo.current {
+    color: #16a34a; font-weight: 500;
+    background: rgba(22,163,74,0.06);
+    border-left: 2px solid #16a34a;
+    margin-left: -1px;
+  }
+
+  /* Search hits */
+  .search-hit {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 120ms;
+    border-left: 2px solid transparent;
+  }
+  .search-hit:hover {
+    background: rgba(22,163,74,0.04);
+    border-left-color: #16a34a;
+  }
+  .search-hit.selected {
+    background: rgba(22,163,74,0.06);
+    border-left-color: #16a34a;
+  }
+  .search-hit-text {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 12.5px; color: #4a5a50; line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .search-hit-text mark { background: rgba(74,222,128,0.25); color: inherit; border-radius: 2px; padding: 0 1px; }
+  .search-hit-meta {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9.5px; color: #a0b0a5; margin-top: 2px; font-weight: 300;
+  }
+
+  /* Footer */
+  .dd-footer {
+    display: flex; gap: 14px; padding: 6px 16px;
+    border-top: 1px solid rgba(22,163,74,0.06);
+    font-size: 10px; color: #b0c0b5; font-weight: 300;
+    background: rgba(255,255,255,0.4);
+  }
+  .dd-footer kbd {
+    font-family: ui-monospace, monospace; font-size: 9px;
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.06);
+    padding: 0 4px; border-radius: 3px; margin-right: 3px;
+  }
+
+  .divider { height: 1px; background: rgba(22,163,74,0.06); margin: 4px 16px; }
+</style>
+
+<h2>Glass Breadcrumb — 3 estados</h2>
+<p class="subtitle">Mesmo container glass, transição entre estados. Scroll para ver todos.</p>
+
+<!-- STATE 1: CLOSED -->
+<div class="section">
+  <div class="label">Estado 1 — Fechada (breadcrumb)</div>
+  <div class="mockup">
+    <div class="mockup-header">Breadcrumb collapsed</div>
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <div class="glass-bar" style="cursor: pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-size: 11.5px; color: #8a9a8f; font-weight: 400;">Parte Especial</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #c5d4c9;"></span>
+          <span style="font-size: 11.5px; color: #8a9a8f;">Título I</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #c5d4c9;"></span>
+          <span style="font-size: 11.5px; color: #3a5540; font-weight: 500;">Cap. I — Dos crimes contra a vida</span>
+          <span style="margin-left: auto; display: flex; align-items: center; gap: 8px; padding-left: 12px;">
+            <span style="font-size: 10px; color: #9aaa9f; font-variant-numeric: tabular-nums;">121 / 615</span>
+            <span style="font-size: 9px; color: #9aaa9f; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.06); padding: 1px 6px; border-radius: 4px; font-family: ui-monospace, monospace;">⌘F</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATE 2: OPEN (input, no search yet) -->
+<div class="section">
+  <div class="label">Estado 2 — Aberta (input vazio, mostra hierarquia)</div>
+  <div class="mockup">
+    <div class="mockup-header">Search open + hierarchy dropdown</div>
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <!-- Input bar -->
+        <div class="glass-bar" style="border-color: rgba(22,163,74,0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 0 3px rgba(22,163,74,0.06);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="glass-input" placeholder="Buscar artigo, tema, palavra..." disabled style="pointer-events:none;">
+          <span style="font-size: 9px; color: #b0c0b5; font-weight: 300;">esc</span>
+        </div>
+        <!-- Dropdown -->
+        <div class="glass-dropdown">
+          <div class="dd-section-label">Navegação</div>
+          <div class="tree-branch"><span class="chev open">›</span> <span>Parte Geral</span></div>
+          <div class="tree-branch" style="padding-left: 32px;"><span class="chev">›</span> <span>Título I — Da aplicação da lei penal</span></div>
+          <div class="tree-branch" style="padding-left: 32px;"><span class="chev">›</span> <span>Título II — Do crime</span></div>
+          <div class="tree-branch"><span class="chev open">›</span> <span>Parte Especial</span></div>
+          <div class="tree-branch active" style="padding-left: 32px;"><span class="chev open">›</span> <span>Título I — Dos crimes contra a pessoa</span></div>
+          <div class="tree-branch" style="padding-left: 48px;"><span class="chev open">›</span> <span>Cap. I — Dos crimes contra a vida</span></div>
+          <div class="tree-artigo current" style="padding-left: 62px;">Art. 121 — Homicídio simples</div>
+          <div class="tree-artigo" style="padding-left: 62px;">Art. 122 — Induzimento ao suicídio</div>
+          <div class="tree-artigo" style="padding-left: 62px;">Art. 123 — Infanticídio</div>
+          <div class="tree-branch" style="padding-left: 48px;"><span class="chev">›</span> <span>Cap. II — Das lesões corporais</span></div>
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+            <span><kbd>→</kbd> expandir</span>
+            <span><kbd>←</kbd> colapsar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATE 3: OPEN with search results -->
+<div class="section">
+  <div class="label">Estado 3 — Aberta com busca (hierarquia filtrada + resultados no texto)</div>
+  <div class="mockup">
+    <div class="mockup-header">Search with results</div>
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <!-- Input bar with query -->
+        <div class="glass-bar" style="border-color: rgba(22,163,74,0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 0 3px rgba(22,163,74,0.06);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-size: 12.5px; color: #2a3a30; font-weight: 400;">homicídio</span>
+          <span style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 9.5px; color: #9aaa9f; font-weight: 300;">14 resultados</span>
+            <span style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; color: #b0c0b5; font-size: 14px; cursor: pointer; border-radius: 50; transition: background 120ms;">×</span>
+          </span>
+        </div>
+        <!-- Dropdown with filtered tree + search hits -->
+        <div class="glass-dropdown">
+          <div class="dd-section-label">Navegação <span>— 3 itens</span></div>
+          <div class="tree-branch"><span class="chev open">›</span> <span>Parte Especial</span></div>
+          <div class="tree-branch" style="padding-left: 32px;"><span class="chev open">›</span> <span>Título I — Dos crimes contra a pessoa</span></div>
+          <div class="tree-branch" style="padding-left: 48px;"><span class="chev">›</span> <span>Cap. I — Dos crimes contra a vida</span></div>
+
+          <div class="divider"></div>
+
+          <div class="dd-section-label">No texto <span>— 14 resultados</span></div>
+          <div class="search-hit selected">
+            <div class="search-hit-text"><b style="font-weight:600; color: #1a2a1f;">Art. 121.</b> Matar alguem: Pena — reclusão... § 2º Se o <mark>homicídio</mark> é cometido:</div>
+            <div class="search-hit-meta">Código Penal · Art. 121</div>
+          </div>
+          <div class="search-hit">
+            <div class="search-hit-text">§ 1º Se o agente comete o crime impelido por motivo de relevante valor social... o juiz pode reduzir a pena — <mark>Homicídio</mark> privilegiado</div>
+            <div class="search-hit-meta">Código Penal · Art. 121, § 1º</div>
+          </div>
+          <div class="search-hit">
+            <div class="search-hit-text">§ 2º-A Considera-se que há razões de condição de sexo feminino quando o crime envolve: feminicídio — <mark>homicídio</mark> qualificado</div>
+            <div class="search-hit-meta">Código Penal · Art. 121, § 2º-A</div>
+          </div>
+
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

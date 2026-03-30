@@ -1,0 +1,123 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .lei-content {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: rgb(67, 80, 92);
+    max-width: 700px;
+    text-align: justify;
+  }
+  .lei-content b { font-weight: 700; color: #1a1a1a; }
+  .anot { font-size: 12px; font-weight: 300; color: #ccc; margin-left: 6px; }
+  .par { padding-left: 34px; margin-bottom: 8px; position: relative; }
+  .par::before { content: '›'; position: absolute; left: 20px; color: #d0d0d0; font-size: 14px; }
+  .inc { padding-left: 58px; margin-bottom: 6px; position: relative; }
+  .inc::before { content: '›'; position: absolute; left: 44px; color: #d8d8d8; font-size: 13px; }
+
+  /* Highlight colors */
+  .h-yellow-a { background: rgba(250, 204, 21, 0.3); border-radius: 2px; padding: 1px 0; }
+  .h-green-a { background: rgba(74, 222, 128, 0.25); border-radius: 2px; padding: 1px 0; }
+  .h-blue-a { background: rgba(96, 165, 250, 0.25); border-radius: 2px; padding: 1px 0; }
+  .h-pink-a { background: rgba(244, 114, 182, 0.25); border-radius: 2px; padding: 1px 0; }
+  .h-orange-a { background: rgba(251, 146, 60, 0.25); border-radius: 2px; padding: 1px 0; }
+
+  .h-yellow-b { text-decoration: underline; text-decoration-color: rgba(250, 204, 21, 0.8); text-underline-offset: 2px; text-decoration-thickness: 3px; }
+  .h-green-b { text-decoration: underline; text-decoration-color: rgba(74, 222, 128, 0.7); text-underline-offset: 2px; text-decoration-thickness: 3px; }
+  .h-blue-b { text-decoration: underline; text-decoration-color: rgba(96, 165, 250, 0.7); text-underline-offset: 2px; text-decoration-thickness: 3px; }
+  .h-pink-b { text-decoration: underline; text-decoration-color: rgba(244, 114, 182, 0.7); text-underline-offset: 2px; text-decoration-thickness: 3px; }
+  .h-orange-b { text-decoration: underline; text-decoration-color: rgba(251, 146, 60, 0.7); text-underline-offset: 2px; text-decoration-thickness: 3px; }
+
+  .h-yellow-c { background: rgba(250, 204, 21, 0.2); border-radius: 2px; padding: 1px 0; box-shadow: -3px 0 0 rgba(250, 204, 21, 0.5); }
+  .h-green-c { background: rgba(74, 222, 128, 0.15); border-radius: 2px; padding: 1px 0; box-shadow: -3px 0 0 rgba(74, 222, 128, 0.5); }
+  .h-blue-c { background: rgba(96, 165, 250, 0.15); border-radius: 2px; padding: 1px 0; box-shadow: -3px 0 0 rgba(96, 165, 250, 0.5); }
+  .h-pink-c { background: rgba(244, 114, 182, 0.15); border-radius: 2px; padding: 1px 0; box-shadow: -3px 0 0 rgba(244, 114, 182, 0.5); }
+  .h-orange-c { background: rgba(251, 146, 60, 0.15); border-radius: 2px; padding: 1px 0; box-shadow: -3px 0 0 rgba(251, 146, 60, 0.5); }
+
+  .style-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #16a34a; margin-bottom: 8px; margin-top: 4px;
+  }
+</style>
+
+<h2>Grifo — Como aparece no texto?</h2>
+<p class="subtitle">Mesmo trecho com 3 estilos diferentes. Todas as 5 cores representadas.</p>
+
+<div class="cards" style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Option A: Background -->
+  <div class="card" data-choice="background" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image" style="padding: 24px 20px; background: #fff;">
+      <div class="style-label">A — Background (marca-texto)</div>
+      <div class="lei-content">
+        <div style="margin-bottom: 8px;">
+          <b>Art. 121.</b> Matar alguem:
+          <span class="anot">(Redação dada pela Lei nº 7.209, de 11.7.1984)</span>
+        </div>
+        <div class="par">
+          <b>§ 2º</b> Se o <span class="h-yellow-a">homicídio é cometido</span>:
+        </div>
+        <div class="inc">I — <span class="h-pink-a">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+        <div class="inc">II — por <span class="h-blue-a">motivo futil</span>;</div>
+        <div class="inc">III — com emprego de <span class="h-orange-a">veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel</span>, ou de que possa resultar perigo comum;</div>
+        <div class="inc">IV — à <span class="h-green-a">traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossível a defesa do ofendido</span>;</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Background colorido</h3>
+      <p>Marca-texto clássico. Familiar, natural, fácil de escanear. O mais usado em apps de leitura (Kindle, Apple Books, Notion).</p>
+    </div>
+  </div>
+
+  <!-- Option B: Underline -->
+  <div class="card" data-choice="underline" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image" style="padding: 24px 20px; background: #fff;">
+      <div class="style-label">B — Underline colorido</div>
+      <div class="lei-content">
+        <div style="margin-bottom: 8px;">
+          <b>Art. 121.</b> Matar alguem:
+          <span class="anot">(Redação dada pela Lei nº 7.209, de 11.7.1984)</span>
+        </div>
+        <div class="par">
+          <b>§ 2º</b> Se o <span class="h-yellow-b">homicídio é cometido</span>:
+        </div>
+        <div class="inc">I — <span class="h-pink-b">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+        <div class="inc">II — por <span class="h-blue-b">motivo futil</span>;</div>
+        <div class="inc">III — com emprego de <span class="h-orange-b">veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel</span>, ou de que possa resultar perigo comum;</div>
+        <div class="inc">IV — à <span class="h-green-b">traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossível a defesa do ofendido</span>;</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Underline grosso</h3>
+      <p>Sublinhado de 3px na cor do grifo. Mais discreto, não compete com o texto. Mas menos visível ao escanear rápido, e pode confundir com links.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Background + border -->
+  <div class="card" data-choice="background-border" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image" style="padding: 24px 20px; background: #fff;">
+      <div class="style-label">C — Background + borda lateral</div>
+      <div class="lei-content">
+        <div style="margin-bottom: 8px;">
+          <b>Art. 121.</b> Matar alguem:
+          <span class="anot">(Redação dada pela Lei nº 7.209, de 11.7.1984)</span>
+        </div>
+        <div class="par">
+          <b>§ 2º</b> Se o <span class="h-yellow-c">homicídio é cometido</span>:
+        </div>
+        <div class="inc">I — <span class="h-pink-c">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+        <div class="inc">II — por <span class="h-blue-c">motivo futil</span>;</div>
+        <div class="inc">III — com emprego de <span class="h-orange-c">veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel</span>, ou de que possa resultar perigo comum;</div>
+        <div class="inc">IV — à <span class="h-green-c">traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossível a defesa do ofendido</span>;</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Background suave + borda lateral</h3>
+      <p>Background mais leve que A, com borda esquerda de 3px na cor. Boa pra trechos longos que cruzam linhas — a borda ancora visualmente. Um pouco mais "premium".</p>
+    </div>
+  </div>
+
+</div>

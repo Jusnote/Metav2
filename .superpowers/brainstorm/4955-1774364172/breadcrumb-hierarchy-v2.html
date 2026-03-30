@@ -1,0 +1,511 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .demo-bg {
+    background: linear-gradient(170deg, #fbfcfb 0%, #f5f8f6 40%, #f0f4f1 100%);
+    padding: 24px 20px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-bg::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -20px;
+    width: 400px; height: 250px;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(22,163,74,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.025) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .demo-bg > * { position: relative; z-index: 1; }
+
+  .glass-bar {
+    font-family: 'Outfit', sans-serif;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .glass-input {
+    flex: 1; border: none; outline: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12.5px; color: #2a3a30; background: transparent;
+  }
+  .glass-input::placeholder { color: #a0b0a5; font-weight: 300; }
+
+  .glass-dropdown {
+    font-family: 'Outfit', sans-serif;
+    margin-top: 6px;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .dd-section-label {
+    font-size: 9px; font-weight: 500; color: #8a9a8f;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 10px 16px 6px;
+  }
+
+  .dd-footer {
+    display: flex; gap: 14px; padding: 6px 16px;
+    border-top: 1px solid rgba(22,163,74,0.06);
+    font-size: 10px; color: #b0c0b5; font-weight: 300;
+    background: rgba(255,255,255,0.4);
+  }
+  .dd-footer kbd {
+    font-family: ui-monospace, monospace; font-size: 9px;
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.06);
+    padding: 0 4px; border-radius: 3px; margin-right: 3px;
+  }
+
+  /* ========== OPTION A: Indent lines ========== */
+  .tree-a { padding: 4px 12px 8px; }
+  .node-a {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px; cursor: pointer;
+    transition: background 120ms;
+    font-size: 12px; color: #5a6a60;
+    position: relative;
+    border-radius: 6px;
+  }
+  .node-a:hover { background: rgba(22,163,74,0.05); }
+  .node-a .chev { font-size: 9px; color: #b0c0b5; width: 12px; text-align: center; transition: transform 200ms; }
+  .node-a .chev.open { transform: rotate(90deg); }
+
+  /* Vertical indent lines */
+  .indent-a { position: relative; padding-left: 20px; }
+  .indent-a::before {
+    content: ''; position: absolute;
+    left: 18px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, rgba(22,163,74,0.15), rgba(22,163,74,0.05));
+  }
+  .indent-a-2 { padding-left: 40px; }
+  .indent-a-2::before { left: 38px; }
+
+  /* Level badges */
+  .level-badge {
+    font-size: 8px; font-weight: 600; letter-spacing: 0.8px;
+    text-transform: uppercase; padding: 1px 6px;
+    border-radius: 4px; flex-shrink: 0;
+  }
+  .level-parte { background: rgba(22,163,74,0.1); color: #15803d; }
+  .level-titulo { background: rgba(6,182,212,0.08); color: #0e7490; }
+  .level-cap { background: rgba(168,85,247,0.08); color: #7c3aed; }
+
+  .node-a.active-node {
+    background: rgba(22,163,74,0.07);
+    color: #15803d; font-weight: 500;
+  }
+
+  .artigo-a {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 8px; margin-left: 40px; cursor: pointer;
+    font-size: 11.5px; color: #7a8a80;
+    border-radius: 6px;
+    transition: all 120ms;
+    position: relative;
+  }
+  .artigo-a:hover { background: rgba(22,163,74,0.04); color: #3a5540; }
+  .artigo-a.current {
+    color: #16a34a; font-weight: 500;
+    background: rgba(22,163,74,0.07);
+  }
+  .artigo-a.current::before {
+    content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 2px; border-radius: 2px;
+    background: linear-gradient(180deg, #16a34a, #4ade80);
+  }
+  .artigo-dot { width: 4px; height: 4px; border-radius: 50%; background: #c5d4c9; flex-shrink: 0; }
+  .artigo-a.current .artigo-dot { background: #4ade80; }
+
+  /* ========== OPTION B: Card groups ========== */
+  .tree-b { padding: 4px 12px 8px; display: flex; flex-direction: column; gap: 4px; }
+
+  .group-b {
+    border-radius: 8px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.03);
+    overflow: hidden;
+  }
+  .group-b-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; cursor: pointer;
+    transition: background 120ms;
+    font-size: 12px; color: #4a5a50;
+  }
+  .group-b-header:hover { background: rgba(22,163,74,0.03); }
+  .group-b-header .chev { font-size: 9px; color: #b0c0b5; width: 12px; text-align: center; transition: transform 200ms; }
+  .group-b-header .chev.open { transform: rotate(90deg); }
+  .group-b-header .g-label { font-weight: 500; color: #3a4a40; }
+  .group-b-header .g-desc { color: #8a9a8f; font-weight: 300; font-size: 11.5px; }
+  .group-b-header .g-count {
+    margin-left: auto; font-size: 9px; color: #a0b0a5;
+    background: rgba(22,163,74,0.06); padding: 1px 7px; border-radius: 10px;
+  }
+
+  .group-b-children {
+    border-top: 1px solid rgba(0,0,0,0.03);
+    padding: 4px 8px 4px 28px;
+  }
+  .group-b-children .group-b {
+    border: none; background: transparent;
+  }
+  .group-b-children .group-b .group-b-header { padding: 5px 8px; font-size: 11.5px; }
+
+  .group-b-artigos { padding: 2px 8px 4px 28px; }
+  .artigo-b {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 8px; cursor: pointer;
+    font-size: 11px; color: #7a8a80;
+    border-radius: 5px; transition: all 120ms;
+  }
+  .artigo-b:hover { background: rgba(22,163,74,0.04); color: #3a5540; }
+  .artigo-b.current {
+    background: rgba(22,163,74,0.08); color: #16a34a; font-weight: 500;
+  }
+
+  /* ========== OPTION C: Connected tree ========== */
+  .tree-c { padding: 8px 12px 8px 16px; }
+
+  .c-node {
+    position: relative;
+    padding-left: 24px;
+  }
+  .c-node::before {
+    content: ''; position: absolute;
+    left: 7px; top: 20px; bottom: 0;
+    width: 1.5px; background: rgba(22,163,74,0.1);
+    border-radius: 1px;
+  }
+  .c-node:last-child::before { display: none; }
+
+  .c-node-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px; cursor: pointer;
+    transition: all 120ms; border-radius: 6px;
+    font-size: 12px; color: #4a5a50;
+    position: relative;
+  }
+  .c-node-row:hover { background: rgba(22,163,74,0.04); }
+
+  /* Horizontal connector line */
+  .c-node-row::before {
+    content: ''; position: absolute;
+    left: -17px; top: 50%;
+    width: 12px; height: 1.5px;
+    background: rgba(22,163,74,0.1);
+    border-radius: 1px;
+  }
+
+  /* Node circle */
+  .c-circle {
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 1.5px solid #b0c0b5;
+    background: #fff; flex-shrink: 0;
+    transition: all 150ms;
+  }
+  .c-node-row:hover .c-circle { border-color: #16a34a; }
+  .c-node-row.active .c-circle {
+    border-color: #16a34a;
+    background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+  }
+
+  .c-label { font-weight: 400; }
+  .c-label-type { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #8a9a8f; }
+  .c-label-name { color: #3a4a40; }
+  .c-node-row.active .c-label-name { color: #16a34a; font-weight: 500; }
+  .c-desc { font-size: 11px; color: #9aaa9f; font-weight: 300; margin-left: 2px; }
+
+  .c-children { padding-left: 0; }
+
+  .c-artigo {
+    position: relative; padding-left: 24px;
+    display: flex; align-items: center; gap: 6px;
+    padding-top: 3px; padding-bottom: 3px;
+    cursor: pointer; font-size: 11px; color: #7a8a80;
+    transition: all 120ms;
+  }
+  .c-artigo::before {
+    content: ''; position: absolute;
+    left: -10px; top: 50%;
+    width: 8px; height: 1.5px;
+    background: rgba(22,163,74,0.08);
+  }
+  .c-artigo:hover { color: #3a5540; }
+  .c-artigo.current { color: #16a34a; font-weight: 500; }
+  .c-artigo-dot { width: 5px; height: 5px; border-radius: 50%; background: #d5e4d9; flex-shrink: 0; }
+  .c-artigo.current .c-artigo-dot { background: #4ade80; }
+</style>
+
+<h2>Hierarquia — Como dar mais destaque?</h2>
+<p class="subtitle">3 abordagens para tornar a árvore mais expressiva e demonstrar a profundidade</p>
+
+<!-- OPTION A -->
+<div class="cards" style="display: flex; flex-direction: column; gap: 24px;">
+
+  <div class="card" data-choice="lines" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image">
+      <div class="demo-bg" style="padding: 16px;">
+        <div class="glass-bar" style="margin-bottom: 6px; border-color: rgba(22,163,74,0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 0 0 3px rgba(22,163,74,0.06);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="glass-input" placeholder="Buscar artigo, tema, palavra..." disabled>
+        </div>
+        <div class="glass-dropdown">
+          <div class="dd-section-label">Navegação</div>
+          <div class="tree-a">
+            <!-- Parte Geral -->
+            <div class="node-a">
+              <span class="chev">›</span>
+              <span class="level-badge level-parte">Parte</span>
+              <span>Parte Geral</span>
+            </div>
+            <!-- Parte Especial (expanded) -->
+            <div class="node-a" style="margin-top: 2px;">
+              <span class="chev open">›</span>
+              <span class="level-badge level-parte">Parte</span>
+              <span>Parte Especial</span>
+            </div>
+            <div class="indent-a">
+              <div class="node-a">
+                <span class="chev open">›</span>
+                <span class="level-badge level-titulo">Tít</span>
+                <span>Título I — Dos crimes contra a pessoa</span>
+              </div>
+              <div class="indent-a">
+                <div class="node-a active-node">
+                  <span class="chev open">›</span>
+                  <span class="level-badge level-cap">Cap</span>
+                  <span>Cap. I — Dos crimes contra a vida</span>
+                </div>
+                <div style="padding-left: 6px;">
+                  <div class="artigo-a current">
+                    <span class="artigo-dot"></span>
+                    Art. 121 — Homicídio simples
+                  </div>
+                  <div class="artigo-a">
+                    <span class="artigo-dot"></span>
+                    Art. 122 — Induzimento ao suicídio
+                  </div>
+                  <div class="artigo-a">
+                    <span class="artigo-dot"></span>
+                    Art. 123 — Infanticídio
+                  </div>
+                  <div class="artigo-a">
+                    <span class="artigo-dot"></span>
+                    Art. 124 — Aborto provocado
+                  </div>
+                </div>
+              </div>
+              <div class="indent-a">
+                <div class="node-a">
+                  <span class="chev">›</span>
+                  <span class="level-badge level-cap">Cap</span>
+                  <span>Cap. II — Das lesões corporais</span>
+                </div>
+              </div>
+            </div>
+            <div class="indent-a">
+              <div class="node-a">
+                <span class="chev">›</span>
+                <span class="level-badge level-titulo">Tít</span>
+                <span>Título II — Dos crimes contra o patrimônio</span>
+              </div>
+            </div>
+          </div>
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd></span>
+            <span><kbd>→</kbd> expandir</span>
+            <span><kbd>←</kbd> colapsar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Indent lines + Level badges</h3>
+      <p>Linhas verticais de conexão em verde sutil marcam a profundidade. Badges coloridos (Parte, Tít, Cap) identificam o nível instantaneamente. Artigos com dot indicator, ativo com barra lateral verde.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="cards" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image">
+      <div class="demo-bg" style="padding: 16px;">
+        <div class="glass-bar" style="margin-bottom: 6px; border-color: rgba(22,163,74,0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 0 0 3px rgba(22,163,74,0.06);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="glass-input" placeholder="Buscar artigo, tema, palavra..." disabled>
+        </div>
+        <div class="glass-dropdown">
+          <div class="dd-section-label">Navegação</div>
+          <div class="tree-b">
+            <!-- Parte Geral collapsed -->
+            <div class="group-b">
+              <div class="group-b-header">
+                <span class="chev">›</span>
+                <span class="g-label">Parte Geral</span>
+                <span class="g-count">3 títulos</span>
+              </div>
+            </div>
+            <!-- Parte Especial expanded -->
+            <div class="group-b" style="border-color: rgba(22,163,74,0.08);">
+              <div class="group-b-header">
+                <span class="chev open">›</span>
+                <span class="g-label">Parte Especial</span>
+                <span class="g-count">11 títulos</span>
+              </div>
+              <div class="group-b-children">
+                <div class="group-b" style="border: 1px solid rgba(0,0,0,0.03); background: rgba(255,255,255,0.5); border-radius: 6px; margin-bottom: 3px;">
+                  <div class="group-b-header" style="background: rgba(22,163,74,0.03);">
+                    <span class="chev open">›</span>
+                    <span class="g-label" style="font-size: 11.5px;">Título I</span>
+                    <span class="g-desc">— Dos crimes contra a pessoa</span>
+                    <span class="g-count">6 caps</span>
+                  </div>
+                  <div class="group-b-children" style="padding-left: 20px;">
+                    <div style="display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 5px; background: rgba(22,163,74,0.06); font-size: 11px; color: #16a34a; font-weight: 500; margin-bottom: 2px;">
+                      <span style="font-size: 8px;">▸</span> Cap. I — Dos crimes contra a vida
+                    </div>
+                    <div class="group-b-artigos" style="padding-left: 12px;">
+                      <div class="artigo-b current">• Art. 121 — Homicídio simples</div>
+                      <div class="artigo-b">• Art. 122 — Induzimento ao suicídio</div>
+                      <div class="artigo-b">• Art. 123 — Infanticídio</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 11px; color: #5a6a60; margin-top: 2px;">
+                      <span style="font-size: 8px; color: #b0c0b5;">▸</span> Cap. II — Das lesões corporais
+                    </div>
+                  </div>
+                </div>
+                <div class="group-b" style="border: 1px solid rgba(0,0,0,0.03); background: rgba(255,255,255,0.5); border-radius: 6px;">
+                  <div class="group-b-header">
+                    <span class="chev">›</span>
+                    <span class="g-label" style="font-size: 11.5px;">Título II</span>
+                    <span class="g-desc">— Dos crimes contra o patrimônio</span>
+                    <span class="g-count">8 caps</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd></span>
+            <span><kbd>→</kbd> expandir</span>
+            <span><kbd>←</kbd> colapsar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Nested cards com contadores</h3>
+      <p>Cada nível é um card aninhado. Contadores ("3 títulos", "6 caps") dão contexto de volume. Cards dentro de cards demonstram visualmente a profundidade. Ativo com background verde.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="connected" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image">
+      <div class="demo-bg" style="padding: 16px;">
+        <div class="glass-bar" style="margin-bottom: 6px; border-color: rgba(22,163,74,0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 0 0 3px rgba(22,163,74,0.06);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="glass-input" placeholder="Buscar artigo, tema, palavra..." disabled>
+        </div>
+        <div class="glass-dropdown">
+          <div class="dd-section-label">Navegação</div>
+          <div class="tree-c">
+            <!-- Parte Geral -->
+            <div class="c-node">
+              <div class="c-node-row">
+                <span class="c-circle"></span>
+                <span class="c-label-type">Parte</span>
+                <span class="c-label-name">Parte Geral</span>
+              </div>
+            </div>
+            <!-- Parte Especial -->
+            <div class="c-node">
+              <div class="c-node-row">
+                <span class="c-circle" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                <span class="c-label-type">Parte</span>
+                <span class="c-label-name">Parte Especial</span>
+              </div>
+              <div class="c-children">
+                <div class="c-node">
+                  <div class="c-node-row">
+                    <span class="c-circle" style="border-color: #16a34a; background: rgba(22,163,74,0.1);"></span>
+                    <span class="c-label-type">Título I</span>
+                    <span class="c-label-name">Dos crimes contra a pessoa</span>
+                  </div>
+                  <div class="c-children">
+                    <div class="c-node">
+                      <div class="c-node-row active">
+                        <span class="c-circle"></span>
+                        <span class="c-label-type">Cap I</span>
+                        <span class="c-label-name">Dos crimes contra a vida</span>
+                      </div>
+                      <div class="c-children" style="padding-left: 8px;">
+                        <div class="c-artigo current">
+                          <span class="c-artigo-dot"></span>
+                          Art. 121 — Homicídio simples
+                        </div>
+                        <div class="c-artigo">
+                          <span class="c-artigo-dot"></span>
+                          Art. 122 — Induzimento ao suicídio
+                        </div>
+                        <div class="c-artigo">
+                          <span class="c-artigo-dot"></span>
+                          Art. 123 — Infanticídio
+                        </div>
+                        <div class="c-artigo">
+                          <span class="c-artigo-dot"></span>
+                          Art. 124 — Aborto provocado
+                        </div>
+                      </div>
+                    </div>
+                    <div class="c-node">
+                      <div class="c-node-row">
+                        <span class="c-circle"></span>
+                        <span class="c-label-type">Cap II</span>
+                        <span class="c-label-name">Das lesões corporais</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="c-node">
+                  <div class="c-node-row">
+                    <span class="c-circle"></span>
+                    <span class="c-label-type">Título II</span>
+                    <span class="c-label-name">Dos crimes contra o patrimônio</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd></span>
+            <span><kbd>→</kbd> expandir</span>
+            <span><kbd>←</kbd> colapsar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Connected tree (graph visual)</h3>
+      <p>Circles + linhas conectoras como um grafo/árvore real. Tipo hierarchy de nível em VS Code ou org chart. Cada nó é um ponto conectado ao pai. Ativo pulsa com ring verde.</p>
+    </div>
+  </div>
+
+</div>

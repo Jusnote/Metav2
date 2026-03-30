@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hierarquia com artigos expandíveis</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Outfit, sans-serif; background: #f7f7f7; padding: 24px; }
+  .label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #bbb; font-weight: 500; margin-bottom: 10px; }
+  .frame { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.03); }
+  .cols { display: flex; gap: 28px; flex-wrap: wrap; }
+  .col { flex:1; min-width: 460px; }
+</style>
+</head>
+<body>
+
+<div style="font-size:15px;font-weight:500;color:#222;margin-bottom:3px">Hierarquia com artigos expandíveis</div>
+<p style="font-size:11px;color:#aaa;margin-bottom:28px;font-weight:300">Capítulos expandem para mostrar artigos sob demanda. Resolve local (sem mudar API).</p>
+
+<div class="cols">
+
+<!-- ========== COLLAPSED STATE ========== -->
+<div class="col">
+  <div class="label">Colapsado — navegação rápida</div>
+  <div class="frame">
+    <!-- Search input -->
+    <div style="padding:14px 20px 0">
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fafafa;border-radius:10px 10px 0 0;border:1px solid #e8e8e8;border-bottom:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2c3338" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:12px;color:#bbb;font-weight:300">Buscar artigo, tema, palavra...</span>
+        <span style="margin-left:auto;font-size:9px;color:#ccc;font-weight:300">esc</span>
+      </div>
+    </div>
+
+    <!-- Dropdown -->
+    <div style="margin:0 20px 20px;background:#fafafa;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 10px 10px;padding-bottom:4px">
+      <div style="padding:10px 14px 6px;font-size:9px;color:#c0c0c0;text-transform:uppercase;letter-spacing:1.5px">Navegação</div>
+
+      <div style="position:relative;padding:2px 0 6px">
+        <!-- Tracing line -->
+        <div style="position:absolute;left:22px;top:8px;bottom:8px;width:1.5px;background:#ededed;border-radius:1px"></div>
+        <div style="position:absolute;left:22px;top:8px;width:1.5px;height:40%;background:#2c3338;border-radius:1px;opacity:0.35"></div>
+
+        <!-- Título I -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+          <div style="font-size:12px;font-weight:500;color:#444">Título I</div>
+          <div style="font-size:10px;color:#b8b8b8;font-weight:300;margin-top:1px">Disposições Preliminares</div>
+        </div>
+
+        <!-- Título II — current, expanded -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px;background:#f0f4ff">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(44,51,56,0.1)"></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="font-size:12px;font-weight:500;color:#2c3338">Título II</div>
+          </div>
+          <div style="font-size:10px;color:#8a9baa;font-weight:300;margin-top:1px">Do Sistema Nacional de Trânsito</div>
+        </div>
+
+        <!-- Cap I — has chevron, collapsed -->
+        <div style="position:relative;padding:6px 14px 6px 54px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+            <span style="font-size:11px;color:#2c3338;font-weight:400">Cap. I — Composição e Competência</span>
+          </div>
+        </div>
+
+        <!-- Cap II — collapsed -->
+        <div style="position:relative;padding:6px 14px 6px 54px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:#ddd;transform:translate(-50%,-50%)"></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+            <span style="font-size:11px;color:#999;font-weight:300">Cap. II — Da Sinalização</span>
+          </div>
+        </div>
+
+        <!-- Cap III — collapsed -->
+        <div style="position:relative;padding:6px 14px 6px 54px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:#ddd;transform:translate(-50%,-50%)"></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+            <span style="font-size:11px;color:#999;font-weight:300">Cap. III — Das Normas Gerais</span>
+          </div>
+        </div>
+
+        <!-- Título III -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #ddd;background:#fafafa;transform:translate(-50%,-50%)"></div>
+          <div style="font-size:12px;font-weight:500;color:#888">Título III</div>
+          <div style="font-size:10px;color:#c8c8c8;font-weight:300;margin-top:1px">Das Normas Gerais de Circulação</div>
+        </div>
+
+        <!-- Título IV -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #ddd;background:#fafafa;transform:translate(-50%,-50%)"></div>
+          <div style="font-size:12px;font-weight:500;color:#888">Título IV</div>
+          <div style="font-size:10px;color:#c8c8c8;font-weight:300;margin-top:1px">Dos Crimes de Trânsito</div>
+        </div>
+      </div>
+
+      <div style="padding:6px 14px;font-size:10px;color:#d0d0d0;font-weight:300;display:flex;gap:14px;border-top:1px solid #f0f0f0;margin-top:2px">
+        <span>↑↓</span><span>⏎ ir</span><span>→ expandir</span><span>← colapsar</span><span>esc</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== EXPANDED STATE ========== -->
+<div class="col">
+  <div class="label">Capítulo expandido — artigos visíveis</div>
+  <div class="frame">
+    <div style="padding:14px 20px 0">
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fafafa;border-radius:10px 10px 0 0;border:1px solid #e8e8e8;border-bottom:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2c3338" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:12px;color:#bbb;font-weight:300">Buscar artigo, tema, palavra...</span>
+        <span style="margin-left:auto;font-size:9px;color:#ccc;font-weight:300">esc</span>
+      </div>
+    </div>
+
+    <div style="margin:0 20px 20px;background:#fafafa;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 10px 10px;padding-bottom:4px;max-height:480px;overflow-y:auto">
+      <div style="padding:10px 14px 6px;font-size:9px;color:#c0c0c0;text-transform:uppercase;letter-spacing:1.5px">Navegação</div>
+
+      <div style="position:relative;padding:2px 0 6px">
+        <div style="position:absolute;left:22px;top:8px;bottom:8px;width:1.5px;background:#ededed;border-radius:1px"></div>
+        <div style="position:absolute;left:22px;top:8px;width:1.5px;height:35%;background:#2c3338;border-radius:1px;opacity:0.35"></div>
+
+        <!-- Título I — collapsed -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+          <div style="font-size:12px;font-weight:500;color:#444">Título I</div>
+          <div style="font-size:10px;color:#b8b8b8;font-weight:300;margin-top:1px">Disposições Preliminares</div>
+        </div>
+
+        <!-- Título II -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px;background:#f0f4ff">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(44,51,56,0.1)"></div>
+          <div style="font-size:12px;font-weight:500;color:#2c3338">Título II</div>
+          <div style="font-size:10px;color:#8a9baa;font-weight:300;margin-top:1px">Do Sistema Nacional de Trânsito</div>
+        </div>
+
+        <!-- Cap I — EXPANDED with chevron down -->
+        <div style="position:relative;padding:6px 14px 6px 54px;cursor:pointer;border-radius:6px;margin:0 6px;background:#f6f8ff">
+          <div style="position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2c3338" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+            <span style="font-size:11px;color:#2c3338;font-weight:500">Cap. I — Composição e Competência</span>
+          </div>
+        </div>
+
+        <!-- ARTICLES inside Cap I -->
+        <div style="position:relative;margin:0 6px;overflow:hidden">
+          <!-- Subtle inner line -->
+          <div style="position:absolute;left:48px;top:0;bottom:0;width:1px;background:#efefef"></div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 5º</span>
+            <span style="font-size:10px;color:#c8c8c8;margin-left:6px;font-weight:300">— Sistema Nacional de Trânsito</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 6º</span>
+            <span style="font-size:10px;color:#c8c8c8;margin-left:6px;font-weight:300">— Objetivos básicos</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s;background:#eef1ff" onmouseover="this.style.background='#e8ecff'" onmouseout="this.style.background='#eef1ff'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#2c3338;font-weight:400">Art. 7º</span>
+            <span style="font-size:10px;color:#8a9baa;margin-left:6px;font-weight:300">— Competência dos órgãos</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 8º</span>
+            <span style="font-size:10px;color:#c8c8c8;margin-left:6px;font-weight:300">— CONTRAN</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 9º</span>
+            <span style="font-size:10px;color:#c8c8c8;margin-left:6px;font-weight:300">— Conselho Estadual</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 10</span>
+            <span style="font-size:10px;color:#c8c8c8;margin-left:6px;font-weight:300">— JARI</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 11</span>
+          </div>
+
+          <div style="position:relative;padding:5px 14px 5px 64px;cursor:pointer;border-radius:5px;transition:background 0.12s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="position:absolute;left:48px;top:50%;width:3px;height:3px;border-radius:50%;background:#ccc;transform:translate(-50%,-50%)"></div>
+            <span style="font-size:10.5px;color:#777;font-weight:300">Art. 12</span>
+          </div>
+        </div>
+
+        <!-- Cap II — collapsed -->
+        <div style="position:relative;padding:6px 14px 6px 54px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:#ddd;transform:translate(-50%,-50%)"></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+            <span style="font-size:11px;color:#999;font-weight:300">Cap. II — Da Sinalização</span>
+          </div>
+        </div>
+
+        <!-- Cap III — collapsed -->
+        <div style="position:relative;padding:6px 14px 6px 54px;cursor:pointer;border-radius:6px;margin:0 6px;transition:background 0.15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:#ddd;transform:translate(-50%,-50%)"></div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+            <span style="font-size:11px;color:#999;font-weight:300">Cap. III — Das Normas Gerais</span>
+          </div>
+        </div>
+
+        <!-- Título III -->
+        <div style="position:relative;padding:7px 14px 7px 40px;cursor:pointer;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+          <div style="position:absolute;left:22px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #ddd;background:#fafafa;transform:translate(-50%,-50%)"></div>
+          <div style="font-size:12px;font-weight:500;color:#888">Título III</div>
+          <div style="font-size:10px;color:#c8c8c8;font-weight:300;margin-top:1px">Das Normas Gerais de Circulação</div>
+        </div>
+      </div>
+
+      <div style="padding:6px 14px;font-size:10px;color:#d0d0d0;font-weight:300;display:flex;gap:14px;border-top:1px solid #f0f0f0;margin-top:2px;position:sticky;bottom:0;background:#fafafa;border-radius:0 0 10px 10px">
+        <span>↑↓</span><span>⏎ ir</span><span>→ expandir</span><span>← colapsar</span><span>esc</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Design notes -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:28px">
+  <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div style="font-size:11px;font-weight:500;color:#333;margin-bottom:6px">Artigos como folhas</div>
+    <div style="font-size:11px;color:#999;line-height:1.5;font-weight:300">
+      Dots de 3px (menores que capítulos), texto em 10.5px weight 300.
+      Subtítulo opcional em #c8c8c8. Hierarquia visual clara:
+      Título (7px) > Cap (5px) > Art (3px).
+    </div>
+  </div>
+  <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div style="font-size:11px;font-weight:500;color:#333;margin-bottom:6px">Expand/collapse</div>
+    <div style="font-size:11px;color:#999;line-height:1.5;font-weight:300">
+      Chevron › (colapsado) / ˅ (expandido). Atalho: → expande, ← colapsa.
+      Artigos só carregam quando o capítulo abre (filtro local dos dispositivos já carregados).
+    </div>
+  </div>
+  <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div style="font-size:11px;font-weight:500;color:#333;margin-bottom:6px">Linha interna sutil</div>
+    <div style="font-size:11px;color:#999;line-height:1.5;font-weight:300">
+      Artigos têm sua própria linha vertical (1px, #efefef) aninhada dentro da tracing beam principal.
+      Reforça que são filhos do capítulo sem poluir visualmente.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

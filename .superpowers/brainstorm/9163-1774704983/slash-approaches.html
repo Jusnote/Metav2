@@ -1,0 +1,188 @@
+<h2>Slash Command — 3 Abordagens</h2>
+<p class="subtitle">Qual experiencia e mais intuitiva?</p>
+
+<div class="cards">
+
+  <!-- APPROACH A: Inline Autocomplete (no popover at all) -->
+  <div class="card" data-choice="a-inline" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;">
+
+        <div style="font-size:9px;color:#999;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Digitando: /banca cespe</div>
+
+        <!-- Input with slash text -->
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #E8930C;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);position:relative;">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;flex:1;display:flex;align-items:center;gap:0;">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span style="color:#E8930C;font-weight:600;background:#FEF3C7;padding:1px 6px;border-radius:4px;margin:0 2px;font-size:12px;">/banca</span>
+            <span style="color:#333;"> cespe</span>
+            <span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;margin-left:1px;"></span>
+          </span>
+        </div>
+
+        <!-- Dropdown directly under input — NO popover -->
+        <div style="background:white;border:1px solid #e0e3e8;border-top:none;border-radius:0 0 14px 14px;box-shadow:0 8px 24px rgba(0,0,0,0.1);overflow:hidden;">
+          <!-- Highlighted result -->
+          <div style="display:flex;align-items:center;padding:10px 16px;background:#FFFBEB;border-left:3px solid #E8930C;">
+            <span style="flex:1;font-size:13px;color:#333;"><span style="color:#E8930C;font-weight:700;">CESPE</span>BRASPE (CESPE)</span>
+            <span style="font-size:10px;color:#b0b4bc;">23.203</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:10px 16px;">
+            <span style="flex:1;font-size:13px;color:#333;">Instituto <span style="color:#E8930C;font-weight:700;">CESE</span>P</span>
+            <span style="font-size:10px;color:#b0b4bc;">142</span>
+          </div>
+          <!-- Hint bar -->
+          <div style="padding:6px 16px;background:#fafbfc;border-top:1px solid #f0f1f3;font-size:10px;color:#999;display:flex;gap:12px;">
+            <span><b style="color:#666;">,</b> seleciona + continua</span>
+            <span><b style="color:#666;">Enter</b> seleciona + sai</span>
+            <span><b style="color:#666;">Esc</b> cancela</span>
+          </div>
+        </div>
+
+        <!-- Filter bar below (pills) -->
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;margin-top:6px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-radius:14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Banca &#9662;</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia &#9662;</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano &#9662;</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A) Inline Autocomplete</h3>
+      <p><b>Sem popover.</b> Dropdown aparece direto embaixo do input, como Google Search. Um input so. <code>/banca</code> vira chip colorido inline. Resultados filtram em tempo real. Hints de teclado no rodape.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Zero confusao — um input, um dropdown</li><li>Familiar (autocomplete)</li><li>Sem duplicacao</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Nao reutiliza o popover do pill click</li><li>Sem progress bars / checkboxes</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPROACH B: Popover sem search input -->
+  <div class="card" data-choice="b-popover-clean" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;position:relative;">
+
+        <div style="font-size:9px;color:#999;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Digitando: /banca cespe</div>
+
+        <!-- Input -->
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #E8930C;border-bottom:none;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;flex:1;display:flex;align-items:center;">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span style="color:#E8930C;font-weight:600;background:#FEF3C7;padding:1px 6px;border-radius:4px;margin:0 2px;font-size:12px;">/banca</span>
+            <span style="color:#333;"> cespe</span>
+            <span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;margin-left:1px;"></span>
+          </span>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-top:1px solid #eaecf0;border-radius:0 0 14px 14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:white;border:1px solid #E8930C;color:#B45309;display:flex;align-items:center;gap:5px;box-shadow:0 1px 4px rgba(232,147,12,0.12);">Banca &#9652;</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano</div>
+        </div>
+
+        <!-- Popover NO search input — just results -->
+        <div style="position:absolute;top:108px;left:0;width:380px;background:white;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,0.16),0 4px 12px rgba(0,0,0,0.08);border:1px solid #e0e3e8;overflow:hidden;z-index:10;">
+          <!-- Banner: slash mode indicator -->
+          <div style="padding:6px 12px;background:#FEF3C7;border-bottom:1px solid #f0e6d4;font-size:10px;color:#92400E;display:flex;align-items:center;gap:6px;">
+            <span style="font-weight:600;">/ banca</span>
+            <span style="color:#B45309;">— digitando no input principal</span>
+          </div>
+          <!-- Results -->
+          <div style="max-height:200px;overflow-y:auto;">
+            <div style="display:flex;align-items:center;padding:7px 12px;background:#FFFBEB;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:12px;color:#333;"><span style="color:#E8930C;font-weight:700;">CESPE</span>BRASPE (CESPE)</span>
+              <span style="font-size:10px;color:#b0b4bc;">23.203</span>
+              <span style="width:55px;padding-left:8px;"><div style="height:5px;border-radius:3px;background:#f0f1f3;overflow:hidden;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);border-radius:3px;"></div></div></span>
+            </div>
+            <div style="display:flex;align-items:center;padding:7px 12px;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:12px;color:#333;">Instituto <span style="color:#E8930C;font-weight:700;">CESE</span>P</span>
+              <span style="font-size:10px;color:#b0b4bc;">142</span>
+              <span style="width:55px;padding-left:8px;"><div style="height:5px;border-radius:3px;background:#f0f1f3;overflow:hidden;"><div style="height:100%;width:1%;background:#d0d3d9;border-radius:3px;"></div></div></span>
+            </div>
+          </div>
+          <div style="padding:6px 12px;border-top:1px solid #f0f1f3;background:#fafbfc;font-size:10px;color:#999;display:flex;gap:12px;">
+            <span><b style="color:#666;">,</b> seleciona + continua</span>
+            <span><b style="color:#666;">Enter</b> seleciona + sai</span>
+            <span><b style="color:#666;">Esc</b> cancela</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Popover Limpo (sem search input)</h3>
+      <p>Mesmo popover do pill click, mas <b>sem o campo de busca</b>. Banner amarelo indica "/ banca — digitando no input principal". Mantem progress bars e checkboxes. Input principal controla tudo.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Reutiliza o popover existente</li><li>Com progress bars, checkboxes, recentes</li><li>Um input so</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Popover longe do input (visualmente)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPROACH C: Command Palette (full takeover) -->
+  <div class="card" data-choice="c-palette" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;">
+
+        <div style="font-size:9px;color:#999;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Digitando: /banca cespe</div>
+
+        <!-- Command palette — input transforms -->
+        <div style="background:white;border:1px solid #E8930C;border-radius:14px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);overflow:hidden;">
+          <!-- Input row -->
+          <div style="display:flex;align-items:center;height:44px;padding:0 16px;gap:8px;border-bottom:1px solid #f0f1f3;">
+            <span style="font-size:12px;font-weight:600;color:#E8930C;background:#FEF3C7;padding:2px 8px;border-radius:6px;flex-shrink:0;">/ banca</span>
+            <span style="font-size:14px;color:#333;flex:1;">cespe<span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;margin-left:1px;"></span></span>
+            <span style="font-size:10px;color:#bbb;flex-shrink:0;">Esc para sair</span>
+          </div>
+
+          <!-- Results directly below in same container -->
+          <div style="max-height:200px;overflow-y:auto;">
+            <div style="display:flex;align-items:center;padding:10px 16px;background:#FFFBEB;border-left:3px solid #E8930C;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:13px;color:#333;"><span style="color:#E8930C;font-weight:700;">CESPE</span>BRASPE (CESPE)</span>
+              <span style="font-size:10px;color:#b0b4bc;">23.203</span>
+              <span style="width:55px;padding-left:8px;"><div style="height:5px;border-radius:3px;background:#f0f1f3;overflow:hidden;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);border-radius:3px;"></div></div></span>
+            </div>
+            <div style="display:flex;align-items:center;padding:10px 16px;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:13px;color:#333;">Instituto <span style="color:#E8930C;font-weight:700;">CESE</span>P</span>
+              <span style="font-size:10px;color:#b0b4bc;">142</span>
+              <span style="width:55px;padding-left:8px;"><div style="height:5px;border-radius:3px;background:#f0f1f3;overflow:hidden;"><div style="height:100%;width:1%;background:#d0d3d9;border-radius:3px;"></div></div></span>
+            </div>
+          </div>
+
+          <!-- Hint footer -->
+          <div style="padding:6px 16px;background:#fafbfc;border-top:1px solid #f0f1f3;font-size:10px;color:#999;display:flex;gap:12px;">
+            <span><b style="color:#666;">,</b> seleciona + continua</span>
+            <span><b style="color:#666;">Enter</b> seleciona + sai</span>
+            <span><b style="color:#666;">Esc</b> cancela</span>
+          </div>
+        </div>
+
+        <!-- Filter bar below (separate) -->
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;margin-top:6px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-radius:14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Banca &#9662;</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia &#9662;</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano &#9662;</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C) Command Palette</h3>
+      <p>O input <b>se transforma</b> quando digita <code>/</code>. Chip <code>/ banca</code> aparece no inicio, cursor fica apos ele. Resultados aparecem dentro do mesmo container, abaixo do input. Um unico bloco visual coeso. Estilo VS Code / Notion / Linear.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Mais clean e coeso possivel</li><li>Input + resultados no mesmo container</li><li>Familiar pra devs (VS Code, Notion)</li><li>Zero duplicacao</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Search bar muda de forma (pode confundir no inicio)</li><li>Precisa de Esc pra sair</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+code { background: #2a2a2a; color: #E8930C; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+</style>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Question Card Header — Swap Rows</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f6f8; padding: 20px; }
+
+  h2 { font-size: 12px; color: #999; text-align: center; margin-bottom: 6px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px; }
+  .subtitle { font-size: 11px; color: #777; text-align: center; margin-bottom: 20px; }
+
+  .container { max-width: 800px; margin: 0 auto; }
+  .label { font-size: 11px; color: #999; margin-bottom: 8px; font-weight: 500; }
+
+  /* ========== CARD SHELL (same as current QuestionCard) ========== */
+  .qc {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  /* Amber accent line at top */
+  .qc-accent { height: 2px; background: linear-gradient(to right, rgba(232,147,12,0.4), rgba(232,147,12,0.6), transparent); }
+
+  /* Banner / header area */
+  .qc-banner { padding: 8px 16px; }
+
+  /* ========== CURRENT DESIGN (for comparison) ========== */
+
+  /* Row 1 current: subject text */
+  .row1-current { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+  .row1-left { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .subject-text { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #27272a; white-space: nowrap; }
+  .subtopic-text { font-size: 11px; color: #71717a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dot-sep { color: #d4d4d8; font-size: 11px; }
+  .counter { font-size: 11px; color: #71717a; white-space: nowrap; }
+  .counter b { color: #27272a; }
+  .qid { font-size: 10px; font-family: monospace; color: #71717a; background: #f4f4f5; padding: 1px 6px; border-radius: 4px; }
+  .bookmark-btn { padding: 2px; border-radius: 4px; border: none; background: none; cursor: pointer; color: #a1a1aa; }
+
+  /* Row 2 current: prova box (highlighted) */
+  .prova-box {
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 10px;
+    background: #fafafa;
+    border-radius: 6px;
+    border-left: 2px solid rgba(232,147,12,0.4);
+    min-width: 0; flex: 1;
+  }
+  .prova-icon { width: 24px; height: 24px; border-radius: 50%; background: #f4f4f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .prova-icon svg { width: 14px; height: 14px; stroke: #71717a; stroke-width: 1.8; fill: none; }
+  .prova-section { flex-shrink: 0; }
+  .prova-section-grow { flex: 1; min-width: 0; }
+  .prova-label { font-size: 8px; font-weight: 600; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1; margin-bottom: 2px; }
+  .prova-value { font-size: 12px; font-weight: 600; color: #27272a; line-height: 1; }
+  .prova-value-medium { font-weight: 500; }
+  .prova-value-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prova-sep { width: 1px; align-self: stretch; margin: 4px 0; background: #e4e4e7; }
+
+  .diff-area { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .diff { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; }
+  .diff-easy { color: #22c55e; }
+  .diff-hard { color: #ef4444; }
+  .diff-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .diff-dot-easy { background: #22c55e; }
+  .diff-dot-hard { background: #ef4444; }
+  .tool-btn { padding: 4px; border-radius: 4px; border: none; background: none; cursor: pointer; color: #a1a1aa; }
+
+  /* Question body */
+  .qc-body { padding: 12px 20px 20px; font-size: 13px; color: #333; line-height: 1.75; }
+
+  /* ========== NEW DESIGN: SWAPPED ========== */
+
+  /* Row 1 NEW: materia/assunto box (highlighted) */
+  .materia-box {
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 10px;
+    background: #fafafa;
+    border-radius: 6px;
+    border-left: 2px solid rgba(232,147,12,0.4);
+    min-width: 0; flex: 1;
+  }
+
+  /* Row 2 NEW: banca/ano/prova as simple text */
+  .meta-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-top: 6px;
+  }
+  .meta-left { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .meta-item { font-size: 11px; color: #71717a; white-space: nowrap; }
+  .meta-item b { font-weight: 600; color: #52525b; }
+  .meta-sep { color: #d4d4d8; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h2>Antes vs Depois</h2>
+<p class="subtitle">Mesmo estilo visual, so invertendo as rows</p>
+
+<div class="container">
+
+  <!-- ========== CURRENT (como esta hoje) ========== -->
+  <div class="label">ATUAL — Row 1: texto subject · subtopic / Row 2: caixa Banca | Ano | Prova</div>
+  <div class="qc">
+    <div class="qc-accent"></div>
+    <div class="qc-banner">
+      <!-- Row 1: subject/subtopic text -->
+      <div class="row1-current">
+        <div class="row1-left">
+          <span class="subject-text">DIREITO CONSTITUCIONAL MUNICIPAL</span>
+          <span class="dot-sep">·</span>
+          <span class="subtopic-text">Leis Organicas dos Demais Municipios</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span class="counter">Q <b>1</b>/469.270</span>
+          <span class="qid">00281892</span>
+          <button class="bookmark-btn"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+        </div>
+      </div>
+
+      <!-- Row 2: prova box (highlighted) -->
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="prova-box">
+          <div class="prova-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg></div>
+          <div class="prova-section">
+            <p class="prova-label">Banca</p>
+            <p class="prova-value">Fenix Instituto</p>
+          </div>
+          <div class="prova-sep"></div>
+          <div class="prova-section">
+            <p class="prova-label">Ano</p>
+            <p class="prova-value">2026</p>
+          </div>
+          <div class="prova-sep"></div>
+          <div class="prova-section-grow">
+            <p class="prova-label">Prova</p>
+            <p class="prova-value prova-value-medium prova-value-truncate">Prefeitura Municipal de Novo Horizonte (SC)</p>
+          </div>
+        </div>
+        <div class="diff-area">
+          <div class="diff diff-easy"><span class="diff-dot diff-dot-easy"></span> Facil</div>
+          <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></button>
+          <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 9 20"/><path d="M4 12h16"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="qc-body">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal em materia de organizacao territorial.</div>
+  </div>
+
+  <!-- ========== NEW (invertido) ========== -->
+  <div class="label" style="margin-top:32px;">NOVO — Row 1: caixa Materia | Assunto (destacada) / Row 2: texto Banca · Ano · Prova</div>
+  <div class="qc">
+    <div class="qc-accent"></div>
+    <div class="qc-banner">
+      <!-- Row 1 NEW: materia/assunto box (highlighted) — same style as prova-box -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div class="materia-box">
+          <div class="prova-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+          <div class="prova-section">
+            <p class="prova-label">Materia</p>
+            <p class="prova-value">Dir. Constitucional Municipal</p>
+          </div>
+          <div class="prova-sep"></div>
+          <div class="prova-section-grow">
+            <p class="prova-label">Assunto</p>
+            <p class="prova-value prova-value-medium prova-value-truncate">Leis Organicas dos Demais Municipios</p>
+          </div>
+        </div>
+        <div class="diff-area">
+          <div class="diff diff-easy"><span class="diff-dot diff-dot-easy"></span> Facil</div>
+          <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></button>
+          <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 9 20"/><path d="M4 12h16"/></svg></button>
+        </div>
+      </div>
+
+      <!-- Row 2 NEW: banca/ano/prova as simple text + counter + bookmark -->
+      <div class="meta-row">
+        <div class="meta-left">
+          <span class="meta-item"><b>Fenix Instituto</b></span>
+          <span class="meta-sep">·</span>
+          <span class="meta-item">2026</span>
+          <span class="meta-sep">·</span>
+          <span class="meta-item" style="overflow:hidden;text-overflow:ellipsis;">Pref. Mun. de Novo Horizonte (SC)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span class="counter">Q <b>1</b>/469.270</span>
+          <span class="qid">00281892</span>
+          <button class="bookmark-btn"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="qc-body">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal em materia de organizacao territorial.</div>
+  </div>
+
+  <!-- ========== NEW — second card ========== -->
+  <div class="qc">
+    <div class="qc-accent"></div>
+    <div class="qc-banner">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div class="materia-box">
+          <div class="prova-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+          <div class="prova-section">
+            <p class="prova-label">Materia</p>
+            <p class="prova-value">Dir. Administrativo</p>
+          </div>
+          <div class="prova-sep"></div>
+          <div class="prova-section-grow">
+            <p class="prova-label">Assunto</p>
+            <p class="prova-value prova-value-medium prova-value-truncate">Atos Administrativos</p>
+          </div>
+        </div>
+        <div class="diff-area">
+          <div class="diff diff-hard"><span class="diff-dot diff-dot-hard"></span> Dificil</div>
+          <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></button>
+          <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 9 20"/><path d="M4 12h16"/></svg></button>
+        </div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-left">
+          <span class="meta-item"><b>CESPE</b></span>
+          <span class="meta-sep">·</span>
+          <span class="meta-item">2024</span>
+          <span class="meta-sep">·</span>
+          <span class="meta-item">TJ-DFT — Analista Judiciario</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span class="counter">Q <b>2</b>/469.270</span>
+          <span class="qid">00392741</span>
+          <button class="bookmark-btn"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="qc-body">Acerca dos atos administrativos, julgue o item subsecutivo. A revogacao de um ato administrativo produz efeitos ex nunc, ou seja, nao retroage para atingir efeitos ja produzidos pelo ato revogado.</div>
+  </div>
+
+</div>
+</body>
+</html>

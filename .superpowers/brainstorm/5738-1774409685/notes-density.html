@@ -1,0 +1,316 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .lei {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: rgb(67, 80, 92);
+    max-width: 700px;
+    text-align: justify;
+  }
+  .lei b { font-weight: 700; color: #1a1a1a; }
+  .anot { font-size: 12px; font-weight: 300; color: #ccc; margin-left: 6px; }
+  .par { padding-left: 34px; margin-bottom: 8px; position: relative; }
+  .par::before { content: '›'; position: absolute; left: 20px; color: #d0d0d0; font-size: 14px; }
+  .inc { padding-left: 58px; margin-bottom: 6px; position: relative; }
+  .inc::before { content: '›'; position: absolute; left: 44px; color: #d8d8d8; font-size: 13px; }
+  .epi { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; color: #666; margin: 20px 0 6px; }
+
+  .h-y { background: rgba(250, 204, 21, 0.3); border-radius: 2px; padding: 1px 0; }
+  .h-g { background: rgba(74, 222, 128, 0.25); border-radius: 2px; padding: 1px 0; }
+  .h-b { background: rgba(96, 165, 250, 0.25); border-radius: 2px; padding: 1px 0; }
+  .h-p { background: rgba(244, 114, 182, 0.25); border-radius: 2px; padding: 1px 0; }
+
+  /* ===== OPTION A: Counter badge ===== */
+  .note-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    color: #8a9a8f;
+    background: #f5f7f6;
+    border: 1px solid #e8ede9;
+    border-radius: 12px;
+    padding: 2px 8px;
+    margin: 4px 0;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .note-badge:hover { background: #eef2ef; color: #3a5540; }
+  .note-badge-dots {
+    display: flex; gap: 2px;
+  }
+  .note-badge-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+  }
+
+  /* Expanded notes under badge */
+  .note-expanded {
+    font-family: 'Outfit', sans-serif;
+    margin: 4px 0 8px;
+  }
+  .note-card-a {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #5a6a60;
+    line-height: 1.5;
+    background: #fafcfb;
+    rounded: 6px;
+    cursor: pointer;
+    transition: background 150ms;
+    border-radius: 6px;
+    margin-bottom: 2px;
+  }
+  .note-card-a:hover { background: #f3f6f4; }
+
+  /* ===== OPTION B: Margin icons ===== */
+  .disp-with-margin {
+    position: relative;
+  }
+  .margin-notes {
+    position: absolute;
+    right: -40px;
+    top: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+  }
+  .margin-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    transition: transform 150ms;
+  }
+  .margin-dot:hover { transform: scale(1.4); }
+
+  /* Tooltip for margin */
+  .margin-tooltip {
+    position: absolute;
+    right: 14px;
+    top: -4px;
+    background: white;
+    border: 1px solid #e8ede9;
+    border-radius: 8px;
+    padding: 8px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: #5a6a60;
+    line-height: 1.5;
+    width: 220px;
+    white-space: normal;
+  }
+
+  /* ===== OPTION C: Sidebar strip ===== */
+  .disp-with-strip {
+    position: relative;
+    padding-left: 6px;
+  }
+  .strip-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+  }
+  .strip-segment { flex: 1; }
+  .strip-count {
+    position: absolute;
+    left: 10px;
+    top: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    color: #b0c0b5;
+    background: #f5f7f6;
+    border-radius: 8px;
+    padding: 0 5px;
+    line-height: 16px;
+    cursor: pointer;
+  }
+  .strip-count:hover { color: #3a5540; background: #eef2ef; }
+
+  .state-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #16a34a; margin-bottom: 8px; margin-top: 20px;
+  }
+</style>
+
+<h2>Notas em densidade alta — 3 alternativas</h2>
+<p class="subtitle">Cenário: Art. 121 com 4 grifos, cada um com nota. Como não poluir a leitura?</p>
+
+<!-- ===== OPTION A: Counter badge (collapsed) ===== -->
+<div class="cards" style="display: flex; flex-direction: column; gap: 20px;">
+
+  <div class="card" data-choice="badge" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image" style="padding: 24px 20px; background: #fff;">
+      <div class="state-label">Collapsed (padrão)</div>
+      <div class="lei">
+        <div style="margin-bottom: 2px;">
+          <b>Art. 121.</b> Matar <span class="h-y">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+        </div>
+        <div class="note-badge">
+          📝 3 notas
+          <span class="note-badge-dots">
+            <span class="note-badge-dot" style="background: rgba(250,204,21,0.6);"></span>
+            <span class="note-badge-dot" style="background: rgba(74,222,128,0.5);"></span>
+            <span class="note-badge-dot" style="background: rgba(244,114,182,0.5);"></span>
+          </span>
+        </div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral...
+        </div>
+        <div class="par" style="margin-bottom: 2px;">
+          <b>§ 2º</b> Se o <span class="h-g">homicídio é cometido</span>:
+        </div>
+        <div class="note-badge">
+          📝 1 nota
+          <span class="note-badge-dots">
+            <span class="note-badge-dot" style="background: rgba(74,222,128,0.5);"></span>
+          </span>
+        </div>
+        <div class="inc">I — <span class="h-p">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+      </div>
+
+      <div class="state-label" style="margin-top: 24px;">Expanded (ao clicar)</div>
+      <div class="lei">
+        <div style="margin-bottom: 2px;">
+          <b>Art. 121.</b> Matar <span class="h-y">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+        </div>
+        <div class="note-badge" style="background: #eef2ef; color: #3a5540;">
+          📝 3 notas ▾
+          <span class="note-badge-dots">
+            <span class="note-badge-dot" style="background: rgba(250,204,21,0.6);"></span>
+            <span class="note-badge-dot" style="background: rgba(74,222,128,0.5);"></span>
+            <span class="note-badge-dot" style="background: rgba(244,114,182,0.5);"></span>
+          </span>
+        </div>
+        <div class="note-expanded">
+          <div class="note-card-a" style="border-left: 3px solid rgba(250,204,21,0.5);">
+            <span style="font-size:10px; color:#8a9a8f;">📝</span>
+            <span style="flex:1;">Cai muito em prova CESPE — dolo eventual</span>
+            <span style="font-size:9px; color:#b0c0b5;">2d</span>
+          </div>
+          <div class="note-card-a" style="border-left: 3px solid rgba(74,222,128,0.5);">
+            <span style="font-size:10px; color:#8a9a8f;">📝</span>
+            <span style="flex:1;">Qualificadoras — estudar cada inciso</span>
+            <span style="font-size:9px; color:#b0c0b5;">1d</span>
+          </div>
+          <div class="note-card-a" style="border-left: 3px solid rgba(244,114,182,0.5);">
+            <span style="font-size:10px; color:#8a9a8f;">📝</span>
+            <span style="flex:1;">Feminicídio — Lei 13.104/2015</span>
+            <span style="font-size:9px; color:#b0c0b5;">5h</span>
+          </div>
+        </div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social...
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Badge contador + expand</h3>
+      <p>Colapsado: pill discreta "📝 3 notas" com dots nas cores. Um toque expande as notas. Leitura limpa por padrão, acesso rápido quando quer.</p>
+    </div>
+  </div>
+
+  <!-- ===== OPTION B: Margin dots ===== -->
+  <div class="card" data-choice="margin" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image" style="padding: 24px 40px 24px 20px; background: #fff;">
+      <div class="lei">
+        <div class="disp-with-margin" style="margin-bottom: 8px;">
+          <b>Art. 121.</b> Matar <span class="h-y">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+          <div class="margin-notes">
+            <div class="margin-dot" style="background: rgba(250,204,21,0.15); border-color: rgba(250,204,21,0.5);"></div>
+            <div class="margin-dot" style="background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.5);"></div>
+            <div class="margin-dot" style="background: rgba(244,114,182,0.1); border-color: rgba(244,114,182,0.5);"></div>
+          </div>
+        </div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção...
+        </div>
+        <div class="disp-with-margin">
+          <div class="par" style="margin-bottom: 0;">
+            <b>§ 2º</b> Se o <span class="h-g">homicídio é cometido</span>:
+          </div>
+          <div class="margin-notes">
+            <div class="margin-dot" style="background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.5);"></div>
+          </div>
+        </div>
+        <div class="inc">I — <span class="h-p">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <div class="state-label">Hover num dot → tooltip com a nota</div>
+        <div class="lei">
+          <div class="disp-with-margin" style="margin-bottom: 8px;">
+            <b>Art. 121.</b> Matar <span class="h-y">alguem</span>:
+            <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+            <div class="margin-notes">
+              <div class="margin-dot" style="background: rgba(250,204,21,0.3); border-color: rgba(250,204,21,0.7); transform: scale(1.3);">
+                <div class="margin-tooltip">
+                  Cai muito em prova CESPE — atenção ao dolo eventual vs culpa consciente
+                  <div style="font-size:9px; color:#b0c0b5; margin-top:4px;">há 2 dias</div>
+                </div>
+              </div>
+              <div class="margin-dot" style="background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.5);"></div>
+              <div class="margin-dot" style="background: rgba(244,114,182,0.1); border-color: rgba(244,114,182,0.5);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Dots na margem direita</h3>
+      <p>Zero poluição no texto — dots coloridos na margem. Hover mostra tooltip com a nota. Clique abre editor. A leitura fica 100% limpa. Desvantagem: margem precisa de espaço (pode conflitar em mobile).</p>
+    </div>
+  </div>
+
+  <!-- ===== OPTION C: Sidebar color strip ===== -->
+  <div class="card" data-choice="strip" onclick="toggleSelect(this)" style="max-width: 100%;">
+    <div class="card-image" style="padding: 24px 20px; background: #fff;">
+      <div class="lei">
+        <div class="disp-with-strip" style="margin-bottom: 8px;">
+          <div class="strip-bar">
+            <div class="strip-segment" style="background: rgba(250,204,21,0.5);"></div>
+            <div class="strip-segment" style="background: rgba(74,222,128,0.4);"></div>
+            <div class="strip-segment" style="background: rgba(244,114,182,0.4);"></div>
+          </div>
+          <span class="strip-count">3</span>
+          <b>Art. 121.</b> Matar <span class="h-y">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209)</span>
+        </div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral...
+        </div>
+        <div class="disp-with-strip">
+          <div class="strip-bar">
+            <div class="strip-segment" style="background: rgba(74,222,128,0.4);"></div>
+          </div>
+          <div class="par" style="margin-bottom: 0; padding-left: 34px;">
+            <b>§ 2º</b> Se o <span class="h-g">homicídio é cometido</span>:
+          </div>
+        </div>
+        <div class="inc">I — <span class="h-p">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Barra lateral colorida + contador</h3>
+      <p>Barra na borda esquerda mostra as cores dos grifos com notas. Número pequeno indica quantidade. Clique abre as notas. Sutil mas informativo. Tipo VS Code gutter marks.</p>
+    </div>
+  </div>
+
+</div>
