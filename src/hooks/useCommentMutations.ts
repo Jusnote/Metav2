@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { commentFrom, commentRpc } from '@/types/question-comments';
 
 interface CreateCommentParams {
   question_id: number;
@@ -26,7 +25,7 @@ export function useCommentMutations(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await commentFrom(supabase, 'question_comments')
+      const { data, error } = await supabase.from('question_comments')
         .insert({
           question_id: params.question_id,
           user_id: user.id,
@@ -48,7 +47,7 @@ export function useCommentMutations(questionId: number) {
 
   const editComment = useMutation({
     mutationFn: async (params: EditCommentParams) => {
-      const { error } = await commentFrom(supabase, 'question_comments')
+      const { error } = await supabase.from('question_comments')
         .update({
           content_json: params.content_json,
           content_text: params.content_text,
@@ -66,7 +65,7 @@ export function useCommentMutations(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await commentRpc(supabase, 'handle_soft_delete', {
+      const { error } = await supabase.rpc('handle_soft_delete', {
         p_comment_id: commentId,
         p_user_id: user.id,
       });
@@ -79,7 +78,7 @@ export function useCommentMutations(questionId: number) {
 
   const pinComment = useMutation({
     mutationFn: async ({ commentId, isPinned }: { commentId: string; isPinned: boolean }) => {
-      const { error } = await commentFrom(supabase, 'question_comments')
+      const { error } = await supabase.from('question_comments')
         .update({ is_pinned: isPinned })
         .eq('id', commentId);
       if (error) throw error;
@@ -91,7 +90,7 @@ export function useCommentMutations(questionId: number) {
 
   const endorseComment = useMutation({
     mutationFn: async ({ commentId, isEndorsed }: { commentId: string; isEndorsed: boolean }) => {
-      const { error } = await commentFrom(supabase, 'question_comments')
+      const { error } = await supabase.from('question_comments')
         .update({ is_endorsed: isEndorsed })
         .eq('id', commentId);
       if (error) throw error;

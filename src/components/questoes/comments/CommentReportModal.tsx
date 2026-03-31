@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { commentFrom } from '@/types/question-comments';
 import {
   Dialog,
   DialogContent,
@@ -49,7 +48,7 @@ export function CommentReportModal({ open, onOpenChange, commentId }: CommentRep
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await commentFrom(supabase, 'question_comment_reports')
+      const { error } = await supabase.from('question_comment_reports')
         .insert({
           comment_id: commentId,
           reporter_id: user.id,

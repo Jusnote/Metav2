@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { commentFrom } from '@/types/question-comments';
 import type { QuestionNote } from '@/types/question-comments';
 
 export function useQuestionNote(questionId: number | null) {
@@ -13,7 +12,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await commentFrom(supabase, 'question_notes')
+      const { data, error } = await supabase.from('question_notes')
         .select('*')
         .eq('question_id', questionId!)
         .eq('user_id', user.id)
@@ -30,7 +29,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await commentFrom(supabase, 'question_notes')
+      const { data, error } = await supabase.from('question_notes')
         .upsert({
           user_id: user.id,
           question_id: questionId!,
@@ -53,7 +52,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await commentFrom(supabase, 'question_notes')
+      const { error } = await supabase.from('question_notes')
         .delete()
         .eq('user_id', user.id)
         .eq('question_id', questionId!);

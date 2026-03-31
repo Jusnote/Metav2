@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { commentRpc } from '@/types/question-comments';
 import type { QuestionComment } from '@/types/question-comments';
 
 export function useQuestionComments(questionId: number | null) {
@@ -12,7 +11,7 @@ export function useQuestionComments(questionId: number | null) {
       if (!user) throw new Error('Not authenticated');
 
       // Call the RPC that returns comments with vote status
-      const { data, error } = await commentRpc(supabase, 'get_comments_with_votes', {
+      const { data, error } = await supabase.rpc('get_comments_with_votes', {
         p_question_id: questionId!,
         p_user_id: user.id,
       });
