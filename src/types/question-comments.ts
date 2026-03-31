@@ -25,6 +25,8 @@ export interface QuestionComment {
   updated_at: string;
   // Joined fields from get_comments_with_votes RPC
   has_upvoted: boolean;
+  reaction_counts: Record<string, number>;  // e.g. {"❤️": 3, "🔥": 1}
+  user_reactions: string[];                  // e.g. ["❤️", "🔥"]
   author_email?: string;
   author_name?: string;
   author_avatar_url?: string;
@@ -56,3 +58,9 @@ export interface CommentDraft {
   updated_at: number;
 }
 
+export const REACTION_EMOJIS = [
+  { emoji: '❤️', label: 'Amei' },
+  { emoji: '🔥', label: 'Destaque' },
+  { emoji: '🎯', label: 'Preciso' },
+  { emoji: '👏', label: 'Boa explicação' },
+] as const;

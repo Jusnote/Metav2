@@ -1,0 +1,188 @@
+<h2>Notion-like — Refinado</h2>
+<p class="subtitle">Mais minimalista, endorsed sutil, badge discreto. Clique na versão preferida.</p>
+
+<div class="cards">
+
+  <!-- V2a: Ultra clean -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px; background: #ffffff;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 520px; margin: 0 auto;">
+
+        <!-- Section header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: #2563EB;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              3 comentários
+            </div>
+            <span style="color: #d1d5db;">·</span>
+            <span style="font-size: 12px; color: #9ca3af;">Mais votados</span>
+          </div>
+          <div style="padding: 5px 12px; border-radius: 6px; background: #111827; color: white; font-size: 12px; font-weight: 500; letter-spacing: 0.01em;">Escrever</div>
+        </div>
+
+        <!-- Pinned — sutil com linha azul fina -->
+        <div style="padding: 12px 14px; border-left: 2px solid #2563EB; margin-bottom: 16px; border-radius: 0 6px 6px 0; background: rgba(37,99,235,0.02);">
+          <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 8px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="#2563EB" stroke="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>
+            <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #2563EB;">Fixado pelo professor</span>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #EF4444, #F97316); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Prof. Marcos</span>
+                <span style="font-size: 11px; color: #b0b0b0;">1d</span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0;">A banca CESPE considera que autarquias são criadas por lei específica (art. 37, XIX CF).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Normal comment -->
+        <div style="padding: 10px 0; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #6366F1, #8B5CF6); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Carlos Lima</span>
+                <span style="font-size: 11px; color: #b0b0b0;">4h</span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0 0 8px 0;">Importante lembrar que a Lei Orgânica Municipal equivale à Constituição Estadual no âmbito municipal.</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="display: flex; align-items: center; gap: 3px; color: #2563EB; font-weight: 500;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  5
+                </span>
+                <span style="color: #9ca3af; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply -->
+        <div style="padding: 8px 0; margin-left: 38px; border-left: 1.5px solid #e5e7eb; padding-left: 14px;">
+          <div style="display: flex; gap: 8px;">
+            <div style="width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #F59E0B, #EF4444); flex-shrink: 0;"></div>
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 2px;">
+                <span style="font-size: 12px; font-weight: 600; color: #111827;">Bia Souza</span>
+                <span style="font-size: 11px; color: #b0b0b0;">2h</span>
+              </div>
+              <p style="font-size: 12px; color: #4b5563; line-height: 1.45; margin: 0;">Complementando: a competência legislativa do município está no art. 30 da CF.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endorsed — SUTIL, sem bg pesado -->
+        <div style="padding: 10px 0; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #10B981, #06B6D4); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Prof. Ana Beatriz</span>
+                <span style="font-size: 11px; color: #b0b0b0;">1h</span>
+                <span style="font-size: 10px; font-weight: 600; color: #D97706; display: flex; align-items: center; gap: 3px;">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#D97706" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  Endossado
+                </span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0;">Resposta perfeita do Carlos. A Lei Orgânica é a "Constituição" do município.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Ultra Clean</h3>
+      <p>Endorsed apenas com badge inline discreto (estrela amber). Pinned com linha azul fina e bg quase invisível. Separadores ultrafinos. Máximo minimalismo.</p>
+    </div>
+  </div>
+
+  <!-- V2b: Warm minimal -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px; background: #fafaf9;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 520px; margin: 0 auto;">
+
+        <!-- Section header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 14px; font-weight: 600; color: #1c1917;">Discussão</span>
+            <span style="font-size: 12px; color: #a8a29e; background: #f5f5f4; padding: 1px 8px; border-radius: 10px;">3</span>
+          </div>
+          <div style="padding: 5px 14px; border-radius: 20px; border: 1px solid #e7e5e4; color: #44403c; font-size: 12px; font-weight: 500;">+ Comentar</div>
+        </div>
+
+        <!-- Pinned — warm accent -->
+        <div style="padding: 14px 16px; border-left: 2px solid #2563EB; margin-bottom: 12px; border-radius: 0 10px 10px 0; background: linear-gradient(90deg, rgba(37,99,235,0.03) 0%, transparent 100%);">
+          <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 10px;">
+            <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3b82f6;">Fixado</span>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #EF4444, #F97316); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1c1917;">Prof. Marcos</span>
+              </div>
+              <p style="font-size: 13px; color: #57534e; line-height: 1.6; margin: 0;">A banca CESPE considera que autarquias são criadas por lei específica (art. 37, XIX CF).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Normal comment -->
+        <div style="padding: 12px 0;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #6366F1, #A78BFA); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1c1917;">Carlos Lima</span>
+                <span style="font-size: 11px; color: #a8a29e;">4h</span>
+              </div>
+              <p style="font-size: 13px; color: #57534e; line-height: 1.6; margin: 0 0 10px 0;">Importante lembrar que a Lei Orgânica Municipal equivale à Constituição Estadual no âmbito municipal.</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="display: flex; align-items: center; gap: 3px; color: #2563EB; font-weight: 500;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  5
+                </span>
+                <span style="color: #a8a29e; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply -->
+        <div style="padding: 8px 0; margin-left: 40px; border-left: 1.5px solid #e7e5e4; padding-left: 14px;">
+          <div style="display: flex; gap: 8px;">
+            <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #F59E0B, #EF4444); flex-shrink: 0;"></div>
+            <div>
+              <span style="font-size: 12px; font-weight: 600; color: #1c1917;">Bia Souza</span>
+              <span style="font-size: 11px; color: #a8a29e; margin-left: 4px;">2h</span>
+              <p style="font-size: 12px; color: #57534e; line-height: 1.45; margin: 3px 0 0 0;">Complementando: a competência legislativa está no art. 30 da CF.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endorsed — apenas badge na linha do nome -->
+        <div style="padding: 12px 0; border-top: 1px solid #f5f5f4;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #10B981, #06B6D4); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1c1917;">Prof. Ana Beatriz</span>
+                <span style="font-size: 10px; color: #D97706; font-weight: 500;">★ Endossado</span>
+              </div>
+              <p style="font-size: 13px; color: #57534e; line-height: 1.6; margin: 0;">Resposta perfeita do Carlos. A Lei Orgânica é a "Constituição" do município.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Warm Minimal</h3>
+      <p>Tom quente (stone), avatares redondos, botão "Comentar" pill, pinned com gradiente sutilíssimo. Endorsed é só "★ Endossado" ao lado do nome. Acolhedor e limpo.</p>
+    </div>
+  </div>
+
+</div>

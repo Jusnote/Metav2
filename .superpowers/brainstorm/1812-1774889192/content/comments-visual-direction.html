@@ -1,0 +1,194 @@
+<h2>Direção visual da seção de comentários</h2>
+<p class="subtitle">Qual atmosfera combina melhor com o app? Clique para selecionar.</p>
+
+<div class="cards">
+
+  <!-- Option A: Glassmorphism sutil -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8fafc;">
+      <!-- Mockup A -->
+      <div style="font-family: system-ui, sans-serif; max-width: 500px; margin: 0 auto;">
+        <!-- Header toggle -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <div style="padding: 6px 14px; border-radius: 20px; background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.15); color: #2563EB; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <span>💬</span> Comunidade <span style="background: #2563EB; color: white; border-radius: 10px; padding: 1px 7px; font-size: 11px;">3</span>
+          </div>
+          <div style="padding: 6px 14px; border-radius: 20px; background: rgba(217,119,6,0.06); border: 1px solid rgba(217,119,6,0.12); color: #92400E; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+            <span>✏️</span> Minha anotação
+          </div>
+        </div>
+
+        <!-- Comment card glass -->
+        <div style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1e293b;">Maria Silva</span>
+                <span style="font-size: 11px; color: #94a3b8;">2h atrás</span>
+              </div>
+              <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0 0 10px 0;">A questão aborda o princípio da legalidade no contexto municipal. Atenção ao art. 30 da CF.</p>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 12px; color: #2563EB; display: flex; align-items: center; gap: 3px;">▲ 7</span>
+                <span style="font-size: 12px; color: #64748b; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pinned comment -->
+        <div style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(37,99,235,0.12); border-left: 3px solid #2563EB; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px;">
+          <div style="margin-bottom: 8px;">
+            <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #2563EB; background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 4px;">📌 Fixado</span>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #F59E0B, #EF4444); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1e293b;">Prof. Ricardo</span>
+                <span style="font-size: 11px; color: #94a3b8;">1d</span>
+              </div>
+              <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0;">Gabarito correto. O fundamento está no art. 30, I da CF/88.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Glass Sutil</h3>
+      <p>Cards com glassmorphism leve, bordas suaves, pills para toggle. Elegante e moderno. Muito espaço para respirar.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Flat clean com accent bars -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #fafafa;">
+      <div style="font-family: system-ui, sans-serif; max-width: 500px; margin: 0 auto;">
+        <!-- Sort + Write button -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <span style="font-size: 12px; color: #71717a;">Mais votados ▾</span>
+          <div style="padding: 5px 12px; border-radius: 6px; background: #18181b; color: white; font-size: 12px; font-weight: 500;">✍ Escrever</div>
+        </div>
+
+        <!-- Comment flat -->
+        <div style="padding: 12px 0; border-bottom: 1px solid #f4f4f5;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #10B981, #06B6D4); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 13px; font-weight: 600; color: #18181b;">João Pedro</span>
+                <span style="font-size: 11px; color: #a1a1aa;">3h</span>
+              </div>
+              <p style="font-size: 13px; color: #3f3f46; line-height: 1.5; margin: 0 0 8px 0;">Errei essa questão porque confundi autarquia com fundação pública. O macete é lembrar que autarquia tem personalidade de direito público.</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="color: #2563EB; font-weight: 500;">▲ 12</span>
+                <span style="color: #71717a;">Responder</span>
+                <span style="color: #71717a;">···</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply indent -->
+        <div style="padding: 10px 0; margin-left: 38px; border-left: 2px solid #e4e4e7; padding-left: 14px;">
+          <div style="display: flex; gap: 8px;">
+            <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #F59E0B, #F97316); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 3px;">
+                <span style="font-size: 12px; font-weight: 600; color: #18181b;">Ana Costa</span>
+                <span style="font-size: 11px; color: #a1a1aa;">1h</span>
+              </div>
+              <p style="font-size: 12px; color: #52525b; line-height: 1.4; margin: 0 0 6px 0;"><span style="color: #2563EB; font-weight: 500;">@João</span> Exatamente! E fundação pode ter direito público OU privado.</p>
+              <span style="font-size: 11px; color: #2563EB;">▲ 3</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pinned -->
+        <div style="padding: 12px 14px; border-left: 3px solid #2563EB; background: #f8faff; border-radius: 0 8px 8px 0; margin-top: 8px;">
+          <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #2563EB; letter-spacing: 0.5px;">📌 Fixado</span>
+          <div style="display: flex; gap: 10px; margin-top: 8px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #EF4444, #EC4899); flex-shrink: 0;"></div>
+            <div>
+              <span style="font-size: 13px; font-weight: 600; color: #18181b;">Prof. Marcos</span>
+              <p style="font-size: 13px; color: #3f3f46; line-height: 1.5; margin: 4px 0 0 0;">A banca CESPE considera que autarquias são criadas por lei específica (art. 37, XIX CF).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Flat Clean</h3>
+      <p>Sem cards, separadores finos. Accent bars coloridas no pinned/endorsed. Minimalista e denso — foco no conteúdo. Estilo Reddit/GitHub.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Notion-like with subtle cards -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #ffffff;">
+      <div style="font-family: system-ui, sans-serif; max-width: 500px; margin: 0 auto;">
+        <!-- Section header -->
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; background: #EFF6FF; color: #2563EB; font-size: 12px; font-weight: 600;">💬 3</div>
+          <span style="font-size: 13px; font-weight: 500; color: #374151;">Comentários</span>
+          <span style="flex: 1;"></span>
+          <span style="font-size: 11px; color: #9ca3af;">Mais votados ▾</span>
+        </div>
+
+        <!-- Comment with hover bg -->
+        <div style="padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; transition: background 0.15s;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #6366F1, #8B5CF6); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Carlos Lima</span>
+                <span style="font-size: 11px; color: #9ca3af;">há 4h</span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0 0 8px 0;">Importante lembrar que a Lei Orgânica Municipal equivale à Constituição Estadual no âmbito municipal.</p>
+              <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: #6b7280;">
+                <span style="display: flex; align-items: center; gap: 4px; color: #2563EB; font-weight: 500;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  5
+                </span>
+                <span style="cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply -->
+        <div style="padding: 8px 12px; margin-left: 40px; border-radius: 8px;">
+          <div style="display: flex; gap: 8px;">
+            <div style="width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, #F59E0B, #EF4444); flex-shrink: 0;"></div>
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 3px;">
+                <span style="font-size: 12px; font-weight: 600; color: #111827;">Bia Souza</span>
+                <span style="font-size: 11px; color: #9ca3af;">2h</span>
+              </div>
+              <p style="font-size: 12px; color: #4b5563; line-height: 1.4; margin: 0;">Complementando: a competência legislativa do município está no art. 30 da CF.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endorsed -->
+        <div style="padding: 10px 12px; border-radius: 8px; border-left: 3px solid #F59E0B; background: #fffbeb; margin-top: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+            <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #B45309; background: rgba(245,158,11,0.12); padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">👑 Endossado</span>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #EF4444, #F97316); flex-shrink: 0;"></div>
+            <div>
+              <span style="font-size: 13px; font-weight: 600; color: #111827;">Prof. Ana Beatriz</span>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 4px 0 0 0;">Resposta perfeita do Carlos. A Lei Orgânica é a "Constituição" do município.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Notion-like</h3>
+      <p>Avatares quadrados arredondados, sem bordas visíveis nos comentários (hover reveal), badges inline com bg suave. Limpo e profissional. Estilo Notion/Linear.</p>
+    </div>
+  </div>
+
+</div>
