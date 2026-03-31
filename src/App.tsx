@@ -41,6 +41,12 @@ import GlobalTimer from "./components/GlobalTimer";
 import React, { useState } from "react";
 // import { TestScheduleHooks } from "./components/TestScheduleHooks";
 import { TimeEstimateInputTest } from "./components/goals/TimeEstimateInputTest";
+import { ModerationShell } from './components/moderation/layout/ModerationShell';
+import { ModerationRoute } from './components/moderation/layout/ModerationRoute';
+
+const ModerationOverviewPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Overview</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
+const ModerationReportsPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Reports</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
+const ModerationUsersPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Usuários</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
 
 const queryClient = new QueryClient();
 
@@ -181,6 +187,21 @@ const App = () => {
                     {/* <Route path="test-schedule" element={<PrivateRoute><TestScheduleHooks /></PrivateRoute>} /> */}
                     <Route path="test-time-input" element={<PrivateRoute><TimeEstimateInputTest /></PrivateRoute>} />
                     <Route path="goals" element={<PrivateRoute><GoalsPage /></PrivateRoute>} />
+                  </Route>
+                  {/* Moderation Panel — separate layout */}
+                  <Route
+                    path="/moderacao"
+                    element={
+                      <PrivateRoute>
+                        <ModerationRoute>
+                          <ModerationShell />
+                        </ModerationRoute>
+                      </PrivateRoute>
+                    }
+                  >
+                    <Route index element={<ModerationOverviewPlaceholder />} />
+                    <Route path="reports" element={<ModerationReportsPlaceholder />} />
+                    <Route path="usuarios" element={<ModerationUsersPlaceholder />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
