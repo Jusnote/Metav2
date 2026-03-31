@@ -46,6 +46,8 @@ import { ModerationRoute } from './components/moderation/layout/ModerationRoute'
 import { OverviewPage } from './components/moderation/overview/OverviewPage';
 import { ReportsPage } from './components/moderation/reports/ReportsPage';
 import { UsersPage } from './components/moderation/users/UsersPage';
+import { QuestionsReportsPage } from './components/moderation/questions/QuestionsReportsPage';
+import { LeiReportsPage } from './components/moderation/lei-seca/LeiReportsPage';
 
 const queryClient = new QueryClient();
 
@@ -201,6 +203,8 @@ const App = () => {
                     <Route index element={<OverviewPage />} />
                     <Route path="reports" element={<ReportsPage />} />
                     <Route path="usuarios" element={<UsersPage />} />
+                    <Route path="questoes" element={<QuestionsReportsPage />} />
+                    <Route path="lei-seca" element={<LeiReportsPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -13,6 +13,8 @@ import {
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/moderation/useUserRole';
+import { useQuestionReportCount } from '@/hooks/moderation/useQuestionReports';
+import { useLawReportCount } from '@/hooks/moderation/useLawReports';
 
 interface NavItem {
   label: string;
@@ -27,6 +29,8 @@ export function ModerationSidebar({ pendingCount = 0 }: { pendingCount?: number 
   const location = useLocation();
   const { user } = useAuth();
   const { role } = useUserRole();
+  const questionReportCount = useQuestionReportCount();
+  const lawReportCount = useLawReportCount();
 
   const navItems: NavItem[] = [
     {
@@ -49,17 +53,17 @@ export function ModerationSidebar({ pendingCount = 0 }: { pendingCount?: number 
       label: 'Questões',
       href: '/moderacao/questoes',
       icon: <HelpCircle className="h-[15px] w-[15px]" />,
-      disabled: true,
+      badge: questionReportCount,
     },
-  ];
-
-  const futureItems: NavItem[] = [
     {
       label: 'Lei Seca',
       href: '/moderacao/lei-seca',
       icon: <BookOpen className="h-[15px] w-[15px]" />,
-      disabled: true,
+      badge: lawReportCount,
     },
+  ];
+
+  const futureItems: NavItem[] = [
     {
       label: 'Billing',
       href: '/moderacao/billing',

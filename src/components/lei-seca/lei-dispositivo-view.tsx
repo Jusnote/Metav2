@@ -3,20 +3,24 @@
 import { useState, useCallback } from 'react';
 import type { NodeViewProps } from '@tiptap/react';
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/react';
-import { MoreVertical, Copy, MessageSquare, Bookmark } from 'lucide-react';
+import { MoreVertical, Copy, MessageSquare, Bookmark, Flag } from 'lucide-react';
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover';
+import { LeiReportModal } from '@/components/lei-seca/LeiReportModal';
 
 export function LeiDispositivoView({ node }: NodeViewProps) {
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   const role = node.attrs.role;
   const slug = node.attrs.slug;
   const indent = node.attrs.indent || 0;
+  const leiId = node.attrs.leiId || '';
+  const numero = node.attrs.numero || slug || '';
 
   const handleCopy = useCallback(() => {
     const text = node.textContent;
@@ -80,6 +84,16 @@ export function LeiDispositivoView({ node }: NodeViewProps) {
                   <Bookmark className="h-3 w-3" />
                   Salvar
                 </button>
+                <button
+                  className="lei-action-item"
+                  onClick={() => {
+                    setPopoverOpen(false);
+                    setReportModalOpen(true);
+                  }}
+                >
+                  <Flag className="h-3 w-3" />
+                  Reportar
+                </button>
               </div>
             </PopoverContent>
           </Popover>
@@ -95,6 +109,18 @@ export function LeiDispositivoView({ node }: NodeViewProps) {
             onClick={(e) => e.stopPropagation()}
           />
         </div>
+      )}
+
+      {reportModalOpen && (
+        <LeiReportModal
+          open={reportModalOpen}
+          onClose={() => setReportModalOpen(false)}
+          dispositivoId={slug || ''}
+          leiId={leiId}
+          dispositivoTipo={role || ''}
+          dispositivoNumero={numero}
+          dispositivoTexto={node.textContent || ''}
+        />
       )}
     </NodeViewWrapper>
   );
