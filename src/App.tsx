@@ -45,8 +45,7 @@ import { ModerationShell } from './components/moderation/layout/ModerationShell'
 import { ModerationRoute } from './components/moderation/layout/ModerationRoute';
 import { OverviewPage } from './components/moderation/overview/OverviewPage';
 import { ReportsPage } from './components/moderation/reports/ReportsPage';
-
-const ModerationUsersPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Usuários</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
+import { UsersPage } from './components/moderation/users/UsersPage';
 
 const queryClient = new QueryClient();
 
@@ -201,7 +200,7 @@ const App = () => {
                   >
                     <Route index element={<OverviewPage />} />
                     <Route path="reports" element={<ReportsPage />} />
-                    <Route path="usuarios" element={<ModerationUsersPlaceholder />} />
+                    <Route path="usuarios" element={<UsersPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
