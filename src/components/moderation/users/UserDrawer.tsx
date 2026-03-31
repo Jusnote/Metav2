@@ -33,6 +33,8 @@ export function UserDrawer({ user, open, onClose }: UserDrawerProps) {
   };
 
   const handleToggleShadowban = async () => {
+    const action = user.is_shadowbanned ? 'remover o shadowban' : 'aplicar shadowban';
+    if (!window.confirm(`Tem certeza que deseja ${action} neste usuário?`)) return;
     await toggleShadowban({ userId: user.user_id, shadowban: !user.is_shadowbanned });
     toast.success(user.is_shadowbanned ? 'Shadowban removido' : 'Shadowban aplicado');
   };
@@ -42,6 +44,7 @@ export function UserDrawer({ user, open, onClose }: UserDrawerProps) {
       toast.error('Motivo obrigatório para banimento');
       return;
     }
+    if (!window.confirm(`Tem certeza que deseja banir "${displayName}"? Motivo: ${banReason}`)) return;
     await banUser({ userId: user.user_id, reason: banReason });
     toast.success('Usuário banido');
     setBanReason('');
@@ -49,6 +52,7 @@ export function UserDrawer({ user, open, onClose }: UserDrawerProps) {
   };
 
   const handleUnban = async () => {
+    if (!window.confirm(`Tem certeza que deseja desbanir "${displayName}"?`)) return;
     await unbanUser({ userId: user.user_id });
     toast.success('Banimento removido');
   };

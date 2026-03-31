@@ -9,6 +9,8 @@ import { useReportMutations } from '@/hooks/moderation/useReports';
 import { useModerationLog } from '@/hooks/moderation/useModerationLog';
 import type { ReportWithContext } from '@/types/moderation';
 import { toast } from 'sonner';
+import { Trash2, ExternalLink } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const REASON_LABELS: Record<string, string> = {
   spam: 'Spam',
@@ -35,6 +37,31 @@ export function ReportDrawer({ report, open, onClose }: ReportDrawerProps) {
     onClose();
   };
 
+  const handleDeleteContent = async () => {
+    if (!window.confirm('Tem certeza que deseja deletar este comentário? Esta ação segue LGPD (soft delete).')) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await (supabase as any).rpc('handle_soft_delete', {
+      p_comment_id: report.comment_id,
+      p_user_id: user.id,
+    });
+    if (error) {
+      toast.error('Erro ao deletar comentário');
+      return;
+    }
+
+    await supabase.from('moderation_log').insert({
+      actor_id: user.id,
+      target_type: 'comment' as any,
+      target_id: report.comment_id,
+      action: 'delete_content' as any,
+    });
+
+    toast.success('Comentário deletado (LGPD)');
+    onClose();
+  };
+
   return (
     <ModerationDrawer
       open={open}
@@ -57,6 +84,14 @@ export function ReportDrawer({ report, open, onClose }: ReportDrawerProps) {
               className="rounded-md bg-zinc-100 px-4 py-2 text-[13px] font-semibold text-zinc-700 transition-colors hover:bg-zinc-200 disabled:opacity-50"
             >
               Improcedente
+            </button>
+            <div className="flex-1" />
+            <button
+              onClick={handleDeleteContent}
+              className="rounded-md bg-red-50 px-3 py-2 text-[12px] font-semibold text-red-600 transition-colors hover:bg-red-100"
+              title="Deletar comentário (LGPD soft delete)"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </ActionBar>
         ) : undefined
@@ -88,6 +123,19 @@ export function ReportDrawer({ report, open, onClose }: ReportDrawerProps) {
           authorEmail={report.comment_author_email}
           questionId={report.comment_question_id}
         />
+      </div>
+
+      {/* Context link */}
+      <div className="mb-5">
+        <a
+          href={`/questoes?id=${report.comment_question_id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-violet-600 transition-colors hover:text-violet-700"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Ver questão #{report.comment_question_id} no contexto
+        </a>
       </div>
 
       {/* Reporter info */}
