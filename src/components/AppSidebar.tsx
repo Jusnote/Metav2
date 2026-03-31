@@ -217,10 +217,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
 
-            {isModerator && (
-              <>
-                <div className="my-3 mx-1 border-t border-white/[0.06]" />
-                <nav className="flex flex-col gap-1">
+            {/* Bottom: settings + moderation + user + logout */}
+            <div className="mt-auto flex flex-col gap-1">
+              {isModerator && (
+                <>
+                  <div className="my-2 mx-1 border-t border-white/[0.06]" />
                   {moderationNav.map((item) => (
                     <button
                       key={item.href}
@@ -239,12 +240,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                       )}
                     </button>
                   ))}
-                </nav>
-              </>
-            )}
-
-            {/* Bottom: settings + user + logout */}
-            <div className="mt-auto flex flex-col gap-1">
+                </>
+              )}
               <button
                 onClick={() => { setPanelSection(null); navigate("/settings"); }}
                 className="flex items-center justify-center h-9 w-9 rounded-md bg-transparent text-[#6B6760] hover:text-[#A09B94] hover:bg-white/[0.04] transition-all duration-150"
