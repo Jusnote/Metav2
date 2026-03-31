@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       alternativas: {
@@ -432,6 +407,51 @@ export type Database = {
         }
         Relationships: []
       }
+      law_article_reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          dispositivo_id: string
+          dispositivo_texto: string | null
+          dispositivo_tipo: string | null
+          id: string
+          lei_id: string
+          reason: string
+          reporter_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          dispositivo_id: string
+          dispositivo_texto?: string | null
+          dispositivo_tipo?: string | null
+          id?: string
+          lei_id: string
+          reason: string
+          reporter_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          dispositivo_id?: string
+          dispositivo_texto?: string | null
+          dispositivo_tipo?: string | null
+          id?: string
+          lei_id?: string
+          reason?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       leis: {
         Row: {
           created_at: string | null
@@ -824,6 +844,42 @@ export type Database = {
           question_id?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      question_reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          question_id: number
+          reason: string
+          reporter_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          question_id: number
+          reason: string
+          reporter_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          question_id?: number
+          reason?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -1741,6 +1797,36 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      get_pending_report_counts: {
+        Args: { p_comment_ids: string[] }
+        Returns: {
+          comment_id: string
+          pending_count: number
+        }[]
+      }
+      get_report_analytics: { Args: { p_days?: number }; Returns: Json }
+      get_reports_paginated: {
+        Args: { p_limit?: number; p_offset?: number; p_status?: string }
+        Returns: {
+          comment_author_email: string
+          comment_author_name: string
+          comment_content_json: Json
+          comment_content_text: string
+          comment_id: string
+          comment_question_id: number
+          created_at: string
+          id: string
+          reason: string
+          report_count_by_reporter: number
+          reporter_email: string
+          reporter_id: string
+          reporter_name: string
+          resolved_at: string
+          resolved_by: string
+          status: string
+          total_count: number
+        }[]
+      }
       get_reports_with_context: {
         Args: { p_status?: string }
         Returns: {
@@ -1923,9 +2009,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
