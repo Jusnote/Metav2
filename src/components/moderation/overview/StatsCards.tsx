@@ -10,11 +10,13 @@ interface StatsCardsProps {
 function StatCard({
   label,
   value,
+  description,
   sub,
   highlight,
 }: {
   label: string;
   value: string;
+  description: string;
   sub?: React.ReactNode;
   highlight?: boolean;
 }) {
@@ -35,6 +37,7 @@ function StatCard({
       <div className="mt-2 text-[36px] font-extrabold leading-none tracking-[-1.5px] tabular-nums text-zinc-900">
         {value}
       </div>
+      <p className="mt-1.5 text-[11px] leading-[1.4] text-zinc-400">{description}</p>
       {sub && <div className="mt-1">{sub}</div>}
     </div>
   );
@@ -59,6 +62,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       <StatCard
         label="Pendentes"
         value={String(stats.pending_reports)}
+        description="Reports de comentários, questões ou leis aguardando análise de um moderador"
         highlight
         sub={
           <span className="text-[12px] text-zinc-400">aguardando ação</span>
@@ -67,6 +71,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       <StatCard
         label="Resolvidos"
         value={String(stats.resolved_reports_period)}
+        description="Reports analisados e finalizados como procedentes ou improcedentes no período"
         sub={
           <span className="text-[12px] text-emerald-500">nos últimos 7 dias</span>
         }
@@ -74,6 +79,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       <StatCard
         label="Tempo médio"
         value={`${stats.avg_resolution_time_hours}`}
+        description="Tempo médio entre a criação do report e a resolução pelo moderador"
         sub={
           <span className="text-[12px] text-zinc-400">horas p/ resolução</span>
         }
@@ -81,6 +87,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       <StatCard
         label="Banidos ativos"
         value={String(stats.active_bans)}
+        description="Usuários com banimento ativo que não podem interagir na plataforma"
         sub={
           <span className="text-[12px] text-zinc-400">este período</span>
         }
