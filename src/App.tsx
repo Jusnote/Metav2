@@ -43,8 +43,8 @@ import React, { useState } from "react";
 import { TimeEstimateInputTest } from "./components/goals/TimeEstimateInputTest";
 import { ModerationShell } from './components/moderation/layout/ModerationShell';
 import { ModerationRoute } from './components/moderation/layout/ModerationRoute';
+import { OverviewPage } from './components/moderation/overview/OverviewPage';
 
-const ModerationOverviewPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Overview</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
 const ModerationReportsPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Reports</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
 const ModerationUsersPlaceholder = () => <div className="p-8"><h1 className="text-xl font-bold">Usuários</h1><p className="text-zinc-400 mt-2">Em construção...</p></div>;
 
@@ -199,7 +199,7 @@ const App = () => {
                       </PrivateRoute>
                     }
                   >
-                    <Route index element={<ModerationOverviewPlaceholder />} />
+                    <Route index element={<OverviewPage />} />
                     <Route path="reports" element={<ModerationReportsPlaceholder />} />
                     <Route path="usuarios" element={<ModerationUsersPlaceholder />} />
                   </Route>
