@@ -565,6 +565,35 @@ export type Database = {
           },
         ]
       }
+      question_comment_reactions: {
+        Row: {
+          comment_id: string
+          created_at: string
+          emoji: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          emoji: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          emoji?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_comment_reactions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "question_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       question_comment_reports: {
         Row: {
           comment_id: string
@@ -1548,12 +1577,14 @@ export type Database = {
           last_edited_at: string
           question_id: number
           quoted_text: string
+          reaction_counts: Json
           reply_count: number
           reply_to_id: string
           report_count: number
           root_id: string
           upvote_count: number
           user_id: string
+          user_reactions: Json
         }[]
       }
       get_daily_capacity: { Args: { intensity_level: string }; Returns: number }
@@ -1608,6 +1639,10 @@ export type Database = {
           rank: number
           texto_plano: string
         }[]
+      }
+      toggle_reaction: {
+        Args: { p_comment_id: string; p_emoji: string; p_user_id: string }
+        Returns: Json
       }
       toggle_upvote: {
         Args: { p_comment_id: string; p_user_id: string }

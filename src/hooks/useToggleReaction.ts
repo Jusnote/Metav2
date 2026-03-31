@@ -11,7 +11,7 @@ export function useToggleReaction(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await (supabase as any).rpc('toggle_reaction', {
+      const { error } = await supabase.rpc('toggle_reaction', {
         p_comment_id: commentId,
         p_user_id: user.id,
         p_emoji: emoji,
