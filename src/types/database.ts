@@ -49,6 +49,205 @@ export type Database = {
           },
         ]
       }
+      artigos: {
+        Row: {
+          anotacoes_legislativas: Json | null
+          content_hash: string | null
+          contexto: string | null
+          created_at: string | null
+          epigrafe: string | null
+          flags: Json | null
+          fonte: string | null
+          fonte_url: string | null
+          id: string
+          lei_id: string | null
+          numero: string
+          ordem_numerica: number | null
+          path: Json | null
+          plate_content: Json | null
+          qualidade_score: number | null
+          reference_links: Json | null
+          revoked_versions: Json | null
+          search_text: string | null
+          slug: string | null
+          source_id: number | null
+          source_index: number | null
+          source_type: string | null
+          texto_limpo: string | null
+          texto_original_fonte: string | null
+          texto_plano: string | null
+          updated_at: string | null
+          vigente: boolean | null
+        }
+        Insert: {
+          anotacoes_legislativas?: Json | null
+          content_hash?: string | null
+          contexto?: string | null
+          created_at?: string | null
+          epigrafe?: string | null
+          flags?: Json | null
+          fonte?: string | null
+          fonte_url?: string | null
+          id: string
+          lei_id?: string | null
+          numero: string
+          ordem_numerica?: number | null
+          path?: Json | null
+          plate_content?: Json | null
+          qualidade_score?: number | null
+          reference_links?: Json | null
+          revoked_versions?: Json | null
+          search_text?: string | null
+          slug?: string | null
+          source_id?: number | null
+          source_index?: number | null
+          source_type?: string | null
+          texto_limpo?: string | null
+          texto_original_fonte?: string | null
+          texto_plano?: string | null
+          updated_at?: string | null
+          vigente?: boolean | null
+        }
+        Update: {
+          anotacoes_legislativas?: Json | null
+          content_hash?: string | null
+          contexto?: string | null
+          created_at?: string | null
+          epigrafe?: string | null
+          flags?: Json | null
+          fonte?: string | null
+          fonte_url?: string | null
+          id?: string
+          lei_id?: string | null
+          numero?: string
+          ordem_numerica?: number | null
+          path?: Json | null
+          plate_content?: Json | null
+          qualidade_score?: number | null
+          reference_links?: Json | null
+          revoked_versions?: Json | null
+          search_text?: string | null
+          slug?: string | null
+          source_id?: number | null
+          source_index?: number | null
+          source_type?: string | null
+          texto_limpo?: string | null
+          texto_original_fonte?: string | null
+          texto_plano?: string | null
+          updated_at?: string | null
+          vigente?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artigos_lei_id_fkey"
+            columns: ["lei_id"]
+            isOneToOne: false
+            referencedRelation: "leis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      caderno_items: {
+        Row: {
+          artigo_contexto: string | null
+          artigo_numero: string
+          caderno_id: string
+          context_chain: Json | null
+          created_at: string | null
+          id: string
+          lei_id: string
+          lei_nome: string | null
+          lei_sigla: string | null
+          markers: string[] | null
+          note: string | null
+          position: number
+          provision_role: string
+          provision_slug: string
+          provision_text: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          artigo_contexto?: string | null
+          artigo_numero: string
+          caderno_id: string
+          context_chain?: Json | null
+          created_at?: string | null
+          id?: string
+          lei_id: string
+          lei_nome?: string | null
+          lei_sigla?: string | null
+          markers?: string[] | null
+          note?: string | null
+          position?: number
+          provision_role: string
+          provision_slug: string
+          provision_text: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          artigo_contexto?: string | null
+          artigo_numero?: string
+          caderno_id?: string
+          context_chain?: Json | null
+          created_at?: string | null
+          id?: string
+          lei_id?: string
+          lei_nome?: string | null
+          lei_sigla?: string | null
+          markers?: string[] | null
+          note?: string | null
+          position?: number
+          provision_role?: string
+          provision_slug?: string
+          provision_text?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caderno_items_caderno_id_fkey"
+            columns: ["caderno_id"]
+            isOneToOne: false
+            referencedRelation: "cadernos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cadernos: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           content: Json
@@ -157,6 +356,102 @@ export type Database = {
         }
         Relationships: []
       }
+      grifos: {
+        Row: {
+          color: string
+          created_at: string | null
+          dispositivo_id: string
+          end_offset: number
+          id: string
+          lei_id: string
+          note: string | null
+          orphan: boolean | null
+          start_offset: number
+          style: string
+          tags: string[] | null
+          texto_grifado: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          dispositivo_id: string
+          end_offset: number
+          id?: string
+          lei_id: string
+          note?: string | null
+          orphan?: boolean | null
+          start_offset: number
+          style?: string
+          tags?: string[] | null
+          texto_grifado: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          dispositivo_id?: string
+          end_offset?: number
+          id?: string
+          lei_id?: string
+          note?: string | null
+          orphan?: boolean | null
+          start_offset?: number
+          style?: string
+          tags?: string[] | null
+          texto_grifado?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leis: {
+        Row: {
+          created_at: string | null
+          data_publicacao: string | null
+          ementa: string | null
+          hierarquia: Json | null
+          id: string
+          nome: string | null
+          numero: string | null
+          raw_metadata: Json | null
+          raw_tabelas: Json | null
+          sigla: string | null
+          total_artigos: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_publicacao?: string | null
+          ementa?: string | null
+          hierarquia?: Json | null
+          id: string
+          nome?: string | null
+          numero?: string | null
+          raw_metadata?: Json | null
+          raw_tabelas?: Json | null
+          sigla?: string | null
+          total_artigos?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data_publicacao?: string | null
+          ementa?: string | null
+          hierarquia?: Json | null
+          id?: string
+          nome?: string | null
+          numero?: string | null
+          raw_metadata?: Json | null
+          raw_tabelas?: Json | null
+          sigla?: string | null
+          total_artigos?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content: string | null
@@ -204,6 +499,249 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      question_comment_edits: {
+        Row: {
+          comment_id: string
+          content_json: Json
+          content_text: string
+          edited_at: string
+          id: string
+        }
+        Insert: {
+          comment_id: string
+          content_json: Json
+          content_text: string
+          edited_at?: string
+          id?: string
+        }
+        Update: {
+          comment_id?: string
+          content_json?: Json
+          content_text?: string
+          edited_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_comment_edits_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "question_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_comment_reports: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          reason: string
+          reporter_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          reason: string
+          reporter_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          reason?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_comment_reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "question_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "question_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_comments: {
+        Row: {
+          content_json: Json
+          content_text: string
+          created_at: string
+          deleted_by: string | null
+          edit_count: number
+          id: string
+          is_author_shadowbanned: boolean
+          is_deleted: boolean
+          is_endorsed: boolean
+          is_pinned: boolean
+          last_edited_at: string | null
+          question_id: number
+          quoted_text: string | null
+          reply_count: number
+          reply_to_id: string | null
+          report_count: number
+          root_id: string | null
+          updated_at: string
+          upvote_count: number
+          user_id: string
+        }
+        Insert: {
+          content_json: Json
+          content_text: string
+          created_at?: string
+          deleted_by?: string | null
+          edit_count?: number
+          id?: string
+          is_author_shadowbanned?: boolean
+          is_deleted?: boolean
+          is_endorsed?: boolean
+          is_pinned?: boolean
+          last_edited_at?: string | null
+          question_id: number
+          quoted_text?: string | null
+          reply_count?: number
+          reply_to_id?: string | null
+          report_count?: number
+          root_id?: string | null
+          updated_at?: string
+          upvote_count?: number
+          user_id: string
+        }
+        Update: {
+          content_json?: Json
+          content_text?: string
+          created_at?: string
+          deleted_by?: string | null
+          edit_count?: number
+          id?: string
+          is_author_shadowbanned?: boolean
+          is_deleted?: boolean
+          is_endorsed?: boolean
+          is_pinned?: boolean
+          last_edited_at?: string | null
+          question_id?: number
+          quoted_text?: string | null
+          reply_count?: number
+          reply_to_id?: string | null
+          report_count?: number
+          root_id?: string | null
+          updated_at?: string
+          upvote_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_comments_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "question_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_comments_root_id_fkey"
+            columns: ["root_id"]
+            isOneToOne: false
+            referencedRelation: "question_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_notes: {
+        Row: {
+          content_json: Json
+          content_text: string
+          created_at: string
+          question_id: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_json: Json
+          content_text: string
+          created_at?: string
+          question_id: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_json?: Json
+          content_text?: string
+          created_at?: string
+          question_id?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       questoes: {
         Row: {
@@ -829,6 +1367,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_moderation: {
+        Row: {
+          banned_by: string | null
+          created_at: string
+          is_shadowbanned: boolean
+          timeout_reason: string | null
+          timeout_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          banned_by?: string | null
+          created_at?: string
+          is_shadowbanned?: boolean
+          timeout_reason?: string | null
+          timeout_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          banned_by?: string | null
+          created_at?: string
+          is_shadowbanned?: boolean
+          timeout_reason?: string | null
+          timeout_until?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_study_config: {
         Row: {
           avoid_times: string[] | null
@@ -945,6 +1513,49 @@ export type Database = {
     }
     Functions: {
       extract_text_from_plate: { Args: { content: Json }; Returns: string }
+      get_comment_replies: {
+        Args: { p_root_id: string; p_user_id: string }
+        Returns: {
+          content_json: Json
+          content_text: string
+          created_at: string
+          edit_count: number
+          has_upvoted: boolean
+          id: string
+          is_author_shadowbanned: boolean
+          is_deleted: boolean
+          last_edited_at: string
+          quoted_text: string
+          reply_to_id: string
+          root_id: string
+          upvote_count: number
+          user_id: string
+        }[]
+      }
+      get_comments_with_votes: {
+        Args: { p_question_id: number; p_sort?: string; p_user_id: string }
+        Returns: {
+          content_json: Json
+          content_text: string
+          created_at: string
+          edit_count: number
+          has_upvoted: boolean
+          id: string
+          is_author_shadowbanned: boolean
+          is_deleted: boolean
+          is_endorsed: boolean
+          is_pinned: boolean
+          last_edited_at: string
+          question_id: number
+          quoted_text: string
+          reply_count: number
+          reply_to_id: string
+          report_count: number
+          root_id: string
+          upvote_count: number
+          user_id: string
+        }[]
+      }
       get_daily_capacity: { Args: { intensity_level: string }; Returns: number }
       get_hard_limit_capacity: {
         Args: { intensity_level: string }
@@ -977,6 +1588,34 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      handle_soft_delete: {
+        Args: { p_comment_id: string; p_user_id: string }
+        Returns: Json
+      }
+      immutable_unaccent: { Args: { "": string }; Returns: string }
+      search_artigos: {
+        Args: {
+          lei_filter?: string
+          limit_count?: number
+          search_query: string
+        }
+        Returns: {
+          contexto: string
+          id: string
+          lei_id: string
+          numero: string
+          rank: number
+          texto_plano: string
+        }[]
+      }
+      toggle_upvote: {
+        Args: { p_comment_id: string; p_user_id: string }
+        Returns: Json
+      }
+      upsert_lei_com_artigos: {
+        Args: { p_artigos: Json; p_lei: Json }
+        Returns: Json
       }
     }
     Enums: {
@@ -1110,14 +1749,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-// Helper type exports
-export type Questao = Tables<"questoes">
-export type Alternativa = Tables<"alternativas">
-export type BlockNoteFlashcard = Tables<"flashcards">
-export type BlockNoteFlashcardInsert = TablesInsert<"flashcards">
-export type ScheduleItem = Tables<"schedule_items">
-export type ScheduleItemInsert = TablesInsert<"schedule_items">
-export type ScheduleItemUpdate = TablesUpdate<"schedule_items">
-export type StudyGoal = Tables<"study_goals">
-export type StudyGoalInsert = TablesInsert<"study_goals">

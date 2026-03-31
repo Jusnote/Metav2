@@ -18,6 +18,8 @@ interface CommentContextMenuProps {
   onReport: () => void;
   onPin?: () => void;
   onEndorse?: () => void;
+  isPinned?: boolean;
+  isEndorsed?: boolean;
 }
 
 export function CommentContextMenu({
@@ -27,6 +29,8 @@ export function CommentContextMenu({
   onReport,
   onPin,
   onEndorse,
+  isPinned,
+  isEndorsed,
 }: CommentContextMenuProps) {
   const hasProfessorActions = onPin || onEndorse;
 
@@ -66,13 +70,13 @@ export function CommentContextMenu({
         {onPin && (
           <DropdownMenuItem onClick={onPin} className="gap-2">
             <Pin className="h-3.5 w-3.5" />
-            Fixar
+            {isPinned ? 'Desfixar' : 'Fixar'}
           </DropdownMenuItem>
         )}
         {onEndorse && (
           <DropdownMenuItem onClick={onEndorse} className="gap-2">
             <Crown className="h-3.5 w-3.5" />
-            Endossar
+            {isEndorsed ? 'Remover endosso' : 'Endossar'}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

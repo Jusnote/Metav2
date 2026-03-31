@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { commentRpc } from '@/types/question-comments';
 import type { QuestionComment } from '@/types/question-comments';
 
 export function useToggleUpvote(questionId: number) {
@@ -11,8 +12,7 @@ export function useToggleUpvote(questionId: number) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Note: RPC types not yet in generated database.ts — cast needed
-      const { error } = await (supabase as any).rpc('toggle_upvote', {
+      const { error } = await commentRpc(supabase, 'toggle_upvote', {
         p_comment_id: commentId,
         p_user_id: user.id,
       });

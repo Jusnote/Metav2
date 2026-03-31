@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { commentFrom } from '@/types/question-comments';
 import type { QuestionNote } from '@/types/question-comments';
 
 export function useQuestionNote(questionId: number | null) {
@@ -12,9 +13,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      // Note: table types not yet in generated database.ts — cast needed
-      const { data, error } = await (supabase as any)
-        .from('question_notes')
+      const { data, error } = await commentFrom(supabase, 'question_notes')
         .select('*')
         .eq('question_id', questionId!)
         .eq('user_id', user.id)
@@ -31,9 +30,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Note: table types not yet in generated database.ts — cast needed
-      const { data, error } = await (supabase as any)
-        .from('question_notes')
+      const { data, error } = await commentFrom(supabase, 'question_notes')
         .upsert({
           user_id: user.id,
           question_id: questionId!,
@@ -56,8 +53,7 @@ export function useQuestionNote(questionId: number | null) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await (supabase as any)
-        .from('question_notes')
+      const { error } = await commentFrom(supabase, 'question_notes')
         .delete()
         .eq('user_id', user.id)
         .eq('question_id', questionId!);

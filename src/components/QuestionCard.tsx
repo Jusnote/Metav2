@@ -21,6 +21,7 @@ import {
   Strikethrough,
 } from 'lucide-react';
 import { QuestionCommentsSection } from '@/components/questoes/comments/QuestionCommentsSection';
+import { useQuestionNote } from '@/hooks/useQuestionNote';
 
 // ============================================================
 // TYPES
@@ -334,6 +335,10 @@ export const QuestionCard = React.memo(function QuestionCard({
   const toggleTab = useCallback((tab: ExpandableTab) => {
     setActiveTab(prev => prev === tab ? null : tab);
   }, []);
+
+  // Private note indicator
+  const { note: privateNote } = useQuestionNote(questaoId);
+  const hasNote = !!privateNote;
 
   // AI explanations per alternative
   const [explanations, setExplanations] = useState<Map<string, string>>(new Map());
@@ -918,13 +923,16 @@ export const QuestionCard = React.memo(function QuestionCard({
 
             <button
               onClick={() => toggleTab('nota')}
-              className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
+              className={`qc-footer-btn relative inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'nota'
                   ? 'text-[#D97706] bg-[#FFFBEB] dark:text-amber-400 dark:bg-amber-950/30'
                   : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
               <PenLine className="w-[15px] h-[15px]" />
+              {hasNote && (
+                <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-amber-500" />
+              )}
             </button>
 
             <button
@@ -996,6 +1004,7 @@ export const QuestionCard = React.memo(function QuestionCard({
               <QuestionCommentsSection
                 questionId={questaoId}
                 activeSection={activeTab}
+                onSwitchTab={(tab) => setActiveTab(tab)}
               />
             )}
           </div>

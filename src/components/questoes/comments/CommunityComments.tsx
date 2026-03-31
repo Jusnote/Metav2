@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import { type Value } from 'platejs';
 import { ChevronDownIcon, MessageCircleIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuestionComments } from '@/hooks/useQuestionComments';
@@ -9,6 +10,7 @@ import type { QuestionComment, CommentSortOption } from '@/types/question-commen
 import { CommunityCommentItem } from './CommunityCommentItem';
 import { CommunityCommentReplies } from './CommunityCommentReplies';
 import { CommunityCommentEditor } from './CommunityCommentEditor';
+import { CommentReportModal } from './CommentReportModal';
 import { CollapsedThread } from './CollapsedThread';
 
 // ---------------------------------------------------------------------------
@@ -18,6 +20,8 @@ import { CollapsedThread } from './CollapsedThread';
 interface CommunityCommentsProps {
   questionId: number;
   currentUserId?: string;
+  /** Pre-fill the editor with content (e.g. from "Post to Community" on a private note) */
+  initialContent?: Value | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +147,9 @@ interface DeletedRootWithRepliesProps {
   onReply: (commentId: string) => void;
   onEdit: (commentId: string) => void;
   onDelete: (commentId: string) => void;
+  onReport: (commentId: string) => void;
+  onPin: (commentId: string, isPinned: boolean) => void;
+  onEndorse: (commentId: string, isEndorsed: boolean) => void;
 }
 
 function DeletedRootWithReplies({
@@ -153,6 +160,9 @@ function DeletedRootWithReplies({
   onReply,
   onEdit,
   onDelete,
+  onReport,
+  onPin,
+  onEndorse,
 }: DeletedRootWithRepliesProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -171,6 +181,9 @@ function DeletedRootWithReplies({
           onReply={onReply}
           onEdit={onEdit}
           onDelete={onDelete}
+          onReport={onReport}
+          onPin={onPin}
+          onEndorse={onEndorse}
           defaultExpanded
         />
       )}
@@ -182,9 +195,9 @@ function DeletedRootWithReplies({
 // Main component
 // ---------------------------------------------------------------------------
 
-export function CommunityComments({ questionId, currentUserId: externalUserId }: CommunityCommentsProps) {
+export function CommunityComments({ questionId, currentUserId: externalUserId, initialContent }: CommunityCommentsProps) {
   const { data: comments, isLoading } = useQuestionComments(questionId);
-  const { createComment, editComment, deleteComment, isCreating, isEditing, isDeleting } =
+  const { createComment, editComment, deleteComment, pinComment, endorseComment, isCreating, isEditing, isDeleting } =
     useCommentMutations(questionId);
 
   // Resolve currentUserId from Supabase auth if not passed as prop
@@ -199,6 +212,21 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
 
   const [sortOption, setSortOption] = useState<CommentSortOption>('top');
   const [activeEditor, setActiveEditor] = useState<ActiveEditor | null>(null);
+
+  // Report modal state
+  const [reportCommentId, setReportCommentId] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
+
+  // Pre-fill content from "Post to Community" (private note)
+  const [prefillContent, setPrefillContent] = useState<Value | null>(initialContent ?? null);
+
+  // When initialContent changes externally, open the editor with it
+  useEffect(() => {
+    if (initialContent) {
+      setPrefillContent(initialContent);
+      setActiveEditor({ type: 'new' });
+    }
+  }, [initialContent]);
 
   // ---- Derived data -------------------------------------------------------
 
@@ -255,11 +283,31 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
     [deleteComment]
   );
 
+  const handleReport = useCallback((commentId: string) => {
+    setReportCommentId(commentId);
+    setReportOpen(true);
+  }, []);
+
+  const handlePin = useCallback(
+    async (commentId: string, isPinned: boolean) => {
+      await pinComment({ commentId, isPinned });
+    },
+    [pinComment]
+  );
+
+  const handleEndorse = useCallback(
+    async (commentId: string, isEndorsed: boolean) => {
+      await endorseComment({ commentId, isEndorsed });
+    },
+    [endorseComment]
+  );
+
   // ---- Submit handlers ----------------------------------------------------
 
   const handleSubmitNew = useCallback(
     async (content_json: Record<string, unknown>, content_text: string) => {
       await createComment({ question_id: questionId, content_json, content_text });
+      setPrefillContent(null);
       closeEditor();
     },
     [createComment, questionId, closeEditor]
@@ -334,8 +382,9 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
             questionId={questionId}
             mode="new"
             draftContext="new"
+            initialValue={prefillContent ?? undefined}
             onSubmit={handleSubmitNew}
-            onCancel={closeEditor}
+            onCancel={() => { setPrefillContent(null); closeEditor(); }}
             isSubmitting={isCreating}
           />
         </div>
@@ -377,6 +426,9 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
                     onReply={handleReply}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onReport={handleReport}
+                    onPin={handlePin}
+                    onEndorse={handleEndorse}
                   />
                 </div>
               );
@@ -405,6 +457,9 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
                     onReply={handleReply}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onReport={handleReport}
+                    onPin={handlePin}
+                    onEndorse={handleEndorse}
                   />
                 )}
 
@@ -417,6 +472,9 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
                     onReply={handleReply}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onReport={handleReport}
+                    onPin={handlePin}
+                    onEndorse={handleEndorse}
                   />
                 )}
 
@@ -449,6 +507,13 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
           <p className="text-sm">Nenhum comentário. Seja o primeiro!</p>
         </div>
       )}
+
+      {/* Report modal */}
+      <CommentReportModal
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        commentId={reportCommentId}
+      />
     </div>
   );
 }
