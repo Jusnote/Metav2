@@ -58,6 +58,7 @@ interface CommunityCommentItemProps {
   onReply?: (commentId: string) => void;
   onEdit?: (commentId: string) => void;
   onDelete?: (commentId: string) => void;
+  pendingReportCount?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -72,6 +73,7 @@ export function CommunityCommentItem({
   onReply,
   onEdit,
   onDelete,
+  pendingReportCount,
 }: CommunityCommentItemProps) {
   const authorName = comment.author_name ?? comment.author_email ?? 'Anônimo';
   const initials = authorName
@@ -132,7 +134,7 @@ export function CommunityCommentItem({
             </span>
             {comment.is_pinned && <PinnedBadge />}
             {comment.is_endorsed && <EndorsedBadge />}
-            <InlineReportBadge commentId={comment.id} />
+            <InlineReportBadge commentId={comment.id} pendingCount={pendingReportCount} />
             <span className="text-[11px] text-zinc-300">{relativeTime(comment.created_at)}</span>
             {comment.edit_count > 0 && (
               <span className="text-[11px] italic text-zinc-300">(editado)</span>

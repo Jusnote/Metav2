@@ -103,7 +103,10 @@ const columns: Column<ReportWithContext>[] = [
 
 export function ReportsPage() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
-  const { data: reports, isLoading } = useReports(statusFilter);
+  const [page, setPage] = useState(0);
+  const { data, isLoading } = useReports(statusFilter, page);
+  const reports = data?.reports;
+  const totalCount = data?.totalCount ?? 0;
   const [selectedReport, setSelectedReport] = useState<ReportWithContext | null>(null);
 
   return (
@@ -138,14 +141,40 @@ export function ReportsPage() {
             ))}
           </div>
         ) : (
-          <ModerationDataTable
-            columns={columns}
-            data={reports ?? []}
-            onRowClick={setSelectedReport}
-            rowKey={(r) => r.id}
-            emptyMessage="Nenhum report encontrado"
-            emptyIcon={<Flag className="h-8 w-8" />}
-          />
+          <>
+            <ModerationDataTable
+              columns={columns}
+              data={reports ?? []}
+              onRowClick={setSelectedReport}
+              rowKey={(r) => r.id}
+              emptyMessage="Nenhum report encontrado"
+              emptyIcon={<Flag className="h-8 w-8" />}
+              pageSize={100}
+            />
+            {totalCount > 20 && (
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-[12px] text-zinc-400">
+                  {page * 20 + 1}–{Math.min((page + 1) * 20, totalCount)} de {totalCount}
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setPage(p => Math.max(0, p - 1))}
+                    disabled={page === 0}
+                    className="rounded-md px-3 py-1.5 text-[12px] font-medium text-zinc-500 hover:bg-zinc-100 disabled:opacity-30"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    onClick={() => setPage(p => p + 1)}
+                    disabled={(page + 1) * 20 >= totalCount}
+                    className="rounded-md px-3 py-1.5 text-[12px] font-medium text-zinc-500 hover:bg-zinc-100 disabled:opacity-30"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

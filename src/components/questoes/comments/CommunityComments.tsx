@@ -10,6 +10,7 @@ import { CommunityCommentItem } from './CommunityCommentItem';
 import { CommunityCommentReplies } from './CommunityCommentReplies';
 import { CommunityCommentEditor } from './CommunityCommentEditor';
 import { CollapsedThread } from './CollapsedThread';
+import { usePendingReportCounts } from '@/hooks/moderation/usePendingReportCounts';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -199,6 +200,9 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
 
   const [sortOption, setSortOption] = useState<CommentSortOption>('top');
   const [activeEditor, setActiveEditor] = useState<ActiveEditor | null>(null);
+
+  const commentIds = (comments ?? []).map(c => c.id);
+  const { data: reportCounts } = usePendingReportCounts(commentIds);
 
   // ---- Derived data -------------------------------------------------------
 
@@ -405,6 +409,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
                     onReply={handleReply}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    pendingReportCount={reportCounts?.get(root.id) ?? 0}
                   />
                 )}
 

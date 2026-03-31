@@ -4,15 +4,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { ReportWithContext, ModerationStats } from '@/types/moderation';
 
-export function useReports(statusFilter?: string) {
+export function useReports(statusFilter?: string, page: number = 0, pageSize: number = 20) {
   return useQuery({
-    queryKey: ['moderation-reports', statusFilter],
+    queryKey: ['moderation-reports', statusFilter, page, pageSize],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).rpc('get_reports_with_context', {
+      const { data, error } = await (supabase as any).rpc('get_reports_paginated', {
         p_status: statusFilter ?? null,
+        p_limit: pageSize,
+        p_offset: page * pageSize,
       });
       if (error) throw error;
-      return (data ?? []) as ReportWithContext[];
+      const rows = (data ?? []) as (ReportWithContext & { total_count: number })[];
+      const totalCount = rows[0]?.total_count ?? 0;
+      return { reports: rows as ReportWithContext[], totalCount };
     },
     staleTime: 30 * 1000,
   });

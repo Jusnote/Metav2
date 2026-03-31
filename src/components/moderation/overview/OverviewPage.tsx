@@ -77,10 +77,11 @@ const columns: Column<ReportWithContext>[] = [
 
 export function OverviewPage() {
   const { data: stats, isLoading: statsLoading } = useModerationStats();
-  const { data: reports, isLoading: reportsLoading } = useReports();
+  const { data: reportsData, isLoading: reportsLoading } = useReports(undefined, 0, 5);
+  const reports = reportsData?.reports;
   const navigate = useNavigate();
 
-  const recentReports = (reports ?? []).slice(0, 5);
+  const recentReports = reports ?? [];
 
   return (
     <>
