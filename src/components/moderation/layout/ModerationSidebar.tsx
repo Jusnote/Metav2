@@ -112,6 +112,11 @@ export function ModerationSidebar({ pendingCount = 0 }: { pendingCount?: number 
               {item.icon}
             </span>
             <span className="flex-1 text-left">{item.label}</span>
+            {item.disabled && (
+              <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-medium text-violet-400">
+                Em breve
+              </span>
+            )}
             {!!item.badge && item.badge > 0 && (
               <span className="min-w-[18px] rounded-full bg-violet-600 px-[7px] py-[2px] text-center text-[11px] font-semibold tabular-nums text-white">
                 {item.badge}
@@ -129,7 +134,10 @@ export function ModerationSidebar({ pendingCount = 0 }: { pendingCount?: number 
             className="flex w-full items-center gap-2 rounded-[7px] px-3 py-[7px] text-[12px] text-violet-300 cursor-default"
           >
             <span className="text-violet-300">{item.icon}</span>
-            {item.label}
+            <span className="flex-1 text-left">{item.label}</span>
+            <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-medium text-violet-400">
+              Em breve
+            </span>
           </button>
         ))}
       </nav>
