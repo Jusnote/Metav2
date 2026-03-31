@@ -8,6 +8,7 @@ import { CommentVoteButton } from './CommentVoteButton';
 import { PinnedBadge } from './PinnedBadge';
 import { EndorsedBadge } from './EndorsedBadge';
 import { CommentContextMenu } from './CommentContextMenu';
+import { ReactionButtons } from './ReactionButtons';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -176,6 +177,12 @@ export function CommunityCommentItem({
             questionId={questionId}
             upvoteCount={comment.upvote_count}
             hasUpvoted={comment.has_upvoted}
+          />
+          <ReactionButtons
+            commentId={comment.id}
+            questionId={questionId}
+            reactionCounts={comment.reaction_counts ?? {}}
+            userReactions={comment.user_reactions ?? []}
           />
           {!isReply && onReply && (
             <button
