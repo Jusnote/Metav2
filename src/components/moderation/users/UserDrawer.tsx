@@ -28,15 +28,23 @@ export function UserDrawer({ user, open, onClose }: UserDrawerProps) {
   const displayName = user.name ?? user.email?.split('@')[0] ?? 'Anônimo';
 
   const handleRoleChange = async (newRole: UserRole) => {
-    await changeRole({ userId: user.user_id, newRole });
-    toast.success(`Role alterada para ${newRole}`);
+    try {
+      await changeRole({ userId: user.user_id, newRole });
+      toast.success(`Role alterada para ${newRole}`);
+    } catch {
+      toast.error('Erro ao alterar role. Tente novamente.');
+    }
   };
 
   const handleToggleShadowban = async () => {
     const action = user.is_shadowbanned ? 'remover o shadowban' : 'aplicar shadowban';
     if (!window.confirm(`Tem certeza que deseja ${action} neste usuário?`)) return;
-    await toggleShadowban({ userId: user.user_id, shadowban: !user.is_shadowbanned });
-    toast.success(user.is_shadowbanned ? 'Shadowban removido' : 'Shadowban aplicado');
+    try {
+      await toggleShadowban({ userId: user.user_id, shadowban: !user.is_shadowbanned });
+      toast.success(user.is_shadowbanned ? 'Shadowban removido' : 'Shadowban aplicado');
+    } catch {
+      toast.error('Erro ao alterar shadowban. Tente novamente.');
+    }
   };
 
   const handleBan = async () => {
@@ -45,16 +53,24 @@ export function UserDrawer({ user, open, onClose }: UserDrawerProps) {
       return;
     }
     if (!window.confirm(`Tem certeza que deseja banir "${displayName}"? Motivo: ${banReason}`)) return;
-    await banUser({ userId: user.user_id, reason: banReason });
-    toast.success('Usuário banido');
-    setBanReason('');
-    onClose();
+    try {
+      await banUser({ userId: user.user_id, reason: banReason });
+      toast.success('Usuário banido');
+      setBanReason('');
+      onClose();
+    } catch {
+      toast.error('Erro ao banir usuário. Tente novamente.');
+    }
   };
 
   const handleUnban = async () => {
     if (!window.confirm(`Tem certeza que deseja desbanir "${displayName}"?`)) return;
-    await unbanUser({ userId: user.user_id });
-    toast.success('Banimento removido');
+    try {
+      await unbanUser({ userId: user.user_id });
+      toast.success('Banimento removido');
+    } catch {
+      toast.error('Erro ao desbanir usuário. Tente novamente.');
+    }
   };
 
   return (

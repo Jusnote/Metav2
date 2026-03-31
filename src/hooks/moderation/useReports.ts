@@ -66,10 +66,52 @@ export function useReportMutations() {
       });
       if (logError) throw logError;
     },
-    onSuccess: () => {
+    onMutate: async ({ reportId, resolution }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['moderation-reports'] });
+
+      // Snapshot previous value
+      const previousReports = queryClient.getQueriesData({ queryKey: ['moderation-reports'] });
+
+      // Optimistically update all report queries
+      queryClient.setQueriesData(
+        { queryKey: ['moderation-reports'] },
+        (old: any) => {
+          if (!old) return old;
+          // Handle paginated format { reports, totalCount }
+          if (old.reports) {
+            return {
+              ...old,
+              reports: old.reports.map((r: any) =>
+                r.id === reportId ? { ...r, status: resolution === 'resolve' ? 'resolved' : 'dismissed' } : r
+              ),
+            };
+          }
+          // Handle array format
+          if (Array.isArray(old)) {
+            return old.map((r: any) =>
+              r.id === reportId ? { ...r, status: resolution === 'resolve' ? 'resolved' : 'dismissed' } : r
+            );
+          }
+          return old;
+        },
+      );
+
+      return { previousReports };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousReports) {
+        for (const [queryKey, data] of context.previousReports) {
+          queryClient.setQueryData(queryKey, data);
+        }
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['moderation-reports'] });
       queryClient.invalidateQueries({ queryKey: ['moderation-report-count'] });
       queryClient.invalidateQueries({ queryKey: ['moderation-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['moderation-analytics'] });
     },
   });
 

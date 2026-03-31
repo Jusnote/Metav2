@@ -32,34 +32,39 @@ export function ReportDrawer({ report, open, onClose }: ReportDrawerProps) {
   const isPending = report.status === 'pending';
 
   const handleResolve = async (resolution: 'resolve' | 'dismiss') => {
-    await resolveReport({ reportId: report.id, resolution });
-    toast.success(resolution === 'resolve' ? 'Report resolvido' : 'Report descartado');
-    onClose();
+    try {
+      await resolveReport({ reportId: report.id, resolution });
+      toast.success(resolution === 'resolve' ? 'Report resolvido' : 'Report descartado');
+      onClose();
+    } catch {
+      toast.error('Erro ao resolver report. Tente novamente.');
+    }
   };
 
   const handleDeleteContent = async () => {
     if (!window.confirm('Tem certeza que deseja deletar este comentário? Esta ação segue LGPD (soft delete).')) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await (supabase as any).rpc('handle_soft_delete', {
-      p_comment_id: report.comment_id,
-      p_user_id: user.id,
-    });
-    if (error) {
-      toast.error('Erro ao deletar comentário');
-      return;
+      const { error } = await (supabase as any).rpc('handle_soft_delete', {
+        p_comment_id: report.comment_id,
+        p_user_id: user.id,
+      });
+      if (error) throw error;
+
+      await supabase.from('moderation_log').insert({
+        actor_id: user.id,
+        target_type: 'comment' as any,
+        target_id: report.comment_id,
+        action: 'delete_content' as any,
+      });
+
+      toast.success('Comentário deletado (LGPD)');
+      onClose();
+    } catch {
+      toast.error('Erro ao deletar comentário. Tente novamente.');
     }
-
-    await supabase.from('moderation_log').insert({
-      actor_id: user.id,
-      target_type: 'comment' as any,
-      target_id: report.comment_id,
-      action: 'delete_content' as any,
-    });
-
-    toast.success('Comentário deletado (LGPD)');
-    onClose();
   };
 
   return (
