@@ -3,6 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useReports, useModerationStats } from '@/hooks/moderation/useReports';
 import { StatsCards } from './StatsCards';
+import { OverviewAnalytics } from './OverviewAnalytics';
 import { ModerationDataTable, type Column } from '../shared/ModerationDataTable';
 import { StatusDot } from '../shared/StatusDot';
 import type { ReportWithContext } from '@/types/moderation';
@@ -99,6 +100,8 @@ export function OverviewPage() {
 
       <div className="space-y-6 p-8">
         <StatsCards stats={stats} isLoading={statsLoading} />
+
+        <OverviewAnalytics />
 
         <div>
           <div className="mb-3 flex items-center justify-between">
