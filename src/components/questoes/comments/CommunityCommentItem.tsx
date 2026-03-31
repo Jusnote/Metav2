@@ -9,6 +9,7 @@ import { PinnedBadge } from './PinnedBadge';
 import { EndorsedBadge } from './EndorsedBadge';
 import { CommentContextMenu } from './CommentContextMenu';
 import { ReactionButtons } from './ReactionButtons';
+import { InlineReportBadge } from './InlineReportBadge';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -60,6 +61,7 @@ interface CommunityCommentItemProps {
   onReport?: (commentId: string) => void;
   onPin?: (commentId: string, isPinned: boolean) => void;
   onEndorse?: (commentId: string, isEndorsed: boolean) => void;
+  pendingReportCount?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -77,6 +79,7 @@ export function CommunityCommentItem({
   onReport,
   onPin,
   onEndorse,
+  pendingReportCount,
 }: CommunityCommentItemProps) {
   const authorName = comment.author_name ?? comment.author_email ?? 'Anônimo';
   const initials = authorName
@@ -135,12 +138,9 @@ export function CommunityCommentItem({
             <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
               {authorName}
             </span>
-            {(comment.is_pinned || comment.is_endorsed) && (
-              <>
-                {comment.is_pinned && <PinnedBadge />}
-                {comment.is_endorsed && <EndorsedBadge />}
-              </>
-            )}
+            {comment.is_pinned && <PinnedBadge />}
+            {comment.is_endorsed && <EndorsedBadge />}
+            <InlineReportBadge commentId={comment.id} pendingCount={pendingReportCount} />
             <span className="text-[11px] text-zinc-300">{relativeTime(comment.created_at)}</span>
             {comment.edit_count > 0 && (
               <span className="text-[11px] italic text-zinc-300">(editado)</span>

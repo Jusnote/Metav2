@@ -41,6 +41,11 @@ import GlobalTimer from "./components/GlobalTimer";
 import React, { useState } from "react";
 // import { TestScheduleHooks } from "./components/TestScheduleHooks";
 import { TimeEstimateInputTest } from "./components/goals/TimeEstimateInputTest";
+import { ModerationShell } from './components/moderation/layout/ModerationShell';
+import { ModerationRoute } from './components/moderation/layout/ModerationRoute';
+import { OverviewPage } from './components/moderation/overview/OverviewPage';
+import { ReportsPage } from './components/moderation/reports/ReportsPage';
+import { UsersPage } from './components/moderation/users/UsersPage';
 
 const queryClient = new QueryClient();
 
@@ -177,6 +182,21 @@ const App = () => {
                     {/* <Route path="test-schedule" element={<PrivateRoute><TestScheduleHooks /></PrivateRoute>} /> */}
                     <Route path="test-time-input" element={<PrivateRoute><TimeEstimateInputTest /></PrivateRoute>} />
                     <Route path="goals" element={<PrivateRoute><GoalsPage /></PrivateRoute>} />
+                  </Route>
+                  {/* Moderation Panel — separate layout */}
+                  <Route
+                    path="/moderacao"
+                    element={
+                      <PrivateRoute>
+                        <ModerationRoute>
+                          <ModerationShell />
+                        </ModerationRoute>
+                      </PrivateRoute>
+                    }
+                  >
+                    <Route index element={<OverviewPage />} />
+                    <Route path="reports" element={<ReportsPage />} />
+                    <Route path="usuarios" element={<UsersPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -16,9 +16,11 @@ import {
   IconMenu2,
   IconX,
   IconNotebook,
+  IconShield,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "../hooks/useAuth";
+import { useUserRole } from "@/hooks/moderation/useUserRole";
 import { toast } from "sonner";
 import { DocumentsOrganizationSidebar } from "./DocumentsOrganizationSidebar";
 
@@ -81,6 +83,14 @@ const mainNavigation: NavItem[] = [
   },
 ];
 
+const moderationNav: NavItem[] = [
+  {
+    label: "Moderação",
+    href: "/moderacao",
+    icon: <IconShield className="h-5 w-5" />,
+  },
+];
+
 const toolsNavigation: NavItem[] = [
   {
     label: "Cronograma",
@@ -107,8 +117,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isModerator } = useUserRole();
 
-  const allNavItems = [...mainNavigation, ...toolsNavigation];
+  const allNavItems = [...mainNavigation, ...toolsNavigation, ...(isModerator ? moderationNav : [])];
   const panelItem = allNavItems.find(item => item.href === panelSection);
 
   const isActive = (href: string) =>
@@ -203,8 +214,31 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
 
-            {/* Bottom: settings + user + logout */}
+            {/* Bottom: settings + moderation + user + logout */}
             <div className="mt-auto flex flex-col gap-1">
+              {isModerator && (
+                <>
+                  <div className="my-2 mx-1 border-t border-white/[0.06]" />
+                  {moderationNav.map((item) => (
+                    <button
+                      key={item.href}
+                      onClick={() => handleNavClick(item)}
+                      className={cn(
+                        "flex items-center justify-center h-9 w-9 rounded-md transition-all duration-150 relative",
+                        isActive(item.href)
+                          ? "bg-violet-500/20 text-violet-300"
+                          : "bg-transparent text-[#6B6760] hover:text-violet-300 hover:bg-violet-500/10"
+                      )}
+                      title={item.label}
+                    >
+                      {item.icon}
+                      {isActive(item.href) && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 bg-violet-400 rounded-r" />
+                      )}
+                    </button>
+                  ))}
+                </>
+              )}
               <button
                 onClick={() => { setPanelSection(null); navigate("/settings"); }}
                 className="flex items-center justify-center h-9 w-9 rounded-md bg-transparent text-[#6B6760] hover:text-[#A09B94] hover:bg-white/[0.04] transition-all duration-150"

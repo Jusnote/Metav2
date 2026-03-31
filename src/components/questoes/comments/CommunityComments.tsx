@@ -12,6 +12,7 @@ import { CommunityCommentReplies } from './CommunityCommentReplies';
 import { CommunityCommentEditor } from './CommunityCommentEditor';
 import { CommentReportModal } from './CommentReportModal';
 import { CollapsedThread } from './CollapsedThread';
+import { usePendingReportCounts } from '@/hooks/moderation/usePendingReportCounts';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -227,6 +228,10 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
       setActiveEditor({ type: 'new' });
     }
   }, [initialContent]);
+
+  // Batch report counts for inline badges
+  const commentIds = (comments ?? []).map(c => c.id);
+  const { data: reportCounts } = usePendingReportCounts(commentIds);
 
   // ---- Derived data -------------------------------------------------------
 
@@ -460,6 +465,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
                     onReport={handleReport}
                     onPin={handlePin}
                     onEndorse={handleEndorse}
+                    pendingReportCount={reportCounts?.get(root.id) ?? 0}
                   />
                 )}
 

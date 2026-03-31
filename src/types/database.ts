@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       alternativas: {
@@ -449,6 +474,36 @@ export type Database = {
           sigla?: string | null
           total_artigos?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      moderation_log: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_id?: string
+          target_type?: string
         }
         Relationships: []
       }
@@ -1426,6 +1481,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_study_config: {
         Row: {
           avoid_times: string[] | null
@@ -1592,6 +1671,48 @@ export type Database = {
         Args: { intensity_level: string }
         Returns: number
       }
+      get_moderation_log: {
+        Args: { p_limit?: number; p_target_id?: string; p_target_type?: string }
+        Returns: {
+          action: string
+          actor_email: string
+          actor_id: string
+          actor_name: string
+          created_at: string
+          details: Json
+          id: string
+          target_id: string
+          target_type: string
+        }[]
+      }
+      get_moderation_stats: {
+        Args: { p_days?: number }
+        Returns: {
+          active_bans: number
+          avg_resolution_time_hours: number
+          pending_reports: number
+          resolved_reports_period: number
+        }[]
+      }
+      get_moderation_users: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          banned_by: string
+          comment_count: number
+          created_at: string
+          email: string
+          is_shadowbanned: boolean
+          last_sign_in_at: string
+          name: string
+          report_count_made: number
+          report_count_received: number
+          role: string
+          timeout_reason: string
+          timeout_until: string
+          user_id: string
+        }[]
+      }
       get_or_create_user_study_config: {
         Args: { p_user_id: string }
         Returns: {
@@ -1620,6 +1741,28 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      get_reports_with_context: {
+        Args: { p_status?: string }
+        Returns: {
+          comment_author_email: string
+          comment_author_name: string
+          comment_content_json: Json
+          comment_content_text: string
+          comment_id: string
+          comment_question_id: number
+          created_at: string
+          id: string
+          reason: string
+          report_count_by_reporter: number
+          reporter_email: string
+          reporter_id: string
+          reporter_name: string
+          resolved_at: string
+          resolved_by: string
+          status: string
+        }[]
+      }
+      get_user_role: { Args: { p_user_id: string }; Returns: string }
       handle_soft_delete: {
         Args: { p_comment_id: string; p_user_id: string }
         Returns: Json
@@ -1780,6 +1923,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
