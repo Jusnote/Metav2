@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
+import { Flag } from 'lucide-react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
 import { grifoPopupStore } from '@/stores/grifoPopupStore'
 import { GrifoNoteInline } from '@/components/lei-seca/GrifoNoteInline'
+import { LeiReportModal } from '@/components/lei-seca/LeiReportModal'
 import { GRIFO_COLORS } from '@/types/grifo'
 import { EstruturaHeader } from './EstruturaHeader'
 import { Epigrafe } from './Epigrafe'
@@ -19,6 +21,7 @@ const STRUCTURAL = ['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO', 'SUBSECAO',
 
 interface Props {
   item: Dispositivo
+  leiId?: string
   leiSecaMode?: boolean
   showRevogados?: boolean
   grifos?: Grifo[]
@@ -27,7 +30,8 @@ interface Props {
   noteOpenGrifoId?: string | null
 }
 
-export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId }: Props) {
+export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId }: Props) {
+  const [reportModalOpen, setReportModalOpen] = useState(false)
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
     texto: normalizeOrdinals(rawItem.texto),
@@ -57,8 +61,31 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
   else content = <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 
   return (
-    <>
+    <div className="group/disp relative">
       {content}
+
+      {/* Report flag — appears on hover */}
+      {leiId && (
+        <button
+          onClick={() => setReportModalOpen(true)}
+          className="absolute right-0 top-0 hidden group-hover/disp:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-zinc-400 hover:text-amber-500 transition-colors"
+          title="Reportar dispositivo"
+        >
+          <Flag className="h-3 w-3" />
+        </button>
+      )}
+
+      {reportModalOpen && (
+        <LeiReportModal
+          open={reportModalOpen}
+          onClose={() => setReportModalOpen(false)}
+          dispositivoId={String(item.id)}
+          leiId={leiId}
+          dispositivoTipo={item.tipo}
+          dispositivoNumero={item.posicao || ''}
+          dispositivoTexto={item.texto}
+        />
+      )}
 
       {/* Note editor (open) */}
       {noteOpenGrifo && onSaveNote && (
@@ -75,7 +102,7 @@ export function DispositivoRenderer({ item: rawItem, leiSecaMode, showRevogados,
       {!noteOpenGrifo && grifosWithNotes.length > 0 && (
         <NoteBadge grifos={grifosWithNotes} />
       )}
-    </>
+    </div>
   )
 }
 

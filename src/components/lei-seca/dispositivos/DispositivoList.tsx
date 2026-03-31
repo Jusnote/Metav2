@@ -10,6 +10,7 @@ const STRUCTURAL_TYPES = new Set(['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO
 
 interface DispositivoListProps {
   dispositivos: Dispositivo[]
+  leiId?: string
   leiSecaMode?: boolean
   showRevogados?: boolean
   grifosByDispositivo?: Map<string, Grifo[]>
@@ -61,6 +62,7 @@ function groupItems(dispositivos: Dispositivo[]): RenderItem[] {
 
 export function DispositivoList({
   dispositivos,
+  leiId,
   leiSecaMode,
   showRevogados,
   grifosByDispositivo,
@@ -94,6 +96,7 @@ export function DispositivoList({
           >
             <DispositivoRenderer
               item={entry.item}
+              leiId={leiId}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
               grifos={grifosByDispositivo?.get(entry.item.id) ?? []}

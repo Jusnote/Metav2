@@ -261,6 +261,7 @@ export default function LeiSecaPage() {
           <div ref={scrollContainerRef} className={`relative flex-1 overflow-y-auto transition-opacity duration-100 ${searchOpen ? 'opacity-15' : ''}`}>
             <DispositivoList
               dispositivos={dispositivos}
+              leiId={currentLeiId}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
               grifosByDispositivo={grifosByDispositivo}

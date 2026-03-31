@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { QuestionCommentsSection } from '@/components/questoes/comments/QuestionCommentsSection';
 import { useQuestionNote } from '@/hooks/useQuestionNote';
+import { QuestionReportModal } from '@/components/questoes/QuestionReportModal';
+import { useHasReportedQuestion } from '@/hooks/useQuestionReport';
 
 // ============================================================
 // TYPES
@@ -322,6 +324,8 @@ export const QuestionCard = React.memo(function QuestionCard({
   const [revealAnimating, setRevealAnimating] = useState(false);
   const [eliminatedAlts, setEliminatedAlts] = useState<Set<string>>(new Set());
   const [highlightMode, setHighlightMode] = useState<HighlightMode>('highlight');
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const { data: hasReported } = useHasReportedQuestion(questaoId);
 
   // Bookmark state (localStorage fallback)
   const [bookmarked, setBookmarked] = useState(() => {
@@ -936,9 +940,13 @@ export const QuestionCard = React.memo(function QuestionCard({
             </button>
 
             <button
-              onClick={() => onReportError?.(questaoId)}
-              className="qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:text-amber-400 dark:hover:bg-amber-900/20 rounded-md transition-all duration-200"
-              title="Reportar erro"
+              onClick={() => setReportModalOpen(true)}
+              className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
+                hasReported
+                  ? 'text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:text-amber-400 dark:hover:bg-amber-900/20'
+              }`}
+              title={hasReported ? 'Ja reportada' : 'Reportar erro'}
             >
               <Flag className="w-[15px] h-[15px]" />
             </button>
@@ -1010,6 +1018,14 @@ export const QuestionCard = React.memo(function QuestionCard({
           </div>
         )}
       </footer>
+
+      <QuestionReportModal
+        open={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        questaoId={questaoId}
+        materia={subject}
+        assunto={subtopic}
+      />
     </article>
   );
 });
