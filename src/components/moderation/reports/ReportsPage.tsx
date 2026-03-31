@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Flag } from 'lucide-react';
 import { useReports } from '@/hooks/moderation/useReports';
 import { ModerationDataTable, type Column } from '../shared/ModerationDataTable';
 import { StatusDot } from '../shared/StatusDot';
@@ -123,8 +124,18 @@ export function ReportsPage() {
 
       <div className="p-8">
         {isLoading ? (
-          <div className="flex justify-center py-20">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+          <div className="overflow-hidden rounded-[10px] border border-zinc-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            <div className="border-b border-zinc-100 bg-[#fafafa] px-[18px] py-[10px]">
+              <div className="h-3 w-40 animate-pulse rounded bg-zinc-200" />
+            </div>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-4 border-b border-[#fafafa] px-[18px] py-[15px]">
+                <div className="h-[7px] w-[7px] animate-pulse rounded-full bg-zinc-200" />
+                <div className="h-3 flex-1 animate-pulse rounded bg-zinc-100" />
+                <div className="h-3 w-16 animate-pulse rounded bg-zinc-100" />
+                <div className="h-3 w-14 animate-pulse rounded bg-zinc-100" />
+              </div>
+            ))}
           </div>
         ) : (
           <ModerationDataTable
@@ -133,6 +144,7 @@ export function ReportsPage() {
             onRowClick={setSelectedReport}
             rowKey={(r) => r.id}
             emptyMessage="Nenhum report encontrado"
+            emptyIcon={<Flag className="h-8 w-8" />}
           />
         )}
       </div>

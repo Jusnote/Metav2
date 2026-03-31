@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { Users } from 'lucide-react';
 import { useModerationUsers } from '@/hooks/moderation/useModerationUsers';
 import { ModerationDataTable, type Column } from '../shared/ModerationDataTable';
 import { UserDrawer } from './UserDrawer';
@@ -124,8 +125,21 @@ export function UsersPage() {
 
       <div className="p-8">
         {isLoading ? (
-          <div className="flex justify-center py-20">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+          <div className="overflow-hidden rounded-[10px] border border-zinc-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            <div className="border-b border-zinc-100 bg-[#fafafa] px-[18px] py-[10px]">
+              <div className="h-3 w-40 animate-pulse rounded bg-zinc-200" />
+            </div>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-4 border-b border-[#fafafa] px-[18px] py-[15px]">
+                <div className="h-7 w-7 animate-pulse rounded-full bg-zinc-200" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3 w-32 animate-pulse rounded bg-zinc-100" />
+                  <div className="h-2.5 w-48 animate-pulse rounded bg-zinc-50" />
+                </div>
+                <div className="h-3 w-16 animate-pulse rounded bg-zinc-100" />
+                <div className="h-3 w-14 animate-pulse rounded bg-zinc-100" />
+              </div>
+            ))}
           </div>
         ) : (
           <ModerationDataTable
@@ -134,6 +148,7 @@ export function UsersPage() {
             onRowClick={setSelectedUser}
             rowKey={(u) => u.user_id}
             emptyMessage="Nenhum usuário encontrado"
+            emptyIcon={<Users className="h-8 w-8" />}
           />
         )}
       </div>
