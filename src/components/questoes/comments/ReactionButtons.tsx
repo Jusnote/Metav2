@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { SmilePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { REACTION_EMOJIS } from '@/types/question-comments';
@@ -22,10 +22,25 @@ export function ReactionButtons({
   const { mutate: toggleReaction } = useToggleReaction(questionId);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [bouncing, setBouncing] = useState<string | null>(null);
+  const bounceTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  // Escape key handler for popover
+  useEffect(() => {
+    if (!pickerOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPickerOpen(false);
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [pickerOpen]);
+
+  // Cleanup bounce timeout on unmount
+  useEffect(() => () => clearTimeout(bounceTimeout.current), []);
 
   function handleToggle(emoji: string) {
     setBouncing(emoji);
-    setTimeout(() => setBouncing(null), 300);
+    clearTimeout(bounceTimeout.current);
+    bounceTimeout.current = setTimeout(() => setBouncing(null), 300);
     toggleReaction({ commentId, emoji });
     setPickerOpen(false);
   }
@@ -82,7 +97,6 @@ export function ReactionButtons({
             <div
               className="fixed inset-0 z-10"
               onClick={() => setPickerOpen(false)}
-              onKeyDown={(e) => e.key === 'Escape' && setPickerOpen(false)}
               aria-hidden="true"
             />
             {/* Ghost popover */}
