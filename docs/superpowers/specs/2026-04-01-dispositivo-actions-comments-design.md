@@ -546,7 +546,7 @@ useEffect(() => {
 
 **Problem:** A lei renders all dispositivos on one page (~2,000 for Código Civil). If multiple footers with comments are open simultaneously, each comment renders a Platejs Static instance. 200 open footers × 10 comments = 2,000 Platejs instances — the browser will freeze.
 
-**Rule:** Only one footer open at a time (accordion behavior). The `openFooterId` state lives in `DispositivoList` (parent), not in individual `DispositivoRenderer` instances. Opening a new footer closes the previous one. This caps Platejs Static instances at ~20-30 max (one footer's worth).
+**Rule:** Only one footer open at a time (accordion behavior). The `openFooterId` state lives in `DispositivoList` (parent), not in individual `DispositivoRenderer` instances. Opening a new footer closes the previous one. Combined with the comment collapse pattern (show 3, "ver mais" — same as questões mobile), only ~3 Platejs Static instances render initially. If the user expands all comments, the count depends on how many that specific dispositivo has — but it's always scoped to a single dispositivo, never multiplied across the entire lei.
 
 **Future escalation path (if accordion alone becomes insufficient):**
 
