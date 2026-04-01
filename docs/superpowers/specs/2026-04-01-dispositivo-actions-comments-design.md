@@ -548,6 +548,16 @@ useEffect(() => {
 
 **Rule:** Only one footer open at a time (accordion behavior). The `openFooterId` state lives in `DispositivoList` (parent), not in individual `DispositivoRenderer` instances. Opening a new footer closes the previous one. This caps Platejs Static instances at ~20-30 max (one footer's worth).
 
+**Future escalation path (if accordion alone becomes insufficient):**
+
+1. **Pre-rendered HTML** — add `content_html text` column to `dispositivo_comments` and `question_comments`. Generate HTML from `content_json` at save time (server-side or on mutation). Read-only rendering uses `dangerouslySetInnerHTML` instead of Platejs Static — zero JS overhead per comment. The editor still uses Platejs for writing. This eliminates the Platejs dependency entirely for reading and allows multiple footers open simultaneously without performance concern.
+
+2. **IntersectionObserver lazy mount** — if keeping Platejs Static, wrap each `CommentItem` in an observer that only mounts the Platejs renderer when the comment scrolls into the viewport. Off-screen comments render a placeholder `<div>` with the correct height (estimated or cached). This handles the case where a single dispositivo has hundreds of comments.
+
+3. **Comment pagination** — for dispositivos with 100+ comments (e.g. Art. 5 da CF), paginate server-side: first load returns 20 comments, "carregar mais" fetches the next page. Reduces both network payload and DOM nodes.
+
+These are ordered by impact. Option 1 alone would solve performance permanently. Options 2-3 are complementary if needed.
+
 ---
 
 ## 12. UX Polish
