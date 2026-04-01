@@ -1,0 +1,124 @@
+<h2>A Dor: Pipeline de Conversão Atual</h2>
+<p class="subtitle">O dado já vem estruturado da API — por que converter 3 vezes?</p>
+
+<div class="section">
+  <h3>O que a GraphQL entrega (já pronto!)</h3>
+  <div style="background:#1a1a2e; border-radius:12px; padding:24px; font-family:monospace; font-size:13px; line-height:1.6; color:#e0e0e0; overflow-x:auto;">
+    <div style="color:#7c8aff;">allItems[16]:</div>
+    <div style="padding-left:16px;">
+      <span style="color:#888;">type:</span> <span style="color:#4ade80;">"ARTIGO"</span><br>
+      <span style="color:#888;">description:</span> <span style="color:#fbbf24;">"Art. 1º Toda pessoa é capaz de direitos e deveres na ordem civil."</span><br>
+      <span style="color:#888;">revoked:</span> <span style="color:#4ade80;">false</span>
+    </div>
+    <br>
+    <div style="color:#7c8aff;">structural[3]:</div>
+    <div style="padding-left:16px;">
+      <span style="color:#888;">type:</span> <span style="color:#4ade80;">"CAPITULO"</span><br>
+      <span style="color:#888;">description:</span> <span style="color:#fbbf24;">"CAPÍTULO I"</span><br>
+      <span style="color:#888;">subtitle:</span> <span style="color:#fbbf24;">"Da Personalidade e da Capacidade"</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3 style="color:#ef4444;">Pipeline Atual — 3 conversões desnecessárias</h3>
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:16px 0;">
+    <div style="background:#1e293b; border:2px solid #4ade80; border-radius:8px; padding:12px 16px; text-align:center; min-width:120px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">GraphQL</div>
+      <div style="font-weight:600; color:#4ade80;">JSON puro</div>
+      <div style="font-size:11px; color:#666;">type + description</div>
+    </div>
+    <div style="color:#ef4444; font-size:24px;">→</div>
+    <div style="background:#1e293b; border:2px solid #ef4444; border-radius:8px; padding:12px 16px; text-align:center; min-width:120px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">lei-graphql-mapper</div>
+      <div style="font-weight:600; color:#ef4444;">PlateElement[]</div>
+      <div style="font-size:11px; color:#666;">718 linhas de código</div>
+    </div>
+    <div style="color:#ef4444; font-size:24px;">→</div>
+    <div style="background:#1e293b; border:2px solid #ef4444; border-radius:8px; padding:12px 16px; text-align:center; min-width:120px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">Supabase</div>
+      <div style="font-weight:600; color:#fbbf24;">plate_content</div>
+      <div style="font-size:11px; color:#666;">JSON inchado</div>
+    </div>
+    <div style="color:#ef4444; font-size:24px;">→</div>
+    <div style="background:#1e293b; border:2px solid #ef4444; border-radius:8px; padding:12px 16px; text-align:center; min-width:120px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">plateToTipTap()</div>
+      <div style="font-weight:600; color:#ef4444;">TipTap JSON</div>
+      <div style="font-size:11px; color:#666;">+80 linhas</div>
+    </div>
+    <div style="color:#ef4444; font-size:24px;">→</div>
+    <div style="background:#1e293b; border:2px solid #ef4444; border-radius:8px; padding:12px 16px; text-align:center; min-width:120px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">TipTap Editor</div>
+      <div style="font-weight:600; color:#ef4444;">ProseMirror</div>
+      <div style="font-size:11px; color:#666;">extensions pesadas</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3 style="color:#4ade80;">Pipeline Proposto — Direto ao ponto</h3>
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:16px 0;">
+    <div style="background:#1e293b; border:2px solid #4ade80; border-radius:8px; padding:12px 16px; text-align:center; min-width:140px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">API Hetzner</div>
+      <div style="font-weight:600; color:#4ade80;">JSON puro</div>
+      <div style="font-size:11px; color:#666;">type + description + hierarchy</div>
+    </div>
+    <div style="color:#4ade80; font-size:24px;">→</div>
+    <div style="background:#1e293b; border:2px solid #4ade80; border-radius:8px; padding:12px 16px; text-align:center; min-width:140px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">React puro</div>
+      <div style="font-weight:600; color:#4ade80;">&lt;Dispositivo /&gt;</div>
+      <div style="font-size:11px; color:#666;">componente simples</div>
+    </div>
+    <div style="color:#4ade80; font-size:24px;">→</div>
+    <div style="background:#1e293b; border:2px solid #4ade80; border-radius:8px; padding:12px 16px; text-align:center; min-width:140px;">
+      <div style="font-size:11px; color:#888; margin-bottom:4px;">getSelection()</div>
+      <div style="font-weight:600; color:#4ade80;">Grifos nativos</div>
+      <div style="font-size:11px; color:#666;">zero framework</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Comparação de complexidade</h3>
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead>
+      <tr style="border-bottom:2px solid #333;">
+        <th style="text-align:left; padding:8px; color:#888;">Aspecto</th>
+        <th style="text-align:center; padding:8px; color:#ef4444;">Hoje (TipTap)</th>
+        <th style="text-align:center; padding:8px; color:#4ade80;">Proposta (React puro)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px;">Conversões de formato</td>
+        <td style="text-align:center; padding:8px; color:#ef4444;">3</td>
+        <td style="text-align:center; padding:8px; color:#4ade80;">0</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px;">Linhas de código de mapping</td>
+        <td style="text-align:center; padding:8px; color:#ef4444;">~900</td>
+        <td style="text-align:center; padding:8px; color:#4ade80;">~0</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px;">Tamanho do JSON armazenado</td>
+        <td style="text-align:center; padding:8px; color:#ef4444;">~3x maior (PlateElement[])</td>
+        <td style="text-align:center; padding:8px; color:#4ade80;">1x (dado bruto)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px;">Bundle size no client</td>
+        <td style="text-align:center; padding:8px; color:#ef4444;">TipTap + ProseMirror (~200KB)</td>
+        <td style="text-align:center; padding:8px; color:#4ade80;">React puro (~0KB extra)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px;">Tempo de ingestão (60k leis)</td>
+        <td style="text-align:center; padding:8px; color:#ef4444;">Conversão + upload</td>
+        <td style="text-align:center; padding:8px; color:#4ade80;">Upload direto</td>
+      </tr>
+      <tr>
+        <td style="padding:8px;">Perda de dados potencial</td>
+        <td style="text-align:center; padding:8px; color:#ef4444;">A cada conversão</td>
+        <td style="text-align:center; padding:8px; color:#4ade80;">Zero (dado bruto preservado)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

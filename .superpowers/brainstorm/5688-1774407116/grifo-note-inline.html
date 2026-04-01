@@ -1,0 +1,187 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .lei-content {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: rgb(67, 80, 92);
+    max-width: 700px;
+    text-align: justify;
+  }
+  .lei-content b { font-weight: 700; color: #1a1a1a; }
+  .anot { font-size: 12px; font-weight: 300; color: #ccc; margin-left: 6px; }
+  .par { padding-left: 34px; margin-bottom: 8px; position: relative; }
+  .par::before { content: '›'; position: absolute; left: 20px; color: #d0d0d0; font-size: 14px; }
+  .inc { padding-left: 58px; margin-bottom: 6px; position: relative; }
+  .inc::before { content: '›'; position: absolute; left: 44px; color: #d8d8d8; font-size: 13px; }
+
+  .h-yellow { background: rgba(250, 204, 21, 0.3); border-radius: 2px; padding: 1px 0; cursor: pointer; }
+
+  .note-card {
+    background: #fafcfb;
+    border-radius: 8px;
+    margin: 4px 0 8px 0;
+    border-left: 3px solid rgba(250, 204, 21, 0.5);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+  }
+  .note-card-body { padding: 12px; }
+  .note-textarea {
+    width: 100%;
+    resize: none;
+    outline: none;
+    font-size: 12px;
+    font-family: 'Outfit', sans-serif;
+    color: #3a4a40;
+    background: transparent;
+    line-height: 1.6;
+    border: none;
+  }
+  .note-textarea::placeholder { color: #b0c0b5; }
+  .note-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-cancel {
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #8a9a8f;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+  }
+  .btn-cancel:hover { color: #3a5540; }
+  .btn-save {
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #fff;
+    background: #16a34a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+  }
+  .btn-save:hover { background: #15803d; }
+
+  /* Saved note indicator */
+  .note-saved {
+    background: #fafcfb;
+    border-radius: 8px;
+    margin: 4px 0 8px 0;
+    border-left: 3px solid rgba(250, 204, 21, 0.5);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 8px 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: #5a6a60;
+    line-height: 1.5;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .note-saved:hover { background: #f5f7f6; }
+  .note-saved-icon { font-size: 10px; color: #8a9a8f; margin-top: 1px; flex-shrink: 0; }
+  .note-saved-text { flex: 1; }
+
+  .state-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #16a34a; margin-bottom: 8px; margin-top: 16px;
+  }
+</style>
+
+<h2>Nota Inline — Como fica?</h2>
+<p class="subtitle">A nota abre abaixo do dispositivo grifado, empurrando o conteúdo</p>
+
+<!-- State 1: Note editor open -->
+<div class="section">
+  <div class="state-label">Estado 1 — Editor de nota aberto (após clicar 📝)</div>
+  <div class="mockup">
+    <div class="mockup-body" style="background: #fff; padding: 24px 20px;">
+      <div class="lei-content">
+        <div style="margin-bottom: 0;">
+          <b>Art. 121.</b> Matar <span class="h-yellow">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209, de 11.7.1984)</span>
+        </div>
+
+        <!-- Note card open -->
+        <div class="note-card">
+          <div class="note-card-body">
+            <textarea class="note-textarea" rows="2" placeholder="Adicionar nota...">Cai muito em prova CESPE — atenção ao dolo eventual vs culpa consciente</textarea>
+            <div class="note-actions">
+              <button class="btn-cancel">Cancelar</button>
+              <button class="btn-save">Salvar</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 13px; font-family: Outfit, sans-serif; font-weight: 500; color: #666; margin-bottom: 6px;">Caso de diminuição de pena</div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- State 2: Saved note (collapsed) -->
+<div class="section">
+  <div class="state-label">Estado 2 — Nota salva (clique pra editar)</div>
+  <div class="mockup">
+    <div class="mockup-body" style="background: #fff; padding: 24px 20px;">
+      <div class="lei-content">
+        <div style="margin-bottom: 0;">
+          <b>Art. 121.</b> Matar <span class="h-yellow">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209, de 11.7.1984)</span>
+        </div>
+
+        <!-- Saved note collapsed -->
+        <div class="note-saved">
+          <span class="note-saved-icon">📝</span>
+          <span class="note-saved-text">Cai muito em prova CESPE — atenção ao dolo eventual vs culpa consciente</span>
+        </div>
+
+        <div style="font-size: 13px; font-family: Outfit, sans-serif; font-weight: 500; color: #666; margin-bottom: 6px;">Caso de diminuição de pena</div>
+        <div class="par">
+          <b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- State 3: Multiple notes on different grifos -->
+<div class="section">
+  <div class="state-label">Estado 3 — Múltiplos grifos com notas</div>
+  <div class="mockup">
+    <div class="mockup-body" style="background: #fff; padding: 24px 20px;">
+      <div class="lei-content">
+        <div style="margin-bottom: 0;">
+          <b>Art. 121.</b> Matar <span class="h-yellow">alguem</span>:
+          <span class="anot">(Redação dada pela Lei nº 7.209, de 11.7.1984)</span>
+        </div>
+        <div class="note-saved">
+          <span class="note-saved-icon">📝</span>
+          <span class="note-saved-text">Cai muito em prova CESPE</span>
+        </div>
+
+        <div class="par" style="margin-bottom: 0;">
+          <b>§ 2º</b> Se o <span style="background: rgba(74, 222, 128, 0.25); border-radius: 2px; padding: 1px 0; cursor: pointer;">homicídio é cometido</span>:
+        </div>
+        <div class="note-saved" style="border-left-color: rgba(74, 222, 128, 0.5); margin-left: 34px;">
+          <span class="note-saved-icon">📝</span>
+          <span class="note-saved-text">Qualificadoras — estudar cada inciso separadamente</span>
+        </div>
+
+        <div class="inc">I — <span style="background: rgba(244, 114, 182, 0.25); border-radius: 2px; padding: 1px 0;">mediante paga ou promessa de recompensa</span>, ou por outro motivo torpe;</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -348,7 +348,7 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
   // ---- Context ----
   const {
     setFocusedProvision, setCompanionOpen, companionOpen,
-    currentLeiId, currentLeiInfo, currentArtigo,
+    currentLeiId, currentLei,
   } = useLeiSeca();
 
   const cadernosCtx = useCadernosOptional();
@@ -687,18 +687,18 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
 
     await cadernosCtx.saveProvision({
       lei_id: currentLeiId,
-      artigo_numero: currentArtigo?.numero || '',
+      artigo_numero: '', // TODO: reconnect after React renderer migration
       provision_slug: slug,
       provision_role: role,
       provision_text: actionPara.text || '',
-      lei_sigla: currentLeiInfo?.sigla || null,
-      lei_nome: currentLeiInfo?.nome || null,
-      artigo_contexto: currentArtigo?.contexto || null,
+      lei_sigla: currentLei?.apelido || null,
+      lei_nome: currentLei?.titulo || null,
+      artigo_contexto: null, // TODO: reconnect after React renderer migration
       context_chain: contextChain,
     });
 
     setActionPara(null);
-  }, [cadernosCtx, actionPara, currentLeiId, currentArtigo, currentLeiInfo]);
+  }, [cadernosCtx, actionPara, currentLeiId, currentLei]);
 
   // ---- Comment highlights (sync DOM with store) ----
 

@@ -134,7 +134,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
         <button
           onClick={handleClick}
           className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-150 border-l-2 ${
-            isSelected ? 'bg-blue-50 border-blue-500 font-medium' : 'border-transparent hover:bg-blue-50/40'
+            isSelected ? 'bg-zinc-200/50 border-[#E8930C] font-medium' : 'border-transparent hover:bg-zinc-100/40'
           }`}
         >
           {/* Chevron */}
@@ -168,10 +168,10 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                       setShowScheduleDrawer(true);
                     }
                   }}
-                  className="overflow-hidden transition-all duration-200 ease-in-out w-0 opacity-0 group-hover:w-5 group-hover:opacity-100 group-hover:mr-1 shrink-0 p-0.5 hover:bg-blue-50 rounded cursor-pointer"
+                  className="overflow-hidden transition-all duration-200 ease-in-out w-0 opacity-0 group-hover:w-5 group-hover:opacity-100 group-hover:mr-1 shrink-0 p-0.5 hover:bg-zinc-100/50 rounded cursor-pointer"
                   title="Agendar subtópicos"
                 >
-                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <Calendar className="w-4 h-4 text-zinc-500" />
                 </div>
               ) : (
                 /* Tópico SEM subtópicos: Agendamento direto */
@@ -190,10 +190,10 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                         e.stopPropagation();
                       }
                     }}
-                    className="overflow-hidden transition-all duration-200 ease-in-out w-0 opacity-0 group-hover:w-5 group-hover:opacity-100 group-hover:mr-1 shrink-0 p-0.5 hover:bg-blue-50 rounded cursor-pointer"
+                    className="overflow-hidden transition-all duration-200 ease-in-out w-0 opacity-0 group-hover:w-5 group-hover:opacity-100 group-hover:mr-1 shrink-0 p-0.5 hover:bg-zinc-100/50 rounded cursor-pointer"
                     title="Agendar estudo"
                   >
-                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <Calendar className="w-4 h-4 text-zinc-500" />
                   </div>
                 </QuickSchedulePopover>
               )}
@@ -202,9 +202,9 @@ export const TopicItem: React.FC<TopicItemProps> = ({
 
           {/* Ícone */}
           <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${
-            hasSubtopics ? 'bg-blue-100' : 'bg-gray-100'
+            hasSubtopics ? 'bg-zinc-200 dark:bg-zinc-700' : 'bg-gray-100'
           }`}>
-            <BookOpen className={`w-3.5 h-3.5 ${hasSubtopics ? 'text-blue-600' : 'text-gray-600'}`} />
+            <BookOpen className={`w-3.5 h-3.5 ${hasSubtopics ? 'text-zinc-500' : 'text-gray-600'}`} />
           </div>
 
           {/* Conteúdo */}
@@ -247,7 +247,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <div className="flex-1 h-0.5 bg-gray-200 rounded-full overflow-hidden max-w-[80px]">
                       <div
-                        className="h-full bg-blue-400 transition-all duration-300"
+                        className="h-full bg-zinc-500 transition-all duration-300"
                         style={{ width: `${progress.percentage}%` }}
                       />
                     </div>
@@ -342,7 +342,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
 
       {/* Children (Subtopics) */}
       {isExpanded && (hasSubtopics || isEditMode) && (
-        <div className="mt-1 ml-2 pl-3 border-l-2 border-blue-200/50">
+        <div className="mt-1 ml-2 pl-3 border-l border-zinc-200/30 dark:border-zinc-700/30">
           <div className="space-y-0.5">
             {children}
           </div>

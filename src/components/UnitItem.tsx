@@ -52,13 +52,13 @@ export const UnitItem: React.FC<UnitItemProps> = ({
       <div className="group relative">
         <button
           onClick={onToggleExpand}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-blue-50/50 border border-blue-100 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-zinc-100/40 hover:bg-zinc-100/60 transition-all duration-200"
         >
           {/* Chevron */}
           <div className="shrink-0">
             {hasTopics || isEditMode ? (
               <ChevronRight
-                className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${
+                className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${
                   isExpanded ? 'rotate-90' : ''
                 }`}
               />
@@ -68,8 +68,8 @@ export const UnitItem: React.FC<UnitItemProps> = ({
           </div>
 
           {/* Ícone da Unidade */}
-          <div className="w-6 h-6 rounded-md bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
-            <Package className="w-3.5 h-3.5 text-white" />
+          <div className="w-6 h-6 rounded-md bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
+            <Package className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
 
           {/* Conteúdo */}
@@ -90,7 +90,7 @@ export const UnitItem: React.FC<UnitItemProps> = ({
                   </span>
                   {/* Tempo total estimado (discreto) */}
                   {totalDuration > 0 && (
-                    <span className="text-xs text-blue-500 flex items-center gap-0.5 font-medium">
+                    <span className="text-[10px] text-zinc-400 flex items-center gap-0.5 font-medium tabular-nums">
                       <Clock className="w-3 h-3" />
                       {Math.floor(totalDuration / 60)}h{totalDuration % 60 > 0 ? ` ${totalDuration % 60}m` : ''}
                     </span>
@@ -108,10 +108,10 @@ export const UnitItem: React.FC<UnitItemProps> = ({
                   e.stopPropagation();
                   onEdit();
                 }}
-                className="p-1.5 hover:bg-blue-100 rounded-md transition-colors"
+                className="p-1.5 hover:bg-zinc-200/60 rounded-md transition-colors"
                 title="Editar unidade"
               >
-                <Edit3 className="w-3.5 h-3.5 text-blue-600" />
+                <Edit3 className="w-3.5 h-3.5 text-zinc-500" />
               </button>
               <button
                 onClick={(e) => {
@@ -130,7 +130,7 @@ export const UnitItem: React.FC<UnitItemProps> = ({
 
       {/* Children (Topics) */}
       {isExpanded && (hasTopics || isEditMode) && (
-        <div className="mt-1.5 ml-2 pl-3 border-l-2 border-blue-200/50">
+        <div className="mt-1.5 ml-2 pl-3 border-l border-zinc-200/40 dark:border-zinc-700/40">
           <div className="space-y-1">
             {children}
           </div>

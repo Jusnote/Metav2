@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Slash Inline Autocomplete — Refined</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0e0e0e; color: #ccc; }
+
+  h1 { font-size: 15px; color: #E8930C; text-align: center; padding: 24px 0 4px; font-weight: 600; letter-spacing: 1px; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 24px; font-weight: 300; }
+  .step-title { font-size: 10px; color: #888; text-align: center; padding: 16px 0 8px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+
+  .frame { max-width: 780px; margin: 0 auto 24px; background: #f5f6f8; border-radius: 16px; overflow: hidden; border: 1px solid #222; }
+  .frame-header { padding: 8px 14px; background: #1a1a1a; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 8px; }
+  .frame-step { width: 22px; height: 22px; border-radius: 50%; background: #E8930C; color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .frame-label { font-size: 12px; color: #ddd; font-weight: 500; }
+  .frame-desc { font-size: 10px; color: #666; margin-left: auto; }
+  .frame-body { padding: 20px; }
+  .page { max-width: 720px; margin: 0 auto; }
+
+  /* Shared styles */
+  .sb { display: flex; align-items: center; height: 46px; background: white; padding: 0 16px; gap: 10px; }
+  .sb-idle { border: 1px solid #e2e5ea; border-radius: 14px 14px 0 0; border-bottom: none; }
+  .sb-active { border: 1.5px solid #E8930C; border-radius: 14px 14px 0 0; border-bottom: none; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); }
+  .sb-active-full { border: 1.5px solid #E8930C; border-radius: 14px; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); }
+  .sb-connected { border: 1.5px solid #E8930C; border-radius: 14px 14px 0 0; border-bottom: 1px solid #f0f1f3; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); }
+  .sb-icon { color: #c0c4cc; font-size: 15px; flex-shrink: 0; }
+  .sb-text { font-size: 14px; flex: 1; display: flex; align-items: center; }
+  .cursor { display: inline-block; width: 2px; height: 17px; background: #E8930C; border-radius: 1px; vertical-align: middle; margin-left: 1px; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Slash chip inside input */
+  .slash-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #FEF3C7; color: #92400E; font-size: 12px; font-weight: 600;
+    padding: 2px 8px; border-radius: 6px; margin-right: 4px;
+    border: 1px solid #F59E0B;
+  }
+  .slash-chip-icon { font-size: 10px; }
+
+  /* Ghost text (typeahead preview) */
+  .ghost { color: #d0d3d9; }
+
+  /* Dropdown */
+  .dd {
+    background: white; border: 1.5px solid #E8930C; border-top: none;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  /* Selected tags bar inside dropdown */
+  .dd-selected {
+    display: flex; align-items: center; gap: 4px;
+    padding: 6px 14px; background: #fafbfc; border-bottom: 1px solid #f0f1f3;
+    flex-wrap: nowrap; overflow-x: auto;
+  }
+  .dd-tag {
+    font-size: 10px; font-weight: 500; color: #5B21B6;
+    background: #F4F0FF; border: 1px solid #E9E3FF;
+    padding: 2px 6px; border-radius: 4px;
+    white-space: nowrap; display: flex; align-items: center; gap: 3px;
+    flex-shrink: 0;
+  }
+  .dd-tag-x { font-size: 8px; color: #a78bfa; cursor: pointer; }
+
+  /* Result rows */
+  .dd-row {
+    display: flex; align-items: center; padding: 8px 14px;
+    font-size: 13px; cursor: pointer; transition: background 0.1s;
+    border-bottom: 1px solid #fafbfc;
+  }
+  .dd-row:hover { background: #f8f9fb; }
+  .dd-row-hl { background: #FFFBEB; border-left: 3px solid #E8930C; padding-left: 11px; }
+  .dd-row-checked { background: #F4F0FF; }
+  .dd-check { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid #d0d3d9; margin-right: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .dd-check-on { background: #E8930C; border-color: #E8930C; }
+  .dd-name { flex: 1; color: #333; }
+  .dd-hl { color: #E8930C; font-weight: 700; }
+  .dd-count { font-size: 10px; color: #b0b4bc; margin-left: 8px; }
+  .dd-bar { width: 50px; margin-left: 8px; flex-shrink: 0; }
+  .dd-bar-bg { height: 4px; border-radius: 2px; background: #f0f1f3; overflow: hidden; }
+  .dd-bar-fill { height: 100%; border-radius: 2px; }
+
+  /* Results count */
+  .dd-meta { padding: 5px 14px; font-size: 10px; color: #b0b4bc; border-bottom: 1px solid #f5f6f8; display: flex; justify-content: space-between; }
+
+  /* Hint footer */
+  .dd-hints {
+    padding: 6px 14px; background: #fafbfc; border-top: 1px solid #f0f1f3;
+    font-size: 10px; color: #999; display: flex; gap: 14px;
+  }
+  .dd-hints kbd { font-size: 9px; background: #eef0f3; padding: 1px 5px; border-radius: 3px; border: 1px solid #e0e0e0; font-family: monospace; color: #666; }
+
+  /* Category hints (when just typed /) */
+  .cat-hints {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; background: white;
+    border: 1.5px solid #E8930C; border-top: none;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .cat-hint {
+    font-size: 11px; padding: 4px 10px; border-radius: 6px;
+    background: #f5f6f8; color: #555; cursor: pointer;
+    transition: all 0.12s; white-space: nowrap;
+  }
+  .cat-hint:hover { background: #FEF3C7; color: #92400E; }
+  .cat-hint-active { background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; }
+
+  /* Filter bar */
+  .fb { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(180deg,#f6f7f9,#eef0f3); border: 1px solid #e2e5ea; border-radius: 14px; margin-top: 6px; }
+  .pill { font-size: 11px; padding: 5px 11px; border-radius: 8px; white-space: nowrap; display: flex; align-items: center; gap: 5px; font-weight: 450; }
+  .pill-off { background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.08); color: #5f6368; }
+  .pill-hl { background: white; border: 1px solid #E8930C; color: #B45309; box-shadow: 0 1px 4px rgba(232,147,12,0.12); }
+  .pill-active { background: linear-gradient(135deg, #F4F0FF, #E9E3FF); color: #5B21B6; border: 1px solid #C4B5FD; }
+
+  /* Confirmation toast */
+  .toast {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 8px; font-size: 11px;
+    background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
+    margin-top: 8px;
+  }
+
+  .container { padding: 0 20px 40px; }
+</style>
+</head>
+<body>
+
+<h1>Slash Inline Autocomplete — Refinado</h1>
+<h2>Flow completo, estado por estado</h2>
+
+<div class="container">
+
+  <!-- STATE 1: Just typed / -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">1</span>
+      <span class="frame-label">Digita <code style="color:#E8930C">/</code></span>
+      <span class="frame-desc">Categorias clicaveis aparecem</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-connected">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span style="color:#E8930C;font-weight:600;font-size:15px;">/</span>
+            <span class="cursor"></span>
+          </span>
+        </div>
+        <div class="cat-hints">
+          <span class="cat-hint">banca</span>
+          <span class="cat-hint">materia</span>
+          <span class="cat-hint">ano</span>
+          <span class="cat-hint">orgao</span>
+          <span class="cat-hint">cargo</span>
+          <span class="cat-hint">assunto</span>
+          <span style="margin-left:auto;font-size:10px;color:#bbb;">digite ou clique</span>
+        </div>
+        <div class="fb">
+          <div class="pill pill-off">Banca &#9662;</div>
+          <div class="pill pill-off">Materia &#9662;</div>
+          <div class="pill pill-off">Ano &#9662;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 2: Typing /ban → fuzzy match -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">2</span>
+      <span class="frame-label">Digita <code style="color:#E8930C">/ban</code></span>
+      <span class="frame-desc">Fuzzy match + ghost text</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-connected">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span style="color:#E8930C;font-weight:600;">/ban</span><span class="ghost">ca</span>
+            <span class="cursor"></span>
+          </span>
+        </div>
+        <div class="cat-hints">
+          <span class="cat-hint cat-hint-active">banca</span>
+          <span class="cat-hint" style="opacity:0.35;">materia</span>
+          <span class="cat-hint" style="opacity:0.35;">ano</span>
+          <span class="cat-hint" style="opacity:0.35;">orgao</span>
+          <span style="margin-left:auto;font-size:10px;color:#E8930C;">Tab para completar</span>
+        </div>
+        <div class="fb">
+          <div class="pill pill-hl">Banca &#9662;</div>
+          <div class="pill pill-off">Materia &#9662;</div>
+          <div class="pill pill-off">Ano &#9662;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 3: Space after category → dropdown opens -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">3</span>
+      <span class="frame-label">Espaco → dropdown abre vazio</span>
+      <span class="frame-desc">Pronto para filtrar valores</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-connected">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span class="slash-chip"><span class="slash-chip-icon">&#127979;</span> banca</span>
+            <span class="cursor"></span>
+          </span>
+        </div>
+        <div class="dd">
+          <div class="dd-meta">
+            <span>498 bancas</span>
+            <span>digite para filtrar...</span>
+          </div>
+          <div class="dd-row dd-row-hl">
+            <div class="dd-check"></div>
+            <span class="dd-name">CEBRASPE (CESPE)</span>
+            <span class="dd-count">23.203</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span>
+          </div>
+          <div class="dd-row">
+            <div class="dd-check"></div>
+            <span class="dd-name">FCC</span>
+            <span class="dd-count">10.151</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:44%;background:#d0d3d9;"></div></div></span>
+          </div>
+          <div class="dd-row">
+            <div class="dd-check"></div>
+            <span class="dd-name">QUADRIX</span>
+            <span class="dd-count">9.632</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:41%;background:#d0d3d9;"></div></div></span>
+          </div>
+          <div class="dd-row">
+            <div class="dd-check"></div>
+            <span class="dd-name">VUNESP</span>
+            <span class="dd-count">7.503</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:32%;background:#d0d3d9;"></div></div></span>
+          </div>
+          <div class="dd-hints">
+            <span><kbd>,</kbd> seleciona + continua</span>
+            <span><kbd>Enter</kbd> seleciona + sai</span>
+            <span><kbd>Esc</kbd> cancela</span>
+            <span><kbd>&#8593;&#8595;</kbd> navegar</span>
+          </div>
+        </div>
+        <div class="fb" style="margin-top:6px;">
+          <div class="pill pill-hl">Banca &#9652;</div>
+          <div class="pill pill-off">Materia &#9662;</div>
+          <div class="pill pill-off">Ano &#9662;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 4: Typing value → filtered -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">4</span>
+      <span class="frame-label">Digita <code style="color:#E8930C">ces</code> → filtra</span>
+      <span class="frame-desc">Ghost text mostra melhor match</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-connected">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span class="slash-chip"><span class="slash-chip-icon">&#127979;</span> banca</span>
+            <span style="color:#333;">ces</span><span class="ghost">pe</span>
+            <span class="cursor"></span>
+          </span>
+        </div>
+        <div class="dd">
+          <div class="dd-meta">
+            <span>2 resultados</span>
+            <span></span>
+          </div>
+          <div class="dd-row dd-row-hl">
+            <div class="dd-check"></div>
+            <span class="dd-name"><span class="dd-hl">CES</span>BRASPE (<span class="dd-hl">CES</span>PE)</span>
+            <span class="dd-count">23.203</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span>
+          </div>
+          <div class="dd-row">
+            <div class="dd-check"></div>
+            <span class="dd-name">Instituto <span class="dd-hl">CES</span>EP</span>
+            <span class="dd-count">142</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:1%;background:#d0d3d9;"></div></div></span>
+          </div>
+          <div class="dd-hints">
+            <span><kbd>,</kbd> seleciona + continua</span>
+            <span><kbd>Enter</kbd> seleciona + sai</span>
+            <span><kbd>Esc</kbd> cancela</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 5a: Comma → select + continue -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">5a</span>
+      <span class="frame-label">Virgula → CESPE selecionado, continua</span>
+      <span class="frame-desc">Pronto pro proximo valor</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-connected">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span class="slash-chip"><span class="slash-chip-icon">&#127979;</span> banca</span>
+            <span class="cursor"></span>
+          </span>
+          <span style="font-size:8px;color:#E8930C;background:#FEF3C7;border-radius:8px;padding:2px 7px;font-weight:600;">1</span>
+        </div>
+        <div class="dd">
+          <!-- Selected bar -->
+          <div class="dd-selected">
+            <span style="font-size:9px;color:#999;flex-shrink:0;">Selecionados:</span>
+            <span class="dd-tag">CESPE <span class="dd-tag-x">&#10005;</span></span>
+          </div>
+          <div class="dd-meta">
+            <span>498 bancas</span>
+            <span>continue digitando...</span>
+          </div>
+          <div class="dd-row dd-row-checked">
+            <div class="dd-check dd-check-on"><span style="color:white;font-size:9px;">&#10003;</span></div>
+            <span class="dd-name" style="color:#92400E;font-weight:500;">CEBRASPE (CESPE)</span>
+            <span class="dd-count">23.203</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span>
+          </div>
+          <div class="dd-row dd-row-hl">
+            <div class="dd-check"></div>
+            <span class="dd-name">FCC</span>
+            <span class="dd-count">10.151</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:44%;background:#d0d3d9;"></div></div></span>
+          </div>
+          <div class="dd-row">
+            <div class="dd-check"></div>
+            <span class="dd-name">QUADRIX</span>
+            <span class="dd-count">9.632</span>
+            <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:41%;background:#d0d3d9;"></div></div></span>
+          </div>
+          <div class="dd-hints">
+            <span><kbd>,</kbd> seleciona + continua</span>
+            <span><kbd>Enter</kbd> seleciona + sai</span>
+            <span><kbd>Esc</kbd> sai sem selecionar mais</span>
+          </div>
+        </div>
+        <div class="fb" style="margin-top:6px;">
+          <div class="pill pill-active">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">1</span> &#9652;</div>
+          <div class="pill pill-off">Materia &#9662;</div>
+          <div class="pill pill-off">Ano &#9662;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 5b: Enter → select + exit -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">5b</span>
+      <span class="frame-label">Enter → CESPE selecionado, sai</span>
+      <span class="frame-desc">Volta ao estado normal</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-idle" style="border-bottom:none;">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro</span>
+            <span class="cursor"></span>
+          </span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;border:1px solid #7C3AED;color:#7C3AED;background:#F4F0FF;">&#10024; IA</span>
+          <span style="font-size:8px;color:#E8930C;background:#FEF3C7;border-radius:8px;padding:2px 7px;font-weight:600;">1 filtro</span>
+        </div>
+        <div class="fb" style="border-radius:0 0 14px 14px;margin-top:0;border-top:1px solid #eaecf0;">
+          <div class="pill pill-active">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">1</span> &#10005;</div>
+          <div class="pill pill-off">Materia &#9662;</div>
+          <div class="pill pill-off">Ano &#9662;</div>
+        </div>
+        <div class="toast">&#10003; CESPE selecionado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 6: Fast typing /banca cespe, fcc↵ all at once -->
+  <div class="step-title">Cenario: digitacao rapida</div>
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step" style="background:#7C3AED;">&#9889;</span>
+      <span class="frame-label">Speed run: <code style="color:#E8930C">/banca cespe, fcc↵</code></span>
+      <span class="frame-desc">Tudo de uma vez — resultado final</span>
+    </div>
+    <div class="frame-body">
+      <div class="page">
+        <div class="sb sb-idle" style="border-bottom:none;">
+          <span class="sb-icon">&#128269;</span>
+          <span class="sb-text">
+            <span style="color:#333;">individuo que mata outro</span>
+            <span class="cursor"></span>
+          </span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;border:1px solid #7C3AED;color:#7C3AED;background:#F4F0FF;">&#10024; IA</span>
+          <span style="font-size:8px;color:#E8930C;background:#FEF3C7;border-radius:8px;padding:2px 7px;font-weight:600;">2 filtros</span>
+        </div>
+        <div class="fb" style="border-radius:0 0 14px 14px;margin-top:0;border-top:1px solid #eaecf0;">
+          <div class="pill pill-active">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span> &#10005;</div>
+          <div class="pill pill-off">Materia &#9662;</div>
+          <div class="pill pill-off">Ano &#9662;</div>
+        </div>
+        <div class="toast">&#10003; CESPE + FCC selecionados</div>
+
+        <div style="margin-top:16px;padding:12px 16px;background:#1a1a1a;border-radius:8px;font-family:monospace;font-size:12px;color:#999;line-height:1.8;">
+          <span style="color:#555;">$</span> <span style="color:#E8930C;">/banca</span> <span style="color:#ccc;">cespe</span><span style="color:#666;">,</span> <span style="color:#ccc;">fcc</span><span style="color:#4ade80;">↵</span><br>
+          <span style="color:#4ade80;">→ CESPE selecionado (virgula)</span><br>
+          <span style="color:#4ade80;">→ FCC selecionado (enter)</span><br>
+          <span style="color:#4ade80;">→ slash mode encerrado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

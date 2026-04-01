@@ -123,8 +123,10 @@
     "emoji-picker-react": "^4.13.2",
     "framer-motion": "^12.23.22",
     "fzf": "^0.5.2",
+    "graphql": "^16.13.1",
     "html2canvas-pro": "^1.5.11",
     "input-otp": "^1.4.2",
+    "katex": "^0.16.38",
     "lisere": "^0.1.2",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
@@ -155,6 +157,7 @@
     "react-router-dom": "^6.26.2",
     "react-textarea-autosize": "^8.5.9",
     "react-tweet": "^3.2.2",
+    "react-virtuoso": "^4.18.3",
     "recharts": "2.15.4",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
@@ -164,6 +167,7 @@
     "tailwindcss-animate": "^1.0.7",
     "ts-fsrs": "^5.2.1",
     "uploadthing": "7.7.4",
+    "urql": "^5.0.1",
     "use-file-picker": "2.1.2",
     "uuid": "^13.0.0",
     "vaul": "^1.1.2",
@@ -192,7 +196,8 @@
     "supabase": "^2.31.8",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.1"
+    "typescript-eslint": "^8.0.1",
+    "vitest": "^4.1.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.46.2",

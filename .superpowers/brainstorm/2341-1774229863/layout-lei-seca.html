@@ -1,0 +1,158 @@
+<h2>Layout Lei Seca v2 — Componentes</h2>
+<p class="subtitle">Mesma estrutura visual, nova fonte de dados (API GraphQL)</p>
+
+<div class="mockup">
+  <div class="mockup-header">Lei Seca — Código Penal</div>
+  <div class="mockup-body" style="display:flex; min-height:500px; font-family:system-ui; font-size:13px; background:#1a1a2e;">
+
+    <!-- Sidebar -->
+    <div style="width:300px; border-right:1px solid #333; background:#16213e; padding:12px; overflow-y:auto; flex-shrink:0;">
+      <div style="margin-bottom:12px;">
+        <select style="width:100%; padding:6px 8px; background:#0f3460; color:#e0e0e0; border:1px solid #444; border-radius:6px; font-size:12px;">
+          <option>DECRETO-LEI Nº 2.848/1940 — Código Penal</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <input type="text" placeholder="🔍 Buscar na lei..." style="width:100%; padding:6px 8px; background:#0f3460; color:#e0e0e0; border:1px solid #444; border-radius:6px; font-size:12px; box-sizing:border-box;">
+      </div>
+
+      <div style="color:#999; font-size:10px; text-transform:uppercase; margin-bottom:8px; letter-spacing:1px;">Hierarquia</div>
+
+      <div style="color:#e0e0e0; font-size:12px; line-height:2.2;">
+        <div style="font-weight:bold; color:#e94560;">▼ PARTE GERAL</div>
+        <div style="padding-left:16px;">
+          <div style="color:#aaa;">▼ TÍTULO I — Da aplicação da lei penal</div>
+          <div style="padding-left:16px; color:#666;">
+            <div>Art. 1º</div>
+            <div>Art. 2º</div>
+            <div>Art. 3º</div>
+          </div>
+        </div>
+        <div style="padding-left:16px;">
+          <div style="color:#aaa;">▶ TÍTULO II — Do crime</div>
+        </div>
+        <div style="padding-left:16px;">
+          <div style="color:#aaa;">▶ TÍTULO III — Da imputabilidade penal</div>
+        </div>
+        <div style="font-weight:bold; color:#e94560; margin-top:8px;">▼ PARTE ESPECIAL</div>
+        <div style="padding-left:16px;">
+          <div style="color:#aaa;">▶ TÍTULO I — Dos crimes contra a pessoa</div>
+        </div>
+      </div>
+
+      <div style="position:absolute; bottom:12px; left:12px; right:12px; color:#666; font-size:11px; border-top:1px solid #333; padding-top:8px;">
+        Art. 121 / 615 artigos · 3.355 dispositivos
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex:1; padding:24px 40px; overflow-y:auto; color:#e0e0e0;">
+
+      <!-- Structural header -->
+      <div style="text-align:center; margin-bottom:24px;">
+        <div style="color:#e94560; font-size:11px; text-transform:uppercase; letter-spacing:2px;">PARTE ESPECIAL</div>
+        <div style="color:#aaa; font-size:14px; font-weight:bold; margin-top:4px;">TÍTULO I</div>
+        <div style="color:#888; font-size:13px; font-style:italic;">Dos crimes contra a pessoa</div>
+        <div style="color:#aaa; font-size:13px; font-weight:bold; margin-top:8px;">CAPÍTULO I</div>
+        <div style="color:#888; font-size:13px; font-style:italic;">Dos crimes contra a vida</div>
+      </div>
+
+      <!-- Epigrafe -->
+      <div style="font-weight:bold; color:#e94560; margin-top:20px; margin-bottom:4px; font-size:13px;">
+        Homicídio simples
+      </div>
+
+      <!-- Artigo -->
+      <div style="margin-bottom:16px; padding:8px 12px; border-left:3px solid #0f3460; border-radius:2px;" data-id="artigo-121">
+        <div style="margin-bottom:6px;">
+          <span style="font-weight:bold; color:#e94560;">Art. 121.</span>
+          <span> Matar alguem:</span>
+        </div>
+
+        <!-- Pena -->
+        <div style="color:#888; font-style:italic; margin-left:16px; margin-bottom:8px; font-size:12px;">
+          Pena - reclusão, de seis a vinte anos.
+        </div>
+
+        <!-- Anotação (cinza, toggle) -->
+        <div style="color:#555; font-style:italic; font-size:11px; margin-left:16px; background:#1a1a2e; padding:4px 8px; border-radius:4px;">
+          (Vide Lei nº 8.072, de 25.7.90)
+        </div>
+      </div>
+
+      <!-- Epigrafe qualificado -->
+      <div style="font-weight:bold; color:#e94560; margin-top:20px; margin-bottom:4px; font-size:13px;">
+        Homicídio qualificado
+      </div>
+
+      <!-- Parágrafo -->
+      <div style="margin-bottom:12px; margin-left:24px; padding:4px 0;">
+        <span style="font-weight:bold; color:#e94560;">§ 2º</span>
+        <span> Se o homicídio é cometido:</span>
+      </div>
+
+      <!-- Incisos -->
+      <div style="margin-bottom:8px; margin-left:48px; padding:2px 0;">
+        <span style="font-weight:bold; color:#e94560;">I -</span>
+        <span> mediante paga ou promessa de recompensa, ou por outro motivo torpe;</span>
+      </div>
+      <div style="margin-bottom:8px; margin-left:48px; padding:2px 0;">
+        <span style="font-weight:bold; color:#e94560;">II -</span>
+        <span> por motivo futil;</span>
+      </div>
+      <div style="margin-bottom:8px; margin-left:48px; padding:2px 0;">
+        <span style="font-weight:bold; color:#e94560;">III -</span>
+        <span> com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel, ou de que possa resultar perigo comum;</span>
+      </div>
+
+      <!-- Revogado -->
+      <div style="margin-bottom:12px; margin-left:24px; padding:4px 0; opacity:0.4; text-decoration:line-through;">
+        <span style="font-weight:bold; color:#e94560;">§ 3º</span>
+        <span> Se o homicídio é culposo: <span style="color:#666; font-size:11px;">(Revogado)</span></span>
+      </div>
+
+      <!-- Loading indicator -->
+      <div style="text-align:center; padding:20px; color:#555; font-size:12px;">
+        ⟳ Carregando mais dispositivos...
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top:24px;">
+  <h3>Componentes React (sem TipTap)</h3>
+  <p class="subtitle">Cada tipo de dispositivo → componente próprio com estilo definido</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px;">
+    <div style="background:#1e293b; padding:12px; border-radius:8px; border:1px solid #334155;">
+      <div style="color:#e94560; font-size:11px; font-weight:bold; margin-bottom:4px;">ESTRUTURAIS</div>
+      <div style="color:#cbd5e1; font-size:12px; line-height:1.8;">
+        PARTE, LIVRO, TÍTULO → centralizado, uppercase, bold<br>
+        CAPÍTULO, SEÇÃO → centralizado, bold<br>
+        SUBTÍTULO → centralizado, itálico<br>
+        EPÍGRAFE → bold, margin-top
+      </div>
+    </div>
+    <div style="background:#1e293b; padding:12px; border-radius:8px; border:1px solid #334155;">
+      <div style="color:#e94560; font-size:11px; font-weight:bold; margin-bottom:4px;">CONTEÚDO</div>
+      <div style="color:#cbd5e1; font-size:12px; line-height:1.8;">
+        ARTIGO → margin-left 0, "Art. X" bold<br>
+        PARÁGRAFO → margin-left 1, "§" bold<br>
+        INCISO → margin-left 2, "I -" bold<br>
+        ALÍNEA → margin-left 3, "a)" bold<br>
+        PENA → itálico, cor muted
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:24px;">
+  <h3>Scroll infinito + Virtualização</h3>
+  <div style="background:#1e293b; padding:16px; border-radius:8px; border:1px solid #334155; color:#cbd5e1; font-size:13px; line-height:1.8;">
+    <strong style="color:#e94560;">react-window</strong> (VariableSizeList) renderiza só os ~20 dispositivos visíveis<br>
+    <strong style="color:#e94560;">urql paginação</strong> busca 100 dispositivos por vez da API (offset/limit)<br>
+    <strong style="color:#e94560;">Scroll spy</strong> IntersectionObserver atualiza posição na sidebar<br>
+    <strong style="color:#e94560;">Resultado:</strong> CC com 5000 dispositivos carrega em &lt;500ms, DOM sempre leve
+  </div>
+</div>

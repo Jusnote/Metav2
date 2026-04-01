@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Toolbar Alive</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1e2a36;
+    --ink-soft: #4a5568;
+    --ink-muted: #8896a4;
+    --ink-faint: #b8c4ce;
+    --ink-ghost: #dce2e8;
+    --surface: #ffffff;
+    --surface-warm: #fafbfc;
+    --surface-hover: #f4f6f8;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --accent-glow: rgba(37, 99, 235, 0.08);
+    --amber: #f59e0b;
+    --amber-soft: #fef3c7;
+    --green: #10b981;
+    --border: #e5e8ec;
+    --border-light: #f0f2f4;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    --radius: 10px;
+    --ui: 'Outfit', sans-serif;
+    --body: 'Literata', Georgia, serif;
+    --mono: 'JetBrains Mono', monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #eef0f4; font-family: var(--ui); color: var(--ink); }
+
+  h2 {
+    font-size: 13px; font-weight: 500; color: var(--ink-muted);
+    text-align: center; padding: 28px 0 10px; letter-spacing: 0.5px;
+  }
+
+  .frame {
+    background: var(--surface);
+    max-width: 1080px;
+    margin: 0 auto 40px;
+    border-radius: 14px;
+    overflow: visible;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+
+  .app { display: flex; flex-direction: column; min-height: 500px; }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 18px;
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-light);
+    border-radius: 14px 14px 0 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Lei selector */
+  .lei-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px 5px 10px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 200ms var(--ease);
+    flex-shrink: 0;
+  }
+  .lei-chip:hover { background: #d0e0ff; border-color: rgba(37, 99, 235, 0.25); }
+  .lei-chip-icon { font-size: 13px; }
+  .lei-chip-name { font-size: 12px; font-weight: 600; color: var(--accent); }
+  .lei-chip-chevron { font-size: 9px; color: var(--accent); opacity: 0.5; }
+
+  /* Nav area */
+  .nav-area { flex: 1; min-width: 0; position: relative; }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 0; cursor: pointer; overflow: hidden;
+    transition: opacity 150ms;
+  }
+  .breadcrumb:hover { opacity: 0.7; }
+  .bc-icon { flex-shrink: 0; opacity: 0.3; transition: opacity 150ms; }
+  .breadcrumb:hover .bc-icon { opacity: 0.6; }
+
+  .bc-seg {
+    font-size: 12px; font-weight: 400; color: var(--ink-faint);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bc-seg.current {
+    color: var(--ink-soft);
+    font-weight: 500;
+    background: var(--surface-hover);
+    padding: 2px 8px;
+    border-radius: 5px;
+  }
+  .bc-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-ghost); flex-shrink: 0; }
+
+  .bc-right {
+    margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-left: 16px;
+  }
+  .bc-pos {
+    font-size: 11px; font-weight: 400; color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-warm);
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+  .bc-kbd {
+    font-family: var(--mono); font-size: 10px; color: var(--ink-ghost);
+    background: var(--surface-warm); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 4px;
+  }
+
+  /* Search input */
+  .search-wrap {
+    display: flex; align-items: center; gap: 8px; padding: 6px 0;
+  }
+  .search-wrap input {
+    flex: 1; border: none; outline: none;
+    font-family: var(--ui); font-size: 13px; font-weight: 400;
+    color: var(--ink); background: transparent; min-width: 0;
+  }
+  .search-wrap input::placeholder { color: var(--ink-ghost); font-weight: 300; }
+  .search-badge {
+    font-size: 10px; font-weight: 500; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 8px; border-radius: 99px;
+    flex-shrink: 0;
+  }
+  .search-clear {
+    width: 22px; height: 22px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: var(--surface-hover);
+    color: var(--ink-muted); cursor: pointer;
+    font-size: 13px; flex-shrink: 0;
+    transition: all 150ms;
+  }
+  .search-clear:hover { background: var(--ink-ghost); color: var(--ink); }
+
+  /* Divider */
+  .div-v { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+  /* Toggle pills */
+  .toggles { display: flex; gap: 5px; flex-shrink: 0; }
+  .tgl {
+    font-family: var(--ui); font-size: 11px; font-weight: 500;
+    padding: 5px 11px; border-radius: 7px; border: none; cursor: pointer;
+    transition: all 180ms var(--ease);
+  }
+  .tgl-off {
+    background: var(--surface-warm); color: var(--ink-muted); border: 1px solid var(--border);
+  }
+  .tgl-off:hover { background: var(--surface-hover); color: var(--ink-soft); border-color: var(--ink-ghost); }
+  .tgl-on {
+    background: var(--ink); color: #fff; border: 1px solid var(--ink);
+    box-shadow: 0 1px 3px rgba(30,42,54,0.2);
+  }
+
+  /* Font control */
+  .font-grp {
+    display: flex; align-items: center;
+    border: 1px solid var(--border); border-radius: 7px;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .font-btn {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: var(--surface);
+    color: var(--ink-muted); cursor: pointer;
+    font-family: var(--ui); font-weight: 600;
+    transition: all 150ms;
+  }
+  .font-btn:hover { background: var(--surface-hover); color: var(--ink); }
+  .font-btn:first-child { font-size: 11px; border-right: 1px solid var(--border); }
+  .font-btn:last-child { font-size: 14px; }
+
+  /* Progress */
+  .progress { height: 2px; background: var(--border-light); }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #60a5fa);
+    border-radius: 0 2px 2px 0;
+    transition: width 400ms var(--ease);
+  }
+
+  /* ===== DROPDOWN ===== */
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: -18px; right: -18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    max-height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    animation: dropIn 200ms var(--ease);
+  }
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dropdown::-webkit-scrollbar { width: 5px; }
+  .dropdown::-webkit-scrollbar-thumb { background: var(--ink-ghost); border-radius: 5px; }
+  .dropdown::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+  .dd-section {
+    padding: 8px 6px 4px 14px;
+    font-size: 10px; font-weight: 600; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dd-section-icon { font-size: 11px; }
+  .dd-section-count { font-weight: 400; color: var(--ink-ghost); }
+  .dd-sep { height: 1px; background: var(--border-light); margin: 4px 12px; }
+
+  /* Tree rows */
+  .tr {
+    display: flex; align-items: baseline; gap: 5px;
+    padding: 7px 12px; margin: 1px 6px; border-radius: 7px;
+    cursor: pointer; font-size: 12px;
+    transition: all 120ms;
+  }
+  .tr:hover { background: var(--surface-hover); }
+  .tr.sel { background: var(--accent-glow); }
+  .tr-arrow { color: var(--ink-ghost); font-size: 9px; width: 12px; flex-shrink: 0; text-align: center; transition: color 120ms; }
+  .tr:hover .tr-arrow { color: var(--ink-muted); }
+  .tr-label { color: var(--ink-soft); font-weight: 500; }
+  .tr-label-root { font-weight: 600; color: var(--ink); }
+  .tr-sublabel { color: var(--ink-muted); font-size: 11px; font-weight: 300; }
+  .tr-count { color: var(--ink-ghost); font-size: 10px; margin-left: auto; flex-shrink: 0; }
+  .tr-label mark, .res-text mark {
+    background: var(--amber-soft); border-radius: 2px; padding: 0 2px; color: var(--ink);
+  }
+
+  /* Result rows */
+  .res {
+    padding: 8px 12px; margin: 1px 6px; border-radius: 7px;
+    cursor: pointer; transition: all 120ms;
+  }
+  .res:hover { background: var(--surface-hover); }
+  .res.sel { background: var(--accent-glow); }
+  .res-text { font-size: 12px; color: var(--ink-soft); line-height: 1.5; font-weight: 400; }
+  .res-meta { font-size: 10px; color: var(--ink-ghost); margin-top: 3px; font-weight: 300; display: flex; align-items: center; gap: 4px; }
+  .res-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-ghost); }
+
+  /* Footer */
+  .dd-foot {
+    padding: 7px 14px;
+    border-top: 1px solid var(--border-light);
+    font-size: 10px; color: var(--ink-ghost);
+    display: flex; gap: 14px;
+    position: sticky; bottom: 0; background: var(--surface);
+    border-radius: 0 0 12px 12px;
+    font-weight: 300;
+  }
+  .dd-foot kbd {
+    font-family: var(--mono); font-size: 9px;
+    background: var(--surface-warm); border: 1px solid var(--border);
+    padding: 0 4px; border-radius: 3px; color: var(--ink-faint);
+  }
+
+  /* Content */
+  .content { flex: 1; overflow-y: auto; background: var(--surface); border-radius: 0 0 14px 14px; }
+  .content-inner {
+    max-width: 820px; margin: 0 auto; padding: 32px 20px 60px;
+    font-family: var(--body); font-size: 16px; line-height: 1.9; color: var(--ink-soft);
+  }
+  .epigrafe { margin-top: 28px; margin-bottom: 8px; font-family: var(--ui); font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+  .artigo { margin-bottom: 8px; }
+  .artigo b { font-weight: 700; color: var(--ink); }
+  .pena { padding-left: 34px; font-weight: 300; font-style: italic; color: var(--ink-faint); font-size: 15px; margin-bottom: 10px; }
+  .anot { font-size: 12px; font-weight: 300; color: var(--ink-ghost); margin-left: 6px; }
+  .par { padding-left: 34px; margin-bottom: 8px; position: relative; }
+  .par::before { content: '›'; position: absolute; left: 20px; color: var(--ink-ghost); font-size: 14px; }
+  .par b { font-weight: 600; color: var(--ink); }
+  .inc { padding-left: 58px; margin-bottom: 6px; position: relative; }
+  .inc::before { content: '›'; position: absolute; left: 44px; color: var(--border); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ===== CLOSED ===== -->
+<h2>Fechado — Breadcrumb + posição</h2>
+
+<div class="frame">
+  <div class="app">
+    <div class="toolbar">
+      <div class="lei-chip">
+        <span class="lei-chip-icon">⚖</span>
+        <span class="lei-chip-name">Código Penal</span>
+        <span class="lei-chip-chevron">▾</span>
+      </div>
+
+      <div class="div-v"></div>
+
+      <div class="nav-area">
+        <div class="breadcrumb">
+          <svg class="bc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span class="bc-seg">Parte Especial</span>
+          <span class="bc-dot"></span>
+          <span class="bc-seg">Título I</span>
+          <span class="bc-dot"></span>
+          <span class="bc-seg current">Cap. I — Dos crimes contra a vida</span>
+
+          <span class="bc-right">
+            <span class="bc-pos">Art. 121 / 615</span>
+            <span class="bc-kbd">⌘F</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="div-v"></div>
+
+      <div class="toggles">
+        <button class="tgl tgl-off">Lei Seca</button>
+        <button class="tgl tgl-on">Revogados ✓</button>
+      </div>
+
+      <div class="div-v"></div>
+
+      <div class="font-grp">
+        <button class="font-btn">A</button>
+        <button class="font-btn">A</button>
+      </div>
+    </div>
+
+    <div class="progress"><div class="progress-bar" style="width:19%"></div></div>
+
+    <div class="content">
+      <div class="content-inner">
+        <div class="epigrafe">Homicídio simples</div>
+        <div class="artigo"><b>Art. 121.</b> Matar alguem:</div>
+        <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+        <div class="epigrafe">Homicídio qualificado</div>
+        <div class="par"><b>§ 2º</b> Se o homicídio é cometido:</div>
+        <div class="inc">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+        <div class="inc">II — por motivo futil;</div>
+        <div class="inc">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel;</div>
+        <div class="inc">IV — à traição, de emboscada, ou mediante dissimulação;</div>
+        <div class="pena">Pena — reclusão, de doze a trinta anos. <span class="anot">(Redação dada pela Lei nº 13.104, de 2015)</span></div>
+        <div class="par"><b>§ 2º-A</b> Considera-se que há razões de condição de sexo feminino quando o crime envolve: <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+        <div class="inc">I — violência doméstica e familiar;</div>
+        <div class="inc">II — menosprezo ou discriminação à condição de mulher.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OPEN EMPTY ===== -->
+<h2>Aberto — Árvore hierárquica</h2>
+
+<div class="frame">
+  <div class="app">
+    <div class="toolbar">
+      <div class="lei-chip">
+        <span class="lei-chip-icon">⚖</span>
+        <span class="lei-chip-name">Código Penal</span>
+        <span class="lei-chip-chevron">▾</span>
+      </div>
+      <div class="div-v"></div>
+      <div class="nav-area">
+        <div class="search-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input placeholder="Buscar artigo, capítulo, tema..." autofocus />
+          <span style="font-size:10px; color:var(--ink-ghost); font-family:var(--mono);">esc</span>
+        </div>
+
+        <div class="dropdown">
+          <div class="dd-section"><span class="dd-section-icon">📂</span> Estrutura da Lei</div>
+          <div class="tr" style="padding-left:14px;"><span class="tr-arrow">▼</span><span class="tr-label tr-label-root">PARTE GERAL</span><span class="tr-count">209 art.</span></div>
+          <div class="tr" style="padding-left:30px;"><span class="tr-arrow">▶</span><span class="tr-label">Título I</span><span class="tr-sublabel">— Da aplicação da lei penal</span><span class="tr-count">12</span></div>
+          <div class="tr" style="padding-left:30px;"><span class="tr-arrow">▶</span><span class="tr-label">Título II</span><span class="tr-sublabel">— Do crime</span><span class="tr-count">28</span></div>
+          <div class="tr" style="padding-left:30px;"><span class="tr-arrow">▶</span><span class="tr-label">Título III</span><span class="tr-sublabel">— Da imputabilidade penal</span><span class="tr-count">5</span></div>
+          <div class="dd-sep"></div>
+          <div class="tr" style="padding-left:14px;"><span class="tr-arrow">▼</span><span class="tr-label tr-label-root">PARTE ESPECIAL</span><span class="tr-count">406 art.</span></div>
+          <div class="tr" style="padding-left:30px;"><span class="tr-arrow">▼</span><span class="tr-label">Título I</span><span class="tr-sublabel">— Dos crimes contra a pessoa</span><span class="tr-count">98</span></div>
+          <div class="tr sel" style="padding-left:46px;"><span class="tr-arrow">▼</span><span class="tr-label">Cap. I</span><span class="tr-sublabel">— Dos crimes contra a vida</span><span class="tr-count">14</span></div>
+          <div class="tr" style="padding-left:46px;"><span class="tr-arrow">▶</span><span class="tr-label">Cap. II</span><span class="tr-sublabel">— Das lesões corporais</span><span class="tr-count">1</span></div>
+          <div class="tr" style="padding-left:46px;"><span class="tr-arrow">▶</span><span class="tr-label">Cap. III</span><span class="tr-sublabel">— Da periclitação da vida e da saúde</span><span class="tr-count">8</span></div>
+          <div class="tr" style="padding-left:46px;"><span class="tr-arrow">▶</span><span class="tr-label">Cap. V</span><span class="tr-sublabel">— Dos crimes contra a honra</span><span class="tr-count">7</span></div>
+          <div class="tr" style="padding-left:30px;"><span class="tr-arrow">▶</span><span class="tr-label">Título II</span><span class="tr-sublabel">— Dos crimes contra o patrimônio</span><span class="tr-count">52</span></div>
+          <div class="dd-foot">
+            <span><kbd>↑</kbd> <kbd>↓</kbd> navegar</span>
+            <span><kbd>↵</kbd> ir para</span>
+            <span><kbd>→</kbd> expandir</span>
+            <span><kbd>esc</kbd> fechar</span>
+          </div>
+        </div>
+      </div>
+      <div class="div-v"></div>
+      <div class="toggles"><button class="tgl tgl-off">Lei Seca</button><button class="tgl tgl-on">Revogados ✓</button></div>
+      <div class="div-v"></div>
+      <div class="font-grp"><button class="font-btn">A</button><button class="font-btn">A</button></div>
+    </div>
+    <div class="progress"><div class="progress-bar" style="width:19%"></div></div>
+    <div class="content" style="opacity:0.12; pointer-events:none;">
+      <div class="content-inner"><div class="epigrafe">Homicídio simples</div><div class="artigo"><b>Art. 121.</b> Matar alguem:</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TYPING ===== -->
+<h2>Digitando "vida" — Navegação filtrada + busca no texto</h2>
+
+<div class="frame">
+  <div class="app">
+    <div class="toolbar">
+      <div class="lei-chip">
+        <span class="lei-chip-icon">⚖</span>
+        <span class="lei-chip-name">Código Penal</span>
+        <span class="lei-chip-chevron">▾</span>
+      </div>
+      <div class="div-v"></div>
+      <div class="nav-area">
+        <div class="search-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <input value="vida" style="color:var(--ink);" />
+          <span class="search-badge">8 resultados</span>
+          <button class="search-clear">×</button>
+        </div>
+
+        <div class="dropdown">
+          <div class="dd-section"><span class="dd-section-icon">📂</span> Navegação <span class="dd-section-count">3 itens</span></div>
+          <div class="tr" style="padding-left:14px;"><span class="tr-arrow">▶</span><span class="tr-label">Cap. I — Dos crimes contra a <mark>vida</mark></span><span class="tr-count">14</span></div>
+          <div class="tr" style="padding-left:14px;"><span class="tr-arrow">▶</span><span class="tr-label">Cap. III — Da periclitação da <mark>vida</mark> e da saúde</span><span class="tr-count">8</span></div>
+          <div class="tr" style="padding-left:14px;"><span class="tr-arrow">▶</span><span class="tr-label">Título XI — Dos crimes contra a <mark>vida</mark></span><span class="tr-count">3</span></div>
+
+          <div class="dd-sep"></div>
+
+          <div class="dd-section"><span class="dd-section-icon">📄</span> No texto <span class="dd-section-count">8 resultados</span></div>
+          <div class="res"><div class="res-text">II — perigo de <mark>vida</mark>;</div><div class="res-meta">Art. 129, § 1º <span class="res-meta-dot"></span> Código Penal</div></div>
+          <div class="res sel"><div class="res-text">Expor a <mark>vida</mark> ou a saúde de outrem a perigo direto e iminente:</div><div class="res-meta">Art. 132 <span class="res-meta-dot"></span> Código Penal</div></div>
+          <div class="res"><div class="res-text">...contra a <mark>vida</mark> do presidente da República, do presidente da Câmara...</div><div class="res-meta">Art. 356 <span class="res-meta-dot"></span> Código Penal</div></div>
+          <div class="res"><div class="res-text">Expor a <mark>vida</mark>, a integridade física ou a saúde de pessoa...</div><div class="res-meta">Art. 136 <span class="res-meta-dot"></span> Código Penal</div></div>
+          <div class="res"><div class="res-text">...se da <mark>vida</mark> resulta perigo de morte...</div><div class="res-meta">Art. 250, § 1º <span class="res-meta-dot"></span> Código Penal</div></div>
+
+          <div class="dd-foot">
+            <span><kbd>↑</kbd> <kbd>↓</kbd> navegar</span>
+            <span><kbd>↵</kbd> ir para</span>
+            <span><kbd>esc</kbd> fechar</span>
+          </div>
+        </div>
+      </div>
+      <div class="div-v"></div>
+      <div class="toggles"><button class="tgl tgl-off">Lei Seca</button><button class="tgl tgl-on">Revogados ✓</button></div>
+      <div class="div-v"></div>
+      <div class="font-grp"><button class="font-btn">A</button><button class="font-btn">A</button></div>
+    </div>
+    <div class="progress"><div class="progress-bar" style="width:19%"></div></div>
+    <div class="content" style="opacity:0.12; pointer-events:none;">
+      <div class="content-inner"><div class="epigrafe">Homicídio simples</div><div class="artigo"><b>Art. 121.</b> Matar alguem:</div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

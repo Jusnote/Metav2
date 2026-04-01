@@ -1,0 +1,188 @@
+<h2>Duas linhas — busca + filtros elegantes</h2>
+<p class="subtitle">Clique na que preferir</p>
+
+<div class="cards">
+
+  <!-- Option A: Minimal with glass effect -->
+  <div class="card" data-choice="a-glass" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: #f8f9fb;">
+      <div style="max-width: 700px; margin: 20px auto; padding: 0 16px;">
+
+        <!-- Search line -->
+        <div style="display: flex; align-items: center; height: 40px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 10px 10px 0 0; padding: 0 14px; gap: 8px;">
+          <span style="color: #ccc; font-size: 14px;">&#128269;</span>
+          <span style="font-size: 12px; color: #bbb; flex: 1;">Buscar questoes...</span>
+          <span style="font-size: 10px; color: #ccc; background: #f0f0f0; padding: 1px 5px; border-radius: 3px;">&#8984;K</span>
+        </div>
+
+        <!-- Filter line - glass style -->
+        <div style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: linear-gradient(135deg, #f8f9fb 0%, #f0f1f5 100%); border: 1px solid #e2e5ea; border-radius: 0 0 10px 10px; overflow-x: auto;">
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); color: #666; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(0,0,0,0.06);">
+            &#127979; Banca <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(232,147,12,0.1); color: #B45309; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(232,147,12,0.3);">
+            &#128218; Dir. Admin. <span style="opacity: 0.5;">&#10005;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(59,130,246,0.1); color: #1D4ED8; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(59,130,246,0.3);">
+            &#128197; 2024-25 <span style="opacity: 0.5;">&#10005;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(0,0,0,0.06);">
+            &#127963; Orgao <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(0,0,0,0.06);">
+            &#128188; Cargo <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(0,0,0,0.06);">
+            &#128209; Assunto <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <span style="margin-left: auto; font-size: 9px; color: #ccc; cursor: pointer; white-space: nowrap;">limpar</span>
+        </div>
+
+        <!-- Tabs preview -->
+        <div style="display: flex; gap: 4px; margin-top: 10px; background: #eef0f3; border-radius: 8px; padding: 3px; width: fit-content;">
+          <span style="font-size: 10px; padding: 3px 10px; border-radius: 6px; background: white; color: #333; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">Todas</span>
+          <span style="font-size: 10px; padding: 3px 10px; color: #999;">Pendentes</span>
+          <span style="font-size: 10px; padding: 3px 10px; color: #999;">Erradas</span>
+        </div>
+
+        <!-- Question preview -->
+        <div style="background: white; border-radius: 8px; border: 1px solid #e8e8e8; padding: 10px 12px; margin-top: 8px; margin-bottom: 16px;">
+          <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+            <span style="font-size: 8px; background: #F4F0FF; color: #7C3AED; padding: 1px 5px; border-radius: 3px;">CESPE</span>
+            <span style="font-size: 8px; background: #DBEAFE; color: #1D4ED8; padding: 1px 5px; border-radius: 3px;">2024</span>
+          </div>
+          <div style="font-size: 10px; color: #666; line-height: 1.5;">Acerca dos principios que regem a administracao publica...</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A) Glass Minimal</h3>
+      <p>Fundo gradiente sutil na linha de filtros, pills translucidos. Limpo e moderno.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Outlined with accent line -->
+  <div class="card" data-choice="b-accent" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: #f8f9fb;">
+      <div style="max-width: 700px; margin: 20px auto; padding: 0 16px;">
+
+        <!-- Search line -->
+        <div style="display: flex; align-items: center; height: 40px; background: white; border: 1px solid #e2e5ea; border-radius: 10px 10px 0 0; padding: 0 14px; gap: 8px;">
+          <span style="color: #ccc; font-size: 14px;">&#128269;</span>
+          <span style="font-size: 12px; color: #bbb; flex: 1;">Buscar questoes...</span>
+          <div style="width: 20px; height: 20px; border-radius: 5px; background: #E8930C; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white;">2</div>
+        </div>
+
+        <!-- Accent line separator -->
+        <div style="height: 2px; background: linear-gradient(90deg, #E8930C 0%, #F59E0B 50%, #FBBF24 100%);"></div>
+
+        <!-- Filter line -->
+        <div style="display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: white; border: 1px solid #e2e5ea; border-top: none; border-radius: 0 0 10px 10px;">
+          <span style="font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 2px;">Filtros</span>
+
+          <div style="font-size: 10px; padding: 3px 10px; border-radius: 16px; background: white; color: #555; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid #e0e0e0;" onmouseover="this.style.borderColor='#E8930C'" onmouseout="this.style.borderColor='#e0e0e0'">
+            Banca <span style="opacity: 0.4; font-size: 8px;">&#9662;</span>
+          </div>
+
+          <div style="font-size: 10px; padding: 3px 10px; border-radius: 16px; background: #FFF7ED; color: #B45309; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid #FBBF24;">
+            Dir. Admin. <span style="opacity: 0.6;">&#10005;</span>
+          </div>
+
+          <div style="font-size: 10px; padding: 3px 10px; border-radius: 16px; background: #EFF6FF; color: #1E40AF; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid #93C5FD;">
+            2024-25 <span style="opacity: 0.6;">&#10005;</span>
+          </div>
+
+          <div style="font-size: 10px; padding: 3px 10px; border-radius: 16px; background: white; color: #555; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid #e0e0e0;" onmouseover="this.style.borderColor='#E8930C'" onmouseout="this.style.borderColor='#e0e0e0'">
+            Orgao <span style="opacity: 0.4; font-size: 8px;">&#9662;</span>
+          </div>
+
+          <div style="font-size: 10px; padding: 3px 10px; border-radius: 16px; background: white; color: #555; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid #e0e0e0;" onmouseover="this.style.borderColor='#E8930C'" onmouseout="this.style.borderColor='#e0e0e0'">
+            Cargo <span style="opacity: 0.4; font-size: 8px;">&#9662;</span>
+          </div>
+
+          <div style="font-size: 10px; padding: 3px 10px; border-radius: 16px; background: white; color: #555; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid #e0e0e0;" onmouseover="this.style.borderColor='#E8930C'" onmouseout="this.style.borderColor='#e0e0e0'">
+            Assunto <span style="opacity: 0.4; font-size: 8px;">&#9662;</span>
+          </div>
+        </div>
+
+        <!-- Tabs preview -->
+        <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+          <span style="color: #E8930C; border-bottom: 2px solid #E8930C; padding-bottom: 4px; font-weight: 500;">Todas</span>
+          <span style="color: #aaa;">Pendentes</span>
+          <span style="color: #aaa;">Erradas</span>
+        </div>
+
+        <!-- Question preview -->
+        <div style="background: white; border-radius: 8px; border: 1px solid #e8e8e8; padding: 10px 12px; margin-top: 8px; margin-bottom: 16px;">
+          <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+            <span style="font-size: 8px; background: #F4F0FF; color: #7C3AED; padding: 1px 5px; border-radius: 3px;">CESPE</span>
+            <span style="font-size: 8px; background: #DBEAFE; color: #1D4ED8; padding: 1px 5px; border-radius: 3px;">2024</span>
+          </div>
+          <div style="font-size: 10px; color: #666; line-height: 1.5;">Acerca dos principios que regem a administracao publica...</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Accent Line</h3>
+      <p>Linha gradiente amber separando busca dos filtros. Pills arredondados. Badge de contagem na busca. Label "Filtros" discreto.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Dark header -->
+  <div class="card" data-choice="c-dark" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: #f8f9fb;">
+      <div style="max-width: 700px; margin: 20px auto; padding: 0 16px;">
+
+        <!-- Search line - dark -->
+        <div style="display: flex; align-items: center; height: 40px; background: #1B1D21; border-radius: 10px 10px 0 0; padding: 0 14px; gap: 8px;">
+          <span style="color: #666; font-size: 14px;">&#128269;</span>
+          <span style="font-size: 12px; color: #555; flex: 1;">Buscar questoes...</span>
+          <span style="font-size: 10px; color: #555; background: #2a2d33; padding: 1px 5px; border-radius: 3px;">&#8984;K</span>
+        </div>
+
+        <!-- Filter line - dark continuation -->
+        <div style="display: flex; align-items: center; gap: 5px; padding: 7px 14px; background: #24262b; border-radius: 0 0 10px 10px;">
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.06); color: #999; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.08);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+            &#127979; Banca <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(232,147,12,0.15); color: #F59E0B; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(232,147,12,0.3);">
+            &#128218; Dir. Admin. <span style="opacity: 0.6;">&#10005;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(59,130,246,0.15); color: #60A5FA; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(59,130,246,0.3);">
+            &#128197; 2024-25 <span style="opacity: 0.6;">&#10005;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.06); color: #999; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.08);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+            &#127963; Orgao <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.06); color: #999; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.08);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+            &#128188; Cargo <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.06); color: #999; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.08);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+            &#128209; Assunto <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+        </div>
+
+        <!-- Tabs preview -->
+        <div style="display: flex; gap: 4px; margin-top: 10px; background: #eef0f3; border-radius: 8px; padding: 3px; width: fit-content;">
+          <span style="font-size: 10px; padding: 3px 10px; border-radius: 6px; background: white; color: #333; font-weight: 500;">Todas</span>
+          <span style="font-size: 10px; padding: 3px 10px; color: #999;">Pendentes</span>
+          <span style="font-size: 10px; padding: 3px 10px; color: #999;">Erradas</span>
+        </div>
+
+        <!-- Question preview -->
+        <div style="background: white; border-radius: 8px; border: 1px solid #e8e8e8; padding: 10px 12px; margin-top: 8px; margin-bottom: 16px;">
+          <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+            <span style="font-size: 8px; background: #F4F0FF; color: #7C3AED; padding: 1px 5px; border-radius: 3px;">CESPE</span>
+            <span style="font-size: 8px; background: #DBEAFE; color: #1D4ED8; padding: 1px 5px; border-radius: 3px;">2024</span>
+          </div>
+          <div style="font-size: 10px; color: #666; line-height: 1.5;">Acerca dos principios que regem a administracao publica...</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C) Dark Header</h3>
+      <p>Bloco escuro unificado. Contraste forte. Filtros ativos brilham. Estilo terminal/dev. Combina com o icon rail escuro do app.</p>
+    </div>
+  </div>
+
+</div>

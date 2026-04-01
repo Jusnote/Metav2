@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Filter Design - Polished</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+
+  .container { max-width: 780px; margin: 0 auto; }
+  h2 { font-size: 14px; color: #999; text-align: center; margin-bottom: 20px; font-weight: 400; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* Search bar */
+  .search-bar {
+    display: flex; align-items: center; height: 44px;
+    background: white; border: 1px solid #e0e3e8;
+    border-bottom: none; border-radius: 14px 14px 0 0;
+    padding: 0 16px; gap: 10px;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.02);
+  }
+  .search-bar .icon { color: #c0c4cc; font-size: 16px; }
+  .search-bar .placeholder { font-size: 13px; color: #b0b4bc; flex: 1; }
+  .search-bar .shortcut {
+    font-size: 10px; color: #c0c4cc; background: #f5f6f8;
+    padding: 2px 6px; border-radius: 4px; border: 1px solid #e8eaed;
+    font-family: monospace;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, #f6f7f9 0%, #eef0f3 100%);
+    border: 1px solid #e0e3e8; border-top: 1px solid #eaecf0;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+
+  .pill {
+    font-size: 11px; padding: 5px 11px; border-radius: 8px;
+    cursor: pointer; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.2s ease;
+    font-weight: 450;
+  }
+  .pill-inactive {
+    background: rgba(255,255,255,0.85); color: #5f6368;
+    border: 1px solid rgba(0,0,0,0.08);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .pill-inactive:hover {
+    background: white; border-color: #E8930C;
+    box-shadow: 0 1px 4px rgba(232,147,12,0.12);
+    color: #B45309;
+  }
+  .pill-active-amber {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    color: #92400E; border: 1px solid #F59E0B;
+    box-shadow: 0 1px 3px rgba(245,158,11,0.2);
+  }
+  .pill-active-blue {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    color: #1E40AF; border: 1px solid #60A5FA;
+    box-shadow: 0 1px 3px rgba(96,165,250,0.2);
+  }
+  .pill-icon { font-size: 12px; opacity: 0.8; }
+  .pill-arrow { opacity: 0.35; font-size: 8px; margin-left: 1px; }
+  .pill-close { opacity: 0.5; font-size: 10px; margin-left: 2px; transition: opacity 0.15s; }
+  .pill-close:hover { opacity: 1; }
+  .clear-link { margin-left: auto; font-size: 10px; color: #c0c4cc; cursor: pointer; transition: color 0.15s; }
+  .clear-link:hover { color: #E8930C; }
+
+  /* Popover */
+  .popover {
+    position: absolute; top: 8px; left: 0;
+    width: 400px; background: white;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e8eaed;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .popover-search {
+    padding: 10px 12px; border-bottom: 1px solid #f0f1f3;
+  }
+  .popover-search input {
+    width: 100%; height: 32px; border: none;
+    background: #f5f6f8; border-radius: 8px;
+    padding: 0 10px; font-size: 12px; color: #333;
+    outline: none; transition: background 0.15s;
+  }
+  .popover-search input:focus { background: #eef0f3; }
+  .popover-search input::placeholder { color: #b0b4bc; }
+
+  /* Table header */
+  .table-header {
+    display: flex; padding: 6px 12px;
+    font-size: 9px; color: #a0a4ac;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    border-bottom: 1px solid #f5f6f8;
+    font-weight: 500;
+  }
+
+  /* Table rows */
+  .table-row {
+    display: flex; align-items: center;
+    padding: 7px 12px; font-size: 12px;
+    cursor: pointer; transition: background 0.1s;
+    border-bottom: 1px solid #fafbfc;
+  }
+  .table-row:hover { background: #f8f9fb; }
+  .table-row-selected { background: #FFFBEB; }
+  .table-row-selected:hover { background: #FEF3C7; }
+
+  /* Checkbox */
+  .checkbox {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 1.5px solid #d0d3d9; display: flex;
+    align-items: center; justify-content: center;
+    margin-right: 10px; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .checkbox-checked {
+    background: #E8930C; border-color: #E8930C;
+    box-shadow: 0 1px 3px rgba(232,147,12,0.3);
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 5px; border-radius: 3px;
+    background: #f0f1f3; overflow: hidden;
+    flex-shrink: 0;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  /* Footer */
+  .popover-footer {
+    padding: 8px 12px; border-top: 1px solid #f0f1f3;
+    display: flex; justify-content: space-between;
+    align-items: center; background: #fafbfc;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 2px; background: #eef0f3;
+    border-radius: 10px; padding: 3px; width: fit-content;
+    margin-top: 14px;
+  }
+  .tab {
+    font-size: 11px; padding: 5px 14px; border-radius: 8px;
+    color: #888; cursor: pointer; transition: all 0.15s;
+    font-weight: 450;
+  }
+  .tab:hover { color: #555; }
+  .tab-active {
+    background: white; color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  /* Question cards */
+  .question {
+    background: white; border-radius: 12px;
+    border: 1px solid #e8eaed; padding: 14px 16px;
+    margin-bottom: 8px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .question:hover {
+    border-color: #d0d3d9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transform: translateY(-1px);
+  }
+  .tag {
+    font-size: 9px; padding: 2px 8px; border-radius: 5px;
+    font-weight: 500; letter-spacing: 0.2px;
+  }
+  .tag-banca { background: #F4F0FF; color: #7C3AED; }
+  .tag-ano { background: #DBEAFE; color: #1D4ED8; }
+  .tag-materia { background: #FEF3C7; color: #D97706; }
+  .difficulty { font-size: 9px; }
+  .diff-hard { color: #EF4444; }
+  .diff-medium { color: #F59E0B; }
+  .diff-easy { color: #22C55E; }
+</style>
+</head>
+<body>
+
+<h2>Glass Minimal + Popovers Adaptativos</h2>
+
+<div class="container">
+
+  <!-- BARRA UNIFICADA -->
+  <div class="search-bar">
+    <span class="icon">&#128269;</span>
+    <span class="placeholder">Buscar questoes...</span>
+    <span class="shortcut">&#8984;K</span>
+  </div>
+
+  <div class="filter-bar">
+    <div class="pill pill-inactive" onclick="togglePopover('banca')" id="pill-banca">
+      <span class="pill-icon">&#127979;</span> Banca <span class="pill-arrow">&#9662;</span>
+    </div>
+    <div class="pill pill-active-amber">
+      <span class="pill-icon">&#128218;</span> Dir. Administrativo <span class="pill-close">&#10005;</span>
+    </div>
+    <div class="pill pill-active-blue">
+      <span class="pill-icon">&#128197;</span> 2024-25 <span class="pill-close">&#10005;</span>
+    </div>
+    <div class="pill pill-inactive" onclick="togglePopover('orgao')">
+      <span class="pill-icon">&#127963;</span> Orgao <span class="pill-arrow">&#9662;</span>
+    </div>
+    <div class="pill pill-inactive">
+      <span class="pill-icon">&#128188;</span> Cargo <span class="pill-arrow">&#9662;</span>
+    </div>
+    <div class="pill pill-inactive" onclick="togglePopover('ano')">
+      <span class="pill-icon">&#128209;</span> Assunto <span class="pill-arrow">&#9662;</span>
+    </div>
+    <span class="clear-link">Limpar</span>
+  </div>
+
+  <!-- POPOVER BANCA (table style) -->
+  <div style="position: relative;" id="popover-banca">
+    <div class="popover">
+      <div class="popover-search">
+        <input type="text" placeholder="&#128269;  Filtrar banca..." />
+      </div>
+      <div class="table-header">
+        <span style="width: 26px;"></span>
+        <span style="flex: 1;">Banca</span>
+        <span style="width: 55px; text-align: right;">Total</span>
+        <span style="width: 70px; text-align: right; padding-right: 4px;">Proporcao</span>
+      </div>
+      <div style="max-height: 240px; overflow-y: auto;">
+        <div class="table-row table-row-selected">
+          <div class="checkbox checkbox-checked"><span style="color: white; font-size: 10px;">&#10003;</span></div>
+          <span style="flex: 1; color: #92400E; font-weight: 500;">CEBRASPE (CESPE)</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">23.203</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #F59E0B, #E8930C);"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">FCC</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">10.151</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 44%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">QUADRIX</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">9.632</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 41%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">VUNESP</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">7.503</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 32%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">FGV</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">6.249</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 27%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">FUNDEP</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">4.891</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 21%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">FUNDATEC</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">3.204</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 14%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+        <div class="table-row">
+          <div class="checkbox"></div>
+          <span style="flex: 1; color: #333;">IBFC</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">2.987</span>
+          <span style="width: 70px; padding-left: 12px;">
+            <div class="progress-bar" style="width: 54px;">
+              <div class="progress-fill" style="width: 13%; background: #d0d3d9;"></div>
+            </div>
+          </span>
+        </div>
+      </div>
+      <div class="popover-footer">
+        <span style="font-size: 10px; color: #a0a4ac;">498 bancas</span>
+        <span style="font-size: 10px; color: #E8930C; font-weight: 600; cursor: pointer;">1 selecionada &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div style="display: flex; align-items: center; margin-top: 14px;">
+    <div class="tabs">
+      <div class="tab tab-active">Todas</div>
+      <div class="tab">Pendentes</div>
+      <div class="tab">Erradas</div>
+      <div class="tab">Marcadas</div>
+    </div>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #a0a4ac;">
+      137.672 questoes
+      <div style="display: flex; border: 1px solid #e0e3e8; border-radius: 8px; overflow: hidden;">
+        <span style="padding: 4px 8px; background: #f8f9fb; border-right: 1px solid #e0e3e8; cursor: pointer; font-size: 12px;">&#9776;</span>
+        <span style="padding: 4px 8px; cursor: pointer; font-size: 12px;">&#9744;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTOES -->
+  <div style="margin-top: 12px;">
+    <div class="question">
+      <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+        <span class="tag tag-banca">CESPE</span>
+        <span class="tag tag-ano">2024</span>
+        <span class="tag tag-materia">Dir. Administrativo</span>
+        <span style="margin-left: auto;" class="difficulty diff-hard">&#9679; Dificil</span>
+      </div>
+      <div style="font-size: 13px; color: #333; line-height: 1.7;">Acerca dos principios que regem a administracao publica, julgue o item subsecutivo. O principio da eficiencia, incorporado expressamente a CF/88 por meio da EC 19/1998, impoe a administracao publica a busca por resultados satisfatorios na prestacao de servicos publicos.</div>
+    </div>
+
+    <div class="question">
+      <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+        <span class="tag tag-banca">FCC</span>
+        <span class="tag tag-ano">2025</span>
+        <span class="tag tag-materia">Dir. Administrativo</span>
+        <span style="margin-left: auto;" class="difficulty diff-medium">&#9679; Medio</span>
+      </div>
+      <div style="font-size: 13px; color: #333; line-height: 1.7;">Sobre os atos administrativos, assinale a alternativa correta quanto a competencia para revogacao e anulacao conforme a Lei 14.133/2021.</div>
+    </div>
+
+    <div class="question">
+      <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+        <span class="tag tag-banca">VUNESP</span>
+        <span class="tag tag-ano">2024</span>
+        <span class="tag tag-materia">Dir. Constitucional</span>
+        <span style="margin-left: auto;" class="difficulty diff-easy">&#9679; Facil</span>
+      </div>
+      <div style="font-size: 13px; color: #333; line-height: 1.7;">Com relacao aos direitos e garantias fundamentais previstos na Constituicao Federal, e correto afirmar que o mandado de seguranca coletivo pode ser impetrado por partido politico com representacao no Congresso Nacional.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

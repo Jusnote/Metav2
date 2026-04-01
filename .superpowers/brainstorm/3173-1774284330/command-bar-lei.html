@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Command Bar vs Sidebar</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; font-family: 'Outfit', sans-serif; color: #1d1d1f; }
+
+  h2 { font-size: 18px; font-weight: 700; color: #1d1d1f; margin-bottom: 8px; text-align: center; padding-top: 24px; }
+  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 24px; }
+
+  .mockup-frame {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin: 0 auto 32px;
+    max-width: 1100px;
+    border: 1px solid #e5e5e5;
+  }
+
+  .mockup-header {
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    padding: 8px 16px;
+    font-size: 11px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28ca42; }
+
+  .card-select {
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    margin: 0 20px 32px;
+  }
+  .card-select:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  .label-bar {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+  }
+  .label-letter {
+    width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: white;
+  }
+  .label-text { font-size: 15px; font-weight: 600; }
+  .label-desc { color: #999; font-size: 13px; margin-left: 4px; }
+</style>
+</head>
+<body>
+
+<h2>Command Bar na Lei Seca — 3 abordagens</h2>
+<p class="subtitle">Clique na preferida</p>
+
+<!-- ===== OPÇÃO A: Command Bar SUBSTITUI sidebar ===== -->
+<div class="card-select mockup-frame" onclick="this.style.outline='3px solid #4f46e5'">
+  <div class="label-bar">
+    <div class="label-letter" style="background:#4f46e5;">A</div>
+    <span class="label-text">Command Bar substitui sidebar</span>
+    <span class="label-desc">— Sem sidebar. Barra no topo. Mais espaço para o texto.</span>
+  </div>
+
+  <div style="display:flex; min-height:520px;">
+    <!-- SEM sidebar -->
+    <div style="flex:1; background:#fff;">
+
+      <!-- Toolbar + Command Bar integrados -->
+      <div style="border-bottom:1px solid #eee; padding:12px 24px; display:flex; align-items:center; gap:12px;">
+        <!-- Seletor de lei (dropdown compacto) -->
+        <select style="font-family:Outfit; font-size:12px; padding:6px 10px; border:1px solid #e5e5e5; border-radius:8px; color:#666; background:#fafafa; min-width:160px;">
+          <option>Código Penal</option>
+        </select>
+
+        <!-- Command bar estilo Google -->
+        <div style="flex:1; position:relative;">
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 16px; background:#fff; border:1px solid #e5e5e5; border-radius:24px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <span style="color:#999; font-size:14px;">🔍</span>
+            <span style="color:#bbb; font-size:13px;">Buscar artigo, texto ou usar / para filtros...</span>
+            <span style="margin-left:auto; color:#ccc; font-size:11px;">Ctrl+F</span>
+          </div>
+        </div>
+
+        <!-- Toggles -->
+        <div style="display:flex; gap:6px;">
+          <span style="font-size:11px; padding:4px 10px; background:#f4f4f4; border-radius:12px; color:#666;">Lei Seca</span>
+          <span style="font-size:11px; padding:4px 10px; background:#f4f4f4; border-radius:12px; color:#666;">A+ A-</span>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="height:3px; background:#f4f4f4;"><div style="height:100%; width:34%; background:rgb(67,80,92);"></div></div>
+
+      <!-- Lei content — usa toda a largura -->
+      <div style="max-width:820px; margin:0 auto; padding:32px 20px; font-family:Literata, serif; font-size:15px; line-height:1.9; color:rgb(67,80,92);">
+
+        <div style="text-align:center; margin-bottom:24px;">
+          <div style="font-family:Outfit; font-size:13px; font-weight:600; color:#444; letter-spacing:1.5px; text-transform:uppercase;">Capítulo I</div>
+          <div style="font-family:Outfit; font-size:13px; color:#999; font-style:italic; margin-top:2px;">Dos crimes contra a vida</div>
+        </div>
+
+        <div style="font-family:Outfit; font-size:13px; font-weight:500; color:#666; margin-bottom:8px;">Homicídio simples</div>
+
+        <div style="margin-bottom:8px;"><b>Art. 121.</b> Matar alguem:</div>
+        <div style="padding-left:34px; font-weight:300; font-style:italic; color:#aaa; font-size:14px; margin-bottom:8px;">Pena — reclusão, de seis a vinte anos.</div>
+
+        <div style="font-family:Outfit; font-size:13px; font-weight:500; color:#666; margin-top:28px; margin-bottom:8px;">Homicídio qualificado</div>
+
+        <div style="padding-left:34px; margin-bottom:8px; position:relative;">
+          <span style="position:absolute; left:20px; color:#d0d0d0;">›</span>
+          <b style="font-weight:600;">§ 2º</b> Se o homicídio é cometido:
+        </div>
+
+        <div style="padding-left:58px; margin-bottom:6px; position:relative;">
+          <span style="position:absolute; left:44px; color:#d8d8d8;">›</span>
+          I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;
+        </div>
+        <div style="padding-left:58px; margin-bottom:6px; position:relative;">
+          <span style="position:absolute; left:44px; color:#d8d8d8;">›</span>
+          II — por motivo futil;
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:12px 20px; background:#f8f8f8; border-top:1px solid #eee; font-size:12px; color:#888; line-height:1.6;">
+    <b style="color:#333;">Vantagens:</b> Máximo espaço para texto. Visual limpo. Command bar integra busca + navegação + filtros num só lugar.<br>
+    <b style="color:#333;">Desvantagem:</b> Perde a árvore hierárquica para navegação visual. Precisa buscar para navegar.
+  </div>
+</div>
+
+<!-- ===== OPÇÃO B: Command Bar como OVERLAY (Ctrl+K) ===== -->
+<div class="card-select mockup-frame" onclick="this.style.outline='3px solid #4f46e5'">
+  <div class="label-bar">
+    <div class="label-letter" style="background:#0891b2;">B</div>
+    <span class="label-text">Command Palette (Ctrl+K)</span>
+    <span class="label-desc">— Sidebar mantida. Command palette como overlay ao estilo VS Code.</span>
+  </div>
+
+  <div style="display:flex; min-height:520px; position:relative;">
+    <!-- Sidebar mantida -->
+    <div style="width:260px; border-right:1px solid #eee; padding:12px; background:#fafafa; font-size:12px; color:#555;">
+      <select style="width:100%; font-size:11px; padding:5px 8px; border:1px solid #e5e5e5; border-radius:6px; margin-bottom:8px; color:#666;">
+        <option>Código Penal</option>
+      </select>
+      <div style="color:#888; font-size:10px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Hierarquia</div>
+      <div style="line-height:2;">
+        <div style="font-weight:600; color:#444;">▼ PARTE ESPECIAL</div>
+        <div style="padding-left:12px; color:#777;">▼ Título I</div>
+        <div style="padding-left:24px; color:#999; font-size:11px;">Cap. I — Dos crimes contra a vida</div>
+        <div style="padding-left:36px; color:#aaa; font-size:10px;">Art. 121 · Art. 122 · Art. 123</div>
+      </div>
+    </div>
+
+    <!-- Conteúdo -->
+    <div style="flex:1; background:#fff;">
+      <!-- Toolbar simples -->
+      <div style="border-bottom:1px solid #eee; padding:8px 16px; display:flex; align-items:center; gap:8px; font-size:11px;">
+        <span style="padding:3px 8px; background:#f4f4f4; border-radius:10px; color:#666;">Lei Seca</span>
+        <span style="padding:3px 8px; background:#f4f4f4; border-radius:10px; color:#666;">Revogados</span>
+        <span style="margin-left:auto; color:#ccc;">Ctrl+K buscar</span>
+        <span style="color:#ccc;">A+ A-</span>
+      </div>
+
+      <div style="height:3px; background:#f4f4f4;"><div style="height:100%; width:34%; background:rgb(67,80,92);"></div></div>
+
+      <!-- Content -->
+      <div style="max-width:820px; margin:0 auto; padding:32px 20px; font-family:Literata, serif; font-size:15px; line-height:1.9; color:rgb(67,80,92);">
+        <div style="font-family:Outfit; font-size:13px; font-weight:500; color:#666; margin-bottom:8px;">Homicídio simples</div>
+        <div style="margin-bottom:8px;"><b>Art. 121.</b> Matar alguem:</div>
+        <div style="padding-left:34px; font-weight:300; font-style:italic; color:#aaa; font-size:14px; margin-bottom:8px;">Pena — reclusão, de seis a vinte anos.</div>
+        <div style="font-family:Outfit; font-size:13px; font-weight:500; color:#666; margin-top:28px; margin-bottom:8px;">Homicídio qualificado</div>
+        <div style="padding-left:34px; margin-bottom:8px; position:relative;">
+          <span style="position:absolute; left:20px; color:#d0d0d0;">›</span>
+          <b style="font-weight:600;">§ 2º</b> Se o homicídio é cometido:
+        </div>
+        <div style="padding-left:58px; margin-bottom:6px; position:relative;">
+          <span style="position:absolute; left:44px; color:#d8d8d8;">›</span>
+          I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERLAY: Command Palette -->
+    <div style="position:absolute; top:60px; left:50%; transform:translateX(-50%); width:560px; background:#fff; border-radius:12px; box-shadow:0 16px 48px rgba(0,0,0,0.15); border:1px solid #e5e5e5; z-index:100;">
+      <!-- Input -->
+      <div style="padding:14px 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #f0f0f0;">
+        <span style="color:#999;">🔍</span>
+        <span style="color:#1d1d1f; font-size:14px;">homicídio qualificado</span>
+        <span style="margin-left:auto; color:#ccc; font-size:11px;">esc fechar</span>
+      </div>
+
+      <!-- Results -->
+      <div style="max-height:300px; overflow-y:auto;">
+        <div style="padding:6px 8px;">
+          <div style="padding:10px 12px; border-radius:8px; background:#f8f8ff; margin-bottom:2px; cursor:pointer;">
+            <div style="font-size:13px; color:rgb(67,80,92);">§ 2º Se o <mark style="background:#fef08a; padding:0 2px; border-radius:2px;">homicídio</mark> é cometido: I — mediante paga...</div>
+            <div style="font-size:11px; color:#bbb; margin-top:2px;">Art. 121 · Código Penal</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:8px; hover:bg-[#f8f8f8]; margin-bottom:2px; cursor:pointer;">
+            <div style="font-size:13px; color:rgb(67,80,92);"><mark style="background:#fef08a; padding:0 2px; border-radius:2px;">Homicídio</mark> <mark style="background:#fef08a; padding:0 2px; border-radius:2px;">qualificado</mark></div>
+            <div style="font-size:11px; color:#bbb; margin-top:2px;">Epígrafe · Art. 121 · Código Penal</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:8px; margin-bottom:2px; cursor:pointer;">
+            <div style="font-size:13px; color:rgb(67,80,92);">§ 2º-A Considera-se que há razões de condição de sexo feminino quando o crime envolve...</div>
+            <div style="font-size:11px; color:#bbb; margin-top:2px;">Art. 121 · Código Penal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:8px 14px; border-top:1px solid #f0f0f0; font-size:11px; color:#ccc; display:flex; gap:12px;">
+        <span>↑↓ navegar</span>
+        <span>↵ abrir</span>
+        <span>/ filtros</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:12px 20px; background:#f8f8f8; border-top:1px solid #eee; font-size:12px; color:#888; line-height:1.6;">
+    <b style="color:#333;">Vantagens:</b> Melhor dos dois mundos. Sidebar para navegação visual + command palette para busca rápida. VS Code pattern (familiar).<br>
+    <b style="color:#333;">Desvantagem:</b> Duas formas de navegar pode confundir. Mais complexo.
+  </div>
+</div>
+
+<!-- ===== OPÇÃO C: Command Bar ACIMA do texto (sempre visível) ===== -->
+<div class="card-select mockup-frame" onclick="this.style.outline='3px solid #4f46e5'">
+  <div class="label-bar">
+    <div class="label-letter" style="background:#059669;">C</div>
+    <span class="label-text">Search Bar fixa no topo (estilo Plate)</span>
+    <span class="label-desc">— Sidebar colapsável. Barra de busca estilo Google sempre visível acima do texto.</span>
+  </div>
+
+  <div style="display:flex; min-height:520px;">
+    <!-- Sidebar colapsada (ícones) -->
+    <div style="width:48px; background:#fafafa; border-right:1px solid #eee; display:flex; flex-direction:column; align-items:center; padding-top:12px; gap:12px;">
+      <div style="width:32px; height:32px; background:#eee; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#888; font-size:14px; cursor:pointer;" title="Expandir">☰</div>
+      <div style="width:32px; height:32px; background:#eee; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#888; font-size:12px;">📑</div>
+    </div>
+
+    <!-- Conteúdo -->
+    <div style="flex:1; background:#fff;">
+
+      <!-- Search bar estilo Plate/Google — sempre visível -->
+      <div style="padding:16px 24px; display:flex; justify-content:center;">
+        <div style="width:100%; max-width:600px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 20px; background:#fff; border:1px solid #e5e5e5; border-radius:28px; box-shadow:0 1px 4px rgba(0,0,0,0.06); transition:box-shadow 0.2s;">
+            <span style="color:#999; font-size:15px;">🔍</span>
+            <span style="color:#bbb; font-size:14px; flex:1;">Buscar na lei ou usar / para filtros...</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <span style="font-size:10px; padding:3px 8px; background:#f4f4f4; border-radius:10px; color:#888;">Lei Seca</span>
+              <span style="font-size:10px; padding:3px 8px; background:rgb(67,80,92); color:white; border-radius:10px;">Revogados ✓</span>
+            </div>
+          </div>
+
+          <!-- Chips de contexto -->
+          <div style="display:flex; gap:6px; margin-top:8px; justify-content:center;">
+            <span style="font-size:10px; padding:3px 10px; background:#eef2ff; color:#4f46e5; border-radius:12px; border:1px solid #e0e7ff;">📜 Código Penal</span>
+            <span style="font-size:10px; padding:3px 10px; background:#f0fdf4; color:#166534; border-radius:12px; border:1px solid #dcfce7;">📂 Cap. I — Dos crimes contra a vida</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="height:3px; background:#f4f4f4;"><div style="height:100%; width:34%; background:rgb(67,80,92);"></div></div>
+
+      <!-- Lei content -->
+      <div style="max-width:820px; margin:0 auto; padding:24px 20px; font-family:Literata, serif; font-size:15px; line-height:1.9; color:rgb(67,80,92);">
+
+        <div style="text-align:center; margin-bottom:24px;">
+          <div style="font-family:Outfit; font-size:13px; font-weight:600; color:#444; letter-spacing:1.5px; text-transform:uppercase;">Capítulo I</div>
+          <div style="font-family:Outfit; font-size:13px; color:#999; font-style:italic; margin-top:2px;">Dos crimes contra a vida</div>
+        </div>
+
+        <div style="font-family:Outfit; font-size:13px; font-weight:500; color:#666; margin-bottom:8px;">Homicídio simples</div>
+
+        <div style="margin-bottom:8px;"><b>Art. 121.</b> Matar alguem:</div>
+        <div style="padding-left:34px; font-weight:300; font-style:italic; color:#aaa; font-size:14px; margin-bottom:8px;">Pena — reclusão, de seis a vinte anos.</div>
+
+        <div style="font-family:Outfit; font-size:13px; font-weight:500; color:#666; margin-top:28px; margin-bottom:8px;">Homicídio qualificado</div>
+
+        <div style="padding-left:34px; margin-bottom:8px; position:relative;">
+          <span style="position:absolute; left:20px; color:#d0d0d0;">›</span>
+          <b style="font-weight:600;">§ 2º</b> Se o homicídio é cometido:
+        </div>
+
+        <div style="padding-left:58px; margin-bottom:6px; position:relative;">
+          <span style="position:absolute; left:44px; color:#d8d8d8;">›</span>
+          I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;
+        </div>
+        <div style="padding-left:58px; margin-bottom:6px; position:relative;">
+          <span style="position:absolute; left:44px; color:#d8d8d8;">›</span>
+          II — por motivo futil;
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:12px 20px; background:#f8f8f8; border-top:1px solid #eee; font-size:12px; color:#888; line-height:1.6;">
+    <b style="color:#333;">Vantagens:</b> Barra sempre visível (sem Ctrl+F). Chips mostram contexto atual (lei + capítulo). Sidebar colapsável dá espaço. Toggles integrados na barra.<br>
+    <b style="color:#333;">Desvantagem:</b> Ocupa espaço vertical. Sidebar colapsada perde navegação por árvore.
+  </div>
+</div>
+
+</body>
+</html>

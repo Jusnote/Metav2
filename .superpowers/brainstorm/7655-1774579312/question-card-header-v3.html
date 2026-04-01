@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Question Card Header — V3 Exact Swap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f6f8; padding: 20px; }
+
+  h2 { font-size: 12px; color: #999; text-align: center; margin-bottom: 6px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px; }
+  .subtitle { font-size: 11px; color: #777; text-align: center; margin-bottom: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  .label { font-size: 11px; color: #999; margin-bottom: 8px; font-weight: 500; }
+
+  .qc { background: white; border-radius: 8px; border: 1px solid #e8eaed; overflow: hidden; margin-bottom: 16px; }
+  .qc-accent { height: 2px; background: linear-gradient(to right, rgba(232,147,12,0.4), rgba(232,147,12,0.6), transparent); }
+  .qc-banner { padding: 8px 16px; }
+  .qc-body { padding: 12px 20px 20px; font-size: 13px; color: #333; line-height: 1.75; }
+</style>
+</head>
+<body>
+
+<h2>Antes vs Depois</h2>
+<p class="subtitle">Mesmo icone (GraduationCap), mesmo estilo da caixa. So troca o conteudo de posicao.</p>
+
+<div class="container">
+
+  <!-- ========== ATUAL ========== -->
+  <div class="label">ATUAL</div>
+  <div class="qc">
+    <div class="qc-accent"></div>
+    <div class="qc-banner">
+      <!-- Row 1: subject · subtopic (texto plano) + Q counter + ID + bookmark -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:6px;min-width:0;">
+          <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:#27272a;white-space:nowrap;">DIREITO CONSTITUCIONAL MUNICIPAL</span>
+          <span style="color:#d4d4d8;font-size:11px;">·</span>
+          <span style="font-size:11px;color:#71717a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Leis Organicas dos Demais Municipios</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:11px;color:#71717a;white-space:nowrap;">Q <b style="color:#27272a;">1</b><span style="color:#a1a1aa;">/469.270</span></span>
+          <span style="font-size:10px;font-family:monospace;color:#71717a;background:#f4f4f5;padding:1px 6px;border-radius:4px;">00281892</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 2: caixa destacada com GraduationCap + Banca | Ano | Prova + dificuldade + tools -->
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 10px;background:#fafafa;border-radius:6px;border-left:2px solid rgba(232,147,12,0.4);min-width:0;flex:1;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#f4f4f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="#71717a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg>
+          </div>
+          <div style="flex-shrink:0;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Banca</p>
+            <p style="font-size:12px;font-weight:600;color:#27272a;line-height:1;">Fenix Instituto</p>
+          </div>
+          <div style="width:1px;align-self:stretch;margin:4px 0;background:#e4e4e7;"></div>
+          <div style="flex-shrink:0;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Ano</p>
+            <p style="font-size:12px;font-weight:600;color:#27272a;line-height:1;">2026</p>
+          </div>
+          <div style="width:1px;align-self:stretch;margin:4px 0;background:#e4e4e7;"></div>
+          <div style="min-width:0;flex:1;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Prova</p>
+            <p style="font-size:12px;font-weight:500;color:#27272a;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Prefeitura Municipal de Novo Horizonte (SC)</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></span><span style="font-size:10px;font-weight:600;color:#22c55e;">Facil</span></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 9 20"/><path d="M4 12h16"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="qc-body">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal em materia de organizacao territorial.</div>
+  </div>
+
+  <!-- ========== NOVO ========== -->
+  <div class="label" style="margin-top:32px;">NOVO — Caixa destacada em cima com Materia | Assunto. Todo o resto embaixo.</div>
+  <div class="qc">
+    <div class="qc-accent"></div>
+    <div class="qc-banner">
+
+      <!-- Row 1: caixa destacada com GraduationCap + Materia | Assunto (SO ISSO) -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 10px;background:#fafafa;border-radius:6px;border-left:2px solid rgba(232,147,12,0.4);min-width:0;flex:1;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#f4f4f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="#71717a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg>
+          </div>
+          <div style="flex-shrink:0;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Materia</p>
+            <p style="font-size:12px;font-weight:600;color:#27272a;line-height:1;">Dir. Constitucional Municipal</p>
+          </div>
+          <div style="width:1px;align-self:stretch;margin:4px 0;background:#e4e4e7;"></div>
+          <div style="min-width:0;flex:1;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Assunto</p>
+            <p style="font-size:12px;font-weight:500;color:#27272a;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Leis Organicas dos Demais Municipios</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Banca · Ano · Prova + Q counter + ID + bookmark + dificuldade + tools -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="display:flex;align-items:center;gap:6px;min-width:0;">
+          <span style="font-size:11px;font-weight:600;color:#52525b;white-space:nowrap;">Fenix Instituto</span>
+          <span style="color:#d4d4d8;font-size:11px;">·</span>
+          <span style="font-size:11px;color:#71717a;">2026</span>
+          <span style="color:#d4d4d8;font-size:11px;">·</span>
+          <span style="font-size:11px;color:#71717a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Pref. Mun. de Novo Horizonte (SC)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:11px;color:#71717a;white-space:nowrap;">Q <b style="color:#27272a;">1</b><span style="color:#a1a1aa;">/469.270</span></span>
+          <span style="font-size:10px;font-family:monospace;color:#71717a;background:#f4f4f5;padding:1px 6px;border-radius:4px;">00281892</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <div style="display:flex;align-items:center;gap:3px;margin-left:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></span><span style="font-size:10px;font-weight:600;color:#22c55e;">Facil</span></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 9 20"/><path d="M4 12h16"/></svg>
+        </div>
+      </div>
+
+    </div>
+    <div class="qc-body">Conforme a Lei Organica do Municipio de Novo Horizonte, assinale a alternativa correta sobre as competencias do poder legislativo municipal em materia de organizacao territorial.</div>
+  </div>
+
+  <!-- ========== NOVO — segundo card ========== -->
+  <div class="qc">
+    <div class="qc-accent"></div>
+    <div class="qc-banner">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 10px;background:#fafafa;border-radius:6px;border-left:2px solid rgba(232,147,12,0.4);min-width:0;flex:1;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#f4f4f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="#71717a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg>
+          </div>
+          <div style="flex-shrink:0;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Materia</p>
+            <p style="font-size:12px;font-weight:600;color:#27272a;line-height:1;">Dir. Administrativo</p>
+          </div>
+          <div style="width:1px;align-self:stretch;margin:4px 0;background:#e4e4e7;"></div>
+          <div style="min-width:0;flex:1;">
+            <p style="font-size:8px;font-weight:600;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px;">Assunto</p>
+            <p style="font-size:12px;font-weight:500;color:#27272a;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Atos Administrativos</p>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="display:flex;align-items:center;gap:6px;min-width:0;">
+          <span style="font-size:11px;font-weight:600;color:#52525b;white-space:nowrap;">CESPE</span>
+          <span style="color:#d4d4d8;font-size:11px;">·</span>
+          <span style="font-size:11px;color:#71717a;">2024</span>
+          <span style="color:#d4d4d8;font-size:11px;">·</span>
+          <span style="font-size:11px;color:#71717a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">TJ-DFT — Analista Judiciario</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:11px;color:#71717a;white-space:nowrap;">Q <b style="color:#27272a;">2</b><span style="color:#a1a1aa;">/469.270</span></span>
+          <span style="font-size:10px;font-family:monospace;color:#71717a;background:#f4f4f5;padding:1px 6px;border-radius:4px;">00392741</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <div style="display:flex;align-items:center;gap:3px;margin-left:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></span><span style="font-size:10px;font-weight:600;color:#ef4444;">Dificil</span></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="#a1a1aa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 9 20"/><path d="M4 12h16"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="qc-body">Acerca dos atos administrativos, julgue o item subsecutivo. A revogacao de um ato administrativo produz efeitos ex nunc, ou seja, nao retroage para atingir efeitos ja produzidos pelo ato revogado.</div>
+  </div>
+
+</div>
+</body>
+</html>

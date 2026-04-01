@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Botao Buscar — 3 Opcoes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0e0e0e; color: #ccc; }
+
+  h1 { font-size: 15px; color: #E8930C; text-align: center; padding: 24px 0 4px; font-weight: 600; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 24px; font-weight: 300; }
+
+  .frame { max-width: 780px; margin: 0 auto 24px; background: #f5f6f8; border-radius: 16px; overflow: hidden; border: 1px solid #222; }
+  .frame-header { padding: 8px 14px; background: #1a1a1a; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 8px; }
+  .frame-label { font-size: 12px; color: #ddd; font-weight: 500; }
+  .frame-desc { font-size: 10px; color: #666; margin-left: auto; }
+  .frame-body { padding: 20px; }
+  .page { max-width: 720px; margin: 0 auto; }
+
+  /* Search bar */
+  .sb { display: flex; align-items: center; height: 44px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 14px 14px 0 0; padding: 0 16px; gap: 10px; }
+  .sb-icon { color: #c0c4cc; font-size: 15px; }
+  .sb-text { font-size: 14px; color: #333; flex: 1; }
+  .sb-ia { font-size: 9px; padding: 3px 8px; border-radius: 6px; border: 1px solid #7C3AED; color: #7C3AED; background: #F4F0FF; }
+  .sb-badge { font-size: 8px; color: #E8930C; background: #FEF3C7; border-radius: 8px; padding: 2px 7px; font-weight: 600; }
+
+  /* Filter bar */
+  .fb { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(180deg,#f6f7f9,#eef0f3); border: 1px solid #e2e5ea; border-top: 1px solid #eaecf0; border-radius: 0 0 14px 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+  .pill { font-size: 11px; padding: 5px 11px; border-radius: 8px; white-space: nowrap; display: flex; align-items: center; gap: 5px; font-weight: 450; }
+  .pill-active { background: linear-gradient(135deg, #F4F0FF, #E9E3FF); color: #5B21B6; border: 1px solid #C4B5FD; }
+  .pill-amber { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #92400E; border: 1px solid #F59E0B; }
+  .pill-blue { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: #1E40AF; border: 1px solid #60A5FA; }
+  .pill-off { background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.08); color: #5f6368; }
+
+  /* Chips bar base */
+  .chips-bar {
+    display: flex; align-items: center;
+    background: white; border: 1px solid #d0d3d9;
+    border-radius: 50px; height: 30px;
+    overflow: hidden; margin: 6px 0;
+  }
+  .chips-inner {
+    display: flex; align-items: center; flex: 1; min-width: 0;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .chips-inner::-webkit-scrollbar { display: none; }
+  .chip-item {
+    font-size: 11px; color: #555; font-weight: 450;
+    padding: 0 12px; height: 30px;
+    display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .chip-x { font-size: 9px; color: #ccc; cursor: pointer; }
+  .chip-sep { color: #e0e3e8; font-size: 14px; font-weight: 200; flex-shrink: 0; line-height: 1; user-select: none; }
+  .chip-clear {
+    font-size: 10px; color: #bbb; cursor: pointer;
+    padding: 0 12px; white-space: nowrap; flex-shrink: 0;
+    height: 30px; display: flex; align-items: center;
+    border-left: 1px solid #eaecf0;
+  }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; background: #eef0f3; border-radius: 10px; padding: 3px; width: fit-content; margin-top: 8px; }
+  .tab { font-size: 11px; padding: 5px 14px; border-radius: 8px; color: #888; font-weight: 450; }
+  .tab-on { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+  .container { padding: 0 20px 40px; }
+</style>
+</head>
+<body>
+
+<h1>Botao Buscar — Onde colocar?</h1>
+<h2>3 abordagens, todas minimalistas</h2>
+
+<div class="container">
+
+  <!-- OPTION A: Inside chips bar, rightmost -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-label">A) Dentro da barra de chips, na ponta direita</span>
+      <span class="frame-desc">Mesma barra, botao amber integrado</span>
+    </div>
+    <div class="frame-body"><div class="page">
+      <div class="sb">
+        <span class="sb-icon">&#128269;</span>
+        <span class="sb-text">individuo que mata outro</span>
+        <span class="sb-ia">&#10024; IA</span>
+        <span class="sb-badge">3 filtros</span>
+      </div>
+      <div class="fb">
+        <div class="pill pill-active">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+        <div class="pill pill-amber">Dir. Admin.</div>
+        <div class="pill pill-blue">2024</div>
+        <div class="pill pill-off">Orgao &#9662;</div>
+      </div>
+
+      <!-- Chips bar with button inside -->
+      <div class="chips-bar">
+        <div class="chips-inner">
+          <div class="chip-item">CESPE <span class="chip-x">&#10005;</span></div>
+          <span class="chip-sep">│</span>
+          <div class="chip-item">FCC <span class="chip-x">&#10005;</span></div>
+          <span class="chip-sep">│</span>
+          <div class="chip-item">Dir. Administrativo <span class="chip-x">&#10005;</span></div>
+          <span class="chip-sep">│</span>
+          <div class="chip-item">2024 <span class="chip-x">&#10005;</span></div>
+        </div>
+        <div class="chip-clear">limpar</div>
+        <!-- Buscar button -->
+        <div style="
+          height: 30px; padding: 0 14px;
+          display: flex; align-items: center; gap: 4px;
+          background: #E8930C; color: white;
+          font-size: 11px; font-weight: 600;
+          cursor: pointer; flex-shrink: 0;
+          border-radius: 0 50px 50px 0;
+          white-space: nowrap;
+        ">
+          Buscar
+          <svg width="12" height="12" viewBox="0 0 24 24" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+    </div></div>
+  </div>
+
+  <!-- OPTION B: Floating right of chips bar -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-label">B) Botao separado ao lado da barra de chips</span>
+      <span class="frame-desc">Pill independente, amber outline</span>
+    </div>
+    <div class="frame-body"><div class="page">
+      <div class="sb">
+        <span class="sb-icon">&#128269;</span>
+        <span class="sb-text">individuo que mata outro</span>
+        <span class="sb-ia">&#10024; IA</span>
+        <span class="sb-badge">3 filtros</span>
+      </div>
+      <div class="fb">
+        <div class="pill pill-active">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+        <div class="pill pill-amber">Dir. Admin.</div>
+        <div class="pill pill-blue">2024</div>
+        <div class="pill pill-off">Orgao &#9662;</div>
+      </div>
+
+      <!-- Chips + button side by side -->
+      <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0;">
+        <div class="chips-bar" style="flex: 1; margin: 0;">
+          <div class="chips-inner">
+            <div class="chip-item">CESPE <span class="chip-x">&#10005;</span></div>
+            <span class="chip-sep">│</span>
+            <div class="chip-item">FCC <span class="chip-x">&#10005;</span></div>
+            <span class="chip-sep">│</span>
+            <div class="chip-item">Dir. Administrativo <span class="chip-x">&#10005;</span></div>
+            <span class="chip-sep">│</span>
+            <div class="chip-item">2024 <span class="chip-x">&#10005;</span></div>
+          </div>
+          <div class="chip-clear">limpar</div>
+        </div>
+        <!-- Separate button -->
+        <button style="
+          height: 30px; padding: 0 16px;
+          display: flex; align-items: center; gap: 5px;
+          background: white; color: #E8930C;
+          font-size: 11px; font-weight: 600;
+          cursor: pointer; flex-shrink: 0;
+          border-radius: 50px;
+          border: 1.5px solid #E8930C;
+          white-space: nowrap;
+          transition: all 0.15s;
+        ">
+          <svg width="13" height="13" viewBox="0 0 24 24" stroke="#E8930C" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Buscar
+        </button>
+      </div>
+
+      <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+    </div></div>
+  </div>
+
+  <!-- OPTION C: Inside search bar, right end -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-label">C) Dentro da barra de busca, ponta direita</span>
+      <span class="frame-desc">Botao compacto dentro do input</span>
+    </div>
+    <div class="frame-body"><div class="page">
+      <!-- Search bar with button inside -->
+      <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #e2e5ea;border-bottom:none;border-radius:14px 14px 0 0;padding:0 6px 0 16px;gap:10px;">
+        <span class="sb-icon">&#128269;</span>
+        <span style="font-size:14px;color:#333;flex:1;">individuo que mata outro</span>
+        <span class="sb-ia">&#10024; IA</span>
+        <span class="sb-badge">3 filtros</span>
+        <!-- Button inside search bar -->
+        <button style="
+          height: 32px; padding: 0 14px;
+          display: flex; align-items: center; gap: 4px;
+          background: #E8930C; color: white;
+          font-size: 11px; font-weight: 600;
+          cursor: pointer; flex-shrink: 0;
+          border-radius: 10px;
+          border: none;
+          white-space: nowrap;
+        ">
+          Buscar
+          <svg width="12" height="12" viewBox="0 0 24 24" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="fb">
+        <div class="pill pill-active">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+        <div class="pill pill-amber">Dir. Admin.</div>
+        <div class="pill pill-blue">2024</div>
+        <div class="pill pill-off">Orgao &#9662;</div>
+      </div>
+
+      <div class="chips-bar">
+        <div class="chips-inner">
+          <div class="chip-item">CESPE <span class="chip-x">&#10005;</span></div>
+          <span class="chip-sep">│</span>
+          <div class="chip-item">FCC <span class="chip-x">&#10005;</span></div>
+          <span class="chip-sep">│</span>
+          <div class="chip-item">Dir. Administrativo <span class="chip-x">&#10005;</span></div>
+          <span class="chip-sep">│</span>
+          <div class="chip-item">2024 <span class="chip-x">&#10005;</span></div>
+        </div>
+        <div class="chip-clear">limpar</div>
+      </div>
+
+      <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

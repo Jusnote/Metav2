@@ -1,0 +1,457 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .demo-bg {
+    background: linear-gradient(170deg, #fbfcfb 0%, #f5f8f6 40%, #f0f4f1 100%);
+    padding: 24px 20px; border-radius: 12px;
+    position: relative; overflow: hidden;
+  }
+  .demo-bg::before {
+    content: ''; position: absolute; top: -40px; left: -20px;
+    width: 400px; height: 250px;
+    background: radial-gradient(ellipse at 20% 30%, rgba(22,163,74,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.025) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .demo-bg > * { position: relative; z-index: 1; }
+
+  /* Glass shared */
+  .glass-bar {
+    font-family: 'Outfit', sans-serif;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .glass-bar.focused {
+    border-color: rgba(22,163,74,0.2);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 0 3px rgba(22,163,74,0.06);
+  }
+  .glass-dropdown {
+    font-family: 'Outfit', sans-serif;
+    margin-top: 6px;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+  }
+  .dd-label {
+    font-size: 9px; font-weight: 500; color: #8a9a8f;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 10px 16px 6px;
+  }
+  .dd-label span { font-weight: 400; letter-spacing: 0; text-transform: none; }
+  .dd-footer {
+    display: flex; gap: 14px; padding: 6px 16px;
+    border-top: 1px solid rgba(22,163,74,0.06);
+    font-size: 10px; color: #b0c0b5; font-weight: 300;
+    background: rgba(255,255,255,0.4);
+  }
+  .dd-footer kbd {
+    font-family: ui-monospace, monospace; font-size: 9px;
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.06);
+    padding: 0 4px; border-radius: 3px; margin-right: 2px;
+  }
+  .divider { height: 1px; background: rgba(22,163,74,0.06); margin: 4px 16px; }
+
+  /* Connected tree (desktop) */
+  .ct { padding: 6px 12px 8px 20px; }
+  .cn { position: relative; padding-left: 22px; }
+  .cn::before {
+    content: ''; position: absolute;
+    left: 6px; top: 18px; bottom: 0;
+    width: 1.5px; background: rgba(22,163,74,0.1);
+  }
+  .cn:last-child::before { display: none; }
+  .cn-row {
+    display: flex; align-items: center; gap: 7px;
+    padding: 4px 8px; cursor: pointer;
+    transition: all 120ms; border-radius: 6px;
+    font-size: 12px; color: #4a5a50;
+    position: relative;
+  }
+  .cn-row:hover { background: rgba(22,163,74,0.04); }
+  .cn-row::before {
+    content: ''; position: absolute; left: -16px; top: 50%;
+    width: 11px; height: 1.5px; background: rgba(22,163,74,0.1);
+  }
+  .cc {
+    width: 7px; height: 7px; border-radius: 50%;
+    border: 1.5px solid #b0c0b5; background: #fff; flex-shrink: 0;
+  }
+  .cn-row:hover .cc { border-color: #16a34a; }
+  .cn-row.active .cc {
+    border-color: #16a34a; background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+  }
+  .cn-row.path .cc { border-color: #16a34a; background: rgba(22,163,74,0.1); }
+  .cn-type { font-size: 8.5px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #8a9a8f; flex-shrink: 0; }
+  .cn-name { color: #3a4a40; }
+  .cn-row.active .cn-name { color: #16a34a; font-weight: 500; }
+  .cn-art {
+    position: relative; padding-left: 22px;
+    display: flex; align-items: center; gap: 5px;
+    padding-top: 2px; padding-bottom: 2px;
+    cursor: pointer; font-size: 11px; color: #7a8a80;
+    transition: all 120ms;
+  }
+  .cn-art::before {
+    content: ''; position: absolute; left: -8px; top: 50%;
+    width: 7px; height: 1.5px; background: rgba(22,163,74,0.08);
+  }
+  .cn-art:hover { color: #3a5540; }
+  .cn-art.cur { color: #16a34a; font-weight: 500; }
+  .cn-art-d { width: 4px; height: 4px; border-radius: 50%; background: #d5e4d9; flex-shrink: 0; }
+  .cn-art.cur .cn-art-d { background: #4ade80; }
+
+  /* Search hits */
+  .sh {
+    padding: 8px 16px; cursor: pointer;
+    transition: background 120ms; border-left: 2px solid transparent;
+  }
+  .sh:hover { background: rgba(22,163,74,0.04); border-left-color: #16a34a; }
+  .sh.sel { background: rgba(22,163,74,0.06); border-left-color: #16a34a; }
+  .sh-text {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 12.5px; color: #4a5a50; line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .sh-text mark { background: rgba(74,222,128,0.25); color: inherit; border-radius: 2px; padding: 0 1px; }
+  .sh-meta { font-family: 'Outfit'; font-size: 9.5px; color: #a0b0a5; margin-top: 2px; font-weight: 300; }
+
+  /* Mobile phone */
+  .phone {
+    width: 375px; margin: 0 auto;
+    border: 1px solid #ddd; border-radius: 24px;
+    overflow: hidden; background: #fff;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  }
+  .phone-notch { height: 28px; background: #000; border-radius: 0 0 20px 20px; width: 140px; margin: 0 auto; }
+  .phone-screen {
+    background: linear-gradient(170deg, #fbfcfb 0%, #f5f8f6 40%, #f0f4f1 100%);
+    min-height: 480px; padding: 12px;
+    position: relative; overflow: hidden;
+  }
+  .phone-screen::before {
+    content: ''; position: absolute; top: -20px; left: -10px;
+    width: 300px; height: 200px;
+    background: radial-gradient(ellipse at 20% 30%, rgba(22,163,74,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .phone-screen > * { position: relative; z-index: 1; }
+
+  /* Mobile bar */
+  .m-bar {
+    font-family: 'Outfit', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .m-bar.focused { border-color: rgba(22,163,74,0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 0 3px rgba(22,163,74,0.06); }
+  .m-dd {
+    font-family: 'Outfit', sans-serif; margin-top: 6px;
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(16px);
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+  }
+
+  /* Drill-down */
+  .dd-path {
+    display: flex; align-items: center; gap: 4px;
+    padding: 8px 12px; margin: 6px 10px;
+    background: rgba(22,163,74,0.04); border-radius: 8px;
+    font-size: 10px; color: #8a9a8f; overflow-x: auto; white-space: nowrap;
+  }
+  .dd-path-seg.cur { color: #16a34a; font-weight: 500; }
+  .dd-path-chev { font-size: 8px; color: #c5d4c9; }
+  .dd-back {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 12px; font-size: 10px; color: #16a34a;
+    cursor: pointer; font-weight: 500;
+  }
+  .dd-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; cursor: pointer; border-radius: 8px;
+    transition: background 120ms; margin: 0 6px;
+    border: 1px solid transparent;
+  }
+  .dd-item:hover { background: rgba(22,163,74,0.03); border-color: rgba(22,163,74,0.06); }
+  .dd-item.active { background: rgba(22,163,74,0.06); border-color: rgba(22,163,74,0.1); }
+  .dd-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: rgba(22,163,74,0.06);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600; color: #16a34a; flex-shrink: 0;
+  }
+  .dd-item.active .dd-icon { background: rgba(22,163,74,0.12); }
+  .dd-info { flex: 1; min-width: 0; }
+  .dd-info-name { font-size: 12px; font-weight: 500; color: #3a4a40; }
+  .dd-item.active .dd-info-name { color: #16a34a; }
+  .dd-info-count { font-size: 9px; color: #a0b0a5; margin-top: 1px; }
+  .dd-chev { font-size: 12px; color: #c5d4c9; flex-shrink: 0; }
+  .dd-art {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; cursor: pointer; border-radius: 6px;
+    transition: all 120ms; font-size: 11.5px; color: #5a6a60; margin: 0 6px;
+  }
+  .dd-art:hover { background: rgba(22,163,74,0.03); }
+  .dd-art.cur { color: #16a34a; font-weight: 500; background: rgba(22,163,74,0.06); }
+  .dd-art-d { width: 5px; height: 5px; border-radius: 50%; background: #d0dcd4; flex-shrink: 0; }
+  .dd-art.cur .dd-art-d { background: #4ade80; }
+
+  .m-footer {
+    padding: 8px 14px; border-top: 1px solid rgba(22,163,74,0.06);
+    font-size: 10px; color: #b0c0b5; text-align: center; font-weight: 300;
+    background: rgba(255,255,255,0.4);
+  }
+
+  .state-label {
+    font-family: 'Outfit'; font-size: 10px; font-weight: 600;
+    color: #16a34a; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+</style>
+
+<h2>Design Final — SearchBreadcrumb</h2>
+<p class="subtitle">Glass bar · Connected tree (desktop) · Drill-down (mobile) · Ellipsis breadcrumb</p>
+
+<!-- ============ DESKTOP ============ -->
+<div class="section">
+  <h3>Desktop</h3>
+
+  <!-- State 1: Closed -->
+  <div class="state-label">Fechada</div>
+  <div class="mockup">
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <div class="glass-bar" style="cursor: pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-size: 11.5px; color: #8a9a8f;">Parte Especial</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #c5d4c9;"></span>
+          <span style="font-size: 11.5px; color: #8a9a8f;">Título I</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #c5d4c9;"></span>
+          <span style="font-size: 11.5px; color: #3a5540; font-weight: 500;">Cap. I — Dos crimes contra a vida</span>
+          <span style="margin-left: auto; display: flex; align-items: center; gap: 8px; padding-left: 12px;">
+            <span style="font-size: 10px; color: #9aaa9f; font-variant-numeric: tabular-nums;">121 / 615</span>
+            <span style="font-size: 9px; color: #9aaa9f; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.06); padding: 1px 6px; border-radius: 4px; font-family: ui-monospace, monospace;">⌘F</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State 2: Open - hierarchy -->
+  <div class="state-label" style="margin-top: 16px;">Aberta — Hierarquia (connected tree)</div>
+  <div class="mockup">
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <div class="glass-bar focused">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-family: Outfit; font-size: 12.5px; color: #a0b0a5; font-weight: 300;">Buscar artigo, tema, palavra...</span>
+          <span style="margin-left: auto; font-size: 9px; color: #b0c0b5; font-weight: 300;">esc</span>
+        </div>
+        <div class="glass-dropdown">
+          <div class="dd-label">Navegação</div>
+          <div class="ct">
+            <div class="cn">
+              <div class="cn-row"><span class="cc"></span><span class="cn-type">Parte</span><span class="cn-name">Parte Geral</span></div>
+            </div>
+            <div class="cn">
+              <div class="cn-row path"><span class="cc"></span><span class="cn-type">Parte</span><span class="cn-name">Parte Especial</span></div>
+              <div class="cn">
+                <div class="cn-row path"><span class="cc"></span><span class="cn-type">Título I</span><span class="cn-name">Dos crimes contra a pessoa</span></div>
+                <div class="cn">
+                  <div class="cn-row active"><span class="cc"></span><span class="cn-type">Cap I</span><span class="cn-name">Dos crimes contra a vida</span></div>
+                  <div style="padding-left: 4px;">
+                    <div class="cn-art cur"><span class="cn-art-d"></span> Art. 121 — Homicídio simples</div>
+                    <div class="cn-art"><span class="cn-art-d"></span> Art. 122 — Induzimento ao suicídio</div>
+                    <div class="cn-art"><span class="cn-art-d"></span> Art. 123 — Infanticídio</div>
+                    <div class="cn-art"><span class="cn-art-d"></span> Art. 124 — Aborto provocado</div>
+                  </div>
+                </div>
+                <div class="cn">
+                  <div class="cn-row"><span class="cc"></span><span class="cn-type">Cap II</span><span class="cn-name">Das lesões corporais</span></div>
+                </div>
+              </div>
+              <div class="cn">
+                <div class="cn-row"><span class="cc"></span><span class="cn-type">Título II</span><span class="cn-name">Dos crimes contra o patrimônio</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+            <span><kbd>→</kbd> expandir</span>
+            <span><kbd>←</kbd> colapsar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State 3: Open - search -->
+  <div class="state-label" style="margin-top: 16px;">Aberta — Com busca (tree filtrada + resultados)</div>
+  <div class="mockup">
+    <div class="mockup-body">
+      <div class="demo-bg">
+        <div class="glass-bar focused">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-family: Outfit; font-size: 12.5px; color: #2a3a30;">homicídio</span>
+          <span style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 9.5px; color: #9aaa9f; font-weight: 300;">14 resultados</span>
+            <span style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; color: #b0c0b5; font-size: 14px; cursor: pointer;">×</span>
+          </span>
+        </div>
+        <div class="glass-dropdown">
+          <div class="dd-label">Navegação <span>— 3 itens</span></div>
+          <div class="ct">
+            <div class="cn">
+              <div class="cn-row path"><span class="cc"></span><span class="cn-type">Parte</span><span class="cn-name">Parte Especial</span></div>
+              <div class="cn">
+                <div class="cn-row path"><span class="cc"></span><span class="cn-type">Título I</span><span class="cn-name">Dos crimes contra a pessoa</span></div>
+                <div class="cn">
+                  <div class="cn-row"><span class="cc"></span><span class="cn-type">Cap I</span><span class="cn-name">Dos crimes contra a vida</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="dd-label">No texto <span>— 14 resultados</span></div>
+          <div class="sh sel">
+            <div class="sh-text"><b style="font-weight:600; color:#1a2a1f;">Art. 121.</b> Matar alguem: Pena — reclusão... § 2º Se o <mark>homicídio</mark> é cometido:</div>
+            <div class="sh-meta">Código Penal · Art. 121</div>
+          </div>
+          <div class="sh">
+            <div class="sh-text">§ 1º Se o agente comete o crime impelido por motivo de relevante valor social... <mark>Homicídio</mark> privilegiado</div>
+            <div class="sh-meta">Código Penal · Art. 121, § 1º</div>
+          </div>
+          <div class="sh">
+            <div class="sh-text">§ 2º-A Considera-se que há razões de condição de sexo feminino — <mark>homicídio</mark> qualificado</div>
+            <div class="sh-meta">Código Penal · Art. 121, § 2º-A</div>
+          </div>
+          <div class="dd-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+            <span><kbd>⏎</kbd> ir</span>
+            <span><kbd>esc</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOBILE ============ -->
+<div class="section" style="margin-top: 32px;">
+  <h3>Mobile (375px)</h3>
+
+  <div style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
+
+    <!-- Mobile: Closed -->
+    <div>
+      <div class="state-label">Fechada</div>
+      <div class="phone" style="height: auto;">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="min-height: auto; padding-bottom: 24px;">
+          <div class="m-bar" style="cursor: pointer;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+            <span style="font-size: 10.5px; color: #b0c0b5;">...</span>
+            <span style="width: 2.5px; height: 2.5px; border-radius: 50%; background: #c5d4c9;"></span>
+            <span style="font-size: 10.5px; color: #8a9a8f;">Seção I</span>
+            <span style="width: 2.5px; height: 2.5px; border-radius: 50%; background: #c5d4c9;"></span>
+            <span style="font-size: 10.5px; color: #3a5540; font-weight: 500;">Subseção I</span>
+            <span style="margin-left: auto; font-size: 9.5px; color: #9aaa9f; font-variant-numeric: tabular-nums;">233/615</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile: Open (drill-down) -->
+    <div>
+      <div class="state-label">Aberta (drill-down)</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="m-bar focused">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+            <span style="font-family: Outfit; font-size: 12px; color: #a0b0a5; font-weight: 300; flex: 1;">Buscar...</span>
+            <span style="font-size: 9px; color: #b0c0b5;">esc</span>
+          </div>
+          <div class="m-dd">
+            <div class="dd-path">
+              <span class="dd-path-seg">Parte Esp.</span>
+              <span class="dd-path-chev">›</span>
+              <span class="dd-path-seg">Livro I</span>
+              <span class="dd-path-chev">›</span>
+              <span class="dd-path-seg">Tít. I</span>
+              <span class="dd-path-chev">›</span>
+              <span class="dd-path-seg cur">Cap. I</span>
+            </div>
+            <div class="dd-back">← Cap. I — Das obrigações de dar</div>
+            <div class="dd-item active">
+              <div class="dd-icon">Seç</div>
+              <div class="dd-info">
+                <div class="dd-info-name">Seção I — Dar coisa certa</div>
+                <div class="dd-info-count">1 subseção · 8 artigos</div>
+              </div>
+              <span class="dd-chev">›</span>
+            </div>
+            <div class="dd-item">
+              <div class="dd-icon">Seç</div>
+              <div class="dd-info">
+                <div class="dd-info-name">Seção II — Dar coisa incerta</div>
+                <div class="dd-info-count">6 artigos</div>
+              </div>
+              <span class="dd-chev">›</span>
+            </div>
+            <div class="dd-item">
+              <div class="dd-icon">Seç</div>
+              <div class="dd-info">
+                <div class="dd-info-name">Seção III — Obrigações de fazer</div>
+                <div class="dd-info-count">4 artigos</div>
+              </div>
+              <span class="dd-chev">›</span>
+            </div>
+            <div style="height: 1px; background: rgba(22,163,74,0.06); margin: 6px 12px;"></div>
+            <div style="font-size: 9px; color: #8a9a8f; text-transform: uppercase; letter-spacing: 1px; padding: 0 12px 4px; font-weight: 500;">Artigos</div>
+            <div class="dd-art cur"><span class="dd-art-d"></span> Art. 233 — A obrigação de dar coisa certa...</div>
+            <div class="dd-art"><span class="dd-art-d"></span> Art. 234 — Se a coisa se perder...</div>
+            <div class="dd-art"><span class="dd-art-d"></span> Art. 235 — Deteriorada a coisa...</div>
+            <div class="m-footer">toque para navegar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Approval -->
+<div class="section" style="margin-top: 24px;">
+  <div class="options">
+    <div class="option" data-choice="approved" onclick="toggleSelect(this)">
+      <div class="letter" style="background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff;">✓</div>
+      <div class="content">
+        <h3>Aprovado — seguir pra spec</h3>
+        <p>Design está bom, pode escrever a spec e seguir pra implementação</p>
+      </div>
+    </div>
+    <div class="option" data-choice="changes" onclick="toggleSelect(this)">
+      <div class="letter">~</div>
+      <div class="content">
+        <h3>Quase — precisa de ajustes</h3>
+        <p>Me diz no terminal o que mudar</p>
+      </div>
+    </div>
+  </div>
+</div>

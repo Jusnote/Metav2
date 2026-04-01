@@ -1,0 +1,300 @@
+"use client"
+
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
+import { useActiveArtigoIndex } from '@/stores/activeArtigoStore'
+import { useBusca } from '@/hooks/useLeiApi'
+import { resolveBreadcrumb } from '@/lib/lei-hierarchy'
+import { SearchBreadcrumbDropdown } from './SearchBreadcrumbDropdown'
+import type { Dispositivo, HierarquiaNode, Lei } from '@/types/lei-api'
+
+interface SearchBreadcrumbProps {
+  currentLei: Lei
+  dispositivos: Dispositivo[]
+  totalDispositivos: number
+  onScrollToDispositivo: (posicao: number) => void
+  onSelectArtigoIndex: (index: number) => void
+  onOpenChange?: (open: boolean) => void
+}
+
+function abbreviateLabel(label: string): string {
+  return label
+    .replace(/^Título\s/i, 'Tít. ')
+    .replace(/^Capítulo\s/i, 'Cap. ')
+    .replace(/^Seção\s/i, 'Seç. ')
+}
+
+export function SearchBreadcrumb({
+  currentLei,
+  dispositivos,
+  totalDispositivos,
+  onScrollToDispositivo,
+  onSelectArtigoIndex,
+  onOpenChange,
+}: SearchBreadcrumbProps) {
+  const [open, setOpen] = useState(false)
+  const [input, setInput] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+
+  const confirmSelectionRef = useRef<(() => void) | null>(null)
+  const expandSelectionRef = useRef<(() => void) | null>(null)
+  const collapseSelectionRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => { setSelectedIndex(-1) }, [input])
+  useEffect(() => { onOpenChange?.(open) }, [open, onOpenChange])
+
+  const [debouncedTerm, setDebouncedTerm] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  const activeIndex = useActiveArtigoIndex()
+
+  const segments = useMemo(
+    () => resolveBreadcrumb(dispositivos, activeIndex, currentLei.hierarquia ?? []),
+    [dispositivos, activeIndex, currentLei.hierarquia]
+  )
+
+  useEffect(() => {
+    clearTimeout(timerRef.current)
+    if (input.length >= 2) {
+      timerRef.current = setTimeout(() => setDebouncedTerm(input), 500)
+    } else {
+      setDebouncedTerm('')
+    }
+    return () => clearTimeout(timerRef.current)
+  }, [input])
+
+  const { hits, total, isSearching } = useBusca(debouncedTerm, currentLei.id)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'f' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        setOpen(true)
+        setTimeout(() => inputRef.current?.focus(), 50)
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        setInput('')
+        setDebouncedTerm('')
+        return
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedIndex(prev => prev + 1)
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedIndex(prev => Math.max(-1, prev - 1))
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault()
+        confirmSelectionRef.current?.()
+      } else if (e.key === 'ArrowRight' && selectedIndex >= 0) {
+        e.preventDefault()
+        expandSelectionRef.current?.()
+      } else if (e.key === 'ArrowLeft' && selectedIndex >= 0) {
+        e.preventDefault()
+        collapseSelectionRef.current?.()
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open, selectedIndex])
+
+  const handleOpen = useCallback(() => {
+    setOpen(true)
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }, [])
+
+  const handleClear = useCallback(() => {
+    setInput('')
+    setDebouncedTerm('')
+    inputRef.current?.focus()
+  }, [])
+
+  const handleSelect = useCallback((posicao: number) => {
+    onScrollToDispositivo(posicao)
+    setOpen(false)
+    setInput('')
+    setDebouncedTerm('')
+  }, [onScrollToDispositivo])
+
+  const handleSelectArtigo = useCallback((artigoIndex: number) => {
+    onSelectArtigoIndex(artigoIndex)
+    setOpen(false)
+    setInput('')
+    setDebouncedTerm('')
+  }, [onSelectArtigoIndex])
+
+  const hasInput = input.length > 0
+  const totalArtigos = currentLei.stats?.totalArtigos ?? totalDispositivos
+
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone/.test(navigator.userAgent)
+
+  return (
+    <div ref={containerRef} className="relative font-[Outfit,sans-serif]">
+      {/* ---- CLOSED: Clean search bar + breadcrumb below ---- */}
+      {!open && (
+        <>
+          <button
+            onClick={handleOpen}
+            className="w-full flex items-center gap-[10px] h-[42px] px-4 cursor-pointer bg-white rounded-[12px] border border-[#e2e5ea] transition-all duration-150 hover:border-[#d0d3d8]"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" className="shrink-0 transition-colors duration-150 group-hover:stroke-[#16a34a]">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <span className="flex-1 text-[13.5px] text-[#a0a0a0] text-left">
+              Buscar artigo, tema, palavra...
+            </span>
+            <span className="text-[10px] font-mono text-[#888] bg-[#f5f6f8] border border-[#e8eaed] px-[6px] py-[2px] rounded hidden sm:inline">
+              {isMac ? '⌘F' : 'Ctrl+F'}
+            </span>
+          </button>
+
+          {/* Breadcrumb — informational, below the bar */}
+          {segments.length > 0 && (
+            <div className="flex items-center gap-[5px] pt-[6px] px-1">
+              {/* Desktop: all segments */}
+              <span className="hidden sm:contents">
+                {segments.map((seg, i) => (
+                  <span key={seg.path} className="flex items-center gap-[5px] shrink-0">
+                    {i > 0 && <span className="text-[9px] text-[#d4dbd7]">›</span>}
+                    <span className={`text-[11px] ${
+                      i === segments.length - 1 ? 'text-[#4a6350] font-medium' : 'text-[#a0afa5]'
+                    }`}>
+                      {seg.label}
+                    </span>
+                  </span>
+                ))}
+              </span>
+              {/* Mobile: ellipsis + last 2 */}
+              <span className="sm:hidden contents">
+                {segments.length > 2 && (
+                  <>
+                    <span className="text-[10px] text-[#b0c0b5]">...</span>
+                    <span className="text-[9px] text-[#d4dbd7]">›</span>
+                  </>
+                )}
+                {segments.slice(segments.length > 2 ? -2 : 0).map((seg, i) => (
+                  <span key={seg.path} className="flex items-center gap-[5px] shrink-0">
+                    {i > 0 && <span className="text-[9px] text-[#d4dbd7]">›</span>}
+                    <span className={`text-[10px] ${
+                      i === (segments.length > 2 ? 1 : segments.length - 1) ? 'text-[#4a6350] font-medium' : 'text-[#a0afa5]'
+                    }`}>
+                      {abbreviateLabel(seg.label)}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ---- OPEN: Glass Search Input ---- */}
+      {open && (
+        <div
+          className="flex items-center gap-[10px] h-[42px] px-4 bg-white rounded-[12px] border border-[#d0d3d8]"
+          style={{
+            boxShadow: '0 0 0 3px rgba(0,0,0,0.03)',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" className="shrink-0">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Buscar artigo, tema, palavra..."
+            className="hidden sm:block flex-1 text-[13.5px] outline-none text-[#2a2a2a] placeholder:text-[#a0a0a0] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
+          />
+          <input
+            ref={el => { if (el && !inputRef.current) (inputRef as React.MutableRefObject<HTMLInputElement>).current = el }}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Buscar..."
+            className="sm:hidden flex-1 text-[13.5px] outline-none text-[#2a2a2a] placeholder:text-[#a0a0a0] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
+          />
+          {hasInput && (
+            <>
+              {isSearching && <span className="text-[9.5px] text-[#9aaa9f] font-light shrink-0">buscando...</span>}
+              {!isSearching && debouncedTerm.length >= 2 && (
+                <span className="text-[9.5px] text-[#9aaa9f] font-light shrink-0">{total} resultado{total !== 1 ? 's' : ''}</span>
+              )}
+              <button
+                onClick={handleClear}
+                className="w-4 h-4 flex items-center justify-center text-[#b0b0b0] hover:bg-[rgba(0,0,0,0.04)] rounded-full text-[14px] shrink-0 transition-colors"
+              >
+                ×
+              </button>
+            </>
+          )}
+          {!hasInput && (
+            <span className="text-[9px] text-[#b0c0b5] font-light shrink-0">esc</span>
+          )}
+        </div>
+      )}
+
+      {/* ---- TABS: Navegar / Buscar ---- */}
+      {open && (
+        <div className="flex gap-0 mt-3 border-b border-[#e8ede9]">
+          <button
+            className="px-4 py-2 text-[12px] font-semibold text-[#3a3a3a] border-b-2 border-[#3a3a3a]"
+          >
+            Navegar
+          </button>
+          <button
+            disabled
+            className="px-4 py-2 text-[12px] font-medium text-[#c4ccc8] cursor-default flex items-center gap-[6px]"
+          >
+            Buscar
+            <span className="text-[9px] font-semibold bg-[#f0f5f2] text-[#a0afa5] px-[6px] py-[2px] rounded">
+              Em breve
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* ---- DROPDOWN ---- */}
+      {open && (
+        <SearchBreadcrumbDropdown
+          hierarquia={currentLei.hierarquia ?? []}
+          dispositivos={dispositivos}
+          input={input}
+          hits={hits}
+          total={total}
+          isSearching={isSearching}
+          debouncedTerm={debouncedTerm}
+          onSelectHit={handleSelect}
+          onSelectArtigo={handleSelectArtigo}
+          selectedIndex={selectedIndex}
+          onClampIndex={setSelectedIndex}
+          confirmSelectionRef={confirmSelectionRef}
+          expandSelectionRef={expandSelectionRef}
+          collapseSelectionRef={collapseSelectionRef}
+        />
+      )}
+    </div>
+  )
+}

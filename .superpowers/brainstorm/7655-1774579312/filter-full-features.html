@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Filtros - Full Features</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f0f2f5; }
+  .container { max-width: 780px; margin: 0 auto; padding: 16px 20px; }
+
+  /* Icons */
+  .icon-svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; opacity: 0.7; }
+
+  /* ========= STICKY BAR ========= */
+  .sticky-bar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(240,242,245,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 16px 0 0;
+    margin: -16px -20px 0;
+    padding-left: 20px; padding-right: 20px;
+  }
+
+  /* Search */
+  .search-bar {
+    display: flex; align-items: center; height: 44px;
+    background: white; border: 1px solid #e2e5ea;
+    border-bottom: none; border-radius: 14px 14px 0 0;
+    padding: 0 16px; gap: 10px;
+  }
+  .search-icon { color: #c0c4cc; font-size: 15px; }
+  .search-input {
+    flex: 1; border: none; outline: none; font-size: 13px;
+    color: #333; font-family: inherit; background: transparent;
+  }
+  .search-input::placeholder { color: #b0b4bc; }
+  .search-badge {
+    font-size: 9px; color: #E8930C; background: #FEF3C7;
+    padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+  @keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .search-shortcut {
+    font-size: 10px; color: #c0c4cc; background: #f5f6f8;
+    padding: 2px 6px; border-radius: 4px; border: 1px solid #e8eaed;
+    font-family: monospace;
+  }
+  .search-mode {
+    font-size: 9px; padding: 3px 8px; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s; font-weight: 500;
+    border: 1px solid #e0e0e0; color: #888;
+  }
+  .search-mode:hover { border-color: #7C3AED; color: #7C3AED; background: #F4F0FF; }
+  .search-mode-active { border-color: #7C3AED; color: #7C3AED; background: #F4F0FF; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, #f6f7f9 0%, #eef0f3 100%);
+    border: 1px solid #e2e5ea; border-top: 1px solid #eaecf0;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    overflow-x: auto;
+  }
+
+  /* Pills */
+  .pill {
+    font-size: 11px; padding: 5px 11px; border-radius: 8px;
+    cursor: pointer; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.2s ease; font-weight: 450; flex-shrink: 0;
+    position: relative; user-select: none;
+  }
+  .pill-off {
+    background: rgba(255,255,255,0.85); color: #5f6368;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .pill-off:hover { background: white; border-color: #E8930C; box-shadow: 0 1px 4px rgba(232,147,12,0.12); color: #B45309; }
+  .pill-off:hover .icon-svg { opacity: 1; stroke: #B45309; }
+
+  .pill-amber {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    color: #92400E; border: 1px solid #F59E0B;
+    box-shadow: 0 1px 3px rgba(245,158,11,0.2);
+  }
+  .pill-amber .icon-svg { opacity: 0.8; stroke: #92400E; }
+
+  .pill-blue {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    color: #1E40AF; border: 1px solid #60A5FA;
+    box-shadow: 0 1px 3px rgba(96,165,250,0.2);
+  }
+  .pill-blue .icon-svg { opacity: 0.8; stroke: #1E40AF; }
+
+  .pill .arrow { opacity: 0.35; font-size: 8px; }
+  .pill .close { opacity: 0.5; font-size: 10px; transition: opacity 0.15s; }
+  .pill .close:hover { opacity: 1; }
+  .pill .count-badge {
+    font-size: 8px; background: rgba(0,0,0,0.12); color: inherit;
+    padding: 0 4px; border-radius: 6px; font-weight: 600;
+    min-width: 14px; text-align: center; line-height: 14px;
+  }
+  .pill-amber .count-badge { background: rgba(146,64,14,0.15); }
+
+  /* Pulse animation on select */
+  @keyframes pill-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  .pill-pulse { animation: pill-pulse 0.3s ease; }
+
+  .clear-link { margin-left: auto; font-size: 10px; color: #c0c4cc; cursor: pointer; transition: color 0.15s; flex-shrink: 0; }
+  .clear-link:hover { color: #E8930C; }
+
+  /* ========= OVERLAY ========= */
+  .overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 15;
+    animation: overlay-in 0.2s ease;
+  }
+  @keyframes overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ========= POPOVER ========= */
+  .popover {
+    position: absolute; top: 8px; left: 0;
+    width: 400px; background: white;
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e0e3e8;
+    overflow: hidden; z-index: 30;
+    animation: pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .pop-search { padding: 10px 12px; border-bottom: 1px solid #f0f1f3; }
+  .pop-input-wrap { position: relative; }
+  .pop-input-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #c0c4cc; font-size: 13px; }
+  .pop-input {
+    width: 100%; height: 34px; border: 1px solid #e8eaed;
+    background: #f8f9fb; border-radius: 8px;
+    padding: 0 10px 0 32px; font-size: 12px; color: #333;
+    outline: none; transition: all 0.15s; font-family: inherit;
+  }
+  .pop-input:focus { border-color: #E8930C; background: white; box-shadow: 0 0 0 3px rgba(232,147,12,0.08); }
+  .pop-input::placeholder { color: #b0b4bc; }
+
+  /* Auto-focus hint */
+  .pop-hint {
+    padding: 4px 12px; font-size: 9px; color: #c0c4cc;
+    background: #fafbfc; border-bottom: 1px solid #f5f5f5;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .pop-hint kbd {
+    font-size: 8px; background: #eef0f3; padding: 1px 4px;
+    border-radius: 3px; border: 1px solid #e0e0e0; font-family: monospace;
+  }
+
+  .pop-header {
+    display: flex; padding: 6px 12px;
+    font-size: 9px; color: #a0a4ac;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    border-bottom: 1px solid #f5f6f8; font-weight: 500;
+  }
+  .pop-scroll { max-height: 240px; overflow-y: auto; }
+
+  .pop-row {
+    display: flex; align-items: center;
+    padding: 7px 12px; font-size: 12px;
+    cursor: pointer; transition: all 0.12s;
+    border-bottom: 1px solid #fafbfc;
+  }
+  .pop-row:hover { background: #f8f9fb; }
+  .pop-row-on { background: #FFFBEB; }
+  .pop-row-on:hover { background: #FEF3C7; }
+
+  .chk {
+    width: 16px; height: 16px; border-radius: 5px;
+    border: 1.5px solid #d0d3d9; display: flex;
+    align-items: center; justify-content: center;
+    margin-right: 10px; flex-shrink: 0; transition: all 0.15s;
+  }
+  .chk-on {
+    background: #E8930C; border-color: #E8930C;
+    box-shadow: 0 1px 3px rgba(232,147,12,0.3);
+    animation: chk-pop 0.2s ease;
+  }
+  @keyframes chk-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .bar-w { width: 60px; padding-left: 10px; flex-shrink: 0; }
+  .bar-bg { height: 5px; border-radius: 3px; background: #f0f1f3; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+
+  .pop-footer {
+    padding: 8px 12px; border-top: 1px solid #f0f1f3;
+    display: flex; justify-content: space-between;
+    align-items: center; background: #fafbfc;
+  }
+  .pop-footer-btn {
+    font-size: 10px; padding: 3px 10px; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s; font-weight: 500;
+  }
+  .pop-footer-link { color: #a0a4ac; }
+  .pop-footer-link:hover { color: #555; background: #eef0f3; }
+  .pop-footer-primary { color: #E8930C; }
+  .pop-footer-primary:hover { background: #FEF3C7; }
+
+  /* ========= TABS ========= */
+  .tabs-row {
+    display: flex; align-items: center; margin-top: 14px;
+  }
+  .tabs {
+    display: flex; gap: 2px; background: #eef0f3;
+    border-radius: 10px; padding: 3px; width: fit-content;
+  }
+  .tab {
+    font-size: 11px; padding: 5px 14px; border-radius: 8px;
+    color: #888; cursor: pointer; transition: all 0.15s; font-weight: 450;
+  }
+  .tab:hover { color: #555; }
+  .tab-on { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+  .meta-info {
+    margin-left: auto; display: flex; align-items: center;
+    gap: 8px; font-size: 11px; color: #a0a4ac;
+  }
+  .meta-count {
+    font-weight: 500; color: #E8930C;
+    animation: count-update 0.3s ease;
+  }
+  @keyframes count-update {
+    from { opacity: 0.5; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .view-toggle {
+    display: flex; border: 1px solid #e0e3e8;
+    border-radius: 8px; overflow: hidden;
+  }
+  .view-btn {
+    padding: 4px 8px; cursor: pointer; font-size: 12px;
+    transition: background 0.15s;
+  }
+  .view-btn:first-child { border-right: 1px solid #e0e3e8; }
+  .view-btn-on { background: #f0f2f5; }
+  .view-btn:hover { background: #f8f9fb; }
+
+  /* ========= QUESTIONS ========= */
+  .questions { margin-top: 12px; }
+  /* Dimmed when overlay active */
+  .questions-dimmed { opacity: 0.4; filter: blur(1px); transition: all 0.2s; pointer-events: none; }
+
+  .q {
+    background: white; border-radius: 12px;
+    border: 1px solid #e8eaed; padding: 14px 16px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+  }
+  .q:hover { border-color: #d0d3d9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transform: translateY(-1px); }
+  .tag { font-size: 9px; padding: 2px 8px; border-radius: 5px; font-weight: 500; letter-spacing: 0.2px; }
+  .t-b { background: #F4F0FF; color: #7C3AED; }
+  .t-a { background: #DBEAFE; color: #1D4ED8; }
+  .t-m { background: #FEF3C7; color: #D97706; }
+
+  /* ========= EMPTY STATE ========= */
+  .empty-state {
+    text-align: center; padding: 48px 20px;
+    color: #a0a4ac;
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-title { font-size: 15px; font-weight: 500; color: #666; margin-bottom: 6px; }
+  .empty-desc { font-size: 12px; color: #aaa; margin-bottom: 16px; line-height: 1.6; }
+  .empty-btn {
+    font-size: 11px; padding: 6px 16px; border-radius: 8px;
+    background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B;
+    cursor: pointer; font-weight: 500; transition: all 0.15s;
+    display: inline-block;
+  }
+  .empty-btn:hover { background: #FDE68A; }
+
+  /* ========= RECENT FILTERS ========= */
+  .recent {
+    padding: 8px 12px; border-bottom: 1px solid #f0f1f3;
+  }
+  .recent-label { font-size: 9px; color: #b0b4bc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .recent-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px; border-radius: 6px; font-size: 11px;
+    color: #666; cursor: pointer; transition: background 0.1s;
+  }
+  .recent-item:hover { background: #f8f9fb; }
+  .recent-icon { font-size: 12px; color: #ccc; }
+</style>
+</head>
+<body>
+
+<!-- OVERLAY (escurece questoes) -->
+<div class="overlay" style="z-index: 15;"></div>
+
+<div class="container">
+
+  <!-- STICKY BAR -->
+  <div class="sticky-bar" style="position: relative; z-index: 25;">
+
+    <!-- Search -->
+    <div class="search-bar">
+      <span class="search-icon">&#128269;</span>
+      <input class="search-input" type="text" placeholder="Buscar questoes ou digite / para comandos..." />
+      <span class="search-mode">&#10024; IA</span>
+      <span class="search-badge">2 filtros</span>
+      <span class="search-shortcut">&#8984;K</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="pill pill-off" style="border-color: #E8930C; background: white; color: #B45309;">
+        <svg class="icon-svg" style="opacity:1; stroke:#B45309;" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg>
+        Banca <span class="arrow">&#9662;</span>
+      </div>
+
+      <div class="pill pill-amber pill-pulse">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Dir. Admin. <span class="count-badge">1</span> <span class="close">&#10005;</span>
+      </div>
+
+      <div class="pill pill-blue">
+        <svg class="icon-svg" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        2024-25 <span class="count-badge" style="background: rgba(30,64,175,0.12);">2</span> <span class="close">&#10005;</span>
+      </div>
+
+      <div class="pill pill-off">
+        <svg class="icon-svg" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
+        Orgao <span class="arrow">&#9662;</span>
+      </div>
+
+      <div class="pill pill-off">
+        <svg class="icon-svg" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Cargo <span class="arrow">&#9662;</span>
+      </div>
+
+      <div class="pill pill-off">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Assunto <span class="arrow">&#9662;</span>
+      </div>
+
+      <span class="clear-link">Limpar</span>
+    </div>
+  </div>
+
+  <!-- POPOVER com todas as features -->
+  <div style="position: relative; z-index: 30;">
+    <div class="popover">
+
+      <!-- Search com auto-focus -->
+      <div class="pop-search">
+        <div class="pop-input-wrap">
+          <span class="pop-input-icon">&#128269;</span>
+          <input class="pop-input" type="text" placeholder="Filtrar banca..." autofocus />
+        </div>
+      </div>
+
+      <!-- Keyboard hint -->
+      <div class="pop-hint">
+        <kbd>&#8593;&#8595;</kbd> navegar &nbsp; <kbd>Enter</kbd> selecionar &nbsp; <kbd>Esc</kbd> fechar
+      </div>
+
+      <!-- Recent searches -->
+      <div class="recent">
+        <div class="recent-label">Recentes</div>
+        <div class="recent-item">
+          <span class="recent-icon">&#128338;</span> CESPE + FCC
+        </div>
+        <div class="recent-item">
+          <span class="recent-icon">&#128338;</span> VUNESP
+        </div>
+      </div>
+
+      <!-- Table header -->
+      <div class="pop-header">
+        <span style="width: 26px;"></span>
+        <span style="flex: 1;">Banca</span>
+        <span style="width: 55px; text-align: right;">Total</span>
+        <span style="width: 60px;"></span>
+      </div>
+
+      <!-- Rows -->
+      <div class="pop-scroll">
+        <div class="pop-row pop-row-on">
+          <div class="chk chk-on"><span style="color: white; font-size: 10px;">&#10003;</span></div>
+          <span style="flex: 1; color: #92400E; font-weight: 500;">CEBRASPE (CESPE)</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">23.203</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 100%; background: linear-gradient(90deg, #F59E0B, #E8930C);"></div></div></span>
+        </div>
+        <div class="pop-row">
+          <div class="chk"></div>
+          <span style="flex: 1; color: #333;">FCC</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">10.151</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 44%; background: #d0d3d9;"></div></div></span>
+        </div>
+        <div class="pop-row">
+          <div class="chk"></div>
+          <span style="flex: 1; color: #333;">QUADRIX</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">9.632</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 41%; background: #d0d3d9;"></div></div></span>
+        </div>
+        <div class="pop-row">
+          <div class="chk"></div>
+          <span style="flex: 1; color: #333;">VUNESP</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">7.503</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 32%; background: #d0d3d9;"></div></div></span>
+        </div>
+        <div class="pop-row">
+          <div class="chk"></div>
+          <span style="flex: 1; color: #333;">FGV</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">6.249</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 27%; background: #d0d3d9;"></div></div></span>
+        </div>
+        <div class="pop-row">
+          <div class="chk"></div>
+          <span style="flex: 1; color: #333;">FUNDEP</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">4.891</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 21%; background: #d0d3d9;"></div></div></span>
+        </div>
+        <div class="pop-row">
+          <div class="chk"></div>
+          <span style="flex: 1; color: #333;">FUNDATEC</span>
+          <span style="width: 55px; text-align: right; color: #a0a4ac; font-size: 10px;">3.204</span>
+          <span class="bar-w"><div class="bar-bg"><div class="bar-fill" style="width: 14%; background: #d0d3d9;"></div></div></span>
+        </div>
+      </div>
+
+      <!-- Footer com ações -->
+      <div class="pop-footer">
+        <div style="display: flex; gap: 6px;">
+          <span class="pop-footer-btn pop-footer-link">Selecionar todos</span>
+          <span class="pop-footer-btn pop-footer-link">Inverter</span>
+        </div>
+        <span class="pop-footer-btn pop-footer-primary">1 selecionada &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS + META -->
+  <div class="tabs-row">
+    <div class="tabs">
+      <div class="tab tab-on">Todas</div>
+      <div class="tab">Pendentes</div>
+      <div class="tab">Erradas</div>
+      <div class="tab">Marcadas</div>
+    </div>
+    <div class="meta-info">
+      <span class="meta-count">137.672</span> questoes
+      <div class="view-toggle">
+        <span class="view-btn view-btn-on">&#9776;</span>
+        <span class="view-btn">&#9744;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTIONS (dimmed by overlay) -->
+  <div class="questions questions-dimmed">
+    <div class="q">
+      <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+        <span class="tag t-b">CESPE</span>
+        <span class="tag t-a">2024</span>
+        <span class="tag t-m">Dir. Administrativo</span>
+        <span style="margin-left: auto; font-size: 9px; color: #EF4444;">&#9679; Dificil</span>
+      </div>
+      <div style="font-size: 13px; color: #333; line-height: 1.7;">Acerca dos principios que regem a administracao publica, julgue o item subsecutivo. O principio da eficiencia, incorporado expressamente a CF/88 por meio da EC 19/1998...</div>
+    </div>
+    <div class="q">
+      <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+        <span class="tag t-b">FCC</span>
+        <span class="tag t-a">2025</span>
+        <span class="tag t-m">Dir. Administrativo</span>
+        <span style="margin-left: auto; font-size: 9px; color: #F59E0B;">&#9679; Medio</span>
+      </div>
+      <div style="font-size: 13px; color: #333; line-height: 1.7;">Sobre os atos administrativos, assinale a alternativa correta quanto a competencia para revogacao e anulacao...</div>
+    </div>
+    <div class="q">
+      <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+        <span class="tag t-b">VUNESP</span>
+        <span class="tag t-a">2024</span>
+        <span class="tag t-m">Dir. Constitucional</span>
+        <span style="margin-left: auto; font-size: 9px; color: #22C55E;">&#9679; Facil</span>
+      </div>
+      <div style="font-size: 13px; color: #333; line-height: 1.7;">Com relacao aos direitos e garantias fundamentais previstos na Constituicao Federal...</div>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE (mostrado quando filtros não retornam resultados) -->
+  <div style="display: none;">
+    <div class="empty-state">
+      <div class="empty-icon">&#128270;</div>
+      <div class="empty-title">Nenhuma questao encontrada</div>
+      <div class="empty-desc">
+        Tente remover alguns filtros ou ampliar o periodo.<br>
+        Atualmente filtrando: CESPE + Dir. Admin. + 2024-25
+      </div>
+      <div class="empty-btn">Limpar filtros</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

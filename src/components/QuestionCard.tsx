@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import DOMPurify from 'dompurify';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 import { TextHighlighter } from 'lisere';
 import 'lisere/dist/style.css';
 import {
@@ -19,6 +21,7 @@ import {
   Strikethrough,
 } from 'lucide-react';
 import { QuestionCommentsSection } from '@/components/questoes/comments/QuestionCommentsSection';
+import { useQuestionNote } from '@/hooks/useQuestionNote';
 import { QuestionReportModal } from '@/components/questoes/QuestionReportModal';
 import { useHasReportedQuestion } from '@/hooks/useQuestionReport';
 
@@ -82,8 +85,64 @@ const SANITIZE_CONFIG = {
   FORCE_BODY: true,
 };
 
+function cleanArtifacts(html: string): string {
+  return html
+    // ── MS Word XML garbage (34 questões) ──
+    .replace(/<!--\[if\s[\s\S]*?<!\[endif\]-->/g, '')
+    .replace(/<o:p>[\s\S]*?<\/o:p>/g, '')
+    // ── Unicode control characters (53k ocorrências) ──
+    .replace(/[\x00-\x08\x0b\x0e-\x1f\x7f]/g, '')
+    // ── render-latex spans → KaTeX HTML ──
+    .replace(
+      /<span\s+class=["']render-latex["'][^>]*>([\s\S]*?)<\/span>/gi,
+      (_, latex: string) => {
+        try {
+          // Decode HTML entities before passing to KaTeX
+          const decoded = latex
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&aacute;/g, 'á').replace(/&Aacute;/g, 'Á')
+            .replace(/&eacute;/g, 'é').replace(/&Eacute;/g, 'É')
+            .replace(/&iacute;/g, 'í').replace(/&oacute;/g, 'ó')
+            .replace(/&uacute;/g, 'ú').replace(/&atilde;/g, 'ã')
+            .replace(/&otilde;/g, 'õ').replace(/&ccedil;/g, 'ç')
+            .replace(/&acirc;/g, 'â').replace(/&ecirc;/g, 'ê')
+            .replace(/&uuml;/g, 'ü').replace(/&ordm;/g, 'º')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)))
+            .replace(/&#(\d+);/g, (_, dec: string) => String.fromCharCode(parseInt(dec, 10)));
+          return katex.renderToString(decoded, {
+            throwOnError: false,
+            displayMode: false,
+            trust: true,
+          });
+        } catch {
+          // Fallback: show as plain text with bullet conversion
+          return latex.replace(/\\bullet\s?/g, '• ');
+        }
+      }
+    )
+    // ── LaTeX outside render-latex spans (fallback) ──
+    .replace(/\\bullet\s?/g, '• ')
+    .replace(/\\textbf\{([^}]*)\}/g, '<b>$1</b>')
+    .replace(/\\textit\{([^}]*)\}/g, '<i>$1</i>')
+    .replace(/\\underline\{([^}]*)\}/g, '<u>$1</u>')
+    .replace(/\\emph\{([^}]*)\}/g, '<i>$1</i>')
+    .replace(/\\item\s?/g, '• ')
+    .replace(/\\par\s?/g, '<br/>')
+    .replace(/\\\\(?!\w)/g, '<br/>');
+}
+
 function sanitizeHtml(html: string) {
-  return { __html: DOMPurify.sanitize(html, SANITIZE_CONFIG) };
+  // KaTeX output uses inline styles + specific classes that DOMPurify must allow
+  const config = {
+    ...SANITIZE_CONFIG,
+    ADD_TAGS: [...SANITIZE_CONFIG.ADD_TAGS, 'math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'mfrac', 'msqrt', 'msub', 'msup', 'msubsup', 'mover', 'munder', 'mtable', 'mtr', 'mtd', 'mtext', 'mspace', 'annotation', 'svg', 'line', 'path'],
+    ADD_ATTR: [...SANITIZE_CONFIG.ADD_ATTR, 'xmlns', 'mathvariant', 'encoding', 'columnalign', 'rowalign', 'columnspacing', 'rowspacing', 'displaystyle', 'scriptlevel', 'fence', 'stretchy', 'symmetric', 'separator', 'lspace', 'rspace', 'accent', 'accentunder', 'viewBox', 'preserveAspectRatio', 'd', 'x1', 'y1', 'x2', 'y2', 'fill', 'stroke', 'stroke-width'],
+  };
+  return { __html: DOMPurify.sanitize(cleanArtifacts(html), config) };
 }
 
 const bookmarkKey = (id: number) => `questao_bookmark_${id}`;
@@ -280,6 +339,10 @@ export const QuestionCard = React.memo(function QuestionCard({
   const toggleTab = useCallback((tab: ExpandableTab) => {
     setActiveTab(prev => prev === tab ? null : tab);
   }, []);
+
+  // Private note indicator
+  const { note: privateNote } = useQuestionNote(questaoId);
+  const hasNote = !!privateNote;
 
   // AI explanations per alternative
   const [explanations, setExplanations] = useState<Map<string, string>>(new Map());
@@ -864,13 +927,16 @@ export const QuestionCard = React.memo(function QuestionCard({
 
             <button
               onClick={() => toggleTab('nota')}
-              className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
+              className={`qc-footer-btn relative inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'nota'
                   ? 'text-[#D97706] bg-[#FFFBEB] dark:text-amber-400 dark:bg-amber-950/30'
                   : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
               <PenLine className="w-[15px] h-[15px]" />
+              {hasNote && (
+                <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-amber-500" />
+              )}
             </button>
 
             <button
@@ -946,6 +1012,7 @@ export const QuestionCard = React.memo(function QuestionCard({
               <QuestionCommentsSection
                 questionId={questaoId}
                 activeSection={activeTab}
+                onSwitchTab={(tab) => setActiveTab(tab)}
               />
             )}
           </div>

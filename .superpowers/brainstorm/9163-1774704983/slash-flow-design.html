@@ -1,0 +1,205 @@
+<h2>Slash Command — Flow Completo</h2>
+<p class="subtitle">Como o input e o popover se comportam em cada etapa</p>
+
+<div class="cards">
+
+  <!-- Step 1: User types / -->
+  <div class="card" data-choice="step1">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;">
+        <!-- Search bar -->
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #E8930C;border-bottom:none;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;color:#333;flex:1;">individuo que mata outro <span style="color:#E8930C;font-weight:600;">/</span><span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;animation:blink 1s step-end infinite;"></span></span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;border:1px solid #7C3AED;color:#7C3AED;background:#F4F0FF;">&#10024; IA</span>
+        </div>
+        <!-- Filter bar with pills -->
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-top:1px solid #eaecf0;border-radius:0 0 14px 14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;display:flex;align-items:center;gap:5px;">Banca <span style="opacity:0.35;font-size:8px;">&#9662;</span></div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;display:flex;align-items:center;gap:5px;">Materia <span style="opacity:0.35;font-size:8px;">&#9662;</span></div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;display:flex;align-items:center;gap:5px;">Ano <span style="opacity:0.35;font-size:8px;">&#9662;</span></div>
+        </div>
+        <!-- Hint below -->
+        <div style="margin-top:6px;display:flex;gap:6px;font-size:11px;color:#999;">
+          <span style="padding:3px 8px;background:#f5f6f8;border-radius:6px;color:#666;">banca</span>
+          <span style="padding:3px 8px;background:#f5f6f8;border-radius:6px;color:#666;">materia</span>
+          <span style="padding:3px 8px;background:#f5f6f8;border-radius:6px;color:#666;">ano</span>
+          <span style="padding:3px 8px;background:#f5f6f8;border-radius:6px;color:#666;">orgao</span>
+          <span style="padding:3px 8px;background:#f5f6f8;border-radius:6px;color:#666;">cargo</span>
+          <span style="padding:3px 8px;background:#f5f6f8;border-radius:6px;color:#666;">assunto</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Step 1 — Digita <code>/</code></h3>
+      <p>Hint aparece abaixo com as categorias disponiveis. Nenhum popover ainda.</p>
+    </div>
+  </div>
+
+  <!-- Step 2: Types /ban → fuzzy matches Banca -->
+  <div class="card" data-choice="step2">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;">
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #E8930C;border-bottom:none;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;color:#333;flex:1;">individuo que mata outro <span style="color:#E8930C;font-weight:600;">/ban</span><span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;"></span></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-top:1px solid #eaecf0;border-radius:0 0 14px 14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:white;border:1px solid #E8930C;color:#B45309;display:flex;align-items:center;gap:5px;box-shadow:0 1px 4px rgba(232,147,12,0.12);">Banca <span style="opacity:0.35;font-size:8px;">&#9662;</span></div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano</div>
+        </div>
+        <!-- Hint showing match -->
+        <div style="margin-top:6px;font-size:11px;color:#E8930C;display:flex;align-items:center;gap:4px;">
+          <span style="font-weight:600;">→ Banca</span>
+          <span style="color:#bbb;font-size:10px;">espaco para filtrar valores</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Step 2 — Digita <code>/ban</code></h3>
+      <p>Fuzzy match: pill "Banca" fica highlighted (borda amber). Hint mostra "→ Banca — espaco para filtrar".</p>
+    </div>
+  </div>
+
+  <!-- Step 3: Space → popover opens, types cespe -->
+  <div class="card" data-choice="step3">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;position:relative;">
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #E8930C;border-bottom:none;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;flex:1;">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span style="color:#E8930C;font-weight:600;">/banca </span>
+            <span style="color:#333;">cespe</span><span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;"></span>
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-top:1px solid #eaecf0;border-radius:0 0 14px 14px;position:relative;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:white;border:1px solid #E8930C;color:#B45309;display:flex;align-items:center;gap:5px;box-shadow:0 1px 4px rgba(232,147,12,0.12);">Banca <span style="font-size:8px;opacity:0.6;">&#9652;</span></div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano</div>
+        </div>
+        <!-- Popover anchored to Banca pill -->
+        <div style="position:absolute;top:100px;left:0;width:380px;background:white;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,0.16),0 4px 12px rgba(0,0,0,0.08);border:1px solid #e0e3e8;overflow:hidden;z-index:10;">
+          <!-- Search mirror -->
+          <div style="padding:10px 12px;border-bottom:1px solid #f0f1f3;">
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f8f9fb;border-radius:8px;border:1px solid #E8930C;">
+              <span style="color:#ccc;font-size:13px;">&#128269;</span>
+              <span style="font-size:12px;color:#333;">cespe</span>
+            </div>
+          </div>
+          <!-- Filtered results -->
+          <div style="padding:4px 0;">
+            <div style="display:flex;align-items:center;padding:7px 12px;background:#FFFBEB;cursor:pointer;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:12px;color:#333;"><span style="color:#E8930C;font-weight:700;">CESPE</span>BRASPE (CESPE)</span>
+              <span style="font-size:10px;color:#b0b4bc;">23.203</span>
+            </div>
+            <div style="display:flex;align-items:center;padding:7px 12px;cursor:pointer;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:12px;color:#333;">Instituto <span style="color:#E8930C;font-weight:700;">CESE</span>P</span>
+              <span style="font-size:10px;color:#b0b4bc;">142</span>
+            </div>
+          </div>
+          <!-- Footer -->
+          <div style="padding:8px 12px;border-top:1px solid #f0f1f3;background:#fafbfc;display:flex;justify-content:space-between;font-size:10px;color:#a0a4ac;">
+            <span>virgula = seleciona + continua · Enter = seleciona + sai · Esc = cancela</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Step 3 — Espaco + digita <code>cespe</code></h3>
+      <p>Popover de Banca abre no pill. Filtra em tempo real mostrando "CESPE". Texto fica visivel no input como <code>/banca cespe</code>. Foco permanece no input principal.</p>
+    </div>
+  </div>
+
+  <!-- Step 4a: Comma → selects, stays -->
+  <div class="card" data-choice="step4a">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;position:relative;">
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #E8930C;border-bottom:none;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;box-shadow:0 0 0 3px rgba(232,147,12,0.06);">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;flex:1;">
+            <span style="color:#333;">individuo que mata outro </span>
+            <span style="color:#E8930C;font-weight:600;">/banca </span>
+            <span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;"></span>
+          </span>
+          <span style="font-size:8px;color:#E8930C;background:#FEF3C7;border-radius:8px;padding:2px 7px;font-weight:600;">1 filtro</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-top:1px solid #eaecf0;border-radius:0 0 14px 14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:linear-gradient(135deg,#F4F0FF,#E9E3FF);border:1px solid #C4B5FD;color:#5B21B6;display:flex;align-items:center;gap:5px;">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">1</span> <span style="font-size:8px;opacity:0.6;">&#9652;</span></div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano</div>
+        </div>
+        <!-- Popover still open, CESPE checked -->
+        <div style="position:absolute;top:100px;left:0;width:380px;background:white;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,0.16),0 4px 12px rgba(0,0,0,0.08);border:1px solid #e0e3e8;overflow:hidden;z-index:10;">
+          <div style="padding:10px 12px;border-bottom:1px solid #f0f1f3;">
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f8f9fb;border-radius:8px;border:1px solid #E8930C;">
+              <span style="color:#ccc;font-size:13px;">&#128269;</span>
+              <span style="font-size:12px;color:#bbb;">pronto para o proximo...</span>
+            </div>
+          </div>
+          <div style="padding:4px 0;">
+            <div style="display:flex;align-items:center;padding:7px 12px;background:#FFFBEB;">
+              <div style="width:16px;height:16px;border-radius:5px;background:#E8930C;border:1.5px solid #E8930C;margin-right:10px;display:flex;align-items:center;justify-content:center;"><span style="color:white;font-size:10px;">&#10003;</span></div>
+              <span style="flex:1;font-size:12px;color:#92400E;font-weight:500;">CEBRASPE (CESPE)</span>
+              <span style="font-size:10px;color:#b0b4bc;">23.203</span>
+            </div>
+            <div style="display:flex;align-items:center;padding:7px 12px;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:12px;color:#333;">FCC</span>
+              <span style="font-size:10px;color:#b0b4bc;">10.151</span>
+            </div>
+            <div style="display:flex;align-items:center;padding:7px 12px;">
+              <div style="width:16px;height:16px;border-radius:5px;border:1.5px solid #d0d3d9;margin-right:10px;"></div>
+              <span style="flex:1;font-size:12px;color:#333;">QUADRIX</span>
+              <span style="font-size:10px;color:#b0b4bc;">9.632</span>
+            </div>
+          </div>
+          <div style="padding:8px 12px;border-top:1px solid #f0f1f3;background:#fafbfc;display:flex;justify-content:space-between;font-size:10px;">
+            <span style="color:#a0a4ac;">498 bancas</span>
+            <span style="color:#E8930C;font-weight:600;">1 selecionada &#10003;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Step 4a — Virgula: seleciona + continua</h3>
+      <p>CESPE selecionado (checkbox marcado). Pill atualiza com badge "1". Input limpa so o valor: <code>/banca </code> fica, pronto pra digitar "fcc". Popover mostra toda a lista de novo.</p>
+    </div>
+  </div>
+
+  <!-- Step 4b: Enter → selects and exits -->
+  <div class="card" data-choice="step4b">
+    <div class="card-image" style="padding:0;background:#f8f9fb;">
+      <div style="max-width:700px;margin:16px auto;padding:0 16px;">
+        <div style="display:flex;align-items:center;height:44px;background:white;border:1px solid #e2e5ea;border-bottom:none;border-radius:14px 14px 0 0;padding:0 16px;gap:10px;">
+          <span style="color:#ccc;font-size:15px;">&#128269;</span>
+          <span style="font-size:14px;color:#333;flex:1;">individuo que mata outro<span style="display:inline-block;width:2px;height:16px;background:#E8930C;vertical-align:middle;"></span></span>
+          <span style="font-size:9px;padding:3px 8px;border-radius:6px;border:1px solid #7C3AED;color:#7C3AED;background:#F4F0FF;">&#10024; IA</span>
+          <span style="font-size:8px;color:#E8930C;background:#FEF3C7;border-radius:8px;padding:2px 7px;font-weight:600;">1 filtro</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:linear-gradient(180deg,#f6f7f9,#eef0f3);border:1px solid #e2e5ea;border-top:1px solid #eaecf0;border-radius:0 0 14px 14px;">
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:linear-gradient(135deg,#F4F0FF,#E9E3FF);border:1px solid #C4B5FD;color:#5B21B6;display:flex;align-items:center;gap:5px;">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">1</span> <span style="font-size:10px;opacity:0.5;">&#10005;</span></div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Materia</div>
+          <div style="font-size:11px;padding:5px 11px;border-radius:8px;background:rgba(255,255,255,0.85);border:1px solid rgba(0,0,0,0.08);color:#5f6368;">Ano</div>
+        </div>
+        <!-- No popover — closed -->
+        <div style="margin-top:8px;font-size:11px;color:#22c55e;display:flex;align-items:center;gap:4px;">
+          &#10003; CESPE aplicado
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Step 4b — Enter: seleciona + sai</h3>
+      <p>CESPE selecionado. Popover fecha. <code>/banca cespe</code> limpo do input — volta so "individuo que mata outro". Pill Banca fica purple com badge "1".</p>
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes blink { 50% { opacity: 0; } }
+code { background: #2a2a2a; color: #E8930C; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+</style>

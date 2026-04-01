@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Botao Buscar Mobile — 2 Opcoes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #1a1a1a; }
+
+  h1 { font-size: 14px; color: #E8930C; text-align: center; padding: 20px 0 4px; font-weight: 600; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 16px; font-weight: 300; }
+
+  .layout { display: flex; gap: 32px; justify-content: center; padding: 0 20px 40px; flex-wrap: wrap; }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  .col-label { font-size: 11px; color: #888; margin-bottom: 8px; font-weight: 500; }
+  .col-desc { font-size: 10px; color: #555; margin-top: 8px; max-width: 300px; text-align: center; }
+
+  /* Phone frame */
+  .phone {
+    width: 375px; height: 680px;
+    border-radius: 36px; border: 7px solid #2a2a2a;
+    background: #f0f2f5; overflow: hidden;
+    position: relative;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  }
+  .phone-notch {
+    width: 120px; height: 28px;
+    background: #2a2a2a; border-radius: 0 0 16px 16px;
+    margin: 0 auto;
+  }
+  .phone-body { padding: 8px 12px; overflow-y: auto; height: calc(100% - 28px); }
+
+  /* Search bar mobile */
+  .msb {
+    display: flex; align-items: center; height: 40px;
+    background: white; border: 1px solid #e2e5ea;
+    border-bottom: none; border-radius: 12px 12px 0 0;
+    padding: 0 12px; gap: 6px;
+  }
+  .msb-icon { color: #c0c4cc; font-size: 14px; }
+  .msb-text { font-size: 13px; color: #333; flex: 1; }
+  .msb-ia { font-size: 8px; padding: 2px 6px; border-radius: 5px; border: 1px solid #7C3AED; color: #7C3AED; background: #F4F0FF; }
+  .msb-badge { font-size: 7px; color: #E8930C; background: #FEF3C7; border-radius: 6px; padding: 2px 5px; font-weight: 600; }
+
+  /* Filter bar mobile */
+  .mfb {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 10px;
+    background: linear-gradient(180deg, #f6f7f9, #eef0f3);
+    border: 1px solid #e2e5ea; border-top: 1px solid #eaecf0;
+    border-radius: 0 0 12px 12px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .mfb::-webkit-scrollbar { display: none; }
+  .mp { font-size: 10px; padding: 4px 8px; border-radius: 7px; white-space: nowrap; display: flex; align-items: center; gap: 4px; font-weight: 450; flex-shrink: 0; }
+  .mp-active { background: linear-gradient(135deg, #F4F0FF, #E9E3FF); color: #5B21B6; border: 1px solid #C4B5FD; }
+  .mp-amber { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #92400E; border: 1px solid #F59E0B; }
+  .mp-blue { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: #1E40AF; border: 1px solid #60A5FA; }
+  .mp-off { background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.08); color: #5f6368; }
+
+  /* Chips bar mobile */
+  .mchips {
+    display: flex; align-items: center;
+    background: white; border: 1px solid #d0d3d9;
+    border-radius: 50px; height: 28px;
+    overflow: hidden; margin: 5px 0;
+  }
+  .mchips-inner {
+    display: flex; align-items: center; flex: 1; min-width: 0;
+    overflow-x: auto; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mchips-inner::-webkit-scrollbar { display: none; }
+  .mchip { font-size: 10px; color: #555; font-weight: 450; padding: 0 10px; height: 28px; display: flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0; }
+  .mchip-x { font-size: 8px; color: #ccc; }
+  .mchip-sep { color: #e0e3e8; font-size: 12px; font-weight: 200; flex-shrink: 0; }
+  .mchip-clear { font-size: 9px; color: #bbb; padding: 0 10px; white-space: nowrap; flex-shrink: 0; height: 28px; display: flex; align-items: center; border-left: 1px solid #eaecf0; }
+
+  /* Tabs mobile */
+  .mtabs { display: flex; gap: 2px; background: #eef0f3; border-radius: 8px; padding: 2px; margin-top: 6px; }
+  .mtab { font-size: 10px; padding: 5px 0; border-radius: 6px; color: #888; font-weight: 450; flex: 1; text-align: center; }
+  .mtab-on { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+  /* Question cards mobile */
+  .mq { background: white; border-radius: 10px; border: 1px solid #e8eaed; padding: 10px 12px; margin-top: 8px; }
+  .mq-tags { display: flex; gap: 4px; margin-bottom: 4px; }
+  .mq-tag { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+  .mq-tag-b { background: #F4F0FF; color: #7C3AED; }
+  .mq-tag-a { background: #DBEAFE; color: #1D4ED8; }
+  .mq-tag-m { background: #FEF3C7; color: #D97706; }
+  .mq-text { font-size: 12px; color: #333; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>Botao Buscar — Mobile</h1>
+<h2>Onde colocar no celular?</h2>
+
+<div class="layout">
+
+  <!-- OPTION A: Inside chips bar -->
+  <div class="col">
+    <div class="col-label">A) Dentro da barra de chips</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-body">
+        <div class="msb">
+          <span class="msb-icon">&#128269;</span>
+          <span class="msb-text">individuo que mata</span>
+          <span class="msb-ia">&#10024; IA</span>
+          <span class="msb-badge">3</span>
+        </div>
+        <div class="mfb">
+          <div class="mp mp-active">Banca <span style="font-size:7px;background:rgba(91,33,182,0.12);padding:0 4px;border-radius:3px;font-weight:700;">2</span></div>
+          <div class="mp mp-amber">Dir. Admin.</div>
+          <div class="mp mp-blue">2024</div>
+          <div class="mp mp-off">Orgao</div>
+        </div>
+
+        <!-- Chips with button inside -->
+        <div class="mchips">
+          <div class="mchips-inner">
+            <div class="mchip">CESPE <span class="mchip-x">&#10005;</span></div>
+            <span class="mchip-sep">│</span>
+            <div class="mchip">FCC <span class="mchip-x">&#10005;</span></div>
+            <span class="mchip-sep">│</span>
+            <div class="mchip">Dir. Admin. <span class="mchip-x">&#10005;</span></div>
+            <span class="mchip-sep">│</span>
+            <div class="mchip">2024 <span class="mchip-x">&#10005;</span></div>
+          </div>
+          <div class="mchip-clear">limpar</div>
+          <div style="
+            height: 28px; padding: 0 12px;
+            display: flex; align-items: center; gap: 3px;
+            background: #E8930C; color: white;
+            font-size: 10px; font-weight: 600;
+            flex-shrink: 0; border-radius: 0 50px 50px 0;
+            white-space: nowrap;
+          ">
+            Buscar
+            <svg width="10" height="10" viewBox="0 0 24 24" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <div class="mtabs">
+          <div class="mtab mtab-on">Todas</div>
+          <div class="mtab">Pend.</div>
+          <div class="mtab">Erradas</div>
+          <div class="mtab">Marc.</div>
+        </div>
+
+        <div class="mq">
+          <div class="mq-tags"><span class="mq-tag mq-tag-b">CESPE</span><span class="mq-tag mq-tag-a">2024</span><span class="mq-tag mq-tag-m">Dir. Admin.</span></div>
+          <div class="mq-text">Acerca dos principios que regem a administracao publica...</div>
+        </div>
+        <div class="mq">
+          <div class="mq-tags"><span class="mq-tag mq-tag-b">FCC</span><span class="mq-tag mq-tag-a">2024</span><span class="mq-tag mq-tag-m">Dir. Admin.</span></div>
+          <div class="mq-text">Sobre os atos administrativos, assinale a alternativa correta...</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-desc">Botao amber na ponta da barra. Sempre visivel. Compacto. Mesmo padrao do desktop.</div>
+  </div>
+
+  <!-- OPTION B: Full-width below chips -->
+  <div class="col">
+    <div class="col-label">B) Full-width abaixo dos chips</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-body">
+        <div class="msb">
+          <span class="msb-icon">&#128269;</span>
+          <span class="msb-text">individuo que mata</span>
+          <span class="msb-ia">&#10024; IA</span>
+          <span class="msb-badge">3</span>
+        </div>
+        <div class="mfb">
+          <div class="mp mp-active">Banca <span style="font-size:7px;background:rgba(91,33,182,0.12);padding:0 4px;border-radius:3px;font-weight:700;">2</span></div>
+          <div class="mp mp-amber">Dir. Admin.</div>
+          <div class="mp mp-blue">2024</div>
+          <div class="mp mp-off">Orgao</div>
+        </div>
+
+        <!-- Chips -->
+        <div class="mchips">
+          <div class="mchips-inner">
+            <div class="mchip">CESPE <span class="mchip-x">&#10005;</span></div>
+            <span class="mchip-sep">│</span>
+            <div class="mchip">FCC <span class="mchip-x">&#10005;</span></div>
+            <span class="mchip-sep">│</span>
+            <div class="mchip">Dir. Admin. <span class="mchip-x">&#10005;</span></div>
+            <span class="mchip-sep">│</span>
+            <div class="mchip">2024 <span class="mchip-x">&#10005;</span></div>
+          </div>
+          <div class="mchip-clear">limpar</div>
+        </div>
+
+        <!-- Full width button -->
+        <button style="
+          width: 100%; height: 36px;
+          display: flex; align-items: center; justify-content: center; gap: 6px;
+          background: #E8930C; color: white;
+          font-size: 13px; font-weight: 600;
+          border: none; border-radius: 10px;
+          cursor: pointer; margin: 4px 0;
+        ">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Buscar questoes
+        </button>
+
+        <div class="mtabs">
+          <div class="mtab mtab-on">Todas</div>
+          <div class="mtab">Pend.</div>
+          <div class="mtab">Erradas</div>
+          <div class="mtab">Marc.</div>
+        </div>
+
+        <div class="mq">
+          <div class="mq-tags"><span class="mq-tag mq-tag-b">CESPE</span><span class="mq-tag mq-tag-a">2024</span><span class="mq-tag mq-tag-m">Dir. Admin.</span></div>
+          <div class="mq-text">Acerca dos principios que regem a administracao publica...</div>
+        </div>
+        <div class="mq">
+          <div class="mq-tags"><span class="mq-tag mq-tag-b">FCC</span><span class="mq-tag mq-tag-a">2024</span><span class="mq-tag mq-tag-m">Dir. Admin.</span></div>
+          <div class="mq-text">Sobre os atos administrativos, assinale a alternativa correta...</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-desc">Botao largo amber abaixo dos chips. Facil de tocar com polegar. Mais visivel, mais call-to-action.</div>
+  </div>
+
+</div>
+
+</body>
+</html>

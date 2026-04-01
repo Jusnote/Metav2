@@ -22,7 +22,6 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "../hooks/useAuth";
 import { useUserRole } from "@/hooks/moderation/useUserRole";
 import { toast } from "sonner";
-import { LeiSecaSidebar } from "./lei-seca/LeiSecaSidebar";
 import { DocumentsOrganizationSidebar } from "./DocumentsOrganizationSidebar";
 
 import { CadernosSidebar } from "./cadernos/CadernosSidebar";
@@ -67,8 +66,6 @@ const mainNavigation: NavItem[] = [
     label: "Lei Seca",
     href: "/lei-seca",
     icon: <IconScale className="h-5 w-5" />,
-    customPanel: true,
-    panelWidth: 340,
   },
   {
     label: "Conteúdos",
@@ -288,7 +285,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     panelItem.href === "/questoes" ? (
                       null
                     ) : panelItem.href === "/lei-seca" ? (
-                      <LeiSecaSidebar />
+                      null
                     ) : panelItem.href === "/documents-organization" ? (
                       <DocumentsOrganizationSidebar />
                     ) : panelItem.href === "/cadernos" ? (

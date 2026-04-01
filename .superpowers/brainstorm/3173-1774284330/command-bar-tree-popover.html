@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Command Bar + Tree Popover</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fff; font-family: 'Outfit', sans-serif; color: #1d1d1f; }
+
+  .app { display: flex; flex-direction: column; height: 100vh; }
+
+  /* ===== TOP BAR ===== */
+  .top-bar {
+    border-bottom: 1px solid #eee;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    z-index: 20;
+  }
+
+  /* Lei selector */
+  .lei-select {
+    font-family: Outfit, sans-serif;
+    font-size: 12px;
+    padding: 6px 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    color: #555;
+    background: #fafafa;
+    cursor: pointer;
+    min-width: 140px;
+  }
+
+  /* Search pill */
+  .search-pill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    cursor: text;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    max-width: 500px;
+  }
+  .search-pill:hover, .search-pill.focused {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-color: #ccc;
+  }
+  .search-icon { color: #bbb; font-size: 14px; flex-shrink: 0; }
+  .search-text { color: #bbb; font-size: 13px; flex: 1; }
+  .search-shortcut { color: #ddd; font-size: 10px; flex-shrink: 0; }
+
+  /* Tree button */
+  .tree-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 12px;
+    color: #555;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .tree-btn:hover { background: #f0f0f0; }
+  .tree-btn .caret { font-size: 10px; color: #999; }
+
+  /* Toggles */
+  .toggles { display: flex; gap: 6px; margin-left: auto; }
+  .toggle-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .toggle-off { background: #f4f4f4; color: #888; }
+  .toggle-off:hover { background: #eee; }
+  .toggle-on { background: rgb(67,80,92); color: #fff; }
+
+  .font-btns { display: flex; align-items: center; gap: 2px; }
+  .font-btn {
+    width: 26px; height: 26px; border-radius: 50%; border: none;
+    background: #f4f4f4; color: #888; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; transition: background 0.15s;
+  }
+  .font-btn:hover { background: #eee; }
+  .font-label { font-size: 10px; color: #ccc; width: 20px; text-align: center; }
+
+  .shortcut-hints {
+    font-size: 10px; color: #ddd; margin-left: 8px;
+    display: none;
+  }
+  @media (min-width: 900px) { .shortcut-hints { display: block; } }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress { height: 3px; background: #f4f4f4; }
+  .progress-fill { height: 100%; width: 34%; background: rgb(67,80,92); transition: width 0.3s; }
+
+  /* ===== CONTENT ===== */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+  .content-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: rgb(67, 80, 92);
+  }
+
+  /* ===== TREE POPOVER ===== */
+  .tree-popover {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 380px;
+    max-height: 460px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    z-index: 100;
+    padding: 8px;
+  }
+
+  .tree-search {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #333;
+    outline: none;
+    margin-bottom: 6px;
+  }
+  .tree-search:focus { border-color: #ccc; }
+
+  .tree-section {
+    padding: 4px 0;
+  }
+  .tree-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-size: 12px;
+  }
+  .tree-item:hover { background: #f8f8f8; }
+  .tree-item.active { background: #f0f0ff; }
+
+  .tree-item .arrow { color: #ccc; font-size: 10px; width: 12px; flex-shrink: 0; }
+  .tree-item .label { color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .tree-item .name { color: #333; flex: 1; }
+  .tree-item .desc { color: #999; font-style: italic; font-size: 11px; }
+  .tree-item .count { color: #ccc; font-size: 10px; flex-shrink: 0; }
+
+  .tree-indent-1 { padding-left: 22px; }
+  .tree-indent-2 { padding-left: 38px; }
+  .tree-indent-3 { padding-left: 54px; }
+
+  .tree-divider { height: 1px; background: #f0f0f0; margin: 4px 8px; }
+
+  /* ===== LEI ELEMENTS ===== */
+  .estrutura { text-align: center; margin: 36px 0 24px; font-family: Outfit, sans-serif; }
+  .estrutura-nome { font-size: 13px; font-weight: 600; color: #444; letter-spacing: 1.5px; text-transform: uppercase; }
+  .estrutura-desc { font-size: 13px; color: #999; font-style: italic; margin-top: 2px; }
+  .epigrafe { margin-top: 28px; margin-bottom: 8px; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 500; color: #666; }
+  .artigo { margin-bottom: 8px; }
+  .artigo b { font-weight: 700; }
+  .pena { padding-left: 34px; font-weight: 300; font-style: italic; color: #aaa; font-size: 15px; margin-bottom: 10px; }
+  .anot { font-size: 12px; font-weight: 300; color: #ccc; margin-left: 6px; }
+  .paragrafo { padding-left: 34px; margin-bottom: 8px; position: relative; }
+  .paragrafo::before { content: '›'; position: absolute; left: 20px; color: #d0d0d0; font-size: 14px; }
+  .paragrafo b { font-weight: 600; }
+  .inciso { padding-left: 58px; margin-bottom: 6px; position: relative; }
+  .inciso::before { content: '›'; position: absolute; left: 44px; color: #d8d8d8; font-size: 13px; }
+  .alinea { padding-left: 82px; margin-bottom: 5px; color: #333; position: relative; }
+  .alinea::before { content: '›'; position: absolute; left: 68px; color: #e0e0e0; font-size: 12px; }
+  .revogado { padding-left: 34px; margin-bottom: 8px; text-decoration: line-through; color: #ddd; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="top-bar">
+    <select class="lei-select">
+      <option>Código Penal</option>
+      <option>Código Civil</option>
+    </select>
+
+    <!-- Tree button with popover -->
+    <div style="position:relative;">
+      <button class="tree-btn" onclick="document.getElementById('tree-pop').style.display = document.getElementById('tree-pop').style.display === 'block' ? 'none' : 'block'">
+        <span>📑</span>
+        <span>Cap. I — Dos crimes contra a vida</span>
+        <span class="caret">▾</span>
+      </button>
+
+      <!-- TREE POPOVER -->
+      <div class="tree-popover" id="tree-pop" style="display:block;">
+        <input class="tree-search" placeholder="Filtrar na hierarquia..." value="" />
+
+        <div class="tree-section">
+          <div class="tree-item">
+            <span class="arrow">▼</span>
+            <span class="name" style="font-weight:600;">PARTE GERAL</span>
+            <span class="count">209 art.</span>
+          </div>
+
+          <div class="tree-item tree-indent-1">
+            <span class="arrow">▶</span>
+            <span class="name">Título I</span>
+            <span class="desc">Da aplicação da lei penal</span>
+            <span class="count">12</span>
+          </div>
+          <div class="tree-item tree-indent-1">
+            <span class="arrow">▶</span>
+            <span class="name">Título II</span>
+            <span class="desc">Do crime</span>
+            <span class="count">28</span>
+          </div>
+          <div class="tree-item tree-indent-1">
+            <span class="arrow">▶</span>
+            <span class="name">Título III</span>
+            <span class="desc">Da imputabilidade penal</span>
+            <span class="count">5</span>
+          </div>
+
+          <div class="tree-divider"></div>
+
+          <div class="tree-item">
+            <span class="arrow">▼</span>
+            <span class="name" style="font-weight:600;">PARTE ESPECIAL</span>
+            <span class="count">406 art.</span>
+          </div>
+
+          <div class="tree-item tree-indent-1">
+            <span class="arrow">▼</span>
+            <span class="name">Título I</span>
+            <span class="desc">Dos crimes contra a pessoa</span>
+            <span class="count">98</span>
+          </div>
+
+          <div class="tree-item tree-indent-2 active">
+            <span class="arrow">▼</span>
+            <span class="name">Cap. I</span>
+            <span class="desc">Dos crimes contra a vida</span>
+            <span class="count">14</span>
+          </div>
+
+          <div class="tree-item tree-indent-3" style="color:#999; font-size:11px;">
+            <span style="width:12px;"></span>
+            Art. 121 · 122 · 123 · 124 · 125 · 126 · 127 · 128
+          </div>
+
+          <div class="tree-item tree-indent-2">
+            <span class="arrow">▶</span>
+            <span class="name">Cap. II</span>
+            <span class="desc">Das lesões corporais</span>
+            <span class="count">1</span>
+          </div>
+
+          <div class="tree-item tree-indent-2">
+            <span class="arrow">▶</span>
+            <span class="name">Cap. III</span>
+            <span class="desc">Da periclitação da vida e da saúde</span>
+            <span class="count">8</span>
+          </div>
+
+          <div class="tree-item tree-indent-2">
+            <span class="arrow">▶</span>
+            <span class="name">Cap. IV</span>
+            <span class="desc">Da rixa</span>
+            <span class="count">1</span>
+          </div>
+
+          <div class="tree-item tree-indent-2">
+            <span class="arrow">▶</span>
+            <span class="name">Cap. V</span>
+            <span class="desc">Dos crimes contra a honra</span>
+            <span class="count">7</span>
+          </div>
+
+          <div class="tree-item tree-indent-1">
+            <span class="arrow">▶</span>
+            <span class="name">Título II</span>
+            <span class="desc">Dos crimes contra o patrimônio</span>
+            <span class="count">52</span>
+          </div>
+
+          <div class="tree-item tree-indent-1">
+            <span class="arrow">▶</span>
+            <span class="name">Título III</span>
+            <span class="desc">Dos crimes contra a propriedade imaterial</span>
+            <span class="count">18</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search pill -->
+    <div class="search-pill">
+      <span class="search-icon">🔍</span>
+      <span class="search-text">Buscar na lei...</span>
+      <span class="search-shortcut">Ctrl+F</span>
+    </div>
+
+    <!-- Toggles -->
+    <div class="toggles">
+      <button class="toggle-btn toggle-off">Lei Seca</button>
+      <button class="toggle-btn toggle-off">Revogados</button>
+    </div>
+
+    <div class="font-btns">
+      <button class="font-btn" style="font-size:10px;">A-</button>
+      <span class="font-label">16</span>
+      <button class="font-btn" style="font-size:13px;">A+</button>
+    </div>
+
+    <span class="shortcut-hints">J/K · L · R · Ctrl+F</span>
+  </div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="progress"><div class="progress-fill"></div></div>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="content">
+    <div class="content-inner">
+
+      <div class="estrutura">
+        <div class="estrutura-nome">Capítulo I</div>
+        <div class="estrutura-desc">Dos crimes contra a vida</div>
+      </div>
+
+      <div class="epigrafe">Homicídio simples</div>
+
+      <div class="artigo"><b>Art. 121.</b> Matar alguem:</div>
+      <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+
+      <div class="epigrafe">Caso de diminuição de pena</div>
+      <div class="paragrafo"><b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.</div>
+
+      <div class="epigrafe">Homicídio qualificado</div>
+      <div class="paragrafo"><b>§ 2º</b> Se o homicídio é cometido:</div>
+      <div class="inciso">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+      <div class="inciso">II — por motivo futil;</div>
+      <div class="inciso">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel, ou de que possa resultar perigo comum;</div>
+      <div class="inciso">IV — à traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossivel a defesa do ofendido;</div>
+      <div class="inciso">V — para assegurar a execução, a ocultação, a impunidade ou vantagem de outro crime:</div>
+
+      <div class="pena">Pena — reclusão, de doze a trinta anos. <span class="anot">(Redação dada pela Lei nº 13.104, de 2015)</span></div>
+
+      <div class="paragrafo"><b>§ 2º-A</b> Considera-se que há razões de condição de sexo feminino quando o crime envolve: <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+      <div class="inciso">I — violência doméstica e familiar;</div>
+      <div class="inciso">II — menosprezo ou discriminação à condição de mulher.</div>
+
+      <div class="paragrafo"><b>§ 2º-B</b> A pena do homicídio contra menor de 14 (quatorze) anos é aumentada de:</div>
+      <div class="inciso">I — 1/3 (um terço) até a metade se a vítima é pessoa com deficiência; <span class="anot">(Incluído pela Lei nº 14.344, de 2022)</span></div>
+      <div class="inciso">II — 2/3 (dois terços) se o autor é ascendente, padrasto ou madrasta da vítima.</div>
+
+      <div class="revogado">§ 3º Se o homicídio é culposo:</div>
+
+      <div class="epigrafe">Homicídio culposo</div>
+      <div class="paragrafo"><b>§ 3º</b> Se o homicídio é culposo:</div>
+      <div class="pena">Pena — detenção, de um a três anos.</div>
+
+      <div class="epigrafe">Aumento de pena</div>
+      <div class="paragrafo"><b>§ 4º</b> No homicídio culposo, a pena é aumentada de 1/3 (um terço), se o crime resulta de inobservância de regra técnica de profissão, arte ou ofício, ou se o agente deixa de prestar imediato socorro à vítima. <span class="anot">(Redação dada pela Lei nº 10.741, de 2003)</span></div>
+
+      <div class="paragrafo"><b>§ 5º</b> Na hipótese de homicídio culposo, o juiz poderá deixar de aplicar a pena, se as conseqüências da infração atingirem o próprio agente de forma tão grave que a sanção penal se torne desnecessária. <span class="anot">(Incluído pela Lei nº 6.416, de 24.5.1977)</span></div>
+
+      <div class="paragrafo"><b>§ 7º</b> A pena do feminicídio é aumentada de 1/3 (um terço) até a metade se o crime for praticado: <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+      <div class="inciso">I — durante a gestação ou nos 3 (três) meses posteriores ao parto;</div>
+      <div class="inciso">II — contra pessoa menor de 14 (catorze) anos, maior de 60 (sessenta) anos;</div>
+      <div class="inciso">III — na presença física ou virtual de descendente ou de ascendente da vítima;</div>
+      <div class="inciso">IV — em descumprimento das medidas protetivas de urgência. <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+
+      <div class="epigrafe">Induzimento, instigação ou auxílio a suicídio ou a automutilação</div>
+      <div class="artigo"><b>Art. 122.</b> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação ou prestar-lhe auxílio material para que o faça: <span class="anot">(Redação dada pela Lei nº 13.968, de 2019)</span></div>
+      <div class="pena">Pena — reclusão, de 6 (seis) meses a 2 (dois) anos.</div>
+
+      <div class="paragrafo"><b>§ 1º</b> Se da automutilação ou da tentativa de suicídio resulta lesão corporal de natureza grave ou gravíssima:</div>
+      <div class="pena">Pena — reclusão, de 1 (um) a 3 (três) anos.</div>
+
+      <div class="paragrafo"><b>§ 2º</b> Se o suicídio se consuma ou se da automutilação resulta morte:</div>
+      <div class="pena">Pena — reclusão, de 2 (dois) a 6 (seis) anos.</div>
+
+      <div class="paragrafo"><b>§ 3º</b> A pena é duplicada:</div>
+      <div class="inciso">I — se o crime é praticado por motivo egoístico, torpe ou fútil;</div>
+      <div class="inciso">II — se a vítima é menor ou tem diminuída, por qualquer causa, a capacidade de resistência. <span class="anot">(Incluído pela Lei nº 13.968, de 2019)</span></div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

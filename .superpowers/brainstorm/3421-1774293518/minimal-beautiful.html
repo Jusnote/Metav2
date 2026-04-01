@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Visual Minimalista</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Outfit, sans-serif; background: #f7f7f7; padding: 20px; }
+
+  .page-title { font-size: 15px; font-weight: 500; color: #222; margin-bottom: 3px; }
+  .page-sub { font-size: 11px; color: #aaa; margin-bottom: 28px; font-weight: 300; }
+
+  .screens { display: flex; gap: 28px; flex-wrap: wrap; }
+  .screen-group { flex: 1; min-width: 580px; }
+  .screen-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #bbb; font-weight: 500; margin-bottom: 10px; }
+
+  .frame { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.03); margin-bottom: 24px; }
+
+  .mobile-col { width: 360px; flex-shrink: 0; }
+
+  .design-note { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .design-note-item { padding: 16px; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .design-note-item h4 { font-size: 11px; font-weight: 500; color: #333; margin-bottom: 6px; }
+  .design-note-item p { font-size: 11px; color: #999; line-height: 1.5; font-weight: 300; }
+</style>
+</head>
+<body>
+
+<div class="page-title">Visual refinado — Minimalista</div>
+<p class="page-sub">Cada pixel com propósito. Sem bordas desnecessárias, sem cores gritantes.</p>
+
+<div class="screens">
+
+<!-- ============ DESKTOP ============ -->
+<div class="screen-group">
+
+  <!-- STATE 1: Closed / Reading -->
+  <div class="screen-label">Leitura — breadcrumb sutil</div>
+  <div class="frame">
+    <!-- Toolbar: quase invisível -->
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:11px">
+      <span style="color:#999;font-weight:400;font-size:12px;letter-spacing:-0.2px">Código de Trânsito</span>
+      <div style="width:1px;height:14px;background:#eee"></div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="padding:4px 12px;border-radius:20px;background:#2c3338;color:#fff;font-size:10px;font-weight:400;letter-spacing:0.2px">Lei Seca</div>
+        <div style="padding:4px 12px;border-radius:20px;color:#c0c0c0;font-size:10px;font-weight:300;border:1px solid #ececec">Revogados</div>
+      </div>
+    </div>
+
+    <!-- Progress: hair-thin -->
+    <div style="height:1px;background:#f0f0f0"><div style="height:1px;background:#2c3338;width:35%;opacity:0.6"></div></div>
+
+    <!-- Content column -->
+    <div style="max-width:660px;margin:0 auto;padding:0 32px">
+      <!-- Breadcrumb: barely there -->
+      <div style="display:flex;align-items:center;padding:14px 0 12px;gap:6px;cursor:pointer;transition:opacity 0.2s" title="Clique para buscar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c8c8c8" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:11px;color:#c0c0c0;font-weight:300">Título II</span>
+        <span style="font-size:9px;color:#ddd">›</span>
+        <span style="font-size:11px;color:#c0c0c0;font-weight:300">Capítulo I</span>
+        <span style="font-size:9px;color:#ddd">›</span>
+        <span style="font-size:11px;color:#888;font-weight:400">Art. 45</span>
+        <span style="margin-left:auto;font-size:10px;color:#ddd;font-weight:300;font-variant-numeric:tabular-nums">45 / 341</span>
+      </div>
+      <div style="height:1px;background:linear-gradient(90deg,#f0f0f0,transparent)"></div>
+
+      <!-- Text: the star of the show -->
+      <div style="padding:28px 0 40px;font-family:Literata,Georgia,serif;font-size:15px;color:#3a3f44;line-height:2;font-weight:400;letter-spacing:-0.1px">
+        <div style="margin-bottom:20px">
+          <span style="font-weight:500;color:#2c3338">Art. 44.</span> Ao ser o veículo apreendido, será expedido ao condutor documento autorizando a circulação no prazo fixado pelo CONTRAN.
+        </div>
+        <div style="margin-bottom:20px">
+          <span style="font-weight:500;color:#2c3338">Art. 45.</span> Os sinais de trânsito classificam-se em:
+        </div>
+        <div style="padding-left:28px;margin-bottom:14px;color:#4a5058">
+          <span style="font-weight:500;color:#2c3338">I</span> — verticais;
+        </div>
+        <div style="padding-left:28px;margin-bottom:14px;color:#4a5058">
+          <span style="font-weight:500;color:#2c3338">II</span> — horizontais;
+        </div>
+        <div style="padding-left:28px;margin-bottom:14px;color:#4a5058">
+          <span style="font-weight:500;color:#2c3338">III</span> — dispositivos de sinalização auxiliar.
+        </div>
+        <div style="margin-top:28px">
+          <span style="font-weight:500;color:#2c3338">Art. 46.</span> O Anexo II deste Código estabelece os sinais de trânsito e seus significados.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 2: Search open, empty -->
+  <div class="screen-label">Busca aberta — hierarquia com TracingBeam</div>
+  <div class="frame">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:11px">
+      <span style="color:#999;font-size:12px;letter-spacing:-0.2px">Código de Trânsito</span>
+      <div style="width:1px;height:14px;background:#eee"></div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="padding:4px 12px;border-radius:20px;background:#2c3338;color:#fff;font-size:10px">Lei Seca</div>
+        <div style="padding:4px 12px;border-radius:20px;color:#c0c0c0;font-size:10px;border:1px solid #ececec">Revogados</div>
+      </div>
+    </div>
+    <div style="height:1px;background:#f0f0f0"><div style="height:1px;background:#2c3338;width:35%;opacity:0.6"></div></div>
+
+    <div style="max-width:660px;margin:0 auto;padding:0 32px;position:relative">
+      <!-- Search input -->
+      <div style="position:relative;z-index:10;padding:14px 0 0">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fafafa;border-radius:10px 10px 0 0;border:1px solid #e8e8e8;border-bottom:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2c3338" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-size:12px;color:#bbb;font-weight:300">Buscar artigo, tema, palavra...</span>
+          <span style="margin-left:auto;font-size:9px;color:#ccc;font-weight:300">esc</span>
+        </div>
+
+        <!-- Dropdown -->
+        <div style="background:#fafafa;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 10px 10px;padding-bottom:6px">
+          <!-- Tree with elegant tracing beam -->
+          <div style="padding:10px 0 6px;position:relative">
+            <!-- Tracing line: thin, elegant -->
+            <div style="position:absolute;left:24px;top:14px;bottom:14px;width:1.5px;background:#ededed;border-radius:1px"></div>
+            <!-- Active portion -->
+            <div style="position:absolute;left:24px;top:14px;width:1.5px;height:52%;background:#2c3338;border-radius:1px;opacity:0.4"></div>
+
+            <!-- Items -->
+            <div style="position:relative;padding:7px 16px 7px 42px;cursor:pointer;transition:background 0.15s;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+              <div style="position:absolute;left:24px;top:50%;width:7px;height:7px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+              <div style="font-size:12px;font-weight:500;color:#444;letter-spacing:-0.2px">Título I</div>
+              <div style="font-size:10px;color:#b8b8b8;font-weight:300;margin-top:1px">Disposições Preliminares</div>
+            </div>
+
+            <div style="position:relative;padding:7px 16px 7px 42px;cursor:pointer;background:#f0f4ff;border-radius:6px;margin:0 6px">
+              <div style="position:absolute;left:24px;top:50%;width:7px;height:7px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(44,51,56,0.1)"></div>
+              <div style="font-size:12px;font-weight:500;color:#2c3338;letter-spacing:-0.2px">Título II</div>
+              <div style="font-size:10px;color:#8a9baa;font-weight:300;margin-top:1px">Do Sistema Nacional de Trânsito</div>
+            </div>
+
+            <!-- Children of Título II -->
+            <div style="position:relative;padding:5px 16px 5px 56px;cursor:pointer;border-radius:6px;margin:0 6px;background:#f6f8ff" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='#f6f8ff'">
+              <div style="position:absolute;left:38px;top:50%;width:5px;height:5px;border-radius:50%;background:#2c3338;transform:translate(-50%,-50%)"></div>
+              <div style="font-size:11px;color:#2c3338;font-weight:400">Cap. I — Da Sinalização</div>
+            </div>
+            <div style="position:relative;padding:5px 16px 5px 56px;cursor:pointer;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+              <div style="position:absolute;left:38px;top:50%;width:5px;height:5px;border-radius:50%;background:#ddd;transform:translate(-50%,-50%)"></div>
+              <div style="font-size:11px;color:#999;font-weight:300">Cap. II — Dos Veículos</div>
+            </div>
+            <div style="position:relative;padding:5px 16px 5px 56px;cursor:pointer;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+              <div style="position:absolute;left:38px;top:50%;width:5px;height:5px;border-radius:50%;background:#ddd;transform:translate(-50%,-50%)"></div>
+              <div style="font-size:11px;color:#999;font-weight:300">Cap. III — Dos Condutores</div>
+            </div>
+
+            <div style="position:relative;padding:7px 16px 7px 42px;cursor:pointer;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+              <div style="position:absolute;left:24px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #ddd;background:#fafafa;transform:translate(-50%,-50%)"></div>
+              <div style="font-size:12px;font-weight:500;color:#888;letter-spacing:-0.2px">Título III</div>
+              <div style="font-size:10px;color:#c8c8c8;font-weight:300;margin-top:1px">Das Normas Gerais de Circulação</div>
+            </div>
+
+            <div style="position:relative;padding:7px 16px 7px 42px;cursor:pointer;border-radius:6px;margin:0 6px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+              <div style="position:absolute;left:24px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #ddd;background:#fafafa;transform:translate(-50%,-50%)"></div>
+              <div style="font-size:12px;font-weight:500;color:#888;letter-spacing:-0.2px">Título IV</div>
+              <div style="font-size:10px;color:#c8c8c8;font-weight:300;margin-top:1px">Dos Crimes de Trânsito</div>
+            </div>
+          </div>
+
+          <!-- Footer: barely visible -->
+          <div style="padding:6px 16px;font-size:10px;color:#d0d0d0;font-weight:300;display:flex;gap:14px;border-top:1px solid #f0f0f0;margin-top:2px">
+            <span>↑↓ navegar</span><span>⏎ ir</span><span>esc fechar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dimmed text -->
+      <div style="padding:24px 0;font-family:Literata,Georgia,serif;font-size:15px;color:#3a3f44;line-height:2;opacity:0.15">
+        <div><span style="font-weight:500">Art. 44.</span> Ao ser o veículo apreendido...</div>
+        <div><span style="font-weight:500">Art. 45.</span> Os sinais de trânsito...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 3: Search with results -->
+  <div class="screen-label">Buscando "embriaguez"</div>
+  <div class="frame">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:11px">
+      <span style="color:#999;font-size:12px">Código de Trânsito</span>
+      <div style="width:1px;height:14px;background:#eee"></div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="padding:4px 12px;border-radius:20px;background:#2c3338;color:#fff;font-size:10px">Lei Seca</div>
+        <div style="padding:4px 12px;border-radius:20px;color:#c0c0c0;font-size:10px;border:1px solid #ececec">Revogados</div>
+      </div>
+    </div>
+    <div style="height:1px;background:#f0f0f0"><div style="height:1px;background:#2c3338;width:35%;opacity:0.6"></div></div>
+
+    <div style="max-width:660px;margin:0 auto;padding:0 32px;position:relative">
+      <div style="position:relative;z-index:10;padding:14px 0 0">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fafafa;border-radius:10px 10px 0 0;border:1px solid #e8e8e8;border-bottom:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2c3338" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-size:12px;color:#333;font-weight:400">embriaguez</span>
+          <span style="margin-left:auto;font-size:9px;color:#b0b0b0;font-weight:300">4 resultados</span>
+          <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#ccc;font-size:14px;border-radius:50%;transition:background 0.15s" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='transparent'">×</div>
+        </div>
+
+        <div style="background:#fafafa;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 10px 10px;padding-bottom:6px">
+          <!-- Hierarchy match -->
+          <div style="padding:10px 16px 4px;font-size:9px;color:#c0c0c0;font-weight:400;text-transform:uppercase;letter-spacing:1.5px">Navegação</div>
+          <div style="padding:6px 16px;cursor:pointer;border-radius:6px;margin:0 6px;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            <div style="width:5px;height:5px;border-radius:50%;background:#2c3338;flex-shrink:0"></div>
+            <span style="font-size:11px;color:#555">Cap. XXI — Dos Crimes em Espécie</span>
+          </div>
+
+          <!-- Divider -->
+          <div style="height:1px;background:#efefef;margin:6px 16px"></div>
+
+          <!-- Full-text results -->
+          <div style="padding:8px 16px 4px;font-size:9px;color:#c0c0c0;font-weight:400;text-transform:uppercase;letter-spacing:1.5px">No texto</div>
+
+          <div style="padding:8px 16px;cursor:pointer;border-radius:8px;margin:0 6px;border-left:2px solid transparent;transition:all 0.15s" onmouseover="this.style.background='#f0f0f0';this.style.borderLeftColor='#2c3338'" onmouseout="this.style.background='transparent';this.style.borderLeftColor='transparent'">
+            <div style="font-family:Literata,serif;font-size:12.5px;color:#4a5058;line-height:1.6">
+              <span style="font-weight:500;color:#2c3338">Art. 165.</span> Dirigir sob a influência de álcool ou de qualquer outra substância que determine dependência. Infração: gravíssima. <span style="background:linear-gradient(120deg,#fff8e1 0%,#fff3c4 100%);padding:1px 3px;border-radius:2px">Embriaguez</span> ao volante...
+            </div>
+            <div style="font-size:9px;color:#c0c0c0;margin-top:3px;font-weight:300">Título III › Cap. XV — Das Infrações</div>
+          </div>
+
+          <div style="padding:8px 16px;cursor:pointer;border-radius:8px;margin:0 6px;border-left:2px solid transparent;transition:all 0.15s" onmouseover="this.style.background='#f0f0f0';this.style.borderLeftColor='#2c3338'" onmouseout="this.style.background='transparent';this.style.borderLeftColor='transparent'">
+            <div style="font-family:Literata,serif;font-size:12.5px;color:#4a5058;line-height:1.6">
+              <span style="font-weight:500;color:#2c3338">Art. 276.</span> Qualquer concentração de álcool por litro de sangue ou por litro de ar sujeita o condutor... <span style="background:linear-gradient(120deg,#fff8e1 0%,#fff3c4 100%);padding:1px 3px;border-radius:2px">embriaguez</span>...
+            </div>
+            <div style="font-size:9px;color:#c0c0c0;margin-top:3px;font-weight:300">Título IV › Cap. II — Dos Crimes</div>
+          </div>
+
+          <div style="padding:8px 16px;cursor:pointer;border-radius:8px;margin:0 6px;border-left:2px solid transparent;transition:all 0.15s" onmouseover="this.style.background='#f0f0f0';this.style.borderLeftColor='#2c3338'" onmouseout="this.style.background='transparent';this.style.borderLeftColor='transparent'">
+            <div style="font-family:Literata,serif;font-size:12.5px;color:#4a5058;line-height:1.6">
+              <span style="font-weight:500;color:#2c3338">Art. 306.</span> Conduzir veículo automotor com capacidade psicomotora alterada em razão da influência de álcool ou <span style="background:linear-gradient(120deg,#fff8e1 0%,#fff3c4 100%);padding:1px 3px;border-radius:2px">embriaguez</span>...
+            </div>
+            <div style="font-size:9px;color:#c0c0c0;margin-top:3px;font-weight:300">Título IV › Cap. XIX</div>
+          </div>
+
+          <div style="padding:6px 16px;font-size:10px;color:#d0d0d0;font-weight:300;display:flex;gap:14px;border-top:1px solid #f0f0f0;margin-top:4px">
+            <span>↑↓</span><span>⏎ ir</span><span>esc</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOBILE ============ -->
+<div class="mobile-col">
+  <div class="screen-label">Mobile — Leitura</div>
+  <div class="frame" style="margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:11px">
+      <span style="color:#999;font-size:11px;font-weight:300">CTB</span>
+      <div style="flex:1"></div>
+      <div style="padding:3px 10px;border-radius:20px;background:#2c3338;color:#fff;font-size:9px">LS</div>
+      <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:14px;cursor:pointer">⋯</div>
+    </div>
+    <div style="height:1px;background:#f0f0f0"><div style="height:1px;background:#2c3338;width:35%;opacity:0.5"></div></div>
+
+    <div style="padding:0 16px">
+      <!-- Breadcrumb -->
+      <div style="display:flex;align-items:center;gap:4px;padding:10px 0 8px;cursor:pointer">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:10px;color:#c0c0c0;font-weight:300">Tít. II</span>
+        <span style="font-size:8px;color:#ddd">›</span>
+        <span style="font-size:10px;color:#c0c0c0;font-weight:300">Cap. I</span>
+        <span style="font-size:8px;color:#ddd">›</span>
+        <span style="font-size:10px;color:#888;font-weight:400">Art. 45</span>
+        <span style="margin-left:auto;font-size:9px;color:#ddd;font-weight:300">45/341</span>
+      </div>
+      <div style="height:1px;background:linear-gradient(90deg,#f0f0f0,transparent)"></div>
+
+      <div style="padding:20px 0;font-family:Literata,Georgia,serif;font-size:14.5px;color:#3a3f44;line-height:1.9;font-weight:400">
+        <div style="margin-bottom:16px"><span style="font-weight:500;color:#2c3338">Art. 45.</span> Os sinais de trânsito classificam-se em:</div>
+        <div style="padding-left:20px;margin-bottom:10px"><span style="font-weight:500;color:#2c3338">I</span> — verticais;</div>
+        <div style="padding-left:20px;margin-bottom:10px"><span style="font-weight:500;color:#2c3338">II</span> — horizontais;</div>
+        <div style="padding-left:20px;margin-bottom:10px"><span style="font-weight:500;color:#2c3338">III</span> — dispositivos de sinalização auxiliar.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-label">Mobile — Busca aberta</div>
+  <div class="frame">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:11px">
+      <span style="color:#999;font-size:11px;font-weight:300">CTB</span>
+      <div style="flex:1"></div>
+      <div style="padding:3px 10px;border-radius:20px;background:#2c3338;color:#fff;font-size:9px">LS</div>
+      <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:14px">⋯</div>
+    </div>
+    <div style="height:1px;background:#f0f0f0"><div style="height:1px;background:#2c3338;width:35%;opacity:0.5"></div></div>
+
+    <!-- Search replaces breadcrumb -->
+    <div style="padding:8px 14px">
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:#f5f5f5;border-radius:8px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2c3338" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:12px;color:#333">embriaguez</span>
+        <span style="margin-left:auto;font-size:9px;color:#b0b0b0">4</span>
+        <span style="color:#ccc;font-size:14px">×</span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div style="border-top:1px solid #f0f0f0">
+      <div style="padding:10px 14px 4px;font-size:8px;color:#c8c8c8;text-transform:uppercase;letter-spacing:1.5px;font-weight:400">No texto</div>
+
+      <div style="padding:8px 14px;border-bottom:1px solid #f8f8f8">
+        <div style="font-family:Literata,serif;font-size:12px;color:#4a5058;line-height:1.5">
+          <span style="font-weight:500;color:#2c3338">Art. 165.</span> Dirigir sob influência de álcool... <span style="background:#fff8e1;padding:1px 2px;border-radius:2px">embriaguez</span> ao volante
+        </div>
+        <div style="font-size:8px;color:#ccc;margin-top:3px;font-weight:300">Tít. III › Cap. XV</div>
+      </div>
+
+      <div style="padding:8px 14px;border-bottom:1px solid #f8f8f8">
+        <div style="font-family:Literata,serif;font-size:12px;color:#4a5058;line-height:1.5">
+          <span style="font-weight:500;color:#2c3338">Art. 276.</span> Qualquer concentração de álcool... <span style="background:#fff8e1;padding:1px 2px;border-radius:2px">embriaguez</span>
+        </div>
+        <div style="font-size:8px;color:#ccc;margin-top:3px;font-weight:300">Tít. IV › Cap. II</div>
+      </div>
+
+      <div style="padding:8px 14px">
+        <div style="font-family:Literata,serif;font-size:12px;color:#4a5058;line-height:1.5">
+          <span style="font-weight:500;color:#2c3338">Art. 306.</span> Conduzir veículo com capacidade alterada... <span style="background:#fff8e1;padding:1px 2px;border-radius:2px">embriaguez</span>
+        </div>
+        <div style="font-size:8px;color:#ccc;margin-top:3px;font-weight:300">Tít. IV › Cap. XIX</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Design principles -->
+<div class="design-note">
+  <div class="design-note-item">
+    <h4>Cor</h4>
+    <p>Uma única cor de acento: <span style="display:inline-block;width:10px;height:10px;background:#2c3338;border-radius:2px;vertical-align:middle"></span> #2c3338. Tudo mais é escala de cinza. Highlights em warm yellow sutil.</p>
+  </div>
+  <div class="design-note-item">
+    <h4>Tipografia</h4>
+    <p>Literata para o texto da lei (serifada, feita para leitura longa). Outfit para a UI (geométrica, limpa). Nada mais.</p>
+  </div>
+  <div class="design-note-item">
+    <h4>Bordas e sombras</h4>
+    <p>Sem bordas visíveis no estado de leitura. Sombras apenas no dropdown de busca (e sutis). A progress bar é 1px. O breadcrumb é quase fantasma.</p>
+  </div>
+</div>
+
+</body>
+</html>

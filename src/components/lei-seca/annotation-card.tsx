@@ -43,7 +43,7 @@ interface AnnotationCardProps {
 
 export function AnnotationCard({ slug, onClose }: AnnotationCardProps) {
   const cadernosCtx = useCadernosOptional();
-  const { currentLeiId, currentLeiInfo, currentArtigo } = useLeiSeca();
+  const { currentLeiId, currentLei } = useLeiSeca();
 
   const existingItem = cadernosCtx?.items.find(i => i.provision_slug === slug);
 
@@ -85,16 +85,16 @@ export function AnnotationCard({ slug, onClose }: AnnotationCardProps) {
       : [];
     await cadernosCtx.saveProvision({
       lei_id: currentLeiId,
-      artigo_numero: currentArtigo?.numero || '',
+      artigo_numero: '', // TODO: reconnect after React renderer migration
       provision_slug: slug,
       provision_role: role,
       provision_text: text,
-      lei_sigla: currentLeiInfo?.sigla || null,
-      lei_nome: currentLeiInfo?.nome || null,
-      artigo_contexto: currentArtigo?.contexto || null,
+      lei_sigla: currentLei?.apelido || null,
+      lei_nome: currentLei?.titulo || null,
+      artigo_contexto: null, // TODO: reconnect after React renderer migration
       context_chain: contextChain,
     });
-  }, [cadernosCtx, slug, getProvisionInfo, currentLeiId, currentArtigo, currentLeiInfo]);
+  }, [cadernosCtx, slug, getProvisionInfo, currentLeiId, currentLei]);
 
   const handleSave = useCallback(async () => {
     if (!cadernosCtx || !noteText.trim()) return;

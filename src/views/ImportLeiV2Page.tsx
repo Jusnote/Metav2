@@ -33,10 +33,13 @@ import type {
   ExportedLei,
   HierarchyNode,
   ExportedArticle,
+  LawDataExport,
+  StructuralItem,
 } from '@/types/lei-import';
 import { LEVEL_ORDER } from '@/lib/lei-parser';
 import { downloadAsJson, uploadToSupabase, type UploadProgress } from '@/lib/lei-exporter';
 import { parseTipTapJson, convertTipTapToExport } from '@/lib/tiptap-to-lei';
+import { convertGraphQLToExported, type ConversionResult, type MapperOptions } from '@/lib/lei-graphql-mapper';
 import {
   LeiIngestaoEditor,
   type LeiIngestaoEditorRef,
@@ -69,9 +72,99 @@ export default function ImportLeiV2Page() {
   const [exportData, setExportData] = useState<ExportedLei | null>(null);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [graphqlJsonError, setGraphqlJsonError] = useState<string | null>(null);
+  const [conversionResult, setConversionResult] = useState<ConversionResult | null>(null);
   const editorRef = useRef<LeiIngestaoEditorRef>(null);
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
+
+  // Helper: build structural from allItems when not provided
+  function buildStructuralFromItems(allItems: any[]): StructuralItem[] {
+    const types = ['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO', 'SUBSECAO'];
+    return allItems
+      .filter((i: any) => types.includes(i.type))
+      .map((item: any) => {
+        let subtitle = null;
+        for (let j = item.index + 1; j < Math.min(item.index + 5, allItems.length); j++) {
+          const candidate = allItems[j];
+          if (candidate.type !== 'NAO_IDENTIFICADO') break;
+          if (!candidate.description.startsWith('(')) {
+            subtitle = candidate.description;
+            break;
+          }
+        }
+        return { ...item, subtitle };
+      });
+  }
+
+  // --- GraphQL JSON Import (single unified JSON) ---
+  const handleGraphQLJsonImport = useCallback((jsonText: string) => {
+    setGraphqlJsonError(null);
+    try {
+      const data = JSON.parse(jsonText);
+
+      // Validate: must have allItems array
+      if (!data.allItems || !Array.isArray(data.allItems) || data.allItems.length === 0) {
+        setGraphqlJsonError('JSON invalido: deve conter o campo "allItems" com array de itens.');
+        return;
+      }
+
+      // Validate item structure
+      if (!data.allItems[0].codeInt64 || !data.allItems[0].type || !data.allItems[0].description) {
+        setGraphqlJsonError('JSON invalido: itens devem ter codeInt64, type e description.');
+        return;
+      }
+
+      // Use structural from JSON (accurate) or build from allItems (fallback)
+      const hasStructural = data.structural && Array.isArray(data.structural) && data.structural.length > 0;
+
+      const lawData: LawDataExport = {
+        document: data.document || undefined,
+        docId: data.document?.docId || data.docId || 0,
+        extractedAt: data.extractedAt || new Date().toISOString(),
+        allItems: data.allItems,
+        structural: hasStructural ? data.structural : buildStructuralFromItems(data.allItems),
+        stats: data.stats || {
+          totalItems: data.allItems.length,
+          totalStructural: hasStructural ? data.structural.length : 0,
+          totalArticles: data.allItems.filter((i: any) => i.type === 'ARTIGO').length,
+        },
+      };
+
+      // Auto-fill metadata from document
+      setMetadata((m) => {
+        const updated = { ...m };
+        const doc = data.document;
+        if (doc) {
+          if (!updated.nome) updated.nome = doc.title || '';
+          if (!updated.ementa) updated.ementa = doc.description || '';
+          if (!updated.numero) updated.numero = doc.title || '';
+          if (!updated.id) {
+            const typeSlug = (doc.type || 'lei').toLowerCase().replace(/\s+/g, '-');
+            updated.id = typeSlug + '-' + (doc.docId || Date.now());
+          }
+          if (!updated.data_publicacao && doc.date) {
+            const d = new Date(doc.date);
+            updated.data_publicacao = d.toISOString().split('T')[0];
+          }
+        } else if (!updated.id) {
+          updated.id = 'lei-import-' + Date.now();
+        }
+        return updated;
+      });
+
+      // Convert to our schema
+      const result = convertGraphQLToExported(lawData, metadata, {
+        useStructuralSubtitles: hasStructural,
+      });
+      setConversionResult(result);
+      setExportData(result.exportedLei);
+
+      setStep('hierarchy');
+    } catch (err) {
+      setGraphqlJsonError(err instanceof Error ? err.message : 'Erro ao processar JSON');
+    }
+  }, [metadata]);
 
   // --- Step 1: Parse TipTap JSON ---
   const handleParse = useCallback(() => {
@@ -172,16 +265,25 @@ export default function ImportLeiV2Page() {
           metadata={metadata}
           setMetadata={setMetadata}
           onNext={handleParse}
+          onGraphQLImport={handleGraphQLJsonImport}
+          graphqlJsonError={graphqlJsonError}
         />
       )}
-      {step === 'hierarchy' && parseResult && (
+      {step === 'hierarchy' && conversionResult && (
+        <StepGraphQLReport
+          result={conversionResult}
+          onNext={() => setStep('review')}
+          onBack={goBack}
+        />
+      )}
+      {step === 'hierarchy' && !conversionResult && parseResult && (
         <StepHierarchy
           parseResult={parseResult}
           onNext={handleConvert}
           onBack={goBack}
         />
       )}
-      {step === 'review' && exportData && parseResult && (
+      {step === 'review' && exportData && (
         <StepReview
           exportData={exportData}
           parseResult={parseResult}
@@ -209,6 +311,185 @@ export default function ImportLeiV2Page() {
 }
 
 // ============================================================
+// Step: GraphQL Import Report
+// ============================================================
+
+function StepGraphQLReport({
+  result,
+  onNext,
+  onBack,
+}: {
+  result: ConversionResult;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  const { stats, unmappedItems, structuralWarnings } = result;
+  const hasIssues = unmappedItems.length > 0;
+
+  const overallStatus = unmappedItems.length === 0
+    ? 'green'
+    : unmappedItems.length > 5
+    ? 'red'
+    : 'yellow';
+
+  const statusColors = {
+    green: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+    red: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  };
+
+  const statusLabels = {
+    green: 'Perfeito',
+    yellow: 'Atenção — itens para revisar',
+    red: 'Problemas encontrados',
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Overall status */}
+      <div className={`p-4 rounded-lg ${statusColors[overallStatus]}`}>
+        <div className="flex items-center gap-3">
+          {overallStatus === 'green' && <Check className="h-5 w-5" />}
+          {overallStatus === 'yellow' && <AlertTriangle className="h-5 w-5" />}
+          {overallStatus === 'red' && <XCircle className="h-5 w-5" />}
+          <div>
+            <div className="font-semibold text-lg">{statusLabels[overallStatus]}</div>
+            <div className="text-sm opacity-80">
+              {stats.totalInput} itens processados → {stats.totalArticles} artigos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <div className="text-2xl font-bold">{stats.totalUniqueArticles || stats.totalArticles}</div>
+            <div className="text-xs text-muted-foreground">Artigos Únicos</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <div className="text-2xl font-bold text-red-600">{stats.totalRevoked}</div>
+            <div className="text-xs text-muted-foreground">Artigos Revogados</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <div className="text-2xl font-bold text-orange-600">{stats.totalDuplicateVersions || 0}</div>
+            <div className="text-xs text-muted-foreground">Versões Duplicadas</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{stats.totalAnnotations}</div>
+            <div className="text-xs text-muted-foreground">Anotações</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <div className="text-2xl font-bold">{stats.totalStructural}</div>
+            <div className="text-xs text-muted-foreground">Estruturais</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Secondary stats */}
+      <div className="flex flex-wrap gap-2">
+        <Badge variant="secondary">Total itens: {stats.totalArticles} (com duplicatas)</Badge>
+        <Badge variant="secondary">Itens revogados (todos): {stats.totalRevokedItems || 0}</Badge>
+        <Badge variant="secondary">Metadata: {stats.totalMetadata}</Badge>
+        <Badge variant="secondary">Tabelas: {stats.totalTabela}</Badge>
+        <Badge variant="secondary">Pre-conteúdo: {stats.totalPreContent}</Badge>
+        <Badge variant="secondary">Input total: {stats.totalInput}</Badge>
+        {stats.totalStructuralWarnings > 0 && (
+          <Badge variant="outline">Divergências estruturais: {stats.totalStructuralWarnings}</Badge>
+        )}
+      </div>
+
+      {/* Unmapped items (flagged for review) */}
+      {unmappedItems.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+              Itens para Revisão Manual ({unmappedItems.length})
+            </CardTitle>
+            <CardDescription>
+              Estes itens foram salvos mas não puderam ser classificados automaticamente. Revise antes de confirmar.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="max-h-[200px]">
+              <div className="space-y-2">
+                {unmappedItems.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs p-2 bg-muted/50 rounded">
+                    <Badge variant="outline" className="text-[10px] shrink-0">
+                      [{item.index}]
+                    </Badge>
+                    <span className="text-muted-foreground">{item.description.substring(0, 150)}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Structural warnings */}
+      {structuralWarnings.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              Validação Cruzada ({structuralWarnings.length} divergências)
+              <Badge variant="secondary" className="text-[10px]">informativo</Badge>
+            </CardTitle>
+            <CardDescription className="text-xs">
+              O JSON estrutural (fonte primária) difere do reconstruído automaticamente.
+              Isso é esperado — significa que o estrutural tem subtítulos mais precisos.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="max-h-[150px]">
+              <ul className="space-y-1">
+                {structuralWarnings.map((w, i) => (
+                  <li key={i} className="text-xs text-muted-foreground">{w}</li>
+                ))}
+              </ul>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Pre-content info */}
+      {result.preContent.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">Conteúdo Pré-Artigos ({result.preContent.length} itens)</CardTitle>
+            <CardDescription className="text-xs">
+              Itens antes do primeiro artigo (preâmbulo, vigência, etc.) — armazenados como metadata.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
+
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onBack}>
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+        <Button onClick={onNext}>
+          {hasIssues ? 'Continuar mesmo assim' : 'Revisar Artigos'}
+          <ChevronRight className="h-4 w-4 ml-2" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // Step 1: TipTap Editor (replaces Textarea)
 // ============================================================
 
@@ -217,30 +498,133 @@ function StepEditor({
   metadata,
   setMetadata,
   onNext,
+  onGraphQLImport,
+  graphqlJsonError,
 }: {
   editorRef: React.RefObject<LeiIngestaoEditorRef | null>;
   metadata: LeiMetadata;
   setMetadata: (v: LeiMetadata) => void;
   onNext: () => void;
+  onGraphQLImport?: (jsonText: string) => void;
+  graphqlJsonError?: string | null;
 }) {
+  const [importMode, setImportMode] = useState<'editor' | 'graphql'>('graphql');
+  const [jsonText, setJsonText] = useState('');
+  const [jsonStats, setJsonStats] = useState<{
+    items: number; articles: number; revoked: number;
+    structural: number; hasDocument: boolean; title: string;
+  } | null>(null);
+
+  const handleJsonChange = (text: string) => {
+    setJsonText(text);
+    try {
+      const data = JSON.parse(text);
+      if (data?.allItems && Array.isArray(data.allItems)) {
+        setJsonStats({
+          items: data.allItems.length,
+          articles: data.allItems.filter((i: any) => i.type === 'ARTIGO').length,
+          revoked: data.allItems.filter((i: any) => i.revoked === true).length,
+          structural: data.structural?.length || 0,
+          hasDocument: !!data.document,
+          title: data.document?.title || '',
+        });
+      } else {
+        setJsonStats(null);
+      }
+    } catch {
+      setJsonStats(null);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* TipTap Editor */}
+      {/* Input area */}
       <div className="lg:col-span-2 space-y-3">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Editor de Lei</CardTitle>
-            <CardDescription>
-              Cole o texto da lei (Ctrl+V). O editor auto-formata artigos, parágrafos, incisos e alíneas.
-              Use <strong>centralizado</strong> para hierarquia (PARTE, TÍTULO, CAPÍTULO) e <strong>negrito</strong> para labels.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[500px]">
-              <LeiIngestaoEditor ref={editorRef as React.RefObject<LeiIngestaoEditorRef>} />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Mode tabs */}
+        <div className="inline-flex rounded-lg border bg-muted p-0.5">
+          <button
+            onClick={() => setImportMode('graphql')}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+              importMode === 'graphql'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            GraphQL JSON
+          </button>
+          <button
+            onClick={() => setImportMode('editor')}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+              importMode === 'editor'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Editor TipTap
+          </button>
+        </div>
+
+        {importMode === 'graphql' ? (
+          <div className="space-y-3">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Importar via GraphQL</CardTitle>
+                <CardDescription>
+                  Execute o script no console do JusBrasil e copie com:
+                  <br />
+                  <code className="text-xs bg-muted px-1 rounded mt-1 inline-block">copy(JSON.stringify(window._lawData, null, 2))</code>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Textarea
+                  value={jsonText}
+                  onChange={(e) => handleJsonChange(e.target.value)}
+                  placeholder='Cole o JSON aqui (resultado do copy(JSON.stringify(window._lawData, null, 2)))'
+                  className="min-h-[400px] font-mono text-xs"
+                />
+
+                {jsonStats && (
+                  <div className="space-y-2">
+                    <div className="flex gap-2 flex-wrap">
+                      <Badge variant="secondary">{jsonStats.items} itens</Badge>
+                      <Badge variant="secondary">{jsonStats.articles} artigos</Badge>
+                      <Badge variant="secondary">{jsonStats.revoked} revogados</Badge>
+                      <Badge variant="secondary">{jsonStats.structural} estruturais</Badge>
+                      {jsonStats.hasDocument && <Badge className="bg-green-600">{jsonStats.title ? jsonStats.title.substring(0, 50) : 'Documento OK'}</Badge>}
+                    </div>
+                    {!jsonStats.structural && (
+                      <p className="text-xs text-yellow-600">Sem dados estruturais — hierarquia será reconstruída por heurística.</p>
+                    )}
+                    {!jsonStats.hasDocument && (
+                      <p className="text-xs text-yellow-600">Sem metadados do documento — preencha manualmente na lateral.</p>
+                    )}
+                  </div>
+                )}
+
+                {graphqlJsonError && (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>{graphqlJsonError}</AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Editor de Lei</CardTitle>
+              <CardDescription>
+                Cole o texto da lei (Ctrl+V). Use <strong>centralizado</strong> para hierarquia e <strong>negrito</strong> para labels.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[500px]">
+                <LeiIngestaoEditor ref={editorRef as React.RefObject<LeiIngestaoEditorRef>} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Metadata */}
@@ -318,10 +702,21 @@ function StepEditor({
           </Alert>
         )}
 
-        <Button onClick={onNext} className="w-full">
-          Analisar Estrutura
-          <ChevronRight className="h-4 w-4 ml-2" />
-        </Button>
+        {importMode === 'graphql' ? (
+          <Button
+            onClick={() => onGraphQLImport?.(jsonText)}
+            disabled={!jsonText || !jsonStats}
+            className="w-full"
+          >
+            Importar ({jsonStats?.articles || 0} artigos, {jsonStats?.revoked || 0} revogados)
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        ) : (
+          <Button onClick={onNext} className="w-full">
+            Analisar Estrutura
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -520,7 +915,7 @@ function StepReview({
   onUpdateExportData,
 }: {
   exportData: ExportedLei;
-  parseResult: ParseResult;
+  parseResult?: ParseResult | null;
   onNext: () => void;
   onBack: () => void;
   onUpdateExportData: (data: ExportedLei) => void;

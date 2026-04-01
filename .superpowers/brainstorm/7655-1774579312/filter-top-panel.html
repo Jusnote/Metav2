@@ -1,0 +1,156 @@
+<h2>Painel de filtros acima das questoes</h2>
+<p class="subtitle">Filtros visiveis no topo com dropdown flutuante ao clicar</p>
+
+<div class="mockup">
+  <div class="mockup-header">Pagina de Questoes — Layout Proposto</div>
+  <div class="mockup-body" style="padding: 0; background: #fafafa; min-height: 500px;">
+
+    <!-- Search bar -->
+    <div style="padding: 12px 16px; background: white; border-bottom: 1px solid #eee;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="flex: 1; height: 36px; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; padding: 0 12px; font-size: 13px; color: #999;">
+          <span style="margin-right: 8px;">&#128269;</span> Buscar questoes...
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter categories bar -->
+    <div style="padding: 8px 16px; background: white; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+      <!-- Filter chips/buttons -->
+      <div id="btn-materia" style="font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid #e5e5e5; background: white; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s;" onmouseover="this.style.borderColor='#E8930C';this.style.background='#FFF7ED'" onmouseout="this.style.borderColor='#e5e5e5';this.style.background='white'" onclick="showDropdown('materia')">
+        <span style="font-size: 14px;">&#128218;</span> Materia <span style="color: #bbb; font-size: 10px;">&#9662;</span>
+      </div>
+
+      <div style="font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid #F59E0B; background: #FEF3C7; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #92400E;">
+        <span style="font-size: 14px;">&#127979;</span> Banca: CESPE <span style="cursor: pointer; margin-left: 2px;">&#10005;</span>
+      </div>
+
+      <div style="font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid #F59E0B; background: #FEF3C7; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #92400E;">
+        <span style="font-size: 14px;">&#128197;</span> Ano: 2024-2025 <span style="cursor: pointer; margin-left: 2px;">&#10005;</span>
+      </div>
+
+      <div style="font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid #e5e5e5; background: white; cursor: pointer; display: flex; align-items: center; gap: 4px;" onmouseover="this.style.borderColor='#E8930C';this.style.background='#FFF7ED'" onmouseout="this.style.borderColor='#e5e5e5';this.style.background='white'">
+        <span style="font-size: 14px;">&#127963;</span> Orgao <span style="color: #bbb; font-size: 10px;">&#9662;</span>
+      </div>
+
+      <div style="font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid #e5e5e5; background: white; cursor: pointer; display: flex; align-items: center; gap: 4px;" onmouseover="this.style.borderColor='#E8930C';this.style.background='#FFF7ED'" onmouseout="this.style.borderColor='#e5e5e5';this.style.background='white'">
+        <span style="font-size: 14px;">&#128188;</span> Cargo <span style="color: #bbb; font-size: 10px;">&#9662;</span>
+      </div>
+
+      <div style="font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 1px solid #e5e5e5; background: white; cursor: pointer; display: flex; align-items: center; gap: 4px;" onmouseover="this.style.borderColor='#E8930C';this.style.background='#FFF7ED'" onmouseout="this.style.borderColor='#e5e5e5';this.style.background='white'">
+        <span style="font-size: 14px;">&#128209;</span> Assunto <span style="color: #bbb; font-size: 10px;">&#9662;</span>
+      </div>
+
+      <!-- Separator + clear -->
+      <div style="margin-left: auto; font-size: 11px; color: #999; cursor: pointer;" onmouseover="this.style.color='#E8930C'" onmouseout="this.style.color='#999'">Limpar filtros</div>
+    </div>
+
+    <!-- Dropdown flutuante (simulando "Materia" aberto) -->
+    <div style="position: relative;">
+      <div id="dropdown-materia" style="position: absolute; top: 0; left: 16px; width: 320px; background: white; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 10; padding: 0; overflow: hidden;">
+        <!-- Search inside dropdown -->
+        <div style="padding: 10px 12px; border-bottom: 1px solid #f0f0f0;">
+          <div style="height: 30px; background: #f5f5f5; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 12px; color: #999;">
+            &#128269; Buscar materia...
+          </div>
+        </div>
+        <!-- Options list -->
+        <div style="max-height: 250px; overflow-y: auto; padding: 4px 0;">
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: #FFF7ED;">
+            <span style="width: 16px; height: 16px; border: 2px solid #E8930C; border-radius: 3px; display: flex; align-items: center; justify-content: center; background: #E8930C; color: white; font-size: 10px;">&#10003;</span>
+            Direito Administrativo
+            <span style="margin-left: auto; font-size: 10px; color: #999;">137.672</span>
+          </div>
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='white'">
+            <span style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px;"></span>
+            Direito Constitucional
+            <span style="margin-left: auto; font-size: 10px; color: #999;">92.546</span>
+          </div>
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='white'">
+            <span style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px;"></span>
+            Direito Civil
+            <span style="margin-left: auto; font-size: 10px; color: #999;">24.864</span>
+          </div>
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='white'">
+            <span style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px;"></span>
+            Direito Penal
+            <span style="margin-left: auto; font-size: 10px; color: #999;">45.231</span>
+          </div>
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='white'">
+            <span style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px;"></span>
+            Direito do Trabalho
+            <span style="margin-left: auto; font-size: 10px; color: #999;">38.102</span>
+          </div>
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='white'">
+            <span style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px;"></span>
+            Direito Ambiental
+            <span style="margin-left: auto; font-size: 10px; color: #999;">23.364</span>
+          </div>
+          <div style="padding: 7px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='white'">
+            <span style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px;"></span>
+            Direito Tributario
+            <span style="margin-left: auto; font-size: 10px; color: #999;">19.870</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs + controls -->
+    <div style="padding: 8px 16px; background: white; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #eee; margin-top: 0;">
+      <div style="display: flex; gap: 16px; font-size: 12px;">
+        <span style="color: #E8930C; border-bottom: 2px solid #E8930C; padding-bottom: 6px; font-weight: 500;">Todas</span>
+        <span style="color: #999; padding-bottom: 6px;">Nao resolvidas</span>
+        <span style="color: #999; padding-bottom: 6px;">Erradas</span>
+        <span style="color: #999; padding-bottom: 6px;">Marcadas</span>
+      </div>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #999;">
+        <span>Q 1/355.459</span>
+        <span style="padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px;">&#9776;</span>
+        <span style="padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px;">&#9744;</span>
+        <span style="padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px;">&#8593; Recentes</span>
+      </div>
+    </div>
+
+    <!-- Questions list -->
+    <div style="padding: 16px;">
+      <div style="background: white; border-radius: 8px; border: 1px solid #eee; padding: 14px; margin-bottom: 8px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+          <span style="font-size: 9px; background: #EEF2FF; color: #4F46E5; padding: 1px 6px; border-radius: 4px;">CESPE</span>
+          <span style="font-size: 9px; background: #F0FDF4; color: #16A34A; padding: 1px 6px; border-radius: 4px;">2024</span>
+          <span style="font-size: 9px; background: #FEF3C7; color: #D97706; padding: 1px 6px; border-radius: 4px;">Dir. Administrativo</span>
+        </div>
+        <div style="font-size: 13px; color: #333; line-height: 1.5;">Acerca dos principios que regem a administracao publica, julgue o item subsecutivo. O principio da eficiencia impoe a administracao publica...</div>
+      </div>
+
+      <div style="background: white; border-radius: 8px; border: 1px solid #eee; padding: 14px; margin-bottom: 8px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+          <span style="font-size: 9px; background: #EEF2FF; color: #4F46E5; padding: 1px 6px; border-radius: 4px;">FCC</span>
+          <span style="font-size: 9px; background: #F0FDF4; color: #16A34A; padding: 1px 6px; border-radius: 4px;">2025</span>
+          <span style="font-size: 9px; background: #FEF3C7; color: #D97706; padding: 1px 6px; border-radius: 4px;">Dir. Administrativo</span>
+        </div>
+        <div style="font-size: 13px; color: #333; line-height: 1.5;">Sobre os atos administrativos, assinale a alternativa correta quanto a competencia para revogacao e anulacao...</div>
+      </div>
+
+      <div style="background: white; border-radius: 8px; border: 1px solid #eee; padding: 14px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+          <span style="font-size: 9px; background: #EEF2FF; color: #4F46E5; padding: 1px 6px; border-radius: 4px;">VUNESP</span>
+          <span style="font-size: 9px; background: #F0FDF4; color: #16A34A; padding: 1px 6px; border-radius: 4px;">2024</span>
+          <span style="font-size: 9px; background: #FEF3C7; color: #D97706; padding: 1px 6px; border-radius: 4px;">Dir. Constitucional</span>
+        </div>
+        <div style="font-size: 13px; color: #333; line-height: 1.5;">Com relacao aos direitos e garantias fundamentais previstos na Constituicao Federal, e correto afirmar que...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top: 20px; padding: 12px 16px; background: #F0F9FF; border-radius: 8px; font-size: 13px;">
+  <strong>Como funciona:</strong>
+  <ul style="margin: 8px 0 0 16px; padding: 0; line-height: 1.8;">
+    <li>Filtros sempre visiveis como botoes no topo</li>
+    <li>Filtros ativos mudam de cor (amber) e mostram o valor selecionado</li>
+    <li>Clicar abre dropdown flutuante com busca + checkboxes + contagem</li>
+    <li>Questoes atualizam em tempo real embaixo</li>
+    <li>Sem sidebar — toda a largura para as questoes</li>
+  </ul>
+</div>

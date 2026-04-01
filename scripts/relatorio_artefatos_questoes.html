@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório de Artefatos — Questões de Concurso</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e4e4e7; padding: 24px; }
+  h1 { font-size: 22px; margin-bottom: 8px; color: #f4f4f5; }
+  .subtitle { color: #71717a; font-size: 14px; margin-bottom: 24px; }
+  .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat { background: #1c1c24; border: 1px solid #27272a; border-radius: 8px; padding: 16px 20px; min-width: 180px; }
+  .stat .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #71717a; margin-bottom: 4px; }
+  .stat .value { font-size: 24px; font-weight: 700; color: #f4f4f5; }
+  .stat .value.green { color: #4ade80; }
+  .stat .value.red { color: #f87171; }
+  .stat .value.yellow { color: #fbbf24; }
+  table { width: 100%; border-collapse: collapse; background: #1c1c24; border-radius: 8px; overflow: hidden; }
+  th { background: #27272a; text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; }
+  td { padding: 10px 12px; border-top: 1px solid #27272a; vertical-align: top; font-size: 13px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  tr.critical td { border-left: 3px solid #f87171; }
+  tr.warning td { border-left: 3px solid #fbbf24; }
+  tr.info td { border-left: 3px solid #60a5fa; }
+  .example { background: #0f1117; border-radius: 4px; padding: 8px; margin: 4px 0; font-size: 11px; }
+  .example .meta { display: block; color: #71717a; margin-bottom: 2px; }
+  .example code { display: block; white-space: pre-wrap; word-break: break-all; color: #a1a1aa; font-size: 11px; }
+  .example .match { display: block; margin-top: 2px; color: #fbbf24; font-size: 10px; }
+  .section { margin-top: 32px; margin-bottom: 12px; font-size: 16px; font-weight: 600; color: #f4f4f5; }
+  .clean { color: #4ade80; font-size: 13px; padding: 4px 0; }
+  .timestamp { color: #52525b; font-size: 11px; margin-top: 24px; }
+</style>
+</head>
+<body>
+  <h1>Relatório de Artefatos — Questões de Concurso</h1>
+  <p class="subtitle">Scan somente-leitura de todos os arquivos JSON em C:\Users\Home\Desktop\tec_scraper\filtros</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Arquivos JSON</div>
+      <div class="value">3,409,197</div>
+    </div>
+    <div class="stat">
+      <div class="label">Questões escaneadas</div>
+      <div class="value">5,539,108</div>
+    </div>
+    <div class="stat">
+      <div class="label">Padrões detectados</div>
+      <div class="value red">43</div>
+    </div>
+    <div class="stat">
+      <div class="label">Ocorrências totais</div>
+      <div class="value red">12,427,555</div>
+    </div>
+    <div class="stat">
+      <div class="label">Erros de leitura</div>
+      <div class="value red">8</div>
+    </div>
+  </div>
+
+  <div class="section">Artefatos Encontrados</div>
+  
+
+  <table>
+    <thead>
+      <tr>
+        <th>Padrão</th>
+        <th>Descrição</th>
+        <th>Ocorrências</th>
+        <th>Questões afetadas</th>
+        <th>Exemplos (até 5)</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr class="critical">
+          <td><code>tab_char</code></td>
+          <td>Multiple tab characters</td>
+          <td class="num">10,978,618</td>
+          <td class="num">3,242,134</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 799421 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...;&quot; id=&quot;00799421Q-5dcf8645-fa3b53158819&quot; hash=&quot;2091531101&quot;&gt;\r\n		Quanto &amp;agrave;s modalidades de compra e ao cadastro de forn...</code>
+              <span class="match">Match: <b>		</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 798192 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...;&quot; id=&quot;00798192Q-9bb08d30-66b7c49245cf&quot; hash=&quot;1393796662&quot;&gt;\r\n		No que tange &amp;agrave;s modalidades de compra e aos cadastros...</code>
+              <span class="match">Match: <b>		</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 898146 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...;&quot; id=&quot;00898146Q-0d734d03-865d356654c1&quot; hash=&quot;1351680326&quot;&gt;\r\n		Para agilizar compras e vendas foram criados sistemas inform...</code>
+              <span class="match">Match: <b>		</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 898146 | alternativa[0] | administracao_de_recursos_materiais</span>
+              <code>...fy;&quot; id=&quot;00898146Q-f6d812d6-e06529abfc93&quot; hash=&quot;56532372&quot;&gt;\r\n		...</code>
+              <span class="match">Match: <b>		</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 898146 | alternativa[1] | administracao_de_recursos_materiais</span>
+              <code>...fy;&quot; id=&quot;00898146Q-bcdec78c-d5fdd5745799&quot; hash=&quot;56859329&quot;&gt;\r\n		...</code>
+              <span class="match">Match: <b>		</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>excessive_nbsp</code></td>
+          <td>4+ consecutive &amp;nbsp;</td>
+          <td class="num">252,700</td>
+          <td class="num">85,117</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1368949 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...atilde;o em que ela incorrer&amp;aacute; ser&amp;aacute; de&amp;nbsp;&lt;u&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/u&gt;&amp;nbsp; / ano para aquisi&amp;ccedil;&amp;atilde;o de&amp;nbsp;&lt;u&gt;&amp;nb...</code>
+              <span class="match">Match: <b>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1973672 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...nciado abaixo. O planejamento log&amp;iacute;stico significa&lt;u&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp; &lt;/u&gt;novos m&amp;eacute;todos e &lt;u&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;n...</code>
+              <span class="match">Match: <b>&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbs</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1820660 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...ify&quot; id=&quot;01820660Q-11cce12f-0f7383e98d9a&quot; hash=&quot;1252648257&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; O &lt;strong&gt;projeto A&lt;/strong&gt; apresentava custo de capital lo...</code>
+              <span class="match">Match: <b>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1118306 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...inais e sistemas de controle de tr&amp;aacute;fego. No&amp;nbsp;&lt;u&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;/u&gt;&amp;nbsp;o n&amp;iacute;vel de satisfa&amp;ccedil;&amp;atilde;o est&amp;aac...</code>
+              <span class="match">Match: <b>&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1316061 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...luenciam no desempenho da cadeia de suprimentos. A&amp;nbsp;&lt;u&gt; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;/u&gt; mede a capacidade utilizada nas instala&amp;ccedil;&amp;otilde;...</code>
+              <span class="match">Match: <b>&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>md_italic</code></td>
+          <td>*italic* (Markdown)</td>
+          <td class="num">238,935</td>
+          <td class="num">93,913</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 511332 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...\r\n						&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;G_x=\large{\sum d_{ix}~C_i\over\sum C_i}~~e~~G_y=\large{\sum d_{iy}~C_i\over\s...</code>
+              <span class="match">Match: <b>_x=\large{\sum d_</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 80983 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...uir, na forma de &quot;a&amp;ccedil;&amp;atilde;o&quot; e &quot;consequ&amp;ecirc;ncia&quot;*, a &amp;uacute;nica rela&amp;ccedil;&amp;atilde;o &quot;a&amp;ccedil;&amp;atilde;o-consequ&amp;ecirc;ncia&quot; que &lt;strong&gt;N&amp;Atilde;O&lt;/strong&gt; corresponde a um &lt;em&gt;trade-off&lt;/em&gt; log&amp;iacute;stico t&amp;iacute;pico &amp;eacute;&lt;br&gt;\r\n	&lt;br&gt;\r\n	*Assumir quantidade de produtos expedidos constante&lt;br&gt;\r\n	&lt;br...</code>
+              <span class="match">Match: <b>*, a &amp;uacute;nica rela&amp;ccedil;&amp;atilde;o &quot;a&amp;ccedil;&amp;atilde;o-consequ&amp;ecirc;ncia&quot; </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 558574 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...		&lt;td id=&quot;00558574Q-299932bb-b05669b6aae4&quot; hash=&quot;42&quot;&gt;\r\n					*&lt;/td&gt;\r\n				&lt;td id=&quot;00558574Q-4c02f984-fd350b820f63&quot; hash=&quot;42&quot;&gt;\r\n					*&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td id=&quot;00558574Q-e1d87ba5-4d3...</code>
+              <span class="match">Match: <b>*&lt;/td&gt;
+				&lt;td id=&quot;00558574Q-4c02f984-fd350b820f63&quot; hash=&quot;42&quot;&gt;
+					*</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2936395 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&quot;02936395Q-475293d3-5603b15a1e0b&quot; hash=&quot;983253594&quot;&gt;&lt;strong&gt;(_)&lt;/strong&gt; O almoxarife deve possuir uma vis&amp;atilde;o sist&amp;ecirc;mica do almoxarifado, para atuar de maneira eficiente em sua atividade.&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=&quot;02936395Q-240d0d36-a6eae3ecc018&quot; hash=&quot;1680403884&quot;&gt;&lt;strong&gt;(_) &lt;/strong&gt;&amp;Eacute; essencial que o almoxarife seja organiza...</code>
+              <span class="match">Match: <b>_)&lt;/strong&gt; O almoxarife deve possuir uma vis&amp;atilde;o sist&amp;ecirc;mica do almoxa</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2600811 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...=&quot;font-size:11px&quot;&gt;ts/LIVROS/GEST%C3%83O%20MATERIAIS/Apostila_G &lt;/span&gt;&lt;/p&gt; \n&lt;p style=&quot;text-align:right&quot; id=&quot;02600811Q-ae8f9f61-d97d74ce4c76&quot; hash=&quot;1028524618&quot;&gt;&lt;span style=&quot;font-size:11px&quot;&gt;est%C3%A3o%20de%20Materiais_ENAP.pdf&amp;gt; &lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;text-align:justi...</code>
+              <span class="match">Match: <b>_G &lt;/span&gt;&lt;/p&gt; 
+&lt;p style=&quot;text-align:right&quot; id=&quot;02600811Q-ae8f9f61-d97d74ce4c76&quot;</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_math_inline</code></td>
+          <td>$...$ (inline math)</td>
+          <td class="num">159,468</td>
+          <td class="num">100,260</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1368949 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...do a l.000Km de dist&amp;acirc;ncia. O custo do transporte, de R$ 300,00/lote, fica por conta do fornecedor.&lt;/p&gt; \n&lt;p hash=&quot;2144884075&quot; id=&quot;01368949Q-647ca419-17c3ccdbd51d&quot; style=&quot;text-align:justify&quot;&gt;&lt;br&gt; O custo da emiss&amp;atilde;o de um pedido &amp;eacute; estimado em R$ 100,00.&lt;/p&gt; \n&lt;p hash=&quot;1648838064&quot; id=&quot;01368949Q-a766c8ae-a9...</code>
+              <span class="match">Match: <b>$ 300,00/lote, fica por conta do fornecedor.&lt;/p&gt; 
+&lt;p hash=&quot;2144884075&quot; id=&quot;01368</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1669825 | alternativa[0] | administracao_de_recursos_materiais</span>
+              <code>... R$ 15,00 / ano; R$ 30,00 / ano; R$ 150,00 / ano&lt;br&gt; ...</code>
+              <span class="match">Match: <b>$ 15,00 / ano; R$</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1669825 | alternativa[1] | administracao_de_recursos_materiais</span>
+              <code>... R$ 15,00 / ano; R$ 150,00 / ano; R$ 1.500,00 / ano&lt;br&gt; ...</code>
+              <span class="match">Match: <b>$ 15,00 / ano; R$</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1669825 | alternativa[2] | administracao_de_recursos_materiais</span>
+              <code>... R$ 150,00 / ano; R$ 1.500,00 / ano; R$ 15.000,00 / ano&lt;br&gt; ...</code>
+              <span class="match">Match: <b>$ 150,00 / ano; R$</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1669825 | alternativa[3] | administracao_de_recursos_materiais</span>
+              <code>... R$ 150,00 / ano; R$ 30,00 / ano; R$ 15,00 / ano&lt;/p&gt;...</code>
+              <span class="match">Match: <b>$ 150,00 / ano; R$</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>empty_tags</code></td>
+          <td>Empty HTML tags</td>
+          <td class="num">153,684</td>
+          <td class="num">59,788</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 898146 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p id=&quot;00898146Q-62816a40-0d1c98a1bdda&quot; hash=&quot;0&quot;&gt;\r\n	&lt;/p&gt;&lt;p style=&quot;text-align: justify;&quot; id=&quot;00898146Q-0d734d03-865d3...</code>
+              <span class="match">Match: <b>&lt;p id=&quot;00898146Q-62816a40-0d1c98a1bdda&quot; hash=&quot;0&quot;&gt;
+	&lt;/p&gt;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 898146 | alternativa[4] | administracao_de_recursos_materiais</span>
+              <code>...LEC.&lt;/p&gt;\r\n&lt;p id=&quot;00898146Q-d26056a6-2ece194101d3&quot; hash=&quot;0&quot;&gt;&lt;/p&gt;\r\n...</code>
+              <span class="match">Match: <b>&lt;p id=&quot;00898146Q-d26056a6-2ece194101d3&quot; hash=&quot;0&quot;&gt;&lt;/p&gt;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1110255 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p id=&quot;01110255Q-06a29262-2c22bceddb9e&quot; hash=&quot;0&quot;&gt;\r\n	&lt;/p&gt;&lt;p style=&quot;text-align: justify;&quot; id=&quot;01110255Q-43bce437-49680...</code>
+              <span class="match">Match: <b>&lt;p id=&quot;01110255Q-06a29262-2c22bceddb9e&quot; hash=&quot;0&quot;&gt;
+	&lt;/p&gt;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1110255 | alternativa[4] | administracao_de_recursos_materiais</span>
+              <code>...rial &amp;eacute; efetivamente recebido pelo almoxarifado.&lt;/p&gt;\r\n&lt;p id=&quot;01110255Q-679d8e75-3b5080561e67&quot; hash=&quot;0&quot;&gt;&lt;/p&gt;\r\n...</code>
+              <span class="match">Match: <b>&lt;p id=&quot;01110255Q-679d8e75-3b5080561e67&quot; hash=&quot;0&quot;&gt;&lt;/p&gt;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 810756 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p id=&quot;00810756Q-2c8bf23f-0817e7e44af5&quot; hash=&quot;0&quot;&gt;\r\n	&lt;/p&gt;&lt;p style=&quot;text-align: justify;&quot; id=&quot;00810756Q-5d6c1509-17b99...</code>
+              <span class="match">Match: <b>&lt;p id=&quot;00810756Q-2c8bf23f-0817e7e44af5&quot; hash=&quot;0&quot;&gt;
+	&lt;/p&gt;</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_greek</code></td>
+          <td>Greek letters (\alpha, etc.)</td>
+          <td class="num">95,109</td>
+          <td class="num">56,933</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2693738 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...n class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;SS = Z\, x ( \mu D \times \sigma\,L)^2 + ( \mu\,L \times \sigma D)^2&lt;/span&gt;&lt;...</code>
+              <span class="match">Match: <b>\mu</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1995783 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...(Dados: Z&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\alpha&lt;/span&gt; - 1,64).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\alpha</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 213835 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...e&lt;/span&gt; &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\sigma&lt;/span&gt;&lt;sub&gt;L &lt;/sub&gt;&amp;#x2022;K&lt;sub&gt;&lt;span class=&quot;render-latex&quot;...</code>
+              <span class="match">Match: <b>\sigma</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3232165 | enunciado | administracao_de_recursos_materiais</span>
+              <code>... ajuste (&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\beta&lt;/span&gt;) de 0,25, a previs&amp;atilde;o de consumo para o m&amp;ecir...</code>
+              <span class="match">Match: <b>\beta</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3236403 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...e ajuste &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\beta&lt;/span&gt;, de 0,25.&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;text-align:justify&quot;...</code>
+              <span class="match">Match: <b>\beta</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>md_numbered_list</code></td>
+          <td>1. numbered list (Markdown)</td>
+          <td class="num">92,606</td>
+          <td class="num">42,323</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 246639 | alternativa[0] | administracao_de_recursos_materiais</span>
+              <code>...1. Negocia&amp;ccedil;&amp;atilde;o com fornecedor&lt;br&gt;\r\n	&amp;nbsp;&amp;nbsp;&amp;n...</code>
+              <span class="match">Match: <b>1. </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 246639 | alternativa[1] | administracao_de_recursos_materiais</span>
+              <code>...1. Sele&amp;ccedil;&amp;atilde;o de fornecedor&lt;br&gt;\r\n	&amp;nbsp;&amp;nbsp;&amp;nbsp;...</code>
+              <span class="match">Match: <b>1. </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 246639 | alternativa[2] | administracao_de_recursos_materiais</span>
+              <code>...1. Requisi&amp;ccedil;&amp;atilde;o do material&lt;br&gt;\r\n	&amp;nbsp;&amp;nbsp;&amp;nbsp...</code>
+              <span class="match">Match: <b>1. </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 246639 | alternativa[3] | administracao_de_recursos_materiais</span>
+              <code>...1. Requisi&amp;ccedil;&amp;atilde;o do material&lt;br&gt;\r\n	&amp;nbsp;&amp;nbsp;&amp;nbsp...</code>
+              <span class="match">Match: <b>1. </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 246639 | alternativa[4] | administracao_de_recursos_materiais</span>
+              <code>...1. An&amp;aacute;lise da Solicita&amp;ccedil;&amp;atilde;o&lt;br&gt;\r\n	&amp;nbsp;&amp;nbs...</code>
+              <span class="match">Match: <b>1. </b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_misc_cmd</code></td>
+          <td>Misc LaTeX commands</td>
+          <td class="num">86,422</td>
+          <td class="num">62,103</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 511332 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...					&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;G_x=\large{\sum d_{ix}~C_i\over\sum C_i}~~e~~G_y=\large{\sum d_{iy}~C_...</code>
+              <span class="match">Match: <b>\large</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2328038 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...enteditable=&quot;false&quot;&gt;\text{N&amp;iacute;vel de Servi&amp;ccedil;o} = \large{\text{N&amp;uacute;mero de requisi&amp;ccedil;&amp;otilde;es atendidas}...</code>
+              <span class="match">Match: <b>\large</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 351277 | enunciado | administracao_de_recursos_materiais</span>
+              <code>... class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;n&amp;ordm;. K= { \large Dx TR + ES \over \large Q/K }+ 1&lt;/span&gt;&lt;/p&gt;\r\n&lt;p style=&quot;text...</code>
+              <span class="match">Match: <b>\large</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2695976 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...editable=&quot;false&quot;&gt;\underset{ (quantidade)} {LEC} = \sqrt { { \large 2\,xCusto\,do\,Pedido\,x\,Demanda \over Custo\,de\,Armazena...</code>
+              <span class="match">Match: <b>\large</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2096640 | enunciado | administracao_de_recursos_materiais</span>
+              <code>... class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;LEC = \sqrt { \large 2 \times DA \times C_f \over p \times i}&lt;/span&gt;&lt;/p&gt; \n&lt;p has...</code>
+              <span class="match">Match: <b>\large</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>html_unclosed_tag</code></td>
+          <td>Very long unclosed HTML tags</td>
+          <td class="num">85,831</td>
+          <td class="num">68,654</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1180838 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...-fbcbb36d-329bcbc7faf0&quot; hash=&quot;1192528612&quot;&gt;\n  &amp;nbsp;\n &lt;/p&gt; \n &lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=&quot;01180838Q-b9144ec6-9080f03c658d&quot; hash=&quot;424855308&quot;&gt;\n  (__) Canal Log&amp;iacute;stico: Caminho percorrido pelos produtos/servi&amp;ccedil;os de uma empresa at&amp;eacute; chegarem aos seus clientes/usu&amp;aacute;rios finais, ou o roteiro pelo qual uma empresa distribui seus produtos/servi&amp;ccedil;os. Pode ser definido, ainda, como todos os indiv&amp;iacute;duos ou organiza&amp;ccedil;&amp;otilde;es envolvidos no processo de movimenta&amp;ccedil;&amp;atilde;o de produtos/servi&amp;ccedil;os desde o fabricante at&amp;eacute; o consumidor/usu&amp;aacute;rio final;\n &lt;/p&gt; \n &lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=...</code>
+              <span class="match">Match: <b>&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=&quot;01180838Q-b9144ec6-9080f03c6</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1363840 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p style=&quot;text-align:justify&quot; id=&quot;01363840Q-87f090a6-aa6f9667f7be&quot; hash=&quot;773151295&quot;&gt;\n A utiliza&amp;ccedil;&amp;atilde;o da tecnologia da informa&amp;ccedil;&amp;atilde;o pode ser uma grande aliada aos processos log&amp;iacute;sticos, dinamizando processos e subsidiando os processos decis&amp;oacute;rios. Dentre as caracter&amp;iacute;sticas dos sistemas informatizados para gest&amp;atilde;o log&amp;iacute;stica, &amp;eacute; correto afirmar que\n &lt;br&gt; \n ...</code>
+              <span class="match">Match: <b>&lt;p style=&quot;text-align:justify&quot; id=&quot;01363840Q-87f090a6-aa6f9667f7be&quot; hash=&quot;7731512</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 695795 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p style=&quot;text-align:justify&quot; id=&quot;00695795Q-90a5f6b2-eecb797b9056&quot; hash=&quot;1509234677&quot;&gt;\n  Considerando a an&amp;aacute;lise de viabilidade, em que a situa&amp;ccedil;&amp;atilde;o operacional deve ser avaliada, sabe-se que a determina&amp;ccedil;&amp;atilde;o das modifica&amp;ccedil;&amp;otilde;es a serem conduzidas no sistema atual fazem parte do projeto e planejamento log&amp;iacute;stico.\n &lt;/p&gt; \n &lt;p style=&quot;text-align:justify&quot; id=&quot;00695795Q-870d444...</code>
+              <span class="match">Match: <b>&lt;p style=&quot;text-align:justify&quot; id=&quot;00695795Q-90a5f6b2-eecb797b9056&quot; hash=&quot;1509234</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 200556 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p style=&quot;text-align:justify&quot; id=&quot;00200556Q-c8f561db-efaacce27b74&quot; hash=&quot;1169822429&quot;&gt;\n Em sua obra &amp;#x201c;Log&amp;iacute;stica Empresarial&amp;#x201d;, Ballou (2012:338) afirma que &amp;#x201c;a estrutura organizacional da log&amp;iacute;stica &amp;eacute; muitas vezes sens&amp;iacute;vel &amp;agrave;s personalidades peculiares dentro da empresa, &amp;agrave;s tradi&amp;ccedil;&amp;otilde;es organizacionais e &amp;agrave; import&amp;acirc;ncia das atividades log&amp;iacute;sticas&amp;#x201d;. Nesse contexto, a organiza&amp;ccedil;&amp;atilde;o que estabelece linhas claras de autoridade e responsabilidade para a log&amp;iacute;stica &amp;eacute; classificada como:\n &lt;br&gt; \n ...</code>
+              <span class="match">Match: <b>&lt;p style=&quot;text-align:justify&quot; id=&quot;00200556Q-c8f561db-efaacce27b74&quot; hash=&quot;1169822</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1289863 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&lt;p style=&quot;text-align:justify&quot; id=&quot;01289863Q-4d2b7581-c387ffdaca2d&quot; hash=&quot;289928047&quot;&gt;\n O transporte &amp;eacute; conhecido por ser a fun&amp;ccedil;&amp;atilde;o log&amp;iacute;stica de maior peso nos custos operacionais, podendo alcan&amp;ccedil;ar at&amp;eacute; dois ter&amp;ccedil;os do total; sendo assim, &amp;eacute; fundamental que a distribui&amp;ccedil;&amp;atilde;o log&amp;iacute;stica seja capaz de selecionar a melhor op&amp;ccedil;&amp;atilde;o dentre os modais de transporte dispon&amp;iacute;veis na regi&amp;atilde;o, caso contr&amp;aacute;rio, toda a opera&amp;ccedil;&amp;atilde;o poder&amp;aacute; ser inviabilizada. Neste caso, &amp;eacute; importante que as caracter&amp;iacute;sticas de cada modal sejam estudadas para verificar a melhor adequa&amp;ccedil;&amp;atilde;o ao tipo de produto transportado. Analise as caracter&amp;iacute;sticas b&amp;aacute;sicas de quatro modais de transporte existentes no Brasil.\n&lt;/p&gt; \n&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=&quot;0...</code>
+              <span class="match">Match: <b>&lt;p style=&quot;text-align:justify&quot; id=&quot;01289863Q-4d2b7581-c387ffdaca2d&quot; hash=&quot;2899280</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>unicode_control</code></td>
+          <td>Control characters</td>
+          <td class="num">53,737</td>
+          <td class="num">26,344</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 92458 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...q&amp;uuml;ente, relativo &amp;agrave; cadeia de suprimentos.&lt;br&gt;\r\n	&lt;br&gt;\r\n	O canal de distribui&amp;ccedil;&amp;atilde;o f&amp;iacute;sica ...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2594832 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...es utilizadas nas opera&amp;ccedil;&amp;otilde;es do cotidiano da organiza&amp;ccedil;&amp;atilde;o, mas adquiridas esporadicamente, com...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2594591 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...ilde;o pr&amp;eacute;-requisitos que devem ser observados no processo de&lt;br&gt; ...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 70891 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...nistra&amp;ccedil;&amp;atilde;o de recursos materiais.&lt;br&gt;\r\n	&lt;br&gt;\r\n	As estrat&amp;eacute;gias de utiliza&amp;ccedil;&amp;atilde;o dos dife...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2679738 | enunciado | administracao_de_recursos_materiais</span>
+              <code>... outras ind&amp;uacute;strias e diversos produtos de ferro fundido. Disp&amp;otilde;e de um determinado tipo de almoxarifado ond...</code>
+              <span class="match">Match: <b></b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_frac</code></td>
+          <td>\frac{...}</td>
+          <td class="num">45,517</td>
+          <td class="num">33,507</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3195954 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...stoque = &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\frac{Consumo\, m&amp;eacute;dio\, anual}{Estoque\, m&amp;eacute;dio}&lt;/spa...</code>
+              <span class="match">Match: <b>\frac{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 619334 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...an class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;LEC = \sqrt{\frac{2CoD}{CiU}}&lt;/span&gt;&lt;/p&gt;\r\n&lt;p style=&quot;text-align: justify;&quot; id=&quot;...</code>
+              <span class="match">Match: <b>\frac{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3096531 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;ROTATIVIDADE = \frac{Consumo\ m&amp;eacute;dio\ anual}{ Estoque \ m&amp;eacute;dio}&lt;/span...</code>
+              <span class="match">Match: <b>\frac{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2689685 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;D_{t+1} = \frac{P_t + P_{t-1}+P_{t-2}}{3}&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;text...</code>
+              <span class="match">Match: <b>\frac{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3195954 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...stoque = &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\frac{Consumo\, m&amp;eacute;dio\, anual}{Estoque\, m&amp;eacute;dio}&lt;/spa...</code>
+              <span class="match">Match: <b>\frac{</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_sqrt</code></td>
+          <td>\sqrt{...}</td>
+          <td class="num">44,949</td>
+          <td class="num">36,975</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3048321 | alternativa[0] | administracao_de_recursos_materiais</span>
+              <code>... &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;N=\sqrt{It/D}&lt;/span&gt;.&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\sqrt{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3048321 | alternativa[3] | administracao_de_recursos_materiais</span>
+              <code>... &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;N=\sqrt{D/It}+K&lt;/span&gt;.&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\sqrt{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1613818 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...nbsp;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;E = \sqrt{ { \Large { 2CpD \over JCt}}}&lt;/span&gt; onde: &lt;em&gt;E &lt;/em&gt;&amp;eacut...</code>
+              <span class="match">Match: <b>\sqrt{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2695976 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...x&quot; contenteditable=&quot;false&quot;&gt;\underset{ (quantidade)} {LEC} = \sqrt { { \large 2\,xCusto\,do\,Pedido\,x\,Demanda \over Custo\,de\...</code>
+              <span class="match">Match: <b>\sqrt {</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1926215 | enunciado | administracao_de_recursos_materiais</span>
+              <code>... que &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;Q = \sqrt{ { \Large { 2* B * C \over D}}}&lt;/span&gt;&lt;/p&gt; \n&lt;/article&gt; \n&amp;nbs...</code>
+              <span class="match">Match: <b>\sqrt{</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_begin_end</code></td>
+          <td>\begin{...} / \end{...}</td>
+          <td class="num">31,415</td>
+          <td class="num">10,932</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 688837 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...agem &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;= { \begin{pmatrix} { \large Q \over 2} \end{pmatrix}}.T\,P.\,I&lt;/span&gt;&lt;...</code>
+              <span class="match">Match: <b>\begin{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 688837 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...agem &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;= { \begin{pmatrix} { \large Q \over 2} \end{pmatrix}}.T\,P.\,I&lt;/span&gt;&lt;...</code>
+              <span class="match">Match: <b>\begin{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 410223 | alternativa[2] | adminstracao_geral_e_publica</span>
+              <code>...&gt;\r\n	&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;IR= {\begin{pmatrix}\large{n&amp;uacute;mero\,total\,,de\,servi&amp;ccedil;os\,r...</code>
+              <span class="match">Match: <b>\begin{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 410223 | alternativa[3] | adminstracao_geral_e_publica</span>
+              <code>...&gt;\r\n	&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;IR= {\begin{pmatrix}\large{n&amp;uacute;mero\,total\,,de\,servi&amp;ccedil;os\,r...</code>
+              <span class="match">Match: <b>\begin{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 410223 | alternativa[2] | adminstracao_geral_e_publica</span>
+              <code>...&gt;\r\n	&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;IR= {\begin{pmatrix}\large{n&amp;uacute;mero\,total\,,de\,servi&amp;ccedil;os\,r...</code>
+              <span class="match">Match: <b>\begin{</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>md_list</code></td>
+          <td>- list (Markdown)</td>
+          <td class="num">24,872</td>
+          <td class="num">10,703</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2690892 | alternativa[0] | administracao_de_recursos_materiais</span>
+              <code>... - 20,0 %&lt;br&gt; ...</code>
+              <span class="match">Match: <b> - </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1583452 | alternativa[1] | administracao_de_recursos_materiais</span>
+              <code>... - 18&amp;deg;C.&lt;br&gt; ...</code>
+              <span class="match">Match: <b> - </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1583452 | alternativa[2] | administracao_de_recursos_materiais</span>
+              <code>... - 4&amp;deg;C.&lt;br&gt; ...</code>
+              <span class="match">Match: <b> - </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1008223 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...&quot;01008223Q-54991f5e-ed606fb5283d&quot; hash=&quot;974756206&quot;&gt;\r\n	&lt;br&gt;\r\n	- O indicador que compara o estoque virtual (no sistema cont&amp;a...</code>
+              <span class="match">Match: <b>	- </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1400692 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...x;&quot; id=&quot;01400692Q-c1d424d3-5cc1fac04e72&quot; hash=&quot;674741238&quot;&gt;\r\n			- Itens A: a cada dois meses;&lt;/p&gt;\r\n		&lt;p style=&quot;text-align: jus...</code>
+              <span class="match">Match: <b>			- </b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_linebreak</code></td>
+          <td>\\\\ (line break)</td>
+          <td class="num">17,679</td>
+          <td class="num">8,554</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2205492 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...al de problemas \over Quant. total produzida(geradas)} X 100\\{ \large Total de desvios \over Quant. total produzida(gerad...</code>
+              <span class="match">Match: <b>\\</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2689671 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...+ R_2 - (R_1 \times R_2)\\R_{s&amp;eacute;rie} = R_1 \times R_2 \\ R_{backup}=R_1 + [(1 - R_1) \times R_2]&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; ...</code>
+              <span class="match">Match: <b>\\</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1346134 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...2.2.1.1.xx.xx \,\,\,\,\, Dota&amp;ccedil;&amp;atilde;o \,\, Inicial \\ C \,\,\,\,\, 6.2.2.1.1.xx.xx \,\,\,\,\, Cr&amp;eacute;dito \,\,...</code>
+              <span class="match">Match: <b>\\</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2161198 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...a Ordin&amp;aacute;ria} \quad &amp;amp; \quad \text{R} $ 100.000,00 \\ \text{Receita Or&amp;ccedil;ament&amp;aacute;ria Vinculada} \quad &amp;...</code>
+              <span class="match">Match: <b>\\</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 576633 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...a\,da\,informa&amp;ccedil;&amp;atilde;o:\,or&amp;ccedil;ament&amp;aacute;ria\\ \over D\,5.2.1.1.x.xx.xx\,previs&amp;atilde;o\,inicial\,da\,rec...</code>
+              <span class="match">Match: <b>\\</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_bullet</code></td>
+          <td>\bullet</td>
+          <td class="num">15,218</td>
+          <td class="num">3,865</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2474530 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...9276352&quot;&gt;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\bullet&lt;/span&gt; recebimento, separa&amp;ccedil;&amp;atilde;o e encaminhament...</code>
+              <span class="match">Match: <b>\bullet</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2731557 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...justify&quot;&gt;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\bullet&lt;/span&gt;&amp;nbsp;no dia 1&amp;ordm;/6/2023, entraram 500 unidades ao...</code>
+              <span class="match">Match: <b>\bullet</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2731547 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...justify&quot;&gt;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\bullet&lt;/span&gt; demanda prevista&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;...</code>
+              <span class="match">Match: <b>\bullet</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2145694 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...7909612&quot;&gt;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\bullet&lt;/span&gt; &amp;Eacute; uma classifica&amp;ccedil;&amp;atilde;o estat&amp;iacut...</code>
+              <span class="match">Match: <b>\bullet</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2444065 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...8106911&quot;&gt;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\bullet&lt;/span&gt; PP = Ponto de Pedido.&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;margin-...</code>
+              <span class="match">Match: <b>\bullet</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>null_text</code></td>
+          <td>null as text</td>
+          <td class="num">14,584</td>
+          <td class="num">6,032</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1690325 | alternativa[4] | biologia_biomedicina</span>
+              <code>... Levantar a suspeita de Rh &lt;em&gt;null&lt;/em&gt;.&lt;/p&gt;...</code>
+              <span class="match">Match: <b>null</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2426516 | alternativa[4] | biologia_biomedicina</span>
+              <code>...e &lt;em&gt;locus &lt;/em&gt;ou pela presen&amp;ccedil;a de alelo nulo (&lt;em&gt;Null allele&lt;/em&gt;).&lt;/p&gt;...</code>
+              <span class="match">Match: <b>Null</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1690325 | alternativa[4] | biologia_biomedicina</span>
+              <code>... Levantar a suspeita de Rh &lt;em&gt;null&lt;/em&gt;.&lt;/p&gt;...</code>
+              <span class="match">Match: <b>null</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2426516 | alternativa[4] | biologia_biomedicina</span>
+              <code>...e &lt;em&gt;locus &lt;/em&gt;ou pela presen&amp;ccedil;a de alelo nulo (&lt;em&gt;Null allele&lt;/em&gt;).&lt;/p&gt;...</code>
+              <span class="match">Match: <b>Null</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2912528 | alternativa[0] | desenho_tecnico_e_artes_graficas</span>
+              <code>... null&lt;br&gt; ...</code>
+              <span class="match">Match: <b>null</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_environment</code></td>
+          <td>LaTeX environments</td>
+          <td class="num">11,967</td>
+          <td class="num">8,436</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 688837 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...agem &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;= { \begin{pmatrix} { \large Q \over 2} \end{pmatrix}}.T\,P.\,I&lt;/span&gt;&lt;/p&gt;\r\n&lt;p ...</code>
+              <span class="match">Match: <b>\begin{pmatrix}</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 688837 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...agem &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;= { \begin{pmatrix} { \large Q \over 2} \end{pmatrix}}.T\,P.\,I&lt;/span&gt;&lt;/p&gt;\r\n&lt;p ...</code>
+              <span class="match">Match: <b>\begin{pmatrix}</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 410223 | alternativa[2] | adminstracao_geral_e_publica</span>
+              <code>...&gt;\r\n	&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;IR= {\begin{pmatrix}\large{n&amp;uacute;mero\,total\,,de\,servi&amp;ccedil;os\,realizado...</code>
+              <span class="match">Match: <b>\begin{pmatrix}</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 410223 | alternativa[3] | adminstracao_geral_e_publica</span>
+              <code>...&gt;\r\n	&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;IR= {\begin{pmatrix}\large{n&amp;uacute;mero\,total\,,de\,servi&amp;ccedil;os\,refeitos\...</code>
+              <span class="match">Match: <b>\begin{pmatrix}</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 410223 | alternativa[2] | adminstracao_geral_e_publica</span>
+              <code>...&gt;\r\n	&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;IR= {\begin{pmatrix}\large{n&amp;uacute;mero\,total\,,de\,servi&amp;ccedil;os\,realizado...</code>
+              <span class="match">Match: <b>\begin{pmatrix}</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>html_xml_namespace</code></td>
+          <td>&lt;o:p&gt; / &lt;w: (MS Word XML)</td>
+          <td class="num">7,361</td>
+          <td class="num">34</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1345294 | alternativa[4] | adminstracao_geral_e_publica</span>
+              <code>...mentSettings&gt;\r\n&lt;/xml&gt;&lt;![endif]--&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n  &lt;w:View&gt;Normal&lt;/w:View&gt;\r\n  &lt;w:Zoom&gt;0&lt;/w:Zoo...</code>
+              <span class="match">Match: <b>&lt;w:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 6308 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...iza&amp;ccedil;&amp;atilde;o:&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View&gt;\r\n &lt;w:Zoom&gt;0&lt;/w:Zoom&gt;...</code>
+              <span class="match">Match: <b>&lt;w:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 7621 | enunciado | auditoria_governamental_e_controle</span>
+              <code>...legisla&amp;ccedil;&amp;atilde;o.&lt;br&gt;&lt;/p&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View&gt;\r\n &lt;w:Zoom&gt;0&lt;/w:Zoom&gt;...</code>
+              <span class="match">Match: <b>&lt;w:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 7621 | enunciado | auditoria_governamental_e_controle</span>
+              <code>...legisla&amp;ccedil;&amp;atilde;o.&lt;br&gt;&lt;/p&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View&gt;\r\n &lt;w:Zoom&gt;0&lt;/w:Zoom&gt;...</code>
+              <span class="match">Match: <b>&lt;w:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 58716 | enunciado | economia_e_financas_publicas</span>
+              <code>..., julgue o item que se segue:&lt;br&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View&gt;\r\n &lt;w:Zoom&gt;0&lt;/w:Zoom&gt;...</code>
+              <span class="match">Match: <b>&lt;w:</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>latex_sum_int</code></td>
+          <td>\sum / \int / \prod / \lim</td>
+          <td class="num">5,297</td>
+          <td class="num">3,107</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 511332 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...pan class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;G_x=\large{\sum d_{ix}~C_i\over\sum C_i}~~e~~G_y=\large{\sum d_{iy}~C_i\ove...</code>
+              <span class="match">Match: <b>\sum</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 511332 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...pan class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;G_x=\large{\sum d_{ix}~C_i\over\sum C_i}~~e~~G_y=\large{\sum d_{iy}~C_i\ove...</code>
+              <span class="match">Match: <b>\sum</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 77647 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...gregado: &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\sum&lt;/span&gt; das Notas ponderadas das Dimens&amp;otilde;es.&lt;/p&gt;\r\n&lt;p s...</code>
+              <span class="match">Match: <b>\sum</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2618490 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\text{Gx} = \dfrac {\sum \text{dix pi Ci}} {\sum \text{pi Ci}} \quad \quad \text{Gy}...</code>
+              <span class="match">Match: <b>\sum</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3441821 | enunciado | arquitetura</span>
+              <code>...ula&amp;nbsp;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\sum&lt;/span&gt; refere-se &amp;agrave; tens&amp;atilde;o normal.&lt;/p&gt; \n&amp;nbsp;...</code>
+              <span class="match">Match: <b>\sum</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>encoding_mojibake</code></td>
+          <td>Mojibake (encoding issue)</td>
+          <td class="num">3,291</td>
+          <td class="num">2,630</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1595632 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...Q-b6ac0525-1d86a235e6ba&quot; style=&quot;text-align:center&quot;&gt;&lt;strong&gt;Nº&lt;/strong&gt;&lt;/p&gt; &lt;/td&gt; \n   &lt;td hash=&quot;492537724&quot; id=&quot;01595632Q-4...</code>
+              <span class="match">Match: <b>º</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1595632 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...Q-b6ac0525-1d86a235e6ba&quot; style=&quot;text-align:center&quot;&gt;&lt;strong&gt;Nº&lt;/strong&gt;&lt;/p&gt; &lt;/td&gt; \n   &lt;td hash=&quot;492537724&quot; id=&quot;01595632Q-4...</code>
+              <span class="match">Match: <b>º</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1348167 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...7&quot; style=&quot;text-align:justify&quot;&gt;Assinale a opção que &lt;strong&gt;NÃO &lt;/strong&gt;apresenta um desses elementos.&lt;/p&gt; \n&lt;p hash=&quot;5831...</code>
+              <span class="match">Match: <b>Ã</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 755969 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...rgin-left:40px; text-align:justify&quot;&gt;&lt;br&gt; ( &amp;nbsp; ) A Lei n.º 8.132/1990 atribui à direção nacional do SUS a responsabili...</code>
+              <span class="match">Match: <b>º</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1250044 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...1250044Q-44cf3b88-fade62e7a205&quot;&gt;O artigo 94 do Decreto-Lei nº 200/67 afirma: &amp;ldquo;O Poder Executivo promoverá a revisão...</code>
+              <span class="match">Match: <b>º</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>md_inline_code</code></td>
+          <td>`code` (Markdown)</td>
+          <td class="num">1,296</td>
+          <td class="num">474</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2545749 | enunciado | biologia_biomedicina</span>
+              <code>...a avifauna que ocorrem nas Terras Ind&amp;iacute;genas do Povo A`uwe Uptabi, localizadas em 15 munic&amp;iacute;pios do Estado de Mato Grosso. Al&amp;eacute;m das fotos, cada ave est&amp;aacute; descrita com o nome em A`uwe Uptabi e o nome popular em portugu&amp;ecirc;s, al&amp;eacute;m ...</code>
+              <span class="match">Match: <b>`uwe Uptabi, localizadas em 15 munic&amp;iacute;pios do Estado de Mato Grosso. Al&amp;ea</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2545749 | enunciado | biologia_biomedicina</span>
+              <code>...a avifauna que ocorrem nas Terras Ind&amp;iacute;genas do Povo A`uwe Uptabi, localizadas em 15 munic&amp;iacute;pios do Estado de Mato Grosso. Al&amp;eacute;m das fotos, cada ave est&amp;aacute; descrita com o nome em A`uwe Uptabi e o nome popular em portugu&amp;ecirc;s, al&amp;eacute;m ...</code>
+              <span class="match">Match: <b>`uwe Uptabi, localizadas em 15 munic&amp;iacute;pios do Estado de Mato Grosso. Al&amp;ea</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3286085 | alternativa[3] | biologia_biomedicina</span>
+              <code>...te;deos de ambas as cadeias est&amp;atilde;o no mesmo sentido, 5`&amp;#x2192; 3`.&lt;br&gt; ...</code>
+              <span class="match">Match: <b>`&amp;#x2192; 3`</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 157136 | alternativa[0] | biologia_biomedicina</span>
+              <code>...A replica&amp;ccedil;&amp;atilde;o do DNA ocorre no sentido 5`- 3`.&lt;br&gt;\r\n	...</code>
+              <span class="match">Match: <b>`- 3`</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1817706 | enunciado | direito_administrativo</span>
+              <code>... Anexo I, cujos valores dos padr&amp;otilde;es de vencimento de `A` a `L` s&amp;atilde;o fixados proporcionalmente &amp;agrave;queles c...</code>
+              <span class="match">Match: <b>`A`</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>html_font_tag</code></td>
+          <td>&lt;font&gt; (legacy HTML)</td>
+          <td class="num">1,214</td>
+          <td class="num">408</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3240297 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...03240295Q-b9b13521-0b2640a993eb&quot; style=&quot;text-align:justify&quot;&gt;&lt;font style=&quot;vertical-align:inherit&quot;&gt;&lt;font style=&quot;vertical-align:...</code>
+              <span class="match">Match: <b>&lt;font</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3240302 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...&lt;p hash=&quot;2003559445&quot; id=&quot;03240295Q-b9b13521-0b2640a993eb&quot;&gt;&lt;font style=&quot;vertical-align:inherit&quot;&gt;&lt;font style=&quot;vertical-align:...</code>
+              <span class="match">Match: <b>&lt;font</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3240299 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...03240295Q-b9b13521-0b2640a993eb&quot; style=&quot;text-align:justify&quot;&gt;&lt;font style=&quot;vertical-align:inherit&quot;&gt;&lt;font style=&quot;vertical-align:...</code>
+              <span class="match">Match: <b>&lt;font</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3240304 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...03240295Q-b9b13521-0b2640a993eb&quot; style=&quot;text-align:justify&quot;&gt;&lt;font style=&quot;vertical-align:inherit&quot;&gt;&lt;font style=&quot;vertical-align:...</code>
+              <span class="match">Match: <b>&lt;font</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3240832 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...03240832Q-617c54f0-19f2e826efeb&quot; style=&quot;text-align:justify&quot;&gt;&lt;font style=&quot;vertical-align:inherit&quot;&gt;&lt;font style=&quot;vertical-align:...</code>
+              <span class="match">Match: <b>&lt;font</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>escaped_newline_literal</code></td>
+          <td>\\n literal (not newline)</td>
+          <td class="num">1,201</td>
+          <td class="num">741</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1741439 | alternativa[0] | biblioteconomia</span>
+              <code>...cedil;&amp;atilde;o e Ci&amp;ecirc;ncia da Informa&amp;ccedil;&amp;atilde;o \n (XXIII. : \d 2009 : \c Bonito, MS).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\n</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1741439 | alternativa[1] | biblioteconomia</span>
+              <code>...cedil;&amp;atilde;o e Ci&amp;ecirc;ncia da Informa&amp;ccedil;&amp;atilde;o \n (23. : 2009 : Bonito, MS).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\n</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1741439 | alternativa[2] | biblioteconomia</span>
+              <code>...cedil;&amp;atilde;o e Ci&amp;ecirc;ncia da Informa&amp;ccedil;&amp;atilde;o \n (23. : \d 2009 : \c Bonito, MS).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\n</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1741439 | alternativa[3] | biblioteconomia</span>
+              <code>...cedil;&amp;atilde;o e Ci&amp;ecirc;ncia da Informa&amp;ccedil;&amp;atilde;o \n (23. : \c Bonito, MS : \d 2009).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\n</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1741439 | alternativa[4] | biblioteconomia</span>
+              <code>...cedil;&amp;atilde;o e Ci&amp;ecirc;ncia da Informa&amp;ccedil;&amp;atilde;o \n (2009 : Bonito, MS).&lt;/p&gt;...</code>
+              <span class="match">Match: <b>\n</b></span>
+            </div></td>
+        </tr>
+        <tr class="critical">
+          <td><code>html_style_mso</code></td>
+          <td>mso-* styles (MS Office)</td>
+          <td class="num">1,143</td>
+          <td class="num">411</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2913829 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...tyle type=&quot;text/css&quot;&gt;&lt;!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}--&gt;\r\n&lt;/style&gt;\r\n&lt;style type=&quot;text/css&quot;&gt;&lt;!--td {bor...</code>
+              <span class="match">Match: <b>mso-data-placement:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2913829 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...tyle type=&quot;text/css&quot;&gt;&lt;!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}--&gt;\r\n&lt;/style&gt;\r\n&lt;style type=&quot;text/css&quot;&gt;&lt;!--td {bor...</code>
+              <span class="match">Match: <b>mso-data-placement:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2161182 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...tyle type=&quot;text/css&quot;&gt;&lt;!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}--&gt;\n&lt;/style&gt;\nReferencial b&amp;aacute;sico de governa...</code>
+              <span class="match">Match: <b>mso-data-placement:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2161183 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...tyle type=&quot;text/css&quot;&gt;&lt;!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}--&gt;\n&lt;/style&gt;\nReferencial b&amp;aacute;sico de governa...</code>
+              <span class="match">Match: <b>mso-data-placement:</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2161184 | enunciado | adminstracao_geral_e_publica</span>
+              <code>...tyle type=&quot;text/css&quot;&gt;&lt;!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}--&gt;\n&lt;/style&gt;\nReferencial b&amp;aacute;sico de governa...</code>
+              <span class="match">Match: <b>mso-data-placement:</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>latex_underline</code></td>
+          <td>\underline{...}</td>
+          <td class="num">630</td>
+          <td class="num">266</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1262571 | enunciado | engenharia_ambiental_florestal_sanitaria</span>
+              <code>...p;&amp;nbsp; &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\underline{\times} MgO(S) + \underline{\times} SO_2(g) + \underline{\ti...</code>
+              <span class="match">Match: <b>\underline{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1262571 | enunciado | engenharia_ambiental_florestal_sanitaria</span>
+              <code>...p;&amp;nbsp; &lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;\underline{\times} MgO(S) + \underline{\times} SO_2(g) + \underline{\ti...</code>
+              <span class="match">Match: <b>\underline{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3195965 | enunciado | engenharia_mecanica</span>
+              <code>...x&quot; contenteditable=&quot;false&quot;&gt;f (x) = \frac{3}{2} (1 - x^2), 0 \underline{ &amp;lt;} x \underline{ &amp;lt;} 1&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;t...</code>
+              <span class="match">Match: <b>\underline{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2680924 | enunciado | engenharia_mecanica</span>
+              <code>...&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;I_S = 5/ \underline{-30^{ \circ}}A&lt;/span&gt;, Considere um motor monof&amp;aacute;sico ...</code>
+              <span class="match">Match: <b>\underline{</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3195965 | enunciado | engenharia_mecanica</span>
+              <code>...x&quot; contenteditable=&quot;false&quot;&gt;f (x) = \frac{3}{2} (1 - x^2), 0 \underline{ &amp;lt;} x \underline{ &amp;lt;} 1&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;t...</code>
+              <span class="match">Match: <b>\underline{</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>pdf_page_number</code></td>
+          <td>Isolated page numbers</td>
+          <td class="num">621</td>
+          <td class="num">283</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1261217 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...        &lt;p id=&quot;01261217Q-2171e0c9-b71932a2a2df&quot; hash=&quot;1567&quot;&gt;\n         10\n        &lt;/p&gt; \n        &lt;p id=&quot;01261217Q-dd78f674-f440a67e8eaf...</code>
+              <span class="match">Match: <b>
+         10
+</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1261219 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...        &lt;p id=&quot;01261219Q-a2d6770f-52e21bc7b837&quot; hash=&quot;1567&quot;&gt;\n         10\n        &lt;/p&gt; \n        &lt;p id=&quot;01261219Q-1f85fddf-24dba7feb36d...</code>
+              <span class="match">Match: <b>
+         10
+</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 867815 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>... \n     &lt;p id=&quot;00867815Q-38e7d52c-550770f980fa&quot; hash=&quot;48780&quot;&gt;\n      150\n     &lt;/p&gt; \n     &lt;p id=&quot;00867815Q-ff68e30f-f11ba5d1e5d1&quot; hash...</code>
+              <span class="match">Match: <b>
+      150
+</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 532246 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...:justify&quot; id=&quot;00532246Q-37a511d1-3a08f2585b92&quot; hash=&quot;49586&quot;&gt;\n           200\n          &lt;/p&gt; \n          &lt;p style=&quot;text-align:justify&quot; id=&quot;...</code>
+              <span class="match">Match: <b>
+           200
+</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1488425 | enunciado | artes_e_musica</span>
+              <code>...&lt;p d=&quot;01488422Q-3f9c19\r\n7\r\n2-66d58a6fc891&quot; hash=&quot;1174438853&quot; i=&quot;&quot; id=&quot;01488424Q-7c638f1...</code>
+              <span class="match">Match: <b>
+7
+</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>html_double_entity</code></td>
+          <td>&amp;amp;amp; (double-escaped entity)</td>
+          <td class="num">308</td>
+          <td class="num">110</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3191430 | enunciado | direito_educacional</span>
+              <code>...s://www.scielo.br/j/cp/a/QBBB9RrmKBx7MngxzBfWgcF/?format=pdf&amp;amp;amp;lang=pt. Acesso em: 29 jan. 2024.) &lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; ...</code>
+              <span class="match">Match: <b>&amp;amp;amp;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1949890 | enunciado | enfermagem</span>
+              <code>...pan style=&quot;font-size:11px&quot;&gt;&lt;em&gt;(INCA. Dispon&amp;iacute;vel em: &amp;amp;lt;https://www.inca.gov.br/ &lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&lt;p style=&quot;text-al...</code>
+              <span class="match">Match: <b>&amp;amp;lt;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1949890 | enunciado | enfermagem</span>
+              <code>...pan style=&quot;font-size:11px&quot;&gt;&lt;em&gt;(INCA. Dispon&amp;iacute;vel em: &amp;amp;lt;https://www.inca.gov.br/ &lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&lt;p style=&quot;text-al...</code>
+              <span class="match">Match: <b>&amp;amp;lt;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3582995 | enunciado | informatica</span>
+              <code>...a valor do c&amp;oacute;digo bin&amp;aacute;rio &amp;eacute; denominado &amp;amp;quot;bit&amp;amp;quot; (binary unit), que &amp;eacute; a maior unidade de...</code>
+              <span class="match">Match: <b>&amp;amp;quot;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1067817 | enunciado | informatica</span>
+              <code>...eb-fc13405c8e94&quot; hash=&quot;965124910&quot;&gt;\r\n		&amp;lt;texto&amp;gt;O pacote &amp;amp;lt;chegou&amp;amp;gt; ...&amp;lt;/texto&amp;gt;&lt;/p&gt;\r\n	&lt;p style=&quot;text-align:...</code>
+              <span class="match">Match: <b>&amp;amp;lt;</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>undefined_text</code></td>
+          <td>undefined as text</td>
+          <td class="num">298</td>
+          <td class="num">260</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3408194 | alternativa[0] | lingua_inglesa</span>
+              <code>... Undefined.&lt;br&gt; ...</code>
+              <span class="match">Match: <b>Undefined</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2187372 | alternativa[0] | lingua_inglesa</span>
+              <code>... in 2 because it is talking about an action completed at an undefined time.&lt;br&gt; ...</code>
+              <span class="match">Match: <b>undefined</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2892039 | alternativa[3] | lingua_inglesa</span>
+              <code>...strative pronouns simply refer to nouns that are unknown or undefined in a sentence, for they are used to connect an independent ...</code>
+              <span class="match">Match: <b>undefined</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 24202 | alternativa[1] | lingua_inglesa</span>
+              <code>...undefined....</code>
+              <span class="match">Match: <b>undefined</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1267261 | enunciado | lingua_inglesa</span>
+              <code>...8e&quot; hash=&quot;732957565&quot;&gt;\r\n			According to the except above the undefined statement means that&lt;/p&gt;\r\n		&lt;p id=&quot;01267261Q-9db8c2cb-df078...</code>
+              <span class="match">Match: <b>undefined</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>escaped_quote</code></td>
+          <td>\\&#x27; or \\\&quot; escaped quotes</td>
+          <td class="num">235</td>
+          <td class="num">99</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3460926 | alternativa[3] | biblioteconomia</span>
+              <code>... &quot;\&quot;&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\&quot;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1764220 | enunciado | historia</span>
+              <code>...=&quot;font-size:11px&quot;&gt;&lt;em&gt;(Carta do Gen Cmt da ia DIE. ln: CA.&quot;l\&#x27;SAN&amp;Ccedil;&amp;Atilde;O, Elza. E foi assim que a cobra fumou. R...</code>
+              <span class="match">Match: <b>\&#x27;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1764220 | enunciado | historia</span>
+              <code>...=&quot;font-size:11px&quot;&gt;&lt;em&gt;(Carta do Gen Cmt da ia DIE. ln: CA.&quot;l\&#x27;SAN&amp;Ccedil;&amp;Atilde;O, Elza. E foi assim que a cobra fumou. R...</code>
+              <span class="match">Match: <b>\&#x27;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3483820 | enunciado | informatica</span>
+              <code>... nome de arquivo n&amp;atilde;o pode conter o caractere &#x27;/&#x27; ou &#x27;\&#x27; pois estes s&amp;atilde;o comumente usados como separadores de ...</code>
+              <span class="match">Match: <b>\&#x27;</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 439174 | enunciado | informatica</span>
+              <code>...alva em um arquivo chamado &quot;brde1.xls&quot;, na raiz do drive &quot;C:\&quot;. A Figura 4(b) mostra uma outra planilha eletr&amp;ocirc;nica, ...</code>
+              <span class="match">Match: <b>\&quot;</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>md_bold</code></td>
+          <td>**bold** (Markdown)</td>
+          <td class="num">232</td>
+          <td class="num">151</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 125058 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...			&lt;strong&gt;Receita&lt;br&gt;\r\n					Arrecadada&lt;br&gt;\r\n					(R$) (*) (**)&lt;/strong&gt;&lt;/td&gt;\r\n				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;00125058Q-1d233932-00c70b8ad3ac&quot; hash=&quot;681595918&quot;&gt;\r\n					&lt;strong&gt;Despesa com&lt;br&gt;\r\n					Pessoal&lt;br&gt;\r\n					(R$) (**)&lt;/strong&gt;&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td id=&quot;00125058Q-7d...</code>
+              <span class="match">Match: <b>**)&lt;/strong&gt;&lt;/td&gt;
+				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;001</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 125046 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...0513&quot;&gt;\r\n					&lt;strong&gt;Receita Arrecadada&lt;br&gt;\r\n					(R$) (*) (**)&lt;/strong&gt;&lt;/td&gt;\r\n				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;00125046Q-9a56f40e-2beb4b2dad69&quot; hash=&quot;39423072&quot;&gt;\r\n					&lt;strong&gt;Despesa com&lt;br&gt;\r\n					pessoal (R$) (**)&lt;/strong&gt;&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td id=&quot;00125046Q-c7...</code>
+              <span class="match">Match: <b>**)&lt;/strong&gt;&lt;/td&gt;
+				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;001</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 125046 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...0513&quot;&gt;\r\n					&lt;strong&gt;Receita Arrecadada&lt;br&gt;\r\n					(R$) (*) (**)&lt;/strong&gt;&lt;/td&gt;\r\n				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;00125046Q-9a56f40e-2beb4b2dad69&quot; hash=&quot;39423072&quot;&gt;\r\n					&lt;strong&gt;Despesa com&lt;br&gt;\r\n					pessoal (R$) (**)&lt;/strong&gt;&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td id=&quot;00125046Q-c7...</code>
+              <span class="match">Match: <b>**)&lt;/strong&gt;&lt;/td&gt;
+				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;001</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 125058 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...			&lt;strong&gt;Receita&lt;br&gt;\r\n					Arrecadada&lt;br&gt;\r\n					(R$) (*) (**)&lt;/strong&gt;&lt;/td&gt;\r\n				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;00125058Q-1d233932-00c70b8ad3ac&quot; hash=&quot;681595918&quot;&gt;\r\n					&lt;strong&gt;Despesa com&lt;br&gt;\r\n					Pessoal&lt;br&gt;\r\n					(R$) (**)&lt;/strong&gt;&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td id=&quot;00125058Q-7d...</code>
+              <span class="match">Match: <b>**)&lt;/strong&gt;&lt;/td&gt;
+				&lt;td style=&quot;background-color: rgb(204, 204, 204);&quot; id=&quot;001</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3663697 | enunciado | direito_educacional</span>
+              <code>...r&amp;aacute;grafo &amp;Uacute;nico prev&amp;ecirc; que esta modalidade **poder&amp;aacute; ser oferecida por meio do servi&amp;ccedil;o de apoio especializado em institui&amp;ccedil;&amp;otilde;es especializadas** sob quais condi&amp;ccedil;&amp;otilde;es espec&amp;iacute;ficas?&lt;br&gt; ...</code>
+              <span class="match">Match: <b>**poder&amp;aacute; ser oferecida por meio do servi&amp;ccedil;o de apoio especializado </b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>nan_text</code></td>
+          <td>NaN as text</td>
+          <td class="num">192</td>
+          <td class="num">131</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2204373 | enunciado | biologia_biomedicina</span>
+              <code>...15 mol.L&lt;sup&gt;-1&lt;/sup&gt;. Qual a quantidade, em gramas (g), de NaN&lt;sub&gt;3&lt;/sub&gt; necess&amp;aacute;ria para preparar a solu&amp;ccedil;&amp;...</code>
+              <span class="match">Match: <b>NaN</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2994993 | alternativa[1] | engenhariaeletrica_e_eletronica</span>
+              <code>... n&amp;atilde;o corresponde a um n&amp;uacute;mero (NaN).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>NaN</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2994993 | alternativa[1] | engenhariaeletrica_e_eletronica</span>
+              <code>... n&amp;atilde;o corresponde a um n&amp;uacute;mero (NaN).&lt;br&gt; ...</code>
+              <span class="match">Match: <b>NaN</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1979537 | enunciado | fisica</span>
+              <code>...de g&amp;aacute;s cont&amp;eacute;m 132,0 g de azida s&amp;oacute;dica (NaN&lt;sub&gt;3&lt;/sub&gt;) &amp;#x2014; reagente limitante &amp;#x2014;, al&amp;eacut...</code>
+              <span class="match">Match: <b>NaN</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1979538 | enunciado | fisica</span>
+              <code>...de g&amp;aacute;s cont&amp;eacute;m 132,0 g de azida s&amp;oacute;dica (NaN&lt;sub&gt;3&lt;/sub&gt;) &amp;#x2014; reagente limitante &amp;#x2014;, al&amp;eacut...</code>
+              <span class="match">Match: <b>NaN</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>html_class_mso</code></td>
+          <td>class=MsoNormal (MS Office)</td>
+          <td class="num">187</td>
+          <td class="num">97</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1345294 | alternativa[4] | adminstracao_geral_e_publica</span>
+              <code>...lu&amp;ccedil;&amp;atilde;o na busca pela competitividade.&lt;/p&gt;\r\n	&lt;p class=&quot;MsoNormal&quot; style=&quot;text-align: justify;&quot; id=&quot;01345294Q-4c986a74-7bb985...</code>
+              <span class="match">Match: <b>class=&quot;MsoNormal</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3751 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...&lt;p class=&quot;MsoNormal&quot; style=&quot;margin: 6.85pt 4.7pt 0.0001pt 0cm; text-align: just...</code>
+              <span class="match">Match: <b>class=&quot;MsoNormal</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1915935 | enunciado | direito_administrativo</span>
+              <code>...a&amp;ccedil;&amp;atilde;o P&amp;uacute;blica Estadual.&lt;/p&gt;\n\n&amp;nbsp;\n\n&lt;p class=&quot;MsoBodyTextIndent2&quot; style=&quot;margin-right:11.25pt&quot; id=&quot;01915935Q-16e09864-acb434...</code>
+              <span class="match">Match: <b>class=&quot;MsoBodyTextIndent2</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1915942 | enunciado | direito_administrativo</span>
+              <code>...a&amp;ccedil;&amp;atilde;o P&amp;uacute;blica Estadual.&lt;/p&gt;\n\n&amp;nbsp;\n\n&lt;p class=&quot;MsoBodyTextIndent2&quot; style=&quot;margin-right:11.25pt&quot; id=&quot;01915942Q-a7f21725-199d3f...</code>
+              <span class="match">Match: <b>class=&quot;MsoBodyTextIndent2</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1915935 | enunciado | direito_administrativo</span>
+              <code>...a&amp;ccedil;&amp;atilde;o P&amp;uacute;blica Estadual.&lt;/p&gt;\n\n&amp;nbsp;\n\n&lt;p class=&quot;MsoBodyTextIndent2&quot; style=&quot;margin-right:11.25pt&quot; id=&quot;01915935Q-16e09864-acb434...</code>
+              <span class="match">Match: <b>class=&quot;MsoBodyTextIndent2</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>md_link</code></td>
+          <td>[text](url) (Markdown)</td>
+          <td class="num">152</td>
+          <td class="num">139</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3684136 | enunciado | artes_e_musica</span>
+              <code>...menta&amp;ccedil;&amp;atilde;o no Artesanato. Dispon&amp;iacute;vel em: [Senac](htttps://www.senac.br)&lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;text-align:justify&quot; id=&quot;...</code>
+              <span class="match">Match: <b>[Senac](htttps://www.senac.br)</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3684145 | enunciado | artes_e_musica</span>
+              <code>...&gt;SENAC.Sustentabilidade no Artesanato. Dispon&amp;iacute;vel em:[Senac](https;//www.senac.br). Acesso em: [03/10/2024].&lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p id=&quot;0...</code>
+              <span class="match">Match: <b>[Senac](https;//www.senac.br)</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3684136 | enunciado | artes_e_musica</span>
+              <code>...menta&amp;ccedil;&amp;atilde;o no Artesanato. Dispon&amp;iacute;vel em: [Senac](htttps://www.senac.br)&lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;text-align:justify&quot; id=&quot;...</code>
+              <span class="match">Match: <b>[Senac](htttps://www.senac.br)</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3684145 | enunciado | artes_e_musica</span>
+              <code>...&gt;SENAC.Sustentabilidade no Artesanato. Dispon&amp;iacute;vel em:[Senac](https;//www.senac.br). Acesso em: [03/10/2024].&lt;/em&gt;&lt;/span&gt;&lt;/p&gt; \n&amp;nbsp; \n&lt;p id=&quot;0...</code>
+              <span class="match">Match: <b>[Senac](https;//www.senac.br)</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 518736 | alternativa[0] | biblioteconomia</span>
+              <code>... 314.117.31[316.812](81);&lt;/p&gt;\r\n&lt;p style=&quot;text-align: justify;&quot; id=&quot;00518736Q-ca9e013...</code>
+              <span class="match">Match: <b>[316.812](81)</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>pdf_formfeed</code></td>
+          <td>Form feed (\\f)</td>
+          <td class="num">132</td>
+          <td class="num">84</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 895094 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...der-latex&quot; contenteditable=&quot;false&quot;&gt;NP = (CDxTC) + ES&lt;/span&gt;  , onde: CD &amp;eacute; o consumo di&amp;aacute;rio; TC &amp;eacute; o ...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 895094 | enunciado | administracao_de_recursos_materiais</span>
+              <code>...der-latex&quot; contenteditable=&quot;false&quot;&gt;NP = (CDxTC) + ES&lt;/span&gt;  , onde: CD &amp;eacute; o consumo di&amp;aacute;rio; TC &amp;eacute; o ...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 655565 | enunciado | engenharia_ambiental_florestal_sanitaria</span>
+              <code>...family:georgia,serif;&quot;&gt;&lt;em&gt; m&lt;/em&gt;&lt;/span&gt;&lt;sup&gt;2 &lt;/sup&gt;)&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td style=&quot;width: 130px;&quot; id=...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 655567 | enunciado | engenharia_ambiental_florestal_sanitaria</span>
+              <code>...&gt;] = &lt;span style=&quot;font-family:georgia,serif;&quot;&gt;&amp;#x3c3;&lt;/span&gt;&lt;sub&gt;y&lt;/sub&gt;&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp; =&amp;nbsp; &lt;span class=&quot;render-l...</code>
+              <span class="match">Match: <b></b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 655565 | enunciado | engenharia_ambiental_florestal_sanitaria</span>
+              <code>...family:georgia,serif;&quot;&gt;&lt;em&gt; m&lt;/em&gt;&lt;/span&gt;&lt;sup&gt;2 &lt;/sup&gt;)&lt;/td&gt;\r\n			&lt;/tr&gt;\r\n			&lt;tr&gt;\r\n				&lt;td style=&quot;width: 130px;&quot; id=...</code>
+              <span class="match">Match: <b></b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>html_conditional_comment</code></td>
+          <td>&lt;!--[if]&gt; (IE conditional)</td>
+          <td class="num">129</td>
+          <td class="num">34</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1345294 | alternativa[4] | adminstracao_geral_e_publica</span>
+              <code>...;&quot; id=&quot;01345294Q-8f54446c-18e2649dda44&quot; hash=&quot;23086100&quot;&gt;\r\n		&lt;!--[if !mso]&gt;\r\n&lt;style&gt;\r\nv\:* {behavior:url(#default#VML);}\r\no\:* {b...</code>
+              <span class="match">Match: <b>&lt;!--[if </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 6308 | enunciado | afo_direitofinanceiro_contabilidadepublica</span>
+              <code>...rdo com a seguinte contabiliza&amp;ccedil;&amp;atilde;o:&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View...</code>
+              <span class="match">Match: <b>&lt;!--[if </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 7621 | enunciado | auditoria_governamental_e_controle</span>
+              <code>...previstos, com clareza, na legisla&amp;ccedil;&amp;atilde;o.&lt;br&gt;&lt;/p&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View...</code>
+              <span class="match">Match: <b>&lt;!--[if </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 7621 | enunciado | auditoria_governamental_e_controle</span>
+              <code>...previstos, com clareza, na legisla&amp;ccedil;&amp;atilde;o.&lt;br&gt;&lt;/p&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View...</code>
+              <span class="match">Match: <b>&lt;!--[if </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 58716 | enunciado | economia_e_financas_publicas</span>
+              <code>...nais. Com base nesse modelo, julgue o item que se segue:&lt;br&gt;&lt;!--[if gte mso 9]&gt;&lt;xml&gt;\r\n &lt;w:WordDocument&gt;\r\n &lt;w:View&gt;Normal&lt;/w:View...</code>
+              <span class="match">Match: <b>&lt;!--[if </b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>rtf_bold_italic</code></td>
+          <td>\b / \i (RTF bold/italic)</td>
+          <td class="num">111</td>
+          <td class="num">105</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1420982 | alternativa[0] | biblioteconomia</span>
+              <code>...tica e os poderes das entidades fiscalizadoras superiores : \b La &amp;eacute;tica y los poderes de las agencias fiscales del ...</code>
+              <span class="match">Match: <b>\b</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1420982 | alternativa[2] | biblioteconomia</span>
+              <code>...tica e os poderes das entidades fiscalizadoras superiores : \b La &amp;eacute;tica y los poderes de las agencias fiscales del ...</code>
+              <span class="match">Match: <b>\b</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1420982 | alternativa[3] | biblioteconomia</span>
+              <code>...tica e os poderes das entidades fiscalizadoras superiores = \b La &amp;eacute;tica y los poderes de las agencias fiscales del ...</code>
+              <span class="match">Match: <b>\b</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1426946 | enunciado | biblioteconomia</span>
+              <code>...nbsp; &amp;nbsp;) m&amp;uacute;sica para piano \h [m&amp;uacute;sica] : \b em dois volumes /J.S.Bach. &amp;#x2013;miniature score&lt;/p&gt;\r\n	&lt;p...</code>
+              <span class="match">Match: <b>\b</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2311064 | alternativa[0] | engenhariaeletrica_e_eletronica</span>
+              <code>...&lt;/span&gt;&lt;span class=&quot;render-latex&quot; contenteditable=&quot;false&quot;&gt;i\\i-1&lt;/span&gt; = &lt;em&gt;Rot(z,&lt;span class=&quot;render-latex&quot; contentedit...</code>
+              <span class="match">Match: <b>\i</b></span>
+            </div></td>
+        </tr>
+        <tr class="warning">
+          <td><code>escaped_tab_literal</code></td>
+          <td>\\t literal (not tab)</td>
+          <td class="num">108</td>
+          <td class="num">50</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2801126 | alternativa[4] | ti_banco_de_dados</span>
+              <code>... \t&lt;/p&gt;...</code>
+              <span class="match">Match: <b>\t</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2801126 | alternativa[4] | ti_banco_de_dados</span>
+              <code>... \t&lt;/p&gt;...</code>
+              <span class="match">Match: <b>\t</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1331051 | enunciado | ti_desenvolvimento_de_sistemas</span>
+              <code>...le=&quot;margin-left:40px; text-align:justify&quot;&gt;(&amp;nbsp;&amp;nbsp; ) [ \t]&lt;/p&gt; \n&lt;p hash=&quot;1898393177&quot; id=&quot;01331051Q-acc2ba12-74681ca1b...</code>
+              <span class="match">Match: <b>\t</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 484119 | alternativa[0] | ti_desenvolvimento_de_sistemas</span>
+              <code>... \t&lt;/p&gt;\r\n	&lt;p id=&quot;00484119Q-d59a430b-3d6d245809bf&quot; hash=&quot;4137730...</code>
+              <span class="match">Match: <b>\t</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2390457 | alternativa[3] | ti_desenvolvimento_de_sistemas</span>
+              <code>... \t&lt;br&gt; ...</code>
+              <span class="match">Match: <b>\t</b></span>
+            </div></td>
+        </tr>
+        <tr class="info">
+          <td><code>latex_math_display</code></td>
+          <td>$$...$$ (display math)</td>
+          <td class="num">59</td>
+          <td class="num">55</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3386574 | enunciado | economia_e_financas_publicas</span>
+              <code>...al, caso o Banco Central aumente a base monet&amp;aacute;ria em $$100,00 por meio da compra de t&amp;iacute;tulos p&amp;uacute;blicos de posse do Banco Comercial (considere apenas os valores gerados nesse processo).&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=&quot;03386574Q-07df1e70-32335badf152&quot; hash=&quot;4244368&quot;&gt;&lt;strong&gt;I&lt;/strong&gt;. Ao final do processo, a varia&amp;ccedil;&amp;atilde;o no Papel Moeda em Poder do P&amp;uacute;blico (PPMP) ser&amp;aacute; de $$100.&lt;/p&gt; \n&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id...</code>
+              <span class="match">Match: <b>$$100,00 por meio da compra de t&amp;iacute;tulos p&amp;uacute;blicos de posse do Banco </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3386574 | enunciado | economia_e_financas_publicas</span>
+              <code>...al, caso o Banco Central aumente a base monet&amp;aacute;ria em $$100,00 por meio da compra de t&amp;iacute;tulos p&amp;uacute;blicos de posse do Banco Comercial (considere apenas os valores gerados nesse processo).&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id=&quot;03386574Q-07df1e70-32335badf152&quot; hash=&quot;4244368&quot;&gt;&lt;strong&gt;I&lt;/strong&gt;. Ao final do processo, a varia&amp;ccedil;&amp;atilde;o no Papel Moeda em Poder do P&amp;uacute;blico (PPMP) ser&amp;aacute; de $$100.&lt;/p&gt; \n&lt;p style=&quot;margin-left:40px; text-align:justify&quot; id...</code>
+              <span class="match">Match: <b>$$100,00 por meio da compra de t&amp;iacute;tulos p&amp;uacute;blicos de posse do Banco </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3511254 | enunciado | engenharia_agronomica_e_agricola</span>
+              <code>...longamento, em que ele ter&amp;aacute; um custo de controle de U$$ 48,00 ha&lt;sup&gt;-1&lt;/sup&gt;?&lt;/p&gt; \n&amp;nbsp; \n&lt;p style=&quot;text-align:justify&quot; id=&quot;03511254Q-e88d8b5d-e470cdc9d413&quot; hash=&quot;688268426&quot;&gt;(Dados: Pp: U$$ 266,00; Cd: 0,01929 t; Ec: 0,9)&lt;br&gt; ...</code>
+              <span class="match">Match: <b>$$ 48,00 ha&lt;sup&gt;-1&lt;/sup&gt;?&lt;/p&gt; 
+&amp;nbsp; 
+&lt;p style=&quot;text-align:justify&quot; id=&quot;0351125</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2411887 | enunciado | fisica</span>
+              <code>... &lt;p hash=&quot;34354980&quot; id=&quot;02411887Q-34ba7140-e740e71eb965&quot;&gt;$$$$$&lt;/p&gt; &lt;/td&gt; \n  &lt;/tr&gt; \n  &lt;tr&gt; \n   &lt;td hash=&quot;1224496599&quot; id=&quot;02411887Q-10c34a9b-a3062798cc4d&quot; style=&quot;text-align:center&quot;&gt; &lt;p hash=&quot;1804167421&quot; id=&quot;02411887Q-cebe3359-2520234a05e6&quot;&gt;Madeira&lt;/p&gt; &lt;/td&gt; \n   &lt;td hash=&quot;1473886&quot; id=&quot;02411887Q-36f61b54-10cd2659021a&quot; style=&quot;text-align:center&quot;&gt;0,35&lt;/td&gt; \n   &lt;td hash=&quot;1826059868&quot; id=&quot;02411887Q-9d09259c-56fed2c41cc1&quot; style=&quot;text-align:center&quot;&gt; &lt;p hash=&quot;1152&quot; id=&quot;02411887Q-61b7c199-8ea6040fb034&quot;&gt;$$&lt;/p&gt; &lt;/td&gt; \n  &lt;/tr&gt; \n  &lt;tr&gt; \n   &lt;td hash=&quot;1217128211&quot; id=&quot;02...</code>
+              <span class="match">Match: <b>$$&lt;/p&gt; &lt;/td&gt; 
+  &lt;/tr&gt; 
+  &lt;tr&gt; 
+   &lt;td hash=&quot;1224496599&quot; id=&quot;02411887Q-10c34a9b-a</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2411887 | enunciado | fisica</span>
+              <code>... &lt;p hash=&quot;34354980&quot; id=&quot;02411887Q-34ba7140-e740e71eb965&quot;&gt;$$$$$&lt;/p&gt; &lt;/td&gt; \n  &lt;/tr&gt; \n  &lt;tr&gt; \n   &lt;td hash=&quot;1224496599&quot; id=&quot;02411887Q-10c34a9b-a3062798cc4d&quot; style=&quot;text-align:center&quot;&gt; &lt;p hash=&quot;1804167421&quot; id=&quot;02411887Q-cebe3359-2520234a05e6&quot;&gt;Madeira&lt;/p&gt; &lt;/td&gt; \n   &lt;td hash=&quot;1473886&quot; id=&quot;02411887Q-36f61b54-10cd2659021a&quot; style=&quot;text-align:center&quot;&gt;0,35&lt;/td&gt; \n   &lt;td hash=&quot;1826059868&quot; id=&quot;02411887Q-9d09259c-56fed2c41cc1&quot; style=&quot;text-align:center&quot;&gt; &lt;p hash=&quot;1152&quot; id=&quot;02411887Q-61b7c199-8ea6040fb034&quot;&gt;$$&lt;/p&gt; &lt;/td&gt; \n  &lt;/tr&gt; \n  &lt;tr&gt; \n   &lt;td hash=&quot;1217128211&quot; id=&quot;02...</code>
+              <span class="match">Match: <b>$$&lt;/p&gt; &lt;/td&gt; 
+  &lt;/tr&gt; 
+  &lt;tr&gt; 
+   &lt;td hash=&quot;1224496599&quot; id=&quot;02411887Q-10c34a9b-a</b></span>
+            </div></td>
+        </tr>
+        <tr class="info">
+          <td><code>md_heading</code></td>
+          <td># Heading (Markdown)</td>
+          <td class="num">36</td>
+          <td class="num">36</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1924628 | alternativa[3] | biblioteconomia</span>
+              <code>...# (jogo da velha) - usado para fazer a truncagem de palavras c...</code>
+              <span class="match">Match: <b># </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 213402 | alternativa[2] | desenho_tecnico_e_artes_graficas</span>
+              <code>...# 40,30&lt;br&gt;\r\n	...</code>
+              <span class="match">Match: <b># </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2371534 | alternativa[0] | informatica</span>
+              <code>...# on twitter.co&lt;/p&gt; \n&lt;p style=&quot;text-align:justify&quot; id=&quot;0237153...</code>
+              <span class="match">Match: <b># </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1239153 | alternativa[1] | informatica</span>
+              <code>...# Nome?&lt;/p&gt;\r\n	&lt;p style=&quot;text-align: justify;&quot; id=&quot;01239153Q-4e...</code>
+              <span class="match">Match: <b># </b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1239153 | alternativa[2] | informatica</span>
+              <code>...# Nulo&lt;/p&gt;\r\n	&lt;p style=&quot;text-align: justify;&quot; id=&quot;01239153Q-29a...</code>
+              <span class="match">Match: <b># </b></span>
+            </div></td>
+        </tr>
+        <tr class="info">
+          <td><code>pdf_hyphenation</code></td>
+          <td>pala-\nvra (PDF hyphenation)</td>
+          <td class="num">4</td>
+          <td class="num">4</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 1488528 | enunciado | artes_e_musica</span>
+              <code>...&lt;p d=&quot;01488523Q-\r\nc\r\n7e26cc2-6f3583477a05&quot; hash=&quot;1942654722&quot; i=&quot;&quot; id=&quot;01488526Q...</code>
+              <span class="match">Match: <b>Q-
+c</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1488528 | enunciado | artes_e_musica</span>
+              <code>...&lt;p d=&quot;01488523Q-\r\nc\r\n7e26cc2-6f3583477a05&quot; hash=&quot;1942654722&quot; i=&quot;&quot; id=&quot;01488526Q...</code>
+              <span class="match">Match: <b>Q-
+c</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 26059 | enunciado | lingua_inglesa</span>
+              <code>.../davefleet.com/2008/03/8-questions-to-ask-before-usingyoutube- \r\nas-a-communications-tool, retrieved on September 24th, 2008)&lt;...</code>
+              <span class="match">Match: <b>e- 
+a</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 26059 | enunciado | lingua_inglesa</span>
+              <code>.../davefleet.com/2008/03/8-questions-to-ask-before-usingyoutube- \r\nas-a-communications-tool, retrieved on September 24th, 2008)&lt;...</code>
+              <span class="match">Match: <b>e- 
+a</b></span>
+            </div></td>
+        </tr>
+        <tr class="info">
+          <td><code>rtf_unicode</code></td>
+          <td>\u1234 (RTF unicode)</td>
+          <td class="num">4</td>
+          <td class="num">4</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 2633180 | enunciado | ti_desenvolvimento_de_sistemas</span>
+              <code>...m a especifica&amp;ccedil;&amp;atilde;o ECMA 404, a sequ&amp;ecirc;ncia \u000d, quando usada dentro de uma string, representa o caractere...</code>
+              <span class="match">Match: <b>\u000</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1722084 | alternativa[4] | ti_desenvolvimento_de_sistemas</span>
+              <code>... \u0000 - Caracter Unicode ISO&lt;/p&gt;...</code>
+              <span class="match">Match: <b>\u0000</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 2633180 | enunciado | ti_desenvolvimento_de_sistemas</span>
+              <code>...m a especifica&amp;ccedil;&amp;atilde;o ECMA 404, a sequ&amp;ecirc;ncia \u000d, quando usada dentro de uma string, representa o caractere...</code>
+              <span class="match">Match: <b>\u000</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 1722084 | alternativa[4] | ti_desenvolvimento_de_sistemas</span>
+              <code>... \u0000 - Caracter Unicode ISO&lt;/p&gt;...</code>
+              <span class="match">Match: <b>\u0000</b></span>
+            </div></td>
+        </tr>
+        <tr class="info">
+          <td><code>md_code_block</code></td>
+          <td>``` code block (Markdown)</td>
+          <td class="num">3</td>
+          <td class="num">3</td>
+          <td>
+            <div class="example">
+              <span class="meta">ID 3527403 | enunciado | ti_rede_de_computadores</span>
+              <code>... id=&quot;03527403Q-57a68e75-7ba9ca2318f1&quot; hash=&quot;1890073936&quot;&gt;&lt;em&gt;```yaml &lt;/em&gt;&lt;/p&gt; \n&lt;p style=&quot;margin-left:40px; text-align:justi...</code>
+              <span class="match">Match: <b>```</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3527390 | enunciado | ti_sistemas_operacionais</span>
+              <code>...64a1a3f3c&quot; style=&quot;margin-left:40px; text-align:justify&quot;&gt;&lt;em&gt;```bash &lt;/em&gt;&lt;/p&gt; \n&lt;p hash=&quot;2102492489&quot; id=&quot;03527390Q-dbdd87e6-...</code>
+              <span class="match">Match: <b>```</b></span>
+            </div>
+            <div class="example">
+              <span class="meta">ID 3527390 | enunciado | ti_sistemas_operacionais</span>
+              <code>...64a1a3f3c&quot; style=&quot;margin-left:40px; text-align:justify&quot;&gt;&lt;em&gt;```bash &lt;/em&gt;&lt;/p&gt; \n&lt;p hash=&quot;2102492489&quot; id=&quot;03527390Q-dbdd87e6-...</code>
+              <span class="match">Match: <b>```</b></span>
+            </div></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <div class="section">Padrões Limpos (não encontrados)</div>
+  <p style="color: #71717a; font-size: 12px; line-height: 1.8;">
+    \item &middot; \textbf{...} &middot; \textit{...} &middot; \textsc{...} &middot; \texttt{...} &middot; \emph{...} &middot; \cite{...} &middot; \ref{...} &middot; \footnote{...} &middot; \section{...} &middot; \par &middot; \newline &middot; \noindent &middot; \hspace / \vspace &middot; \par / \pard (RTF) &middot; \fs24 (RTF font size) &middot; \f0 (RTF font) &middot; \cf1 (RTF color) &middot; RTF header &middot; double  spaces (PDF) &middot; Ligatures (fi, fl, etc.) &middot; &lt;center&gt; (legacy HTML) &middot; Replacement char (U+FFFD) &middot; BOM (U+FEFF) &middot; Private use area chars
+  </p>
+
+  <p class="timestamp">Gerado em 18/03/2026 04:20:01 — somente leitura, nenhum arquivo foi modificado.</p>
+</body>
+</html>

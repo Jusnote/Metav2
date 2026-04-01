@@ -1,0 +1,178 @@
+<h2>Resultado da Análise: JusBrasil DOM — Dados Reais</h2>
+<p class="subtitle">Código Civil (Lei 10.406/02) — análise completa via browser automation</p>
+
+<!-- KEY FINDINGS -->
+<div class="section">
+  <h3>Descobertas-Chave</h3>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 16px 0;">
+    <div style="background: #0d1117; border-radius: 8px; padding: 20px; text-align: center; border-top: 3px solid #66bb6a;">
+      <div style="color: #66bb6a; font-size: 32px; font-weight: 700;">2.155</div>
+      <div style="color: #aaa; font-size: 13px;">artigos na página</div>
+      <div style="color: #666; font-size: 11px; margin-top: 4px;">(esperado: ~2.082 + versões revogadas)</div>
+    </div>
+    <div style="background: #0d1117; border-radius: 8px; padding: 20px; text-align: center; border-top: 3px solid #ff9800;">
+      <div style="color: #ff9800; font-size: 32px; font-weight: 700;">4.880</div>
+      <div style="color: #aaa; font-size: 13px;">dispositivos totais (&lt;p&gt;)</div>
+      <div style="color: #666; font-size: 11px; margin-top: 4px;">artigos + §§ + incisos + alíneas</div>
+    </div>
+    <div style="background: #0d1117; border-radius: 8px; padding: 20px; text-align: center; border-top: 3px solid #ef5350;">
+      <div style="color: #ef5350; font-size: 32px; font-weight: 700;">315</div>
+      <div style="color: #aaa; font-size: 13px;">itens revogados</div>
+      <div style="color: #666; font-size: 11px; margin-top: 4px;">CSS class: law-item_revoked</div>
+    </div>
+  </div>
+</div>
+
+<!-- DOM STRUCTURE -->
+<div class="section">
+  <h3>Estrutura DOM Real — Cada Dispositivo é um &lt;p&gt;</h3>
+
+  <div style="background: #0d1117; border-radius: 12px; padding: 20px; font-family: monospace; font-size: 13px; line-height: 2.2;">
+    <div style="color: #666;">// Hierarquia</div>
+    <div><span style="color: #ff9800;">&lt;p&gt;</span> <span style="color: #ccc;">PARTE GERAL</span></div>
+    <div><span style="color: #ff9800;">&lt;p&gt;</span> <span style="color: #ccc;">LIVRO I</span></div>
+    <div style="color: #666; margin: 8px 0;">// Artigo — número é um &lt;a&gt; com link</div>
+    <div>
+      <span style="color: #ff9800;">&lt;p&gt;</span>
+      <span style="color: #42a5f5;">&lt;a href="...topicos/10731186..."&gt;</span><span style="color: #fff;">Art. 3º</span><span style="color: #42a5f5;">&lt;/a&gt;</span>
+      <span style="color: #ccc;"> São absolutamente incapazes...</span>
+    </div>
+    <div style="color: #666; margin: 8px 0;">// Versão revogada — tem CSS class especial</div>
+    <div>
+      <span style="color: #ff9800;">&lt;p class="<span style="color: #ef5350;">law-item_revoked</span>"&gt;</span>
+      <span style="color: #888; text-decoration: line-through;">Art. 3º (versão original)...</span>
+    </div>
+    <div style="color: #666; margin: 8px 0;">// Sub-dispositivos — cada um é seu próprio &lt;p&gt;</div>
+    <div><span style="color: #ff9800;">&lt;p&gt;</span> <span style="color: #ccc;">Parágrafo único. Cessará...</span></div>
+    <div><span style="color: #ff9800;">&lt;p&gt;</span> <span style="color: #ccc;">I - pela concessão dos pais...</span></div>
+    <div><span style="color: #ff9800;">&lt;p&gt;</span> <span style="color: #ccc;">II - pelo casamento;</span></div>
+    <div><span style="color: #ff9800;">&lt;p&gt;</span> <span style="color: #ccc;">III - pelo exercício de emprego público...</span></div>
+  </div>
+</div>
+
+<!-- ANNOTATION ANALYSIS -->
+<div class="section">
+  <h3>Anotações — Ainda São Inline (Mesmo Problema)</h3>
+
+  <div style="background: #0d1117; border-radius: 12px; padding: 20px; margin: 12px 0;">
+    <div style="color: #ef5350; font-weight: 600; margin-bottom: 12px;">Anotações NÃO estão em tags separadas no JusBrasil</div>
+
+    <div style="background: #1a1a2e; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 12px; line-height: 1.8;">
+      <span style="color: #666;">// HTML real do Art. 3º no JusBrasil:</span><br>
+      <span style="color: #42a5f5;">&lt;a href="..."&gt;</span><span style="color: #fff;">Art. 3º</span><span style="color: #42a5f5;">&lt;/a&gt;</span><br>
+      <span style="color: #ccc;">São absolutamente incapazes... 16 anos.</span><br>
+      <span style="color: #ef5350;">(Redação dada pela Lei nº 13.146, de 2015) (Vigência)</span>
+      <br><br>
+      <span style="color: #666;">// As anotações são texto puro no final do &lt;p&gt;</span><br>
+      <span style="color: #666;">// NÃO estão em &lt;a&gt;, &lt;span&gt; ou qualquer tag especial</span><br>
+      <span style="color: #666;">// 0 anotações em links, TODAS como texto puro</span>
+    </div>
+
+    <div style="margin-top: 16px; padding: 12px; background: #1a1a2e; border-radius: 8px; border-left: 3px solid #ff9800;">
+      <div style="color: #ff9800; font-weight: 600; margin-bottom: 4px;">Implicação</div>
+      <div style="color: #aaa; font-size: 13px;">
+        JusBrasil tem a <strong style="color: #fff;">mesma limitação de anotações</strong> que o Planalto — são texto inline.
+        O regex de separação ainda é necessário. MAS o JusBrasil tem uma vantagem enorme:
+        <strong style="color: #66bb6a;">cada dispositivo já está isolado em seu próprio &lt;p&gt;</strong>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VERDICT -->
+<div class="section">
+  <h3>Veredicto: JusBrasil vs Planalto</h3>
+
+  <div style="background: #1a1a2e; border-radius: 12px; overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <thead>
+        <tr style="background: #0d1117;">
+          <th style="padding: 12px 16px; text-align: left; color: #888;">Critério</th>
+          <th style="padding: 12px 16px; text-align: center; color: #888;">Planalto</th>
+          <th style="padding: 12px 16px; text-align: center; color: #888;">JusBrasil</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Cada dispositivo é entidade própria</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ef5350;">Não (HTML varia)</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim (cada &lt;p&gt;)</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Anotações separadas do texto</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ef5350;">Não (inline)</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ef5350;">Não (inline)</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Marca dispositivos revogados</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ff9800;">Parcial</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim (CSS class)</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Link por dispositivo (âncoras)</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ff9800;">Varia por lei</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim (toda &lt;a&gt;)</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">HTML consistente entre leis</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ef5350;">Não</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim (padrão único)</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Todas as leis na mesma página</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Acesso automatizado</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">HTTP direto</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ff9800;">403 HTTP / OK via browser</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Fonte canônica (oficial)</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Sim (gov)</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ff9800;">Não (privado)</td>
+        </tr>
+        <tr style="border-top: 1px solid #333;">
+          <td style="padding: 10px 16px; color: #ccc;">Risco legal de scraping</td>
+          <td style="padding: 10px 16px; text-align: center; color: #66bb6a;">Zero (gov)</td>
+          <td style="padding: 10px 16px; text-align: center; color: #ff9800;">Baixo (lei é pública)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- REVISED PROPOSAL -->
+<div style="margin-top: 24px; padding: 24px; background: #1a1a2e; border-radius: 12px; border-left: 4px solid #66bb6a;">
+  <h3 style="margin: 0 0 16px 0; color: #66bb6a;">Proposta Revisada: JusBrasil (primário) + Planalto (validação)</h3>
+
+  <div style="color: #ccc; font-size: 14px; line-height: 1.9;">
+    <strong style="color: #4fc3f7;">1. Fonte Primária — JusBrasil via Browser Automation</strong><br>
+    &nbsp;&nbsp;&nbsp;• Cada dispositivo já isolado em &lt;p&gt; — parsing trivial<br>
+    &nbsp;&nbsp;&nbsp;• HTML consistente entre leis — um parser pra todas<br>
+    &nbsp;&nbsp;&nbsp;• Versões revogadas marcadas com CSS class<br>
+    &nbsp;&nbsp;&nbsp;• Playwright/Puppeteer para contornar o 403<br>
+    <br>
+    <strong style="color: #4fc3f7;">2. Separação de Anotações — Regex Aprimorado + LLM</strong><br>
+    &nbsp;&nbsp;&nbsp;• As anotações são inline tanto no JusBrasil quanto no Planalto<br>
+    &nbsp;&nbsp;&nbsp;• Regex expandido para cobrir TODOS os padrões (Regulamento, Produção de efeito, etc.)<br>
+    &nbsp;&nbsp;&nbsp;• Para os casos ambíguos: LLM (Claude API) como fallback de classificação<br>
+    &nbsp;&nbsp;&nbsp;• Armazenar: texto_limpo + anotacoes[] + texto_original<br>
+    <br>
+    <strong style="color: #4fc3f7;">3. Validação Cruzada — Planalto como Fonte de Verdade</strong><br>
+    &nbsp;&nbsp;&nbsp;• Fetch do Planalto HTML para comparar contagem de dispositivos<br>
+    &nbsp;&nbsp;&nbsp;• Amostragem aleatória de texto para detectar divergências<br>
+    &nbsp;&nbsp;&nbsp;• Planalto É a fonte oficial — se JusBrasil divergir, flag automático<br>
+    <br>
+    <strong style="color: #4fc3f7;">4. Relatório de Qualidade</strong><br>
+    &nbsp;&nbsp;&nbsp;• Score de confiança por lei e por dispositivo<br>
+    &nbsp;&nbsp;&nbsp;• Regex de segurança no texto_limpo (anotações residuais)<br>
+    &nbsp;&nbsp;&nbsp;• Revisão manual apenas dos itens flagados<br>
+  </div>
+</div>
+
+<div style="margin-top: 16px; text-align: center; color: #888; font-size: 13px;">
+  Essa proposta revisada faz sentido? Posso prosseguir para o design detalhado.
+</div>

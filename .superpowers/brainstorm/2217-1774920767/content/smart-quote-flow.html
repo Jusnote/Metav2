@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Quote — Fluxo Completo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #111827; padding: 24px; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
+  .step { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #e5e7eb; }
+  .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: #2563EB; color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .step-title { font-size: 15px; font-weight: 600; }
+  .step-desc { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+  .mock { background: #fafbfc; border-radius: 10px; padding: 16px; border: 1px solid #f0f0f0; }
+
+  /* Editor mock */
+  .editor-area { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 14px; min-height: 60px; font-size: 13px; color: #374151; line-height: 1.6; }
+  .editor-cursor { display: inline; border-right: 2px solid #2563EB; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hash-trigger { color: #2563EB; font-weight: 600; }
+
+  /* Dropdown */
+  .dropdown { background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 6px; margin-top: 4px; width: 340px; }
+  .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .dropdown-item:hover, .dropdown-item.active { background: #f0f4ff; }
+  .dropdown-label { font-weight: 600; color: #111827; white-space: nowrap; flex-shrink: 0; }
+  .dropdown-preview { color: #9ca3af; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dropdown-icon { font-size: 14px; flex-shrink: 0; }
+
+  /* Text selector */
+  .text-selector { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-top: 8px; }
+  .text-selector-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .text-selector-title { font-size: 12px; font-weight: 600; color: #6b7280; }
+  .text-selector-actions { display: flex; gap: 8px; }
+  .btn-sm { padding: 4px 12px; border-radius: 5px; font-size: 11px; font-weight: 500; border: none; cursor: pointer; }
+  .btn-primary { background: #2563EB; color: white; }
+  .btn-ghost { background: transparent; color: #6b7280; }
+  .text-content { font-size: 13px; color: #374151; line-height: 1.6; }
+  .text-highlight { background: #bfdbfe; border-radius: 2px; padding: 1px 0; }
+  .text-dim { color: #c0c0c0; }
+
+  /* Void node (resultado final) */
+  .void-node { display: flex; gap: 0; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; margin: 8px 0; background: #fafbfc; }
+  .void-node-bar { width: 3px; background: #2563EB; flex-shrink: 0; }
+  .void-node-bar.amber { background: #D97706; }
+  .void-node-content { padding: 8px 12px; flex: 1; min-width: 0; }
+  .void-node-label { font-size: 10px; font-weight: 600; color: #2563EB; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+  .void-node-label.amber { color: #D97706; }
+  .void-node-text { font-size: 12px; color: #6b7280; line-height: 1.5; font-style: italic; }
+  .void-node-text.clamped { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* Comment final */
+  .comment-mock { display: flex; gap: 10px; padding: 10px 0; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #6366F1, #8B5CF6); flex-shrink: 0; }
+  .comment-body { flex: 1; }
+  .comment-author { font-size: 13px; font-weight: 600; }
+  .comment-time { font-size: 11px; color: #c0c0c0; margin-left: 6px; }
+  .comment-text { font-size: 13px; color: #4b5563; line-height: 1.55; margin-top: 4px; }
+  .comment-actions { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; }
+  .comment-actions span { color: #9ca3af; }
+  .comment-actions .vote { color: #2563EB; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+
+  .divider { height: 1px; background: #f3f4f6; margin: 8px 0; }
+  .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px; }
+</style>
+</head>
+<body>
+
+<h2>Smart Quote Blocks — Fluxo Completo</h2>
+<p class="subtitle">Como funciona o comando # no editor de comentários</p>
+
+<!-- Step 1: Digita # -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    <div class="step-title">Usuário digita <code>#</code> no editor</div>
+  </div>
+  <div class="step-desc">O dropdown aparece com o enunciado e as alternativas da questão.</div>
+  <div class="mock">
+    <div class="editor-area">
+      O erro da galera aqui foi não ler a exceção. Olha <span class="hash-trigger">#</span><span class="editor-cursor"></span>
+    </div>
+    <div class="dropdown">
+      <div class="dropdown-item">
+        <span class="dropdown-icon">📄</span>
+        <span class="dropdown-label">Enunciado</span>
+        <span class="dropdown-preview">A Lei Orgânica Municipal estabelece a composição da Câmara...</span>
+      </div>
+      <div class="dropdown-item active">
+        <span class="dropdown-icon">🅰️</span>
+        <span class="dropdown-label">Alternativa A</span>
+        <span class="dropdown-preview">As autarquias municipais são criadas por decreto do...</span>
+      </div>
+      <div class="dropdown-item">
+        <span class="dropdown-icon">🅱️</span>
+        <span class="dropdown-label">Alternativa B</span>
+        <span class="dropdown-preview">A administração indireta municipal compreende apenas...</span>
+      </div>
+      <div class="dropdown-item" style="background: #f0f4ff;">
+        <span class="dropdown-icon">🅲</span>
+        <span class="dropdown-label">Alternativa C</span>
+        <span class="dropdown-preview">O mandado de segurança coletivo pode ser impetrado por...</span>
+      </div>
+      <div class="dropdown-item">
+        <span class="dropdown-icon">🅳</span>
+        <span class="dropdown-label">Alternativa D</span>
+        <span class="dropdown-preview">As fundações públicas municipais possuem personalidade...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: Seleciona e marca trecho -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    <div class="step-title">Seleciona a alternativa → marca o trecho</div>
+  </div>
+  <div class="step-desc">O texto completo aparece. O usuário seleciona/marca o que quer citar. Se não marcar nada, cita o texto inteiro (com truncamento).</div>
+  <div class="mock">
+    <div class="text-selector">
+      <div class="text-selector-header">
+        <div class="text-selector-title">🅲 Alternativa C — Selecione o trecho que deseja citar</div>
+        <div class="text-selector-actions">
+          <button class="btn-sm btn-ghost">Cancelar</button>
+          <button class="btn-sm btn-primary">Citar trecho</button>
+        </div>
+      </div>
+      <div class="text-content">
+        <span class="text-dim">O mandado de segurança coletivo pode ser impetrado por partido político </span><span class="text-highlight">sem representação no Congresso Nacional, desde que constituído há mais de um ano</span><span class="text-dim">, em defesa dos interesses de seus membros ou associados, conforme estabelece a Constituição Federal em seu artigo 5º, inciso LXX.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: Void node inserido -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    <div class="step-title">Smart Quote Block inserido no editor</div>
+  </div>
+  <div class="step-desc">O bloco é um Void Node — não pode ser editado por dentro, só deletado inteiro com Backspace.</div>
+  <div class="mock">
+    <div class="editor-area">
+      O erro da galera aqui foi não ler a exceção. Olha:
+
+      <div class="void-node">
+        <div class="void-node-bar"></div>
+        <div class="void-node-content">
+          <div class="void-node-label">🅲 Alternativa C</div>
+          <div class="void-node-text">"sem representação no Congresso Nacional, desde que constituído há mais de um ano"</div>
+        </div>
+      </div>
+
+      Isso tá errado porque exige representação no Congresso! A pegadinha clássica da FGV.<span class="editor-cursor"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Step 4: Resultado final no comentário salvo -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    <div class="step-title">Como fica no comentário publicado</div>
+  </div>
+  <div class="step-desc">O bloco aparece compacto e elegante dentro do comentário.</div>
+  <div class="mock">
+    <div class="comment-mock">
+      <div class="avatar"></div>
+      <div class="comment-body">
+        <div>
+          <span class="comment-author">Carlos Lima</span>
+          <span class="comment-time">4h</span>
+        </div>
+        <div class="comment-text">
+          O erro da galera aqui foi não ler a exceção. Olha:
+        </div>
+
+        <div class="void-node" style="margin: 8px 0;">
+          <div class="void-node-bar"></div>
+          <div class="void-node-content">
+            <div class="void-node-label">🅲 Alternativa C</div>
+            <div class="void-node-text">"sem representação no Congresso Nacional, desde que constituído há mais de um ano"</div>
+          </div>
+        </div>
+
+        <div class="comment-text">
+          Isso tá errado porque exige representação no Congresso! A pegadinha clássica da FGV.
+        </div>
+
+        <div class="comment-actions">
+          <span class="vote">▲ 12</span>
+          <span>Responder</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Exemplo com texto inteiro truncado -->
+    <div class="comment-mock">
+      <div class="avatar" style="background: linear-gradient(135deg, #10B981, #06B6D4);"></div>
+      <div class="comment-body">
+        <div>
+          <span class="comment-author">Ana Costa</span>
+          <span class="comment-time">2h</span>
+        </div>
+        <div class="comment-text">
+          Pessoal, prestem atenção no enunciado:
+        </div>
+
+        <div class="void-node" style="margin: 8px 0;">
+          <div class="void-node-bar amber"></div>
+          <div class="void-node-content">
+            <div class="void-node-label amber">📄 Enunciado</div>
+            <div class="void-node-text clamped">"A Lei Orgânica Municipal estabelece a composição da Câmara Municipal e define as características das entidades que integram a Administração Indireta. Com base nessas disposições, analise as assertivas a seguir quanto ao regime jurídico aplicável."</div>
+          </div>
+        </div>
+
+        <div class="comment-text">
+          A palavra-chave é "regime jurídico aplicável" — a banca quer saber se você diferencia direito público de direito privado.
+        </div>
+
+        <div class="comment-actions">
+          <span class="vote">▲ 5</span>
+          <span>Responder</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Resumo do fluxo</div>
+<div class="step" style="background: #f0f4ff; border-color: rgba(37,99,235,0.15);">
+  <div style="font-size: 13px; color: #374151; line-height: 1.8;">
+    <strong>Trecho selecionado:</strong> exibe o trecho exato, sem truncar (já é curto)<br>
+    <strong>Alternativa inteira:</strong> exibe com line-clamp 2 linhas + "..."<br>
+    <strong>Enunciado inteiro:</strong> exibe com line-clamp 2 linhas + "..."<br>
+    <strong>Void Node:</strong> não editável por dentro, delete inteiro com Backspace<br>
+    <strong>Clique no bloco:</strong> scrola até o trecho original na questão + highlight flash
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SearchBar alinhada ao texto + TracingBeam</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Outfit, -apple-system, sans-serif; background: #f5f5f5; padding: 24px; color: #333; }
+  h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: 600; margin-bottom: 8px; }
+  .mockups { display: flex; gap: 24px; flex-wrap: wrap; }
+  .mockup-frame { background: #fff; border: 1px solid #e0e0e0; border-radius: 14px; overflow: hidden; }
+  .desktop { flex: 1; min-width: 700px; }
+  .mobile { width: 370px; flex-shrink: 0; }
+  .annotation { padding: 8px 16px; background: #fff3cd; font-size: 10px; color: #856404; text-align: center; border-top: 1px solid #ffe69c; }
+  .note-box { margin-top: 20px; padding: 14px 18px; background: #f0f7ff; border-radius: 10px; border: 1px solid #c2dbf5; font-size: 12px; line-height: 1.6; color: #444; }
+  .note-box h4 { font-size: 13px; margin-bottom: 6px; color: #1565c0; }
+
+  /* TracingBeam styles for dropdown */
+  .tracing-line { position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #e8e8e8; border-radius: 1px; }
+  .tracing-active { background: linear-gradient(180deg, #43505c 0%, #8ea3b5 100%); }
+  .tree-item { position: relative; padding: 5px 12px 5px 36px; font-size: 11px; cursor: pointer; transition: background 0.15s; }
+  .tree-item:hover { background: #f8f8f8; }
+  .tree-item-dot { position: absolute; left: 16px; top: 50%; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #d0d0d0; background: #fff; transform: translate(0, -50%); z-index: 1; }
+  .tree-item-dot.active { border-color: #43505c; background: #43505c; }
+  .tree-depth-1 { padding-left: 52px; }
+  .tree-depth-1 .tree-item-dot { left: 32px; }
+  .tree-depth-2 { padding-left: 68px; }
+  .tree-depth-2 .tree-item-dot { left: 48px; }
+</style>
+</head>
+<body>
+
+<h2>SearchBar alinhada ao texto + TracingBeam na hierarquia</h2>
+<p class="subtitle">Breadcrumb → SearchBar no mesmo espaço, alinhado com a coluna do texto</p>
+
+<div class="mockups">
+
+<!-- ============ DESKTOP ============ -->
+<div style="flex:1;min-width:680px">
+  <div class="label">Desktop — Estado fechado (breadcrumb)</div>
+  <div class="mockup-frame desktop" style="margin-bottom:20px">
+    <!-- Toolbar: minimal -->
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 16px;border-bottom:1px solid #eee;font-size:11px">
+      <select style="font-size:10px;padding:3px 8px;border:1px solid #e5e5e5;border-radius:6px;color:#555;background:#fafafa;font-family:Outfit,sans-serif">
+        <option>Código de Trânsito Brasileiro</option>
+      </select>
+      <div style="flex:1"></div>
+      <button style="padding:3px 10px;border-radius:20px;background:#43505c;color:white;border:none;font-size:10px">Lei Seca ✓</button>
+      <button style="padding:3px 10px;border-radius:20px;background:#f4f4f4;color:#888;border:none;font-size:10px">Revogados</button>
+      <div style="display:flex;gap:3px;align-items:center">
+        <button style="width:22px;height:22px;border-radius:50%;background:#f4f4f4;border:none;font-size:9px;color:#888;font-weight:bold">A-</button>
+        <span style="font-size:9px;color:#ccc">16</span>
+        <button style="width:22px;height:22px;border-radius:50%;background:#f4f4f4;border:none;font-size:11px;color:#888;font-weight:bold">A+</button>
+      </div>
+      <span style="font-size:8px;color:#ddd">J/K · L · R</span>
+    </div>
+    <div style="height:2px;background:#f0f0f0"><div style="height:2px;background:#43505c;width:35%"></div></div>
+
+    <!-- Content wrapper: centered -->
+    <div style="max-width:700px;margin:0 auto;padding:0 24px">
+      <!-- BREADCRUMB / SEARCH — clickable bar -->
+      <div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer" title="Clique ou Ctrl+F para buscar">
+        <span style="color:#bbb;font-size:12px">🔍</span>
+        <span style="color:#999;font-size:11px">TÍTULO II</span>
+        <span style="color:#ddd;font-size:10px">›</span>
+        <span style="color:#999;font-size:11px">Cap. I — Sinalização</span>
+        <span style="color:#ddd;font-size:10px">›</span>
+        <span style="color:#43505c;font-size:11px;font-weight:600">Art. 45</span>
+        <span style="margin-left:auto;color:#ddd;font-size:9px;background:#f8f8f8;padding:1px 6px;border-radius:3px;font-family:monospace">Ctrl+F</span>
+        <span style="color:#ccc;font-size:9px">45 / 341</span>
+      </div>
+
+      <!-- Text -->
+      <div style="padding:20px 0;font-size:13.5px;color:rgb(67,80,92);line-height:1.8;font-family:Literata,Georgia,serif">
+        <div style="margin-bottom:14px"><strong style="text-decoration:underline">Art. 44.</strong> Ao ser o veículo apreendido, será expedido ao condutor documento autorizando a circulação no prazo fixado pelo CONTRAN.</div>
+        <div style="margin-bottom:14px"><strong style="text-decoration:underline">Art. 45.</strong> Os sinais de trânsito classificam-se em:</div>
+        <div style="padding-left:24px;margin-bottom:8px"><strong>I</strong> — verticais;</div>
+        <div style="padding-left:24px;margin-bottom:8px"><strong>II</strong> — horizontais;</div>
+        <div style="padding-left:24px;margin-bottom:8px"><strong>III</strong> — dispositivos de sinalização auxiliar.</div>
+        <div style="margin-top:18px"><strong style="text-decoration:underline">Art. 46.</strong> O Anexo II estabelece os sinais e seus significados.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="label">Desktop — Estado aberto (Ctrl+F ativo, sem texto digitado)</div>
+  <div class="mockup-frame desktop" style="margin-bottom:20px">
+    <!-- Toolbar (same) -->
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 16px;border-bottom:1px solid #eee;font-size:11px">
+      <select style="font-size:10px;padding:3px 8px;border:1px solid #e5e5e5;border-radius:6px;color:#555;background:#fafafa;font-family:Outfit,sans-serif"><option>Código de Trânsito Brasileiro</option></select>
+      <div style="flex:1"></div>
+      <button style="padding:3px 10px;border-radius:20px;background:#43505c;color:white;border:none;font-size:10px">Lei Seca ✓</button>
+      <button style="padding:3px 10px;border-radius:20px;background:#f4f4f4;color:#888;border:none;font-size:10px">Revogados</button>
+      <div style="display:flex;gap:3px;align-items:center">
+        <button style="width:22px;height:22px;border-radius:50%;background:#f4f4f4;border:none;font-size:9px;color:#888;font-weight:bold">A-</button>
+        <span style="font-size:9px;color:#ccc">16</span>
+        <button style="width:22px;height:22px;border-radius:50%;background:#f4f4f4;border:none;font-size:11px;color:#888;font-weight:bold">A+</button>
+      </div>
+    </div>
+    <div style="height:2px;background:#f0f0f0"><div style="height:2px;background:#43505c;width:35%"></div></div>
+
+    <div style="max-width:700px;margin:0 auto;padding:0 24px;position:relative">
+      <!-- SEARCH BAR — open state, replaces breadcrumb -->
+      <div style="position:relative;z-index:20">
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid transparent">
+          <span style="color:#43505c;font-size:13px">🔍</span>
+          <div style="flex:1;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1.5px solid #43505c;border-radius:12px 12px 0 0;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.08)">
+            <input type="text" placeholder="Buscar artigo, tema, palavra..." style="border:none;outline:none;font-size:12px;color:#333;flex:1;font-family:Outfit,sans-serif;background:transparent" />
+            <span style="color:#ccc;font-size:9px">esc para fechar</span>
+          </div>
+        </div>
+
+        <!-- DROPDOWN with TracingBeam hierarchy -->
+        <div style="position:absolute;left:24px;right:0;top:100%;background:white;border:1.5px solid #43505c;border-top:none;border-radius:0 0 14px 14px;box-shadow:0 12px 32px rgba(0,0,0,0.1);overflow:hidden;max-height:380px;overflow-y:auto">
+          <!-- Section: Navegação com TracingBeam -->
+          <div style="padding:8px 12px 4px;font-size:9px;font-weight:600;color:#bbb;text-transform:uppercase;letter-spacing:1px">📁 Navegação</div>
+
+          <!-- Tree with tracing beam line -->
+          <div style="position:relative;padding:4px 0 8px">
+            <!-- Main tracing line -->
+            <div style="position:absolute;left:20px;top:8px;bottom:8px;width:2px;background:#e8e8e8;border-radius:1px"></div>
+            <!-- Active segment -->
+            <div style="position:absolute;left:20px;top:8px;width:2px;height:60%;background:linear-gradient(180deg,#43505c,#a0b0bc);border-radius:1px"></div>
+
+            <!-- TÍTULO I -->
+            <div class="tree-item">
+              <div class="tree-item-dot active"></div>
+              <span style="font-weight:600;color:#333">TÍTULO I</span>
+              <span style="color:#999;font-size:10px;margin-left:4px;font-style:italic">— Disposições Preliminares</span>
+            </div>
+            <div class="tree-item tree-depth-1">
+              <div class="tree-item-dot active" style="width:8px;height:8px;border-width:1.5px"></div>
+              <span style="color:#666">Cap. Único — Arts. 1º a 4º</span>
+            </div>
+
+            <!-- TÍTULO II -->
+            <div class="tree-item" style="background:#f0f4ff">
+              <div class="tree-item-dot active"></div>
+              <span style="font-weight:600;color:#43505c">▸ TÍTULO II</span>
+              <span style="color:#999;font-size:10px;margin-left:4px;font-style:italic">— Do Sistema Nacional de Trânsito</span>
+            </div>
+            <div class="tree-item tree-depth-1" style="background:#f6f8ff">
+              <div class="tree-item-dot active" style="width:8px;height:8px;border-width:1.5px;border-color:#43505c;background:#43505c"></div>
+              <span style="color:#43505c;font-weight:500">Cap. I — Da Sinalização</span>
+              <span style="color:#43505c;font-size:9px;margin-left:4px;opacity:0.6">← você está aqui</span>
+            </div>
+            <div class="tree-item tree-depth-1">
+              <div class="tree-item-dot" style="width:8px;height:8px;border-width:1.5px"></div>
+              <span style="color:#888">Cap. II — Dos Veículos</span>
+            </div>
+
+            <!-- TÍTULO III -->
+            <div class="tree-item">
+              <div class="tree-item-dot"></div>
+              <span style="font-weight:600;color:#555">TÍTULO III</span>
+              <span style="color:#999;font-size:10px;margin-left:4px;font-style:italic">— Das Normas Gerais</span>
+            </div>
+            <div class="tree-item tree-depth-1">
+              <div class="tree-item-dot" style="width:8px;height:8px;border-width:1.5px"></div>
+              <span style="color:#888">Cap. I — Da Habilitação</span>
+            </div>
+            <div class="tree-item tree-depth-1">
+              <div class="tree-item-dot" style="width:8px;height:8px;border-width:1.5px"></div>
+              <span style="color:#888">Cap. II — Das Infrações</span>
+            </div>
+
+            <!-- TÍTULO IV -->
+            <div class="tree-item">
+              <div class="tree-item-dot"></div>
+              <span style="font-weight:600;color:#555">TÍTULO IV</span>
+              <span style="color:#999;font-size:10px;margin-left:4px;font-style:italic">— Dos Crimes de Trânsito</span>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="padding:6px 12px;border-top:1px solid #f0f0f0;font-size:10px;color:#ccc;display:flex;gap:12px;background:#fafafa;border-radius:0 0 12px 12px">
+            <span>↑↓ navegar</span>
+            <span>⏎ ir para</span>
+            <span>esc fechar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text behind (dimmed when dropdown is open) -->
+      <div style="padding:20px 0;font-size:13.5px;color:rgb(67,80,92);line-height:1.8;font-family:Literata,Georgia,serif;opacity:0.3">
+        <div style="margin-bottom:14px"><strong>Art. 44.</strong> Ao ser o veículo apreendido...</div>
+        <div style="margin-bottom:14px"><strong>Art. 45.</strong> Os sinais de trânsito classificam-se em:</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="label">Desktop — Buscando "sinalização"</div>
+  <div class="mockup-frame desktop">
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 16px;border-bottom:1px solid #eee;font-size:11px">
+      <select style="font-size:10px;padding:3px 8px;border:1px solid #e5e5e5;border-radius:6px;color:#555;background:#fafafa;font-family:Outfit,sans-serif"><option>Código de Trânsito Brasileiro</option></select>
+      <div style="flex:1"></div>
+      <button style="padding:3px 10px;border-radius:20px;background:#43505c;color:white;border:none;font-size:10px">Lei Seca ✓</button>
+      <button style="padding:3px 10px;border-radius:20px;background:#f4f4f4;color:#888;border:none;font-size:10px">Revogados</button>
+    </div>
+    <div style="height:2px;background:#f0f0f0"><div style="height:2px;background:#43505c;width:35%"></div></div>
+
+    <div style="max-width:700px;margin:0 auto;padding:0 24px;position:relative">
+      <div style="position:relative;z-index:20">
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 0">
+          <span style="color:#43505c;font-size:13px">🔍</span>
+          <div style="flex:1;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1.5px solid #43505c;border-radius:12px 12px 0 0;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.08)">
+            <span style="font-size:12px;color:#333;font-family:Outfit,sans-serif">sinalização</span>
+            <span style="color:#999;font-size:9px;margin-left:auto">8 resultados</span>
+            <span style="color:#ccc;cursor:pointer;font-size:14px">×</span>
+          </div>
+        </div>
+
+        <div style="position:absolute;left:24px;right:0;top:100%;background:white;border:1.5px solid #43505c;border-top:none;border-radius:0 0 14px 14px;box-shadow:0 12px 32px rgba(0,0,0,0.1);overflow:hidden">
+          <!-- Hierarchy matches -->
+          <div style="padding:8px 12px 4px;font-size:9px;font-weight:600;color:#bbb;text-transform:uppercase;letter-spacing:1px">📁 Navegação — 2 itens</div>
+          <div style="position:relative;padding:2px 0 6px">
+            <div style="position:absolute;left:20px;top:4px;bottom:4px;width:2px;background:#e8e8e8;border-radius:1px"></div>
+            <div class="tree-item">
+              <div class="tree-item-dot active"></div>
+              <span style="color:#333">Cap. I — <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">Sinalização</mark> de Trânsito</span>
+            </div>
+            <div class="tree-item">
+              <div class="tree-item-dot"></div>
+              <span style="color:#333">Cap. XIV — Da <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">Sinalização</mark></span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div style="height:1px;background:#f0f0f0;margin:0 12px"></div>
+
+          <!-- Full-text results -->
+          <div style="padding:8px 12px 4px;font-size:9px;font-weight:600;color:#bbb;text-transform:uppercase;letter-spacing:1px">📄 No texto — 6 resultados</div>
+          <div style="padding:6px 14px;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s" onmouseover="this.style.background='#f8f8f8';this.style.borderLeftColor='#43505c'" onmouseout="this.style.background='transparent';this.style.borderLeftColor='transparent'">
+            <div style="font-size:12px;color:rgb(67,80,92);line-height:1.5"><strong>Art. 45.</strong> Os sinais de <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">sinalização</mark> classificam-se em verticais, horizontais...</div>
+            <div style="font-size:9px;color:#bbb;margin-top:2px">TÍTULO II › Cap. I</div>
+          </div>
+          <div style="padding:6px 14px;cursor:pointer;border-left:3px solid transparent">
+            <div style="font-size:12px;color:rgb(67,80,92);line-height:1.5"><strong>Art. 80.</strong> Sempre que necessário, será colocada ao longo da via, <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">sinalização</mark> prevista...</div>
+            <div style="font-size:9px;color:#bbb;margin-top:2px">TÍTULO III › Cap. VII</div>
+          </div>
+          <div style="padding:6px 14px;cursor:pointer;border-left:3px solid transparent">
+            <div style="font-size:12px;color:rgb(67,80,92);line-height:1.5"><strong>Art. 87.</strong> Os sinais de trânsito e a <mark style="background:#fef3c7;border-radius:2px;padding:0 2px">sinalização</mark> horizontal e vertical...</div>
+            <div style="font-size:9px;color:#bbb;margin-top:2px">TÍTULO III › Cap. VII</div>
+          </div>
+
+          <div style="padding:6px 12px;border-top:1px solid #f0f0f0;font-size:10px;color:#ccc;display:flex;gap:12px;background:#fafafa;border-radius:0 0 12px 12px">
+            <span>↑↓ navegar</span><span>⏎ ir para</span><span>esc fechar</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:20px 0;font-size:13.5px;color:rgb(67,80,92);line-height:1.8;font-family:Literata,Georgia,serif;opacity:0.3">
+        <div><strong>Art. 44.</strong> Ao ser o veículo apreendido...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOBILE ============ -->
+<div style="width:370px;flex-shrink:0">
+  <div class="label">Mobile — Fechado</div>
+  <div class="mockup-frame mobile" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid #eee;font-size:10px">
+      <span style="background:#fafafa;border:1px solid #e5e5e5;padding:3px 6px;border-radius:5px;color:#555;font-size:9px">CTB</span>
+      <div style="flex:1"></div>
+      <span style="background:#43505c;color:white;padding:3px 8px;border-radius:20px;font-size:9px">LS</span>
+      <button style="width:22px;height:22px;border:1px solid #e5e5e5;border-radius:5px;background:white;color:#888;font-size:11px">⋯</button>
+    </div>
+    <div style="height:2px;background:#f0f0f0"><div style="height:2px;background:#43505c;width:35%"></div></div>
+
+    <!-- Breadcrumb + search trigger -->
+    <div style="display:flex;align-items:center;gap:4px;padding:6px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer">
+      <span style="color:#bbb;font-size:11px">🔍</span>
+      <span style="color:#999;font-size:9px">TÍT. II</span>
+      <span style="color:#ddd;font-size:9px">›</span>
+      <span style="color:#999;font-size:9px">Cap. I</span>
+      <span style="color:#ddd;font-size:9px">›</span>
+      <span style="color:#43505c;font-size:9px;font-weight:600">Art. 45</span>
+      <span style="margin-left:auto;color:#ccc;font-size:8px">45/341</span>
+    </div>
+
+    <div style="padding:14px;font-size:13px;color:rgb(67,80,92);line-height:1.7;font-family:Literata,Georgia,serif">
+      <div style="margin-bottom:12px"><strong style="text-decoration:underline">Art. 45.</strong> Os sinais de trânsito classificam-se em:</div>
+      <div style="padding-left:16px;margin-bottom:7px"><strong>I</strong> — verticais;</div>
+      <div style="padding-left:16px;margin-bottom:7px"><strong>II</strong> — horizontais;</div>
+      <div style="padding-left:16px;margin-bottom:7px"><strong>III</strong> — dispositivos auxiliar.</div>
+    </div>
+  </div>
+
+  <div class="label">Mobile — Aberto (toque no breadcrumb)</div>
+  <div class="mockup-frame mobile">
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid #eee;font-size:10px">
+      <span style="background:#fafafa;border:1px solid #e5e5e5;padding:3px 6px;border-radius:5px;color:#555;font-size:9px">CTB</span>
+      <div style="flex:1"></div>
+      <span style="background:#43505c;color:white;padding:3px 8px;border-radius:20px;font-size:9px">LS</span>
+      <button style="width:22px;height:22px;border:1px solid #e5e5e5;border-radius:5px;background:white;color:#888;font-size:11px">⋯</button>
+    </div>
+    <div style="height:2px;background:#f0f0f0"><div style="height:2px;background:#43505c;width:35%"></div></div>
+
+    <!-- Search input replaces breadcrumb -->
+    <div style="padding:6px 12px;border-bottom:1px solid #43505c;background:#fafbfc">
+      <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1.5px solid #43505c;border-radius:10px;background:white">
+        <span style="color:#43505c;font-size:11px">🔍</span>
+        <span style="font-size:11px;color:#333;flex:1;font-family:Outfit,sans-serif">|</span>
+        <span style="color:#ccc;font-size:14px">×</span>
+      </div>
+    </div>
+
+    <!-- Fullscreen dropdown on mobile -->
+    <div style="background:white;min-height:240px;overflow-y:auto">
+      <div style="padding:8px 12px 4px;font-size:9px;font-weight:600;color:#bbb;text-transform:uppercase;letter-spacing:1px">📁 Navegação</div>
+
+      <div style="position:relative;padding:4px 0">
+        <div style="position:absolute;left:16px;top:4px;bottom:4px;width:2px;background:#e8e8e8;border-radius:1px"></div>
+        <div style="position:absolute;left:16px;top:4px;width:2px;height:55%;background:linear-gradient(180deg,#43505c,#a0b0bc);border-radius:1px"></div>
+
+        <div style="position:relative;padding:6px 12px 6px 32px;font-size:11px">
+          <div style="position:absolute;left:12px;top:50%;width:10px;height:10px;border-radius:50%;border:2px solid #43505c;background:#43505c;transform:translateY(-50%)"></div>
+          <span style="font-weight:600;color:#333">TÍTULO I</span>
+        </div>
+        <div style="position:relative;padding:6px 12px 6px 32px;font-size:11px;background:#f0f4ff">
+          <div style="position:absolute;left:12px;top:50%;width:10px;height:10px;border-radius:50%;border:2px solid #43505c;background:#43505c;transform:translateY(-50%)"></div>
+          <span style="font-weight:600;color:#43505c">▸ TÍTULO II</span>
+          <span style="color:#999;font-size:9px;margin-left:4px">← aqui</span>
+        </div>
+        <div style="position:relative;padding:5px 12px 5px 44px;font-size:10px">
+          <div style="position:absolute;left:24px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #43505c;background:#43505c;transform:translateY(-50%)"></div>
+          <span style="color:#43505c;font-weight:500">Cap. I — Sinalização</span>
+        </div>
+        <div style="position:relative;padding:5px 12px 5px 44px;font-size:10px">
+          <div style="position:absolute;left:24px;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid #d0d0d0;background:#fff;transform:translateY(-50%)"></div>
+          <span style="color:#888">Cap. II — Veículos</span>
+        </div>
+        <div style="position:relative;padding:6px 12px 6px 32px;font-size:11px">
+          <div style="position:absolute;left:12px;top:50%;width:10px;height:10px;border-radius:50%;border:2px solid #d0d0d0;background:#fff;transform:translateY(-50%)"></div>
+          <span style="font-weight:600;color:#555">TÍTULO III</span>
+        </div>
+        <div style="position:relative;padding:6px 12px 6px 32px;font-size:11px">
+          <div style="position:absolute;left:12px;top:50%;width:10px;height:10px;border-radius:50%;border:2px solid #d0d0d0;background:#fff;transform:translateY(-50%)"></div>
+          <span style="font-weight:600;color:#555">TÍTULO IV</span>
+        </div>
+      </div>
+
+      <div style="padding:6px 12px;border-top:1px solid #f0f0f0;font-size:10px;color:#ccc;text-align:center;background:#fafafa">
+        toque para navegar · × para fechar
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="note-box" style="margin-top:24px">
+  <h4>Resumo das decisões visuais</h4>
+  <ul style="padding-left:16px;margin:6px 0 0">
+    <li><strong>Breadcrumb = SearchBar</strong> — mesmo componente, dois estados. Clicou/Ctrl+F → vira input.</li>
+    <li><strong>Alinhado ao texto</strong> — dentro do mesmo <code>max-width</code> wrapper, não na toolbar.</li>
+    <li><strong>TracingBeam na hierarquia</strong> — dots + linha gradiente mostram posição atual na árvore.</li>
+    <li><strong>Mobile: dropdown vira tela cheia</strong> — sem overlay parcial, ocupa o espaço do conteúdo.</li>
+    <li><strong>Texto dimmed (opacity 0.3)</strong> — quando dropdown aberto no desktop, indica que o foco mudou.</li>
+  </ul>
+</div>
+
+</body>
+</html>

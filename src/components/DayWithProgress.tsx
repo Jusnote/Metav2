@@ -21,66 +21,59 @@ export function DayWithProgress({
   exceptionHours,
   loadPercentage = 0
 }: DayWithProgressProps) {
-  // Calcular o stroke-dasharray para o círculo de progresso
   const radius = 14;
   const circumference = 2 * Math.PI * radius;
-  const strokeDasharray = circumference;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-  // Determinar cores baseado na carga do dia
-  const getLoadColors = () => {
-    // Se completou 100%, tudo fica VERDE (vitória!)
+  // Cores: amber para progresso, emerald para 100%, vermelho para sobrecarga
+  const getColors = () => {
     if (progress === 100) {
       return {
-        borderColor: '#10b981',     // Verde (celebração)
-        progressColor: '#10b981',    // Verde
+        trackColor: 'transparent',
+        progressColor: '#10b981',   // emerald-500 — conquista
       };
     }
 
-    // Durante o progresso: borda indica carga, progress sempre azul
     if (loadPercentage > 100) {
       return {
-        borderColor: '#f87171',      // Vermelho vibrante mas suave (sobrecarga)
-        progressColor: '#3b82f6',     // Azul (progresso normal)
+        trackColor: '#f87171',      // red-400 — sobrecarga
+        progressColor: '#E8930C',    // amber brand
       };
     }
     if (loadPercentage >= 80) {
       return {
-        borderColor: '#fde68a',       // Amarelo clarinho (alerta)
-        progressColor: '#3b82f6',     // Azul (progresso normal)
+        trackColor: '#fde68a',       // amber-200 — alerta
+        progressColor: '#E8930C',    // amber brand
       };
     }
 
-    // Normal: cinza/tracejado + azul
     return {
-      borderColor: hasException ? '#9ca3af' : '#e5e7eb', // Cinza (tracejado se tem exceção)
-      progressColor: '#3b82f6',     // Azul (progresso)
+      trackColor: hasException ? '#a1a1aa' : '#d4d4d8', // zinc-400/zinc-300 track
+      progressColor: '#E8930C',     // amber brand
     };
   };
 
-  const colors = getLoadColors();
+  const colors = getColors();
+  const hasTasks = progress > 0 || loadPercentage > 0;
 
-  // Tooltip informativo baseado na carga
   const getTooltip = () => {
     const parts: string[] = [];
-
-    // Adicionar informação de exceção
     if (hasException && exceptionHours !== undefined) {
       parts.push(`${exceptionHours}h customizado`);
     }
-
-    // Adicionar informação de carga
     if (loadPercentage > 100) {
-      parts.push(`🔴 SOBRECARREGADO (${loadPercentage.toFixed(0)}%)`);
+      parts.push(`Sobrecarregado (${loadPercentage.toFixed(0)}%)`);
     } else if (loadPercentage >= 80) {
-      parts.push(`⚠️ Próximo do limite (${loadPercentage.toFixed(0)}%)`);
+      parts.push(`Próximo do limite (${loadPercentage.toFixed(0)}%)`);
     }
-
-    return parts.length > 0 ? parts.join(' | ') : undefined;
+    if (progress > 0) {
+      parts.push(`${progress}% concluído`);
+    }
+    return parts.length > 0 ? parts.join(' · ') : undefined;
   };
 
   if (isEmpty) {
-    return <div className="h-8 w-8"></div>;
+    return <div className="h-8 w-8" />;
   }
 
   return (
@@ -94,30 +87,33 @@ export function DayWithProgress({
         className="absolute inset-0 w-8 h-8 transform -rotate-90"
         viewBox="0 0 32 32"
       >
-        {/* Background circle - com borda tracejada se tiver exceção */}
-        <circle
-          cx="16"
-          cy="16"
-          r={radius}
-          stroke={colors.borderColor}
-          strokeWidth="2"
-          strokeDasharray={hasException ? "2 2" : "0"}
-          fill="transparent"
-          className="transition-all duration-300"
-        />
+        {/* Track circle — only show if day has tasks */}
+        {hasTasks && (
+          <circle
+            cx="16"
+            cy="16"
+            r={radius}
+            stroke={colors.trackColor}
+            strokeWidth="2.5"
+            strokeDasharray={hasException ? "2 2" : "0"}
+            fill="transparent"
+            opacity={0.4}
+            className="transition-all duration-300"
+          />
+        )}
 
-        {/* Progress circle */}
+        {/* Progress fill */}
         {progress > 0 && (
           <circle
             cx="16"
             cy="16"
             r={radius}
             stroke={colors.progressColor}
-            strokeWidth="2"
+            strokeWidth="2.5"
             fill="transparent"
-            strokeDasharray={strokeDasharray}
+            strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            className="transition-all duration-300 ease-in-out"
+            className={`transition-all duration-500 ease-out ${progress === 100 ? 'drop-shadow-[0_0_3px_rgba(16,185,129,0.4)]' : ''}`}
             strokeLinecap="round"
           />
         )}
@@ -125,17 +121,24 @@ export function DayWithProgress({
 
       {/* Day Number */}
       <div className={`
-        relative z-10 text-sm font-medium transition-colors
+        relative z-10 text-[11px] font-medium transition-all duration-200
         ${isSelected
-          ? 'text-white bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center'
+          ? 'text-white bg-[#E8930C] rounded-full w-[22px] h-[22px] flex items-center justify-center font-semibold shadow-[0_0_0_2px_rgba(232,147,12,0.2)]'
           : isToday
-            ? 'text-blue-600 font-bold'
-            : 'text-gray-700'
+            ? 'text-zinc-800 font-bold'
+            : hasTasks
+              ? 'text-zinc-700'
+              : 'text-zinc-400'
         }
-        ${!isSelected && 'hover:text-blue-600'}
+        ${!isSelected && 'group-hover:text-zinc-900'}
       `}>
         {day}
       </div>
+
+      {/* Today dot */}
+      {isToday && !isSelected && (
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full bg-[#E8930C]" />
+      )}
     </div>
   );
 }

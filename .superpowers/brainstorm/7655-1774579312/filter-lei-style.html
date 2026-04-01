@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Filtros - Estilo Lei Seca</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Outfit', sans-serif; background: #f0f2f5; padding: 20px; }
+  .container { max-width: 780px; margin: 0 auto; }
+  h2 { font-size: 13px; color: #aaa; text-align: center; margin-bottom: 16px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* === BARRA ESTILO LEI SECA === */
+  .bar {
+    background: white;
+    border-bottom: 1px solid #eee;
+    font-size: 12px;
+  }
+
+  /* Linha 1: Busca */
+  .bar-search {
+    display: flex; align-items: center;
+    padding: 8px 16px; gap: 8px;
+  }
+  .bar-search-icon { color: #aaa; font-size: 14px; }
+  .bar-search-input {
+    flex: 1; font-size: 12px; color: #bbb;
+    font-family: 'Outfit', sans-serif;
+  }
+  .bar-search-badge {
+    font-size: 10px; color: #888; background: #f4f4f4;
+    padding: 2px 8px; border-radius: 999px; font-weight: 500;
+  }
+  .bar-search-shortcut {
+    font-size: 10px; color: #ccc; background: #f4f4f4;
+    padding: 1px 5px; border-radius: 4px; border: 1px solid #eee;
+    font-family: monospace;
+  }
+
+  /* Divisor sutil */
+  .bar-sep { height: 1px; background: #eee; margin: 0 16px; }
+
+  /* Linha 2: Filtros */
+  .bar-filters {
+    display: flex; align-items: center;
+    padding: 6px 16px; gap: 6px;
+    overflow-x: auto;
+  }
+
+  /* Pill base - estilo Lei Seca */
+  .f-pill {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+    font-weight: 450; flex-shrink: 0;
+  }
+
+  /* Inativo - bg cinza como LeiToolbar */
+  .f-pill-off {
+    background: #f4f4f4; color: #888;
+  }
+  .f-pill-off:hover {
+    background: #eee; color: #555;
+  }
+
+  /* Ativo - bg escuro como toggle "Lei Seca ✓" */
+  .f-pill-on {
+    background: #2c3338; color: white;
+  }
+
+  /* Ativo alternativo - amber suave */
+  .f-pill-on-amber {
+    background: #F59E0B; color: white;
+  }
+
+  .f-pill .icon { font-size: 11px; opacity: 0.7; }
+  .f-pill .arrow { font-size: 7px; opacity: 0.4; margin-left: 1px; }
+  .f-pill .close { font-size: 9px; opacity: 0.6; margin-left: 2px; }
+  .f-pill .close:hover { opacity: 1; }
+
+  /* Divisor vertical fino */
+  .f-div { width: 1px; height: 16px; background: #ddd; margin: 0 2px; flex-shrink: 0; }
+
+  /* Clear link */
+  .f-clear {
+    font-size: 10px; color: #ccc; cursor: pointer;
+    margin-left: auto; flex-shrink: 0; transition: color 0.15s;
+  }
+  .f-clear:hover { color: #E8930C; }
+
+  /* === POPOVER === */
+  .popover {
+    position: absolute; top: 6px;
+    width: 380px; background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+    overflow: hidden; z-index: 10;
+    font-family: 'Outfit', sans-serif;
+  }
+  .pop-search {
+    padding: 8px 10px; border-bottom: 1px solid #f0f0f0;
+  }
+  .pop-search input {
+    width: 100%; height: 30px; border: 1px solid #e5e5e5;
+    background: #fafafa; border-radius: 8px;
+    padding: 0 10px; font-size: 11px; color: #555;
+    outline: none; font-family: 'Outfit', sans-serif;
+  }
+  .pop-search input:focus { border-color: #ddd; background: white; }
+  .pop-search input::placeholder { color: #bbb; }
+
+  .pop-header {
+    display: flex; padding: 5px 10px;
+    font-size: 9px; color: #bbb;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    border-bottom: 1px solid #f5f5f5; font-weight: 500;
+  }
+
+  .pop-row {
+    display: flex; align-items: center;
+    padding: 6px 10px; font-size: 12px;
+    cursor: pointer; transition: background 0.1s;
+  }
+  .pop-row:hover { background: #fafafa; }
+  .pop-row-on { background: #f4f4f4; }
+  .pop-row-on:hover { background: #eee; }
+
+  .pop-check {
+    width: 15px; height: 15px; border-radius: 4px;
+    border: 1.5px solid #ddd; display: flex;
+    align-items: center; justify-content: center;
+    margin-right: 8px; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .pop-check-on {
+    background: #2c3338; border-color: #2c3338;
+  }
+
+  .pop-bar-wrap { width: 60px; padding-left: 10px; flex-shrink: 0; }
+  .pop-bar { height: 4px; border-radius: 2px; background: #eee; overflow: hidden; }
+  .pop-bar-fill { height: 100%; border-radius: 2px; }
+
+  .pop-footer {
+    padding: 6px 10px; border-top: 1px solid #f0f0f0;
+    display: flex; justify-content: space-between;
+    align-items: center; background: #fafafa;
+    font-size: 10px;
+  }
+
+  /* === TABS estilo Lei Seca === */
+  .tabs {
+    display: flex; gap: 2px; background: #f4f4f4;
+    border-radius: 999px; padding: 3px; width: fit-content; margin-top: 12px;
+  }
+  .tab {
+    font-size: 11px; padding: 4px 14px; border-radius: 999px;
+    color: #888; cursor: pointer; transition: all 0.15s; font-weight: 450;
+  }
+  .tab:hover { color: #555; }
+  .tab-on { background: #2c3338; color: white; }
+
+  /* === QUESTOES === */
+  .q-card {
+    background: white; border-radius: 10px;
+    border: 1px solid #eee; padding: 14px 16px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+  }
+  .q-card:hover { border-color: #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+  .q-tag {
+    font-size: 9px; padding: 2px 7px; border-radius: 999px;
+    font-weight: 500;
+  }
+  .q-tag-banca { background: #f4f4f4; color: #555; }
+  .q-tag-ano { background: #f4f4f4; color: #555; }
+  .q-tag-mat { background: #2c3338; color: white; }
+</style>
+</head>
+<body>
+
+<h2>Estilo Lei Seca — Filtros de Questoes</h2>
+
+<div class="container">
+
+  <!-- BARRA -->
+  <div class="bar">
+    <!-- Busca -->
+    <div class="bar-search">
+      <span class="bar-search-icon">&#128269;</span>
+      <span class="bar-search-input">Buscar questoes...</span>
+      <span class="bar-search-badge">2 filtros</span>
+      <span class="bar-search-shortcut">&#8984;K</span>
+    </div>
+
+    <div class="bar-sep"></div>
+
+    <!-- Filtros -->
+    <div class="bar-filters">
+      <div class="f-pill f-pill-off">
+        <span class="icon">&#127979;</span> Banca <span class="arrow">&#9662;</span>
+      </div>
+
+      <div class="f-pill f-pill-on">
+        <span class="icon">&#128218;</span> Dir. Admin. <span class="close">&#10005;</span>
+      </div>
+
+      <div class="f-pill f-pill-on-amber">
+        <span class="icon">&#128197;</span> 2024-25 <span class="close">&#10005;</span>
+      </div>
+
+      <div class="f-div"></div>
+
+      <div class="f-pill f-pill-off">
+        <span class="icon">&#127963;</span> Orgao <span class="arrow">&#9662;</span>
+      </div>
+
+      <div class="f-pill f-pill-off">
+        <span class="icon">&#128188;</span> Cargo <span class="arrow">&#9662;</span>
+      </div>
+
+      <div class="f-pill f-pill-off">
+        <span class="icon">&#128209;</span> Assunto <span class="arrow">&#9662;</span>
+      </div>
+
+      <span class="f-clear">Limpar</span>
+    </div>
+  </div>
+
+  <!-- POPOVER (Banca aberto) -->
+  <div style="position: relative;">
+    <div class="popover" style="left: 0;">
+      <div class="pop-search">
+        <input type="text" placeholder="Filtrar banca..." />
+      </div>
+      <div class="pop-header">
+        <span style="width: 23px;"></span>
+        <span style="flex: 1;">Banca</span>
+        <span style="width: 50px; text-align: right;">Total</span>
+        <span style="width: 60px;"></span>
+      </div>
+      <div style="max-height: 230px; overflow-y: auto;">
+        <div class="pop-row pop-row-on">
+          <div class="pop-check pop-check-on"><span style="color: white; font-size: 9px;">&#10003;</span></div>
+          <span style="flex: 1; color: #333; font-weight: 500;">CEBRASPE (CESPE)</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">23.203</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 100%; background: #2c3338;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">FCC</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">10.151</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 44%; background: #ddd;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">QUADRIX</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">9.632</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 41%; background: #ddd;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">VUNESP</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">7.503</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 32%; background: #ddd;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">FGV</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">6.249</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 27%; background: #ddd;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">FUNDEP</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">4.891</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 21%; background: #ddd;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">FUNDATEC</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">3.204</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 14%; background: #ddd;"></div></div>
+          </span>
+        </div>
+        <div class="pop-row">
+          <div class="pop-check"></div>
+          <span style="flex: 1; color: #555;">IBFC</span>
+          <span style="width: 50px; text-align: right; color: #aaa; font-size: 10px;">2.987</span>
+          <span class="pop-bar-wrap">
+            <div class="pop-bar"><div class="pop-bar-fill" style="width: 13%; background: #ddd;"></div></div>
+          </span>
+        </div>
+      </div>
+      <div class="pop-footer">
+        <span style="color: #bbb;">498 bancas</span>
+        <span style="color: #2c3338; font-weight: 600; cursor: pointer;">1 selecionada &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div style="display: flex; align-items: center; margin-top: 12px;">
+    <div class="tabs">
+      <div class="tab tab-on">Todas</div>
+      <div class="tab">Pendentes</div>
+      <div class="tab">Erradas</div>
+      <div class="tab">Marcadas</div>
+    </div>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 11px; color: #aaa;">
+      137.672
+      <div class="f-div" style="height: 14px;"></div>
+      <div style="display: flex; gap: 2px;">
+        <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: #f4f4f4; border-radius: 999px; cursor: pointer; font-size: 11px; color: #888;">&#9776;</span>
+        <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: #f4f4f4; border-radius: 999px; cursor: pointer; font-size: 11px; color: #888;">&#9744;</span>
+      </div>
+      <div class="f-div" style="height: 14px;"></div>
+      <span style="font-size: 10px; padding: 3px 8px; background: #f4f4f4; border-radius: 999px; color: #888; cursor: pointer;">Recentes &#9662;</span>
+    </div>
+  </div>
+
+  <!-- QUESTOES -->
+  <div style="margin-top: 10px;">
+    <div class="q-card">
+      <div style="display: flex; gap: 5px; margin-bottom: 7px; align-items: center;">
+        <span class="q-tag q-tag-banca">CESPE</span>
+        <span class="q-tag q-tag-ano">2024</span>
+        <span class="q-tag q-tag-mat">Dir. Administrativo</span>
+        <span style="margin-left: auto; font-size: 9px; color: #e74c3c;">&#9679; Dificil</span>
+      </div>
+      <div style="font-size: 13px; color: #555; line-height: 1.7;">Acerca dos principios que regem a administracao publica, julgue o item subsecutivo. O principio da eficiencia, incorporado expressamente a CF/88 por meio da EC 19/1998, impoe a administracao publica a busca por resultados satisfatorios.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display: flex; gap: 5px; margin-bottom: 7px; align-items: center;">
+        <span class="q-tag q-tag-banca">FCC</span>
+        <span class="q-tag q-tag-ano">2025</span>
+        <span class="q-tag q-tag-mat">Dir. Administrativo</span>
+        <span style="margin-left: auto; font-size: 9px; color: #f39c12;">&#9679; Medio</span>
+      </div>
+      <div style="font-size: 13px; color: #555; line-height: 1.7;">Sobre os atos administrativos, assinale a alternativa correta quanto a competencia para revogacao e anulacao conforme a Lei 14.133/2021.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display: flex; gap: 5px; margin-bottom: 7px; align-items: center;">
+        <span class="q-tag q-tag-banca">VUNESP</span>
+        <span class="q-tag q-tag-ano">2024</span>
+        <span class="q-tag q-tag-mat">Dir. Constitucional</span>
+        <span style="margin-left: auto; font-size: 9px; color: #27ae60;">&#9679; Facil</span>
+      </div>
+      <div style="font-size: 13px; color: #555; line-height: 1.7;">Com relacao aos direitos e garantias fundamentais previstos na Constituicao Federal, e correto afirmar que o mandado de seguranca coletivo pode ser impetrado por partido politico.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

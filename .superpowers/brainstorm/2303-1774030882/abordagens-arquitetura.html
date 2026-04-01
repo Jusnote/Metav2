@@ -1,0 +1,96 @@
+<h2>Arquitetura do Sistema de Lei Seca — 3 Abordagens</h2>
+<p class="subtitle">Todas compartilham: API GraphQL no Hetzner, React puro + getSelection, Supabase para user data</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Monolito GraphQL</h3>
+      <p><strong>Tudo num serviço Node.js:</strong> API GraphQL + script de extração + processamento + full-text search via PostgreSQL tsvector</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Menor complexidade operacional — 1 container no Coolify</li>
+            <li>Deploy simples, debug simples</li>
+            <li>PostgreSQL tsvector é suficiente para busca textual</li>
+            <li>Mais rápido de implementar (~2-3 semanas)</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Sem busca semântica (só textual exata)</li>
+            <li>Extração roda no mesmo processo da API</li>
+            <li>Se precisar escalar, tudo escala junto</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:12px; color:#888; font-size:13px;"><strong>Stack:</strong> Fastify + Mercurius + PostgreSQL + tsvector</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>API + Typesense (Recomendado)</h3>
+      <p><strong>API GraphQL + Typesense para busca:</strong> PostgreSQL é source of truth, Typesense sincronizado para busca rápida com facets. Mesmo pattern da API de questões.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Busca instant — typo tolerance, facets por tipo/nível/data</li>
+            <li>Mesmo pattern da API de questões (infraestrutura conhecida)</li>
+            <li>Typesense já roda no servidor — custo zero</li>
+            <li>Futuro: adicionar Voyage embeddings = busca semântica</li>
+            <li>Separação clara: PostgreSQL = CRUD, Typesense = busca</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Sync PostgreSQL → Typesense (complexidade moderada)</li>
+            <li>2 datastores para manter</li>
+            <li>~1 semana a mais que opção A</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:12px; color:#888; font-size:13px;"><strong>Stack:</strong> Fastify + Mercurius + PostgreSQL + Typesense (existente)</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Microserviços Separados</h3>
+      <p><strong>3 serviços independentes:</strong> API GraphQL, Worker de extração/processamento, Serviço de busca (Typesense). Comunicam via fila (Redis/BullMQ).</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Isolamento total — extração pesada não afeta API</li>
+            <li>Cada serviço escala independente</li>
+            <li>Worker pode rodar 24/7 sincronizando leis novas</li>
+            <li>Arquitetura "enterprise-ready"</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>3 containers no Coolify, 3 deploys, 3 logs</li>
+            <li>Complexidade desnecessária para o volume atual</li>
+            <li>Redis como message broker adiciona ponto de falha</li>
+            <li>~3-4 semanas a mais que opção A</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:12px; color:#888; font-size:13px;"><strong>Stack:</strong> Fastify + Mercurius + PostgreSQL + Typesense + Redis/BullMQ</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:32px;">
+  <h3>Minha Recomendação: B</h3>
+  <p>A opção B é o sweet spot perfeito. Reutiliza infraestrutura que já existe (Typesense, pattern da API de questões), sem overengineering de microserviços. A extração roda como script CLI separado (não precisa ser serviço), o processamento roda uma vez na ingestão, e o sync para Typesense é um job simples.</p>
+  <p style="color:#888; margin-top:8px;">O caminho para busca semântica futura (Voyage-4-large) já fica pavimentado — basta adicionar embeddings ao Typesense index, exatamente como funciona na API de questões.</p>
+</div>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Active Filters — Inline Bar with Separators</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #111; color: #ccc; }
+
+  h1 { font-size: 14px; color: #E8930C; text-align: center; padding: 24px 0 4px; font-weight: 600; letter-spacing: 1px; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 20px; font-weight: 300; }
+
+  .card { background: #1a1a1a; border-radius: 16px; border: 1px solid #2a2a2a; overflow: hidden; margin-bottom: 16px; max-width: 820px; margin-left: auto; margin-right: auto; }
+  .card-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #1e1e1e; }
+  .card-label { font-size: 12px; color: #ddd; font-weight: 500; }
+  .card-desc { font-size: 10px; color: #666; margin-left: auto; }
+  .card-body { padding: 16px 20px; background: #f0f2f5; }
+  .page { max-width: 780px; margin: 0 auto; }
+
+  /* Simulated search + filter bar */
+  .sb { display: flex; align-items: center; height: 44px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 14px 14px 0 0; padding: 0 16px; gap: 10px; font-size: 13px; color: #b0b4bc; }
+  .fb { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(180deg, #f6f7f9, #eef0f3); border: 1px solid #e2e5ea; border-top: 1px solid #eaecf0; border-radius: 0 0 14px 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+  .pill { font-size: 11px; padding: 5px 11px; border-radius: 8px; white-space: nowrap; display: flex; align-items: center; gap: 5px; font-weight: 450; flex-shrink: 0; }
+  .pill-purple { background: linear-gradient(135deg, #F4F0FF, #E9E3FF); color: #5B21B6; border: 1px solid #C4B5FD; }
+  .pill-amber { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #92400E; border: 1px solid #F59E0B; }
+  .pill-blue { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: #1E40AF; border: 1px solid #60A5FA; }
+  .pill-off { background: rgba(255,255,255,0.85); color: #5f6368; border: 1px solid rgba(0,0,0,0.08); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; background: #eef0f3; border-radius: 10px; padding: 3px; width: fit-content; margin-top: 8px; }
+  .tab { font-size: 11px; padding: 5px 14px; border-radius: 8px; color: #888; font-weight: 450; }
+  .tab-on { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+  /* Question */
+  .q { background: white; border-radius: 12px; border: 1px solid #e8eaed; padding: 14px 16px; margin-top: 10px; }
+  .tg { font-size: 9px; padding: 2px 8px; border-radius: 5px; font-weight: 500; }
+  .tg-b { background: #F4F0FF; color: #7C3AED; }
+  .tg-a { background: #DBEAFE; color: #1D4ED8; }
+  .tg-m { background: #FEF3C7; color: #D97706; }
+
+  /* ========== INLINE BAR STYLES ========== */
+
+  /* Shared bar container */
+  .ibar {
+    display: flex; align-items: center;
+    overflow-x: auto; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding: 6px 2px;
+    gap: 0;
+  }
+  .ibar::-webkit-scrollbar { display: none; }
+
+  /* Separator */
+  .sep { color: #d0d3d9; font-size: 10px; flex-shrink: 0; margin: 0; user-select: none; }
+
+  /* Close x */
+  .ix { font-size: 9px; color: #ccc; cursor: pointer; transition: color 0.15s; margin-left: 3px; }
+  .ix:hover { color: #ef4444; }
+
+  /* Clear all */
+  .ibar-clear { font-size: 10px; color: #c0c4cc; cursor: pointer; flex-shrink: 0; white-space: nowrap; margin-left: 4px; }
+  .ibar-clear:hover { color: #ef4444; }
+
+  /* Fade on right */
+  .ibar-wrap { position: relative; padding: 0 2px; }
+  .ibar-wrap::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 28px;
+    background: linear-gradient(90deg, transparent, #f0f2f5);
+    pointer-events: none;
+  }
+
+  /* ---- A: Dot separator, light text ---- */
+  .ibar-a .item { font-size: 12px; color: #666; font-weight: 400; padding: 0 8px; flex-shrink: 0; display: flex; align-items: center; gap: 3px; }
+  .ibar-a .sep-dot { width: 3px; height: 3px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
+
+  /* ---- B: Pipe separator, medium text ---- */
+  .ibar-b .item { font-size: 11px; color: #555; font-weight: 450; padding: 0 10px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+  .ibar-b .sep-pipe { color: #e0e3e8; font-size: 14px; flex-shrink: 0; font-weight: 300; }
+
+  /* ---- C: Slash separator, monospace feel ---- */
+  .ibar-c .item { font-size: 11px; color: #555; font-weight: 450; padding: 0 8px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+  .ibar-c .sep-slash { color: #d0d3d9; font-size: 12px; flex-shrink: 0; font-weight: 300; }
+
+  /* ---- D: Chevron separator, breadcrumb style ---- */
+  .ibar-d .item { font-size: 11px; color: #555; font-weight: 450; padding: 0 6px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+  .ibar-d .sep-chev { flex-shrink: 0; }
+  .ibar-d .sep-chev svg { width: 10px; height: 10px; stroke: #ccc; stroke-width: 2; fill: none; }
+
+  /* ---- E: Thin line separator, ultra clean ---- */
+  .ibar-e { gap: 0; }
+  .ibar-e .item { font-size: 11px; color: #555; font-weight: 450; padding: 4px 12px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; border-right: 1px solid #e8eaed; }
+  .ibar-e .item:last-of-type { border-right: none; }
+  .ibar-e .item:hover { background: #f8f9fb; }
+
+  /* ---- F: No separator, spaced, underline on hover ---- */
+  .ibar-f .item {
+    font-size: 11px; color: #777; font-weight: 400; padding: 2px 10px; flex-shrink: 0;
+    display: flex; align-items: center; gap: 4px;
+    border-bottom: 1px solid transparent; transition: all 0.15s;
+  }
+  .ibar-f .item:hover { color: #333; border-bottom-color: #E8930C; }
+
+  .steps { padding: 0 20px 40px; }
+</style>
+</head>
+<body>
+
+<h1>Active Filters — Uma Linha com Separadores</h1>
+<h2>Scroll horizontal, nunca quebra, minimalista</h2>
+
+<div class="steps">
+
+  <!-- A: Dot separator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">A) Dot Separator</span>
+      <span class="card-desc">Pontos pequenos entre items, leve e arejado</span>
+    </div>
+    <div class="card-body">
+      <div class="page">
+        <div class="sb">🔍 individuo que mata outro</div>
+        <div class="fb">
+          <div class="pill pill-purple">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+          <div class="pill pill-amber">Dir. Admin.</div>
+          <div class="pill pill-blue">2024</div>
+          <div class="pill pill-off">Orgao ▾</div>
+        </div>
+        <div class="ibar-wrap">
+          <div class="ibar ibar-a">
+            <div class="item">FGV <span class="ix">✕</span></div>
+            <div class="sep-dot"></div>
+            <div class="item">CESPE <span class="ix">✕</span></div>
+            <div class="sep-dot"></div>
+            <div class="item">Dir. Administrativo <span class="ix">✕</span></div>
+            <div class="sep-dot"></div>
+            <div class="item">2024 <span class="ix">✕</span></div>
+            <div class="sep-dot"></div>
+            <div class="item">Promotor de Justica <span class="ix">✕</span></div>
+            <div class="sep-dot"></div>
+            <div class="item">Excluir Anuladas <span class="ix">✕</span></div>
+            <span class="ibar-clear">limpar</span>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+        <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Pipe separator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">B) Pipe Separator</span>
+      <span class="card-desc">Pipe vertical fino, separacao clara</span>
+    </div>
+    <div class="card-body">
+      <div class="page">
+        <div class="sb">🔍 individuo que mata outro</div>
+        <div class="fb">
+          <div class="pill pill-purple">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+          <div class="pill pill-amber">Dir. Admin.</div>
+          <div class="pill pill-blue">2024</div>
+          <div class="pill pill-off">Orgao ▾</div>
+        </div>
+        <div class="ibar-wrap">
+          <div class="ibar ibar-b">
+            <div class="item">FGV <span class="ix">✕</span></div>
+            <span class="sep-pipe">│</span>
+            <div class="item">CESPE <span class="ix">✕</span></div>
+            <span class="sep-pipe">│</span>
+            <div class="item">Dir. Administrativo <span class="ix">✕</span></div>
+            <span class="sep-pipe">│</span>
+            <div class="item">2024 <span class="ix">✕</span></div>
+            <span class="sep-pipe">│</span>
+            <div class="item">Promotor de Justica <span class="ix">✕</span></div>
+            <span class="sep-pipe">│</span>
+            <div class="item">Excluir Anuladas <span class="ix">✕</span></div>
+            <span class="ibar-clear">limpar</span>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+        <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Slash separator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">C) Slash Separator</span>
+      <span class="card-desc">Barras inclinadas, vibe tecnica/moderna</span>
+    </div>
+    <div class="card-body">
+      <div class="page">
+        <div class="sb">🔍 individuo que mata outro</div>
+        <div class="fb">
+          <div class="pill pill-purple">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+          <div class="pill pill-amber">Dir. Admin.</div>
+          <div class="pill pill-blue">2024</div>
+          <div class="pill pill-off">Orgao ▾</div>
+        </div>
+        <div class="ibar-wrap">
+          <div class="ibar ibar-c">
+            <div class="item">FGV <span class="ix">✕</span></div>
+            <span class="sep-slash">/</span>
+            <div class="item">CESPE <span class="ix">✕</span></div>
+            <span class="sep-slash">/</span>
+            <div class="item">Dir. Administrativo <span class="ix">✕</span></div>
+            <span class="sep-slash">/</span>
+            <div class="item">2024 <span class="ix">✕</span></div>
+            <span class="sep-slash">/</span>
+            <div class="item">Promotor de Justica <span class="ix">✕</span></div>
+            <span class="sep-slash">/</span>
+            <div class="item">Excluir Anuladas <span class="ix">✕</span></div>
+            <span class="ibar-clear">limpar</span>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+        <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D: Chevron separator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">D) Chevron Separator</span>
+      <span class="card-desc">Setas pequenas, estilo breadcrumb, fluxo visual</span>
+    </div>
+    <div class="card-body">
+      <div class="page">
+        <div class="sb">🔍 individuo que mata outro</div>
+        <div class="fb">
+          <div class="pill pill-purple">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+          <div class="pill pill-amber">Dir. Admin.</div>
+          <div class="pill pill-blue">2024</div>
+          <div class="pill pill-off">Orgao ▾</div>
+        </div>
+        <div class="ibar-wrap">
+          <div class="ibar ibar-d">
+            <div class="item">FGV <span class="ix">✕</span></div>
+            <span class="sep-chev"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            <div class="item">CESPE <span class="ix">✕</span></div>
+            <span class="sep-chev"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            <div class="item">Dir. Administrativo <span class="ix">✕</span></div>
+            <span class="sep-chev"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            <div class="item">2024 <span class="ix">✕</span></div>
+            <span class="sep-chev"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            <div class="item">Promotor de Justica <span class="ix">✕</span></div>
+            <span class="sep-chev"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            <div class="item">Excluir Anuladas <span class="ix">✕</span></div>
+            <span class="ibar-clear">limpar</span>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+        <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E: Thin line separator (border-right) -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">E) Thin Line</span>
+      <span class="card-desc">Linha vertical fina entre items, hover highlight, ultra limpo</span>
+    </div>
+    <div class="card-body">
+      <div class="page">
+        <div class="sb">🔍 individuo que mata outro</div>
+        <div class="fb">
+          <div class="pill pill-purple">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+          <div class="pill pill-amber">Dir. Admin.</div>
+          <div class="pill pill-blue">2024</div>
+          <div class="pill pill-off">Orgao ▾</div>
+        </div>
+        <div class="ibar-wrap">
+          <div class="ibar ibar-e">
+            <div class="item">FGV <span class="ix">✕</span></div>
+            <div class="item">CESPE <span class="ix">✕</span></div>
+            <div class="item">Dir. Administrativo <span class="ix">✕</span></div>
+            <div class="item">2024 <span class="ix">✕</span></div>
+            <div class="item">Promotor de Justica <span class="ix">✕</span></div>
+            <div class="item">Excluir Anuladas <span class="ix">✕</span></div>
+            <span class="ibar-clear" style="padding-left:8px;">limpar</span>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+        <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- F: No separator, underline hover -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">F) Underline Hover</span>
+      <span class="card-desc">Sem separador visivel, underline amber ao hover, super clean</span>
+    </div>
+    <div class="card-body">
+      <div class="page">
+        <div class="sb">🔍 individuo que mata outro</div>
+        <div class="fb">
+          <div class="pill pill-purple">Banca <span style="font-size:8px;background:rgba(91,33,182,0.12);padding:0 5px;border-radius:4px;font-weight:700;">2</span></div>
+          <div class="pill pill-amber">Dir. Admin.</div>
+          <div class="pill pill-blue">2024</div>
+          <div class="pill pill-off">Orgao ▾</div>
+        </div>
+        <div class="ibar-wrap">
+          <div class="ibar ibar-f">
+            <div class="item">FGV <span class="ix">✕</span></div>
+            <div class="item">CESPE <span class="ix">✕</span></div>
+            <div class="item">Dir. Administrativo <span class="ix">✕</span></div>
+            <div class="item">2024 <span class="ix">✕</span></div>
+            <div class="item">Promotor de Justica <span class="ix">✕</span></div>
+            <div class="item">Excluir Anuladas <span class="ix">✕</span></div>
+            <span class="ibar-clear">limpar</span>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div></div>
+        <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica...</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

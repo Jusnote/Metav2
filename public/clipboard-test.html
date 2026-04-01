@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Teste Clipboard HTML - JusBrasil</title>
+<style>
+  body { font-family: system-ui; max-width: 900px; margin: 40px auto; padding: 20px; background: #fafafa; }
+  h1 { color: #333; }
+  .instructions { color: #666; margin-bottom: 20px; line-height: 1.8; background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #ddd; }
+  .instructions strong { color: #333; }
+  .instructions ol { margin: 8px 0; padding-left: 20px; }
+  #paste-area {
+    border: 2px dashed #4fc3f7; border-radius: 12px; padding: 20px;
+    min-height: 100px; background: #fff; font-size: 14px; color: #999;
+    cursor: text;
+  }
+  #paste-area:focus { border-color: #1976d2; outline: none; color: #333; }
+  #results { margin-top: 24px; display: none; }
+  h2 { color: #333; margin-top: 32px; }
+  h3 { margin-top: 20px; }
+  pre {
+    background: #1a1a2e; color: #66bb6a; padding: 16px; border-radius: 8px;
+    overflow-x: auto; font-size: 12px; max-height: 500px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  #analysis-pre { color: #ff9800; }
+  .stat { display: inline-block; background: #1a1a2e; color: #fff; padding: 8px 16px; border-radius: 8px; margin: 4px; }
+  .stat .num { font-size: 24px; font-weight: 700; }
+  .stat .label { font-size: 11px; color: #aaa; }
+  .stat.green .num { color: #66bb6a; }
+  .stat.red .num { color: #ef5350; }
+  .stat.orange .num { color: #ff9800; }
+  .stat.blue .num { color: #4fc3f7; }
+</style>
+</head>
+<body>
+
+<h1>Teste: O que chega no Clipboard HTML?</h1>
+
+<div class="instructions">
+  <strong>Instrucoes:</strong>
+  <ol>
+    <li>Va na aba do JusBrasil com o Codigo Civil</li>
+    <li>Selecione do <strong>TITULO I</strong> ate o <strong>Art. 5</strong> (incluindo CAPITULO, descricoes e incisos)</li>
+    <li>Copie (Ctrl+C)</li>
+    <li>Volte aqui e <strong>cole na area abaixo</strong> (Ctrl+V)</li>
+  </ol>
+</div>
+
+<div id="paste-area" contenteditable="true">Clique aqui e cole (Ctrl+V)...</div>
+
+<div id="results">
+  <h2>Resultado</h2>
+
+  <div id="stats-bar"></div>
+
+  <h3 style="color: #ff9800;">Analise Estrutural</h3>
+  <pre id="analysis-pre"></pre>
+
+  <h3 style="color: #4fc3f7;">HTML Raw do Clipboard (primeiros 5000 chars)</h3>
+  <pre id="raw-html-pre"></pre>
+</div>
+
+<script>
+document.getElementById('paste-area').addEventListener('paste', function(e) {
+  e.preventDefault();
+
+  var htmlData = e.clipboardData.getData('text/html');
+  var textData = e.clipboardData.getData('text/plain');
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('raw-html-pre').textContent = htmlData ? htmlData.substring(0, 5000) : '(VAZIO - nenhum HTML no clipboard)';
+
+  if (!htmlData) {
+    document.getElementById('analysis-pre').textContent = 'Nenhum HTML no clipboard. Apenas texto puro foi colado.';
+    return;
+  }
+
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(htmlData, 'text/html');
+
+  var analysis = {
+    '01_TAGS': { p: 0, h6: 0, h5: 0, h4: 0, h3: 0, h2: 0, h1: 0, div: 0, span: 0 },
+    '02_LINKS': { total: 0, comTopicos: 0, exemplos: [] },
+    '03_IDS': { total: 0, exemplos: [] },
+    '04_CLASSES': { total: 0, revokedFound: false, exemplos: [] },
+    '05_HIERARQUIA': { total: 0, exemplos: [] },
+    '06_CONCLUSAO': {}
+  };
+
+  var allEls = doc.querySelectorAll('*');
+  for (var i = 0; i < allEls.length; i++) {
+    var el = allEls[i];
+    var tag = el.tagName;
+    if (analysis['01_TAGS'][tag.toLowerCase()] !== undefined) analysis['01_TAGS'][tag.toLowerCase()]++;
+
+    if (el.id && analysis['03_IDS'].exemplos.length < 10) {
+      analysis['03_IDS'].total++;
+      analysis['03_IDS'].exemplos.push(el.id + ' (' + tag + ': ' + (el.textContent || '').substring(0, 50) + ')');
+    }
+
+    if (el.className && typeof el.className === 'string' && el.className.length > 0) {
+      analysis['04_CLASSES'].total++;
+      if (el.className.indexOf('revoked') >= 0) analysis['04_CLASSES'].revokedFound = true;
+      if (analysis['04_CLASSES'].exemplos.length < 10) {
+        analysis['04_CLASSES'].exemplos.push(el.className.substring(0, 80) + ' (' + tag + ')');
+      }
+    }
+
+    var text = (el.textContent || '').trim();
+    if (text.match(/^(PARTE\s|LIVRO\s|TÍTULO\s|CAPÍTULO\s|Seção\s|Subseção\s)/i)) {
+      analysis['05_HIERARQUIA'].total++;
+      if (analysis['05_HIERARQUIA'].exemplos.length < 10) {
+        analysis['05_HIERARQUIA'].exemplos.push(tag + (el.id ? '#' + el.id : '') + ': ' + text.substring(0, 60));
+      }
+    }
+  }
+
+  var links = doc.querySelectorAll('a');
+  analysis['02_LINKS'].total = links.length;
+  for (var j = 0; j < links.length; j++) {
+    var href = links[j].getAttribute('href') || '';
+    if (href.indexOf('topicos') >= 0) {
+      analysis['02_LINKS'].comTopicos++;
+      if (analysis['02_LINKS'].exemplos.length < 5) {
+        analysis['02_LINKS'].exemplos.push(links[j].textContent.substring(0, 40) + ' -> ' + href.substring(0, 100));
+      }
+    }
+  }
+
+  // Conclusao
+  analysis['06_CONCLUSAO'] = {
+    'links_preservados': analysis['02_LINKS'].comTopicos > 0 ? 'SIM' : 'NAO',
+    'h6_preservados': analysis['01_TAGS'].h6 > 0 ? 'SIM' : 'NAO',
+    'ids_preservados': analysis['03_IDS'].total > 0 ? 'SIM' : 'NAO',
+    'classes_preservadas': analysis['04_CLASSES'].total > 0 ? 'SIM' : 'NAO',
+    'revoked_class': analysis['04_CLASSES'].revokedFound ? 'SIM' : 'NAO',
+    'hierarquia_detectada': analysis['05_HIERARQUIA'].total > 0 ? 'SIM' : 'NAO'
+  };
+
+  document.getElementById('analysis-pre').textContent = JSON.stringify(analysis, null, 2);
+
+  // Stats bar
+  var c = analysis['06_CONCLUSAO'];
+  var statsHtml = '';
+  statsHtml += '<div class="stat ' + (c.links_preservados === 'SIM' ? 'green' : 'red') + '"><div class="num">' + analysis['02_LINKS'].comTopicos + '</div><div class="label">Links topicos</div></div>';
+  statsHtml += '<div class="stat ' + (c.h6_preservados === 'SIM' ? 'green' : 'red') + '"><div class="num">' + analysis['01_TAGS'].h6 + '</div><div class="label">Tags h6</div></div>';
+  statsHtml += '<div class="stat ' + (c.ids_preservados === 'SIM' ? 'green' : 'red') + '"><div class="num">' + analysis['03_IDS'].total + '</div><div class="label">IDs</div></div>';
+  statsHtml += '<div class="stat ' + (c.classes_preservadas === 'SIM' ? 'green' : 'orange') + '"><div class="num">' + analysis['04_CLASSES'].total + '</div><div class="label">CSS Classes</div></div>';
+  statsHtml += '<div class="stat blue"><div class="num">' + analysis['01_TAGS'].p + '</div><div class="label">Tags p</div></div>';
+  statsHtml += '<div class="stat blue"><div class="num">' + analysis['05_HIERARQUIA'].total + '</div><div class="label">Hierarquia</div></div>';
+  document.getElementById('stats-bar').innerHTML = statsHtml;
+
+  this.innerHTML = '<em style="color:#999">Conteudo colado com sucesso. Veja analise abaixo.</em>';
+});
+</script>
+
+</body>
+</html>

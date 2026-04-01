@@ -1,0 +1,84 @@
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<h2>Qual vibe visual pra barra?</h2>
+<p class="subtitle">O mockup anterior era genérico demais. Qual direção te atrai?</p>
+
+<div class="cards" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+  <!-- Option A: Minimal -->
+  <div class="card" data-choice="minimal" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px 16px; background: #fff;">
+      <div style="font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1.5px solid #111;">
+        <span style="font-size: 11px; color: #999; font-weight: 400; letter-spacing: 0.3px;">Parte Especial</span>
+        <span style="font-size: 9px; color: #ccc;">—</span>
+        <span style="font-size: 11px; color: #999;">Título I</span>
+        <span style="font-size: 9px; color: #ccc;">—</span>
+        <span style="font-size: 11px; color: #333; font-weight: 500;">Cap. I</span>
+        <span style="margin-left: auto; font-size: 10px; color: #bbb; font-variant-numeric: tabular-nums;">121 / 615</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Minimal editorial</h3>
+      <p>Sem container, sem sombra, sem bordas. Linha fina embaixo. Tipografia faz o trabalho. Estilo editorial/magazine.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Glass -->
+  <div class="card" data-choice="glass" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px 16px; background: linear-gradient(135deg, #f8faf9, #f0f4f1);">
+      <div style="font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 8px; padding: 7px 14px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 10px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 1px 8px rgba(0,0,0,0.04);">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" opacity="0.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size: 11px; color: #8a9a8f; font-weight: 400;">Parte Especial</span>
+        <span style="width: 3px; height: 3px; border-radius: 50%; background: #c5d4c9;"></span>
+        <span style="font-size: 11px; color: #8a9a8f;">Título I</span>
+        <span style="width: 3px; height: 3px; border-radius: 50%; background: #c5d4c9;"></span>
+        <span style="font-size: 11px; color: #3a5540; font-weight: 500;">Cap. I</span>
+        <span style="margin-left: auto; font-size: 10px; color: #9aaa9f; font-variant-numeric: tabular-nums;">121 / 615</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Glass sutil</h3>
+      <p>Container translúcido com blur, radius suave, sombra micro. Tom verde nos acentos. Premium mas discreto.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Notion/Linear -->
+  <div class="card" data-choice="notion" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px 16px; background: #fff;">
+      <div style="font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 4px; padding: 5px 0;">
+        <span style="font-size: 11px; color: #91979e; font-weight: 400; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: background 150ms;">Parte Especial</span>
+        <span style="font-size: 11px; color: #d0d4d8;">/</span>
+        <span style="font-size: 11px; color: #91979e; padding: 2px 6px; border-radius: 4px;">Título I</span>
+        <span style="font-size: 11px; color: #d0d4d8;">/</span>
+        <span style="font-size: 11px; color: #37404a; font-weight: 500; padding: 2px 6px; border-radius: 4px; background: #f3f4f6;">Cap. I</span>
+        <span style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 10px; color: #b0b6bd; font-variant-numeric: tabular-nums;">121 / 615</span>
+          <span style="font-size: 9px; color: #b0b6bd; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-family: monospace;">⌘F</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Notion / Linear</h3>
+      <p>Breadcrumb com "/" separadores, hover com pill highlight, último item com background sutil. Clean e funcional.</p>
+    </div>
+  </div>
+
+  <!-- Option D: Pill segments -->
+  <div class="card" data-choice="pills" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px 16px; background: #fff;">
+      <div style="font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 3px; padding: 5px 0;">
+        <span style="font-size: 10.5px; color: #7a8490; font-weight: 400; padding: 3px 10px; border-radius: 20px; background: #f5f6f8; border: 1px solid #eef0f2;">Parte Especial</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d0d4d8" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span style="font-size: 10.5px; color: #7a8490; padding: 3px 10px; border-radius: 20px; background: #f5f6f8; border: 1px solid #eef0f2;">Título I</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#d0d4d8" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span style="font-size: 10.5px; color: #2d3640; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: #ecfdf5; border: 1px solid #bbf7d0;">Cap. I</span>
+        <span style="margin-left: auto; font-size: 10px; color: #b0b6bd; font-variant-numeric: tabular-nums;">121 / 615</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Pill segments</h3>
+      <p>Cada segmento é uma pill clicável. O ativo tem acento verde. Chevrons entre. Visual moderno tipo Vercel/Stripe.</p>
+    </div>
+  </div>
+
+</div>

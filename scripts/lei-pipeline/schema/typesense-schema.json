@@ -1,0 +1,16 @@
+{
+  "name": "dispositivos",
+  "fields": [
+    { "name": "id", "type": "string" },
+    { "name": "lei_id", "type": "string", "facet": true },
+    { "name": "lei_titulo", "type": "string" },
+    { "name": "tipo", "type": "string", "facet": true },
+    { "name": "nivel", "type": "string", "facet": true },
+    { "name": "texto", "type": "string" },
+    { "name": "epigrafe", "type": "string", "optional": true },
+    { "name": "numero", "type": "string", "optional": true },
+    { "name": "posicao", "type": "int32" },
+    { "name": "path", "type": "string", "optional": true, "facet": true }
+  ],
+  "default_sorting_field": "posicao"
+}

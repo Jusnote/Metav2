@@ -1,0 +1,145 @@
+<h2>Features de UX que elevam a experiência</h2>
+<p class="subtitle">Além do layout, funcionalidades que diferenciam de qualquer app jurídico. Selecione as que fazem sentido para o v1.</p>
+
+<div class="options" data-multiselect>
+
+  <!-- Feature 1: Lei Seca Mode -->
+  <div class="option" data-choice="lei-seca-toggle" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>Toggle "Lei Seca"</h3>
+      <p>Um switch no topo que esconde todas as anotações legislativas <em>"(Incluído pela Lei nº...)"</em>, mostrando só o texto puro da lei. Estudantes de concurso precisam ler a lei "seca" — sem anotações. Toggle instantâneo, sem reload.</p>
+      <div style="margin-top:8px; display:flex; gap:12px;">
+        <div style="background:#0f172a; padding:8px 12px; border-radius:6px; font-size:11px; flex:1;">
+          <div style="color:#10b981; font-size:10px; margin-bottom:4px;">COM anotações</div>
+          <span style="color:#e94560; font-weight:bold;">Art. 121.</span>
+          <span style="color:#e0e0e0;"> Matar alguem:</span>
+          <div style="color:#555; font-style:italic; font-size:10px; margin-top:4px;">(Vide Lei nº 8.072, de 25.7.90)</div>
+        </div>
+        <div style="background:#0f172a; padding:8px 12px; border-radius:6px; font-size:11px; flex:1;">
+          <div style="color:#e94560; font-size:10px; margin-bottom:4px;">LEI SECA (limpo)</div>
+          <span style="color:#e94560; font-weight:bold;">Art. 121.</span>
+          <span style="color:#e0e0e0;"> Matar alguem:</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 2: Referência cruzada inline -->
+  <div class="option" data-choice="ref-cruzada" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>Referência Cruzada Inline</h3>
+      <p>Quando o texto menciona "nos termos do art. 121", o número vira um link clicável. Hover mostra um tooltip com o texto do artigo referenciado — sem sair da página. Os dados de <code>links[]</code> da API já contêm essas referências.</p>
+      <div style="margin-top:8px; background:#0f172a; padding:10px 14px; border-radius:6px; font-size:12px; color:#e0e0e0; position:relative;">
+        <span>...responde o agente pelo crime de homicídio, nos termos do </span>
+        <span style="color:#3b82f6; text-decoration:underline; cursor:pointer;">art. 121</span>
+        <span> deste Código.</span>
+        <div style="position:absolute; bottom:-60px; left:40%; background:#1e293b; border:1px solid #3b82f6; border-radius:8px; padding:8px 12px; font-size:11px; width:240px; z-index:10; box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+          <div style="color:#3b82f6; font-weight:bold; margin-bottom:4px;">Art. 121 — Homicídio simples</div>
+          <div style="color:#94a3b8;">Matar alguem: Pena - reclusão, de seis a vinte anos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 3: Ctrl+F inteligente -->
+  <div class="option" data-choice="smart-search" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Busca com Minimap (estilo VS Code)</h3>
+      <p>Ctrl+F abre barra de busca que usa a API <code>busca()</code> com <code>websearch_to_tsquery</code>. Resultados aparecem como marcadores na barra de scroll lateral — clique para pular direto. Suporta <code>"prisão preventiva" -fiança</code>.</p>
+      <div style="margin-top:8px; display:flex; gap:8px; align-items:stretch;">
+        <div style="background:#0f172a; padding:8px 12px; border-radius:6px; font-size:11px; flex:1; color:#e0e0e0;">
+          <div style="background:#1e293b; padding:4px 8px; border-radius:4px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#888;">🔍</span>
+            <span style="color:#e0e0e0;">homicídio qualificado</span>
+            <span style="color:#64748b; margin-left:auto; font-size:10px;">22 resultados</span>
+          </div>
+          <div style="color:#94a3b8; font-size:10px;">
+            <div style="padding:3px 0;">Art. 121, § 2º — Se o <span style="background:#854d0e; padding:0 2px; border-radius:2px; color:#fbbf24;">homicídio</span> é cometido...</div>
+            <div style="padding:3px 0;">Art. 121, § 2º-B — A pena do <span style="background:#854d0e; padding:0 2px; border-radius:2px; color:#fbbf24;">homicídio</span> contra menor...</div>
+          </div>
+        </div>
+        <div style="width:8px; background:#1e293b; border-radius:4px; position:relative; min-height:80px;">
+          <div style="width:8px; height:3px; background:#fbbf24; border-radius:1px; position:absolute; top:15%;"></div>
+          <div style="width:8px; height:3px; background:#fbbf24; border-radius:1px; position:absolute; top:22%;"></div>
+          <div style="width:8px; height:3px; background:#fbbf24; border-radius:1px; position:absolute; top:45%;"></div>
+          <div style="width:8px; height:3px; background:#fbbf24; border-radius:1px; position:absolute; top:78%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 4: Keyboard navigation -->
+  <div class="option" data-choice="keyboard-nav" onclick="toggleSelect(this)">
+    <div class="letter">4</div>
+    <div class="content">
+      <h3>Navegação por Teclado</h3>
+      <p>Atalhos para quem estuda de verdade:</p>
+      <div style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:11px;">
+        <div style="background:#0f172a; padding:6px 10px; border-radius:4px;">
+          <kbd style="background:#334155; padding:2px 6px; border-radius:3px; color:#e0e0e0; font-size:10px;">J</kbd>
+          <kbd style="background:#334155; padding:2px 6px; border-radius:3px; color:#e0e0e0; font-size:10px;">K</kbd>
+          <span style="color:#94a3b8; margin-left:4px;">próximo/anterior artigo</span>
+        </div>
+        <div style="background:#0f172a; padding:6px 10px; border-radius:4px;">
+          <kbd style="background:#334155; padding:2px 6px; border-radius:3px; color:#e0e0e0; font-size:10px;">Ctrl+\</kbd>
+          <span style="color:#94a3b8; margin-left:4px;">toggle modo imersivo</span>
+        </div>
+        <div style="background:#0f172a; padding:6px 10px; border-radius:4px;">
+          <kbd style="background:#334155; padding:2px 6px; border-radius:3px; color:#e0e0e0; font-size:10px;">Ctrl+G</kbd>
+          <span style="color:#94a3b8; margin-left:4px;">ir para artigo (nº)</span>
+        </div>
+        <div style="background:#0f172a; padding:6px 10px; border-radius:4px;">
+          <kbd style="background:#334155; padding:2px 6px; border-radius:3px; color:#e0e0e0; font-size:10px;">L</kbd>
+          <span style="color:#94a3b8; margin-left:4px;">toggle lei seca</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 5: Reading progress -->
+  <div class="option" data-choice="reading-progress" onclick="toggleSelect(this)">
+    <div class="letter">5</div>
+    <div class="content">
+      <h3>Progresso de Leitura</h3>
+      <p>Barra fina no topo mostra % lida da lei. Persiste no localStorage. Quando volta para a lei, scrolla automaticamente para onde parou. A sidebar marca artigos já visitados com um dot sutil.</p>
+      <div style="margin-top:8px; background:#0f172a; padding:0; border-radius:6px; overflow:hidden;">
+        <div style="height:3px; background:#1e293b;">
+          <div style="height:3px; width:34%; background:linear-gradient(90deg, #3b82f6, #10b981); border-radius:0 2px 2px 0;"></div>
+        </div>
+        <div style="padding:6px 12px; font-size:10px; color:#64748b; display:flex; justify-content:space-between;">
+          <span>34% lido · Art. 121 / 361 artigos</span>
+          <span style="color:#10b981;">↩ Continuar de onde parou</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 6: Dispositivo revogado toggle -->
+  <div class="option" data-choice="revogados-toggle" onclick="toggleSelect(this)">
+    <div class="letter">6</div>
+    <div class="content">
+      <h3>Toggle Revogados</h3>
+      <p>Artigos revogados ficam colapsados por default com um indicador visual <span style="color:#ef4444;">(Revogado)</span>. Clique para expandir e ver o texto original riscado. A API já filtra com <code>incluirRevogados</code>.</p>
+      <div style="margin-top:8px; background:#0f172a; padding:8px 12px; border-radius:6px; font-size:11px; color:#e0e0e0;">
+        <div style="opacity:0.5; cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <span style="color:#ef4444; font-size:10px;">▶</span>
+          <span style="text-decoration:line-through;">§ 3º Se o homicídio é culposo:</span>
+          <span style="background:#7f1d1d; color:#fca5a5; font-size:9px; padding:1px 6px; border-radius:3px;">Revogado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px; padding:16px; background:#1e293b; border-radius:8px; border:1px solid #334155;">
+  <h3 style="margin-top:0;">Recomendação para v1</h3>
+  <p style="color:#94a3b8; font-size:13px; margin-bottom:0;">
+    <strong style="color:#10b981;">Essenciais:</strong> 1 (Lei Seca toggle), 4 (teclado), 6 (revogados) — baixo esforço, alto impacto<br>
+    <strong style="color:#3b82f6;">Diferenciais:</strong> 3 (busca minimap), 5 (progresso) — médio esforço, experiência premium<br>
+    <strong style="color:#f59e0b;">v2:</strong> 2 (ref cruzada) — precisa de dados de links entre leis, mais complexo
+  </p>
+</div>

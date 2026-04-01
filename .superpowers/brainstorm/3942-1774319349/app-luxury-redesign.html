@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jusnote — Premium Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --font-ui: 'Outfit', sans-serif;
+    --font-body: 'Literata', Georgia, serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    background: #0a0a0c;
+    color: #e8e8ec;
+    min-height: 100vh;
+  }
+
+  .app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 68px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    gap: 6px;
+    background: linear-gradient(180deg, #0d1117 0%, #0a0e14 100%);
+    border-right: 1px solid rgba(255,255,255,0.04);
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #059669, #10b981, #34d399);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .sidebar-item {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    color: #4a5568;
+    font-size: 18px;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,0.05); color: #a0aec0; }
+  .sidebar-item.active {
+    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(52,211,153,0.08));
+    color: #34d399;
+  }
+  .sidebar-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, #10b981, #34d399);
+  }
+
+  .sidebar-spacer { flex: 1; }
+
+  .sidebar-bottom {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: #64748b;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ===== MAIN AREA ===== */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #0c0e14;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Gradient mesh background */
+  .main::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    left: -80px;
+    width: 600px;
+    height: 500px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 40%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .main::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HEADER / TOOLBAR ===== */
+  .header {
+    position: relative;
+    z-index: 10;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* Lei chip */
+  .lei-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px 6px 10px;
+    background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(52,211,153,0.06));
+    border: 1px solid rgba(52,211,153,0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 200ms;
+    flex-shrink: 0;
+  }
+  .lei-chip:hover { background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(52,211,153,0.1)); border-color: rgba(52,211,153,0.25); }
+  .lei-chip-icon { font-size: 14px; filter: saturate(1.5); }
+  .lei-chip-name { font-size: 13px; font-weight: 600; color: #34d399; }
+  .lei-chip-chevron { font-size: 9px; color: #34d399; opacity: 0.4; }
+
+  /* Search / Breadcrumb */
+  .search-area {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  .breadcrumb-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 200ms;
+    overflow: hidden;
+  }
+  .breadcrumb-bar:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .bb-icon { color: #4a5568; flex-shrink: 0; transition: color 200ms; }
+  .breadcrumb-bar:hover .bb-icon { color: #10b981; }
+
+  .bb-seg { font-size: 12px; color: #4a5568; white-space: nowrap; font-weight: 400; }
+  .bb-seg.current { color: #94a3b8; font-weight: 500; }
+  .bb-dot { width: 3px; height: 3px; border-radius: 50%; background: #2d3748; flex-shrink: 0; }
+
+  .bb-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-left: 12px; }
+  .bb-pos {
+    font-size: 10px; color: #4a5568; font-variant-numeric: tabular-nums;
+    background: rgba(255,255,255,0.04); padding: 2px 8px; border-radius: 6px;
+  }
+  .bb-kbd {
+    font-family: var(--font-mono); font-size: 9px; color: #374151;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+    padding: 1px 6px; border-radius: 4px;
+  }
+
+  /* Divider */
+  .hd-div { width: 1px; height: 24px; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+
+  /* Toggles */
+  .toggles { display: flex; gap: 5px; flex-shrink: 0; }
+  .tgl {
+    font-family: var(--font-ui); font-size: 11px; font-weight: 500;
+    padding: 5px 12px; border-radius: 8px; border: none; cursor: pointer;
+    transition: all 180ms;
+  }
+  .tgl-off {
+    background: rgba(255,255,255,0.04); color: #4a5568;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tgl-off:hover { background: rgba(255,255,255,0.06); color: #718096; }
+  .tgl-on {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff; border: 1px solid transparent;
+    box-shadow: 0 2px 8px rgba(16,185,129,0.25);
+  }
+
+  /* Font */
+  .font-grp {
+    display: flex; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; overflow: hidden; flex-shrink: 0;
+  }
+  .font-btn {
+    width: 30px; height: 30px; border: none;
+    background: rgba(255,255,255,0.02); color: #4a5568;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-ui); font-weight: 600; transition: all 150ms;
+  }
+  .font-btn:hover { background: rgba(255,255,255,0.06); color: #a0aec0; }
+  .font-btn:first-child { font-size: 11px; border-right: 1px solid rgba(255,255,255,0.06); }
+  .font-btn:last-child { font-size: 14px; }
+
+  /* Progress */
+  .progress-track {
+    height: 2px;
+    background: rgba(255,255,255,0.03);
+    position: relative;
+    z-index: 10;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #059669, #10b981, #6ee7b7);
+    border-radius: 0 2px 2px 0;
+    transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 8px rgba(16,185,129,0.3);
+  }
+
+  /* ===== CONTENT AREA ===== */
+  .content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    z-index: 5;
+  }
+  .content-scroll::-webkit-scrollbar { width: 6px; }
+  .content-scroll::-webkit-scrollbar-track { background: transparent; }
+  .content-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 6px; }
+  .content-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
+
+  /* Content card — white island */
+  .content-card {
+    max-width: 860px;
+    margin: 24px auto;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 44px 40px 60px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.04);
+    position: relative;
+  }
+  .content-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 40px; right: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(16,185,129,0.3), rgba(6,182,212,0.2), transparent);
+    border-radius: 2px;
+  }
+
+  .content-card .estrutura { text-align: center; margin: 36px 0 24px; font-family: var(--font-ui); }
+  .content-card .estrutura-nome { font-size: 13px; font-weight: 600; color: #444; letter-spacing: 1.5px; text-transform: uppercase; }
+  .content-card .estrutura-desc { font-size: 13px; color: #999; font-style: italic; margin-top: 2px; }
+  .content-card .epigrafe { margin-top: 28px; margin-bottom: 8px; font-family: var(--font-ui); font-size: 13px; font-weight: 500; color: #666; }
+  .content-card .artigo { margin-bottom: 8px; font-family: var(--font-body); font-size: 16px; line-height: 1.9; color: rgb(67,80,92); }
+  .content-card .artigo b { font-weight: 700; color: #1a1a1a; }
+  .content-card .pena { padding-left: 34px; font-family: var(--font-body); font-weight: 300; font-style: italic; color: #aaa; font-size: 15px; line-height: 1.9; margin-bottom: 10px; }
+  .content-card .anot { font-size: 12px; font-weight: 300; color: #ccc; margin-left: 6px; font-family: var(--font-body); }
+  .content-card .par { padding-left: 34px; margin-bottom: 8px; position: relative; font-family: var(--font-body); font-size: 16px; line-height: 1.9; color: rgb(67,80,92); }
+  .content-card .par::before { content: '›'; position: absolute; left: 20px; color: #d0d0d0; font-size: 14px; }
+  .content-card .par b { font-weight: 600; color: #1a1a1a; }
+  .content-card .inc { padding-left: 58px; margin-bottom: 6px; position: relative; font-family: var(--font-body); font-size: 16px; line-height: 1.9; color: rgb(67,80,92); }
+  .content-card .inc::before { content: '›'; position: absolute; left: 44px; color: #d8d8d8; font-size: 13px; }
+  .content-card .alinea { padding-left: 82px; margin-bottom: 5px; font-family: var(--font-body); font-size: 16px; line-height: 1.9; color: #555; }
+  .content-card .alinea::before { content: '›'; position: absolute; left: 68px; color: #e0e0e0; font-size: 12px; position: relative; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar">
+    <div class="sidebar-logo">J</div>
+
+    <div class="sidebar-item" title="Dashboard">🏠</div>
+    <div class="sidebar-item" title="Flashcards">🃏</div>
+    <div class="sidebar-item" title="Questões">❓</div>
+    <div class="sidebar-item active" title="Lei Seca">⚖️</div>
+    <div class="sidebar-item" title="Conteúdos">📚</div>
+    <div class="sidebar-item" title="Cadernos">📓</div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-item" title="Configurações">⚙️</div>
+    <div class="sidebar-bottom">A</div>
+  </div>
+
+  <!-- ===== MAIN ===== -->
+  <div class="main">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="lei-chip">
+        <span class="lei-chip-icon">⚖️</span>
+        <span class="lei-chip-name">Código Penal</span>
+        <span class="lei-chip-chevron">▾</span>
+      </div>
+
+      <div class="hd-div"></div>
+
+      <div class="search-area">
+        <div class="breadcrumb-bar">
+          <svg class="bb-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span class="bb-seg">Parte Especial</span>
+          <span class="bb-dot"></span>
+          <span class="bb-seg">Título I</span>
+          <span class="bb-dot"></span>
+          <span class="bb-seg current">Cap. I — Dos crimes contra a vida</span>
+          <span class="bb-right">
+            <span class="bb-pos">Art. 121 / 615</span>
+            <span class="bb-kbd">⌘F</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="hd-div"></div>
+
+      <div class="toggles">
+        <button class="tgl tgl-off">Lei Seca</button>
+        <button class="tgl tgl-on">Revogados ✓</button>
+      </div>
+
+      <div class="hd-div"></div>
+
+      <div class="font-grp">
+        <button class="font-btn">A</button>
+        <button class="font-btn">A</button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-track">
+      <div class="progress-fill" style="width: 19%;"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-scroll">
+      <div class="content-card">
+
+        <div class="estrutura">
+          <div class="estrutura-nome">Capítulo I</div>
+          <div class="estrutura-desc">Dos crimes contra a vida</div>
+        </div>
+
+        <div class="epigrafe">Homicídio simples</div>
+
+        <div class="artigo"><b>Art. 121.</b> Matar alguem:</div>
+
+        <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+
+        <div class="epigrafe">Caso de diminuição de pena</div>
+
+        <div class="par"><b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.</div>
+
+        <div class="epigrafe">Homicídio qualificado</div>
+
+        <div class="par"><b>§ 2º</b> Se o homicídio é cometido:</div>
+
+        <div class="inc">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+        <div class="inc">II — por motivo futil;</div>
+        <div class="inc">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel, ou de que possa resultar perigo comum;</div>
+        <div class="inc">IV — à traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossivel a defesa do ofendido;</div>
+        <div class="inc">V — para assegurar a execução, a ocultação, a impunidade ou vantagem de outro crime:</div>
+
+        <div class="pena">Pena — reclusão, de doze a trinta anos. <span class="anot">(Redação dada pela Lei nº 13.104, de 2015)</span></div>
+
+        <div class="par"><b>§ 2º-A</b> Considera-se que há razões de condição de sexo feminino quando o crime envolve: <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+        <div class="inc">I — violência doméstica e familiar;</div>
+        <div class="inc">II — menosprezo ou discriminação à condição de mulher.</div>
+
+        <div class="par"><b>§ 2º-B</b> A pena do homicídio contra menor de 14 (quatorze) anos é aumentada de:</div>
+        <div class="inc">I — 1/3 (um terço) até a metade se a vítima é pessoa com deficiência; <span class="anot">(Incluído pela Lei nº 14.344, de 2022)</span></div>
+        <div class="inc">II — 2/3 (dois terços) se o autor é ascendente, padrasto ou madrasta da vítima.</div>
+
+        <div class="epigrafe">Homicídio culposo</div>
+
+        <div class="par"><b>§ 3º</b> Se o homicídio é culposo:</div>
+        <div class="pena">Pena — detenção, de um a três anos.</div>
+
+        <div class="epigrafe">Aumento de pena</div>
+
+        <div class="par"><b>§ 4º</b> No homicídio culposo, a pena é aumentada de 1/3 (um terço), se o crime resulta de inobservância de regra técnica de profissão, arte ou ofício, ou se o agente deixa de prestar imediato socorro à vítima, não procura diminuir as conseqüências do seu ato, ou foge para evitar prisão em flagrante. <span class="anot">(Redação dada pela Lei nº 10.741, de 2003)</span></div>
+
+        <div class="par"><b>§ 5º</b> Na hipótese de homicídio culposo, o juiz poderá deixar de aplicar a pena, se as conseqüências da infração atingirem o próprio agente de forma tão grave que a sanção penal se torne desnecessária. <span class="anot">(Incluído pela Lei nº 6.416, de 24.5.1977)</span></div>
+
+        <div class="par"><b>§ 7º</b> A pena do feminicídio é aumentada de 1/3 (um terço) até a metade se o crime for praticado: <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+        <div class="inc">I — durante a gestação ou nos 3 (três) meses posteriores ao parto;</div>
+        <div class="inc">II — contra pessoa menor de 14 (catorze) anos, maior de 60 (sessenta) anos;</div>
+        <div class="inc">III — na presença física ou virtual de descendente ou de ascendente da vítima;</div>
+        <div class="inc">IV — em descumprimento das medidas protetivas de urgência. <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+
+        <div class="epigrafe">Induzimento, instigação ou auxílio a suicídio ou a automutilação</div>
+
+        <div class="artigo"><b>Art. 122.</b> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação ou prestar-lhe auxílio material para que o faça: <span class="anot">(Redação dada pela Lei nº 13.968, de 2019)</span></div>
+
+        <div class="pena">Pena — reclusão, de 6 (seis) meses a 2 (dois) anos.</div>
+
+        <div class="par"><b>§ 1º</b> Se da automutilação ou da tentativa de suicídio resulta lesão corporal de natureza grave ou gravíssima:</div>
+        <div class="pena">Pena — reclusão, de 1 (um) a 3 (três) anos.</div>
+
+        <div class="par"><b>§ 2º</b> Se o suicídio se consuma ou se da automutilação resulta morte:</div>
+        <div class="pena">Pena — reclusão, de 2 (dois) a 6 (seis) anos.</div>
+
+        <div class="par"><b>§ 3º</b> A pena é duplicada:</div>
+        <div class="inc">I — se o crime é praticado por motivo egoístico, torpe ou fútil;</div>
+        <div class="inc">II — se a vítima é menor ou tem diminuída, por qualquer causa, a capacidade de resistência. <span class="anot">(Incluído pela Lei nº 13.968, de 2019)</span></div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

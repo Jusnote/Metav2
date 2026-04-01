@@ -58,6 +58,9 @@ interface CommunityCommentItemProps {
   onReply?: (commentId: string) => void;
   onEdit?: (commentId: string) => void;
   onDelete?: (commentId: string) => void;
+  onReport?: (commentId: string) => void;
+  onPin?: (commentId: string, isPinned: boolean) => void;
+  onEndorse?: (commentId: string, isEndorsed: boolean) => void;
   pendingReportCount?: number;
 }
 
@@ -73,6 +76,9 @@ export function CommunityCommentItem({
   onReply,
   onEdit,
   onDelete,
+  onReport,
+  onPin,
+  onEndorse,
   pendingReportCount,
 }: CommunityCommentItemProps) {
   const authorName = comment.author_name ?? comment.author_email ?? 'Anônimo';
@@ -149,9 +155,11 @@ export function CommunityCommentItem({
               isAuthor={isAuthor}
               onEdit={() => onEdit?.(comment.id)}
               onDelete={() => onDelete?.(comment.id)}
-              onReport={() => {
-                // report handler — parent can wire this if needed
-              }}
+              onReport={() => onReport?.(comment.id)}
+              onPin={onPin ? () => onPin(comment.id, !comment.is_pinned) : undefined}
+              onEndorse={onEndorse ? () => onEndorse(comment.id, !comment.is_endorsed) : undefined}
+              isPinned={comment.is_pinned}
+              isEndorsed={comment.is_endorsed}
             />
           </div>
         </div>

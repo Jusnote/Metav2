@@ -1,0 +1,91 @@
+<h2>SearchBreadcrumb — O que redesenhar?</h2>
+<p class="subtitle">A barra tem dois estados: fechada (breadcrumb) e aberta (busca + dropdown). O que focar agora?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Barra fechada + aberta + dropdown — tudo</h3>
+      <p>Redesenhar o componente inteiro: breadcrumb collapsed, input de busca, e o dropdown com hierarquia + resultados. Polish completo.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Só a barra (fechada + aberta)</h3>
+      <p>Focar na "casca" — visual do breadcrumb e do input de busca. O dropdown fica pro próximo passo.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Barra + dropdown, sem mudar funcionalidade</h3>
+      <p>Polish visual de tudo (cores, spacing, tipografia, sombras) mas sem alterar comportamento — mantém a mesma lógica/interações.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Estado atual</h3>
+  <p class="subtitle">Referência: o que existe hoje nos componentes</p>
+  <div class="mockup">
+    <div class="mockup-header">Barra fechada (breadcrumb)</div>
+    <div class="mockup-body" style="padding: 16px 20px; background: #fff; font-family: 'Outfit', sans-serif;">
+      <div style="display: flex; align-items: center; gap: 6px; padding: 14px 0; cursor: pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c8c8c8" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size: 11px; color: #c0c0c0; font-weight: 300;">Parte Especial</span>
+        <span style="font-size: 9px; color: #ddd;">›</span>
+        <span style="font-size: 11px; color: #c0c0c0; font-weight: 300;">Título I</span>
+        <span style="font-size: 9px; color: #ddd;">›</span>
+        <span style="font-size: 11px; color: #888; font-weight: 400;">Cap. I — Dos crimes contra a vida</span>
+        <span style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 9px; color: #ddd; font-family: monospace; background: #f8f8f8; padding: 1px 6px; border-radius: 3px;">Ctrl+F</span>
+          <span style="font-size: 10px; color: #ddd; font-weight: 300; font-variant-numeric: tabular-nums;">121 / 615</span>
+        </span>
+      </div>
+      <div style="height: 1px; background: linear-gradient(90deg, #f0f0f0, transparent);"></div>
+    </div>
+  </div>
+
+  <div class="mockup" style="margin-top: 12px;">
+    <div class="mockup-header">Design aprovado no mockup (meta)</div>
+    <div class="mockup-body" style="padding: 0; background: #fff; font-family: 'Outfit', sans-serif;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 0 20px; height: 50px; border-bottom: 1px solid #e8eaed; background: rgba(255,255,255,0.8);">
+        <!-- Lei chip -->
+        <div style="display: flex; align-items: center; gap: 5px; padding: 5px 12px 5px 8px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+          <span style="font-size: 13px;">⚖️</span>
+          <span style="font-size: 12px; font-weight: 600; color: #15803d;">Código Penal</span>
+          <span style="font-size: 8px; color: #22c55e; opacity: 0.5;">▾</span>
+        </div>
+        <div style="width: 1px; height: 22px; background: #e8eaed;"></div>
+        <!-- Breadcrumb bar -->
+        <div style="flex: 1; display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fafbfc; border: 1px solid #e8eaed; border-radius: 8px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+          <span style="font-size: 11.5px; color: #9ca3af;">Parte Especial</span>
+          <span style="width: 2.5px; height: 2.5px; border-radius: 50%; background: #d1d5db;"></span>
+          <span style="font-size: 11.5px; color: #9ca3af;">Título I</span>
+          <span style="width: 2.5px; height: 2.5px; border-radius: 50%; background: #d1d5db;"></span>
+          <span style="font-size: 11.5px; color: #4b5563; font-weight: 500;">Cap. I — Dos crimes contra a vida</span>
+          <span style="margin-left: auto; display: flex; align-items: center; gap: 6px; padding-left: 12px;">
+            <span style="font-size: 10px; color: #9ca3af; font-variant-numeric: tabular-nums;">121 / 615</span>
+            <span style="font-size: 9px; color: #9ca3af; background: #fff; border: 1px solid #e8eaed; padding: 1px 5px; border-radius: 4px; font-family: monospace;">⌘F</span>
+          </span>
+        </div>
+        <div style="width: 1px; height: 22px; background: #e8eaed;"></div>
+        <!-- Toggles -->
+        <div style="display: flex; gap: 4px;">
+          <button style="font-family: 'Outfit'; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 6px; border: 1px solid #e8eaed; background: #fafbfc; color: #9ca3af; cursor: pointer;">Lei Seca</button>
+          <button style="font-family: 'Outfit'; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 6px; border: 1px solid transparent; background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; cursor: pointer; box-shadow: 0 1px 4px rgba(22,163,74,0.2);">Revogados ✓</button>
+        </div>
+        <div style="width: 1px; height: 22px; background: #e8eaed;"></div>
+        <!-- Font controls -->
+        <div style="display: flex; border: 1px solid #e8eaed; border-radius: 6px; overflow: hidden;">
+          <div style="width: 28px; height: 28px; background: #fafbfc; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #9ca3af; border-right: 1px solid #e8eaed; font-weight: 600;">A</div>
+          <div style="width: 28px; height: 28px; background: #fafbfc; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #9ca3af; font-weight: 600;">A</div>
+        </div>
+      </div>
+      <!-- Progress bar -->
+      <div style="height: 2px; background: #f4f5f7;"><div style="height: 100%; width: 19%; border-radius: 0 2px 2px 0; background: linear-gradient(90deg, #16a34a, #4ade80); box-shadow: 0 0 6px rgba(22,163,74,0.15);"></div></div>
+    </div>
+  </div>
+</div>

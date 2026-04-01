@@ -1,0 +1,1 @@
+var entries=performance.getEntriesByType("resource").filter(function(e){return e.initiatorType==="fetch"||e.initiatorType==="xmlhttprequest"});console.log("Requisicoes fetch/xhr encontradas: "+entries.length);entries.forEach(function(e){console.log(e.name.substring(0,150))})

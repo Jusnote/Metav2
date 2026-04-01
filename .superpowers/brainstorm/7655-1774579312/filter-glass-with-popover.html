@@ -1,0 +1,174 @@
+<h2>Glass Minimal + Popover estilo tabela</h2>
+<p class="subtitle">Como ficaria ao clicar num filtro — popover com layout de tabela</p>
+
+<div class="cards">
+
+  <!-- Option A: Table vertical -->
+  <div class="card" data-choice="a-table-vertical" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: #f8f9fb;">
+      <div style="max-width: 720px; margin: 16px auto; padding: 0 16px;">
+
+        <!-- Search line -->
+        <div style="display: flex; align-items: center; height: 40px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 10px 10px 0 0; padding: 0 14px; gap: 8px;">
+          <span style="color: #ccc; font-size: 14px;">&#128269;</span>
+          <span style="font-size: 12px; color: #bbb; flex: 1;">Buscar questoes...</span>
+        </div>
+
+        <!-- Filter line - glass -->
+        <div style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: linear-gradient(135deg, #f8f9fb 0%, #f0f1f5 100%); border: 1px solid #e2e5ea; border-radius: 0 0 10px 10px;">
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(232,147,12,0.12); color: #B45309; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(232,147,12,0.35); box-shadow: 0 0 0 2px rgba(232,147,12,0.08);">
+            &#127979; Banca &#9662;
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(232,147,12,0.1); color: #B45309; border: 1px solid rgba(232,147,12,0.3);">
+            &#128218; Dir. Admin. &#10005;
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(59,130,246,0.1); color: #1D4ED8; border: 1px solid rgba(59,130,246,0.3);">
+            &#128197; 2024-25 &#10005;
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">
+            &#127963; Orgao <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">
+            &#128188; Cargo <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">
+            &#128209; Assunto <span style="opacity: 0.4;">&#9662;</span>
+          </div>
+        </div>
+
+        <!-- Popover: Table style, vertical list with columns -->
+        <div style="position: relative;">
+          <div style="position: absolute; top: 6px; left: 0; width: 380px; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); z-index: 10; overflow: hidden; border: 1px solid #e8e8e8;">
+            <!-- Search -->
+            <div style="padding: 8px 10px; border-bottom: 1px solid #f0f0f0;">
+              <div style="height: 28px; background: #f5f5f5; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; color: #999;">&#128269; Filtrar banca...</div>
+            </div>
+            <!-- Table header -->
+            <div style="display: flex; padding: 4px 10px; font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f5f5f5;">
+              <span style="width: 24px;"></span>
+              <span style="flex: 1;">Banca</span>
+              <span style="width: 60px; text-align: right;">Questoes</span>
+              <span style="width: 50px; text-align: right;">%</span>
+            </div>
+            <!-- Table rows -->
+            <div style="max-height: 200px; overflow-y: auto;">
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer; background: #FFF7ED;" >
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #E8930C; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; background: #E8930C; color: white; font-size: 8px;">&#10003;</span></span>
+                <span style="flex: 1; color: #92400E; font-weight: 500;">CEBRASPE (CESPE)</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">23.203</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #E8930C; height: 4px; border-radius: 2px; display: inline-block; width: 32px;"></span></span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='white'">
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #ddd; border-radius: 3px; display: inline-block;"></span></span>
+                <span style="flex: 1; color: #333;">FCC</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">10.151</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #e0e0e0; height: 4px; border-radius: 2px; display: inline-block; width: 14px;"></span></span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='white'">
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #ddd; border-radius: 3px; display: inline-block;"></span></span>
+                <span style="flex: 1; color: #333;">QUADRIX</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">9.632</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #e0e0e0; height: 4px; border-radius: 2px; display: inline-block; width: 13px;"></span></span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='white'">
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #ddd; border-radius: 3px; display: inline-block;"></span></span>
+                <span style="flex: 1; color: #333;">VUNESP</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">7.503</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #e0e0e0; height: 4px; border-radius: 2px; display: inline-block; width: 10px;"></span></span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='white'">
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #ddd; border-radius: 3px; display: inline-block;"></span></span>
+                <span style="flex: 1; color: #333;">FGV</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">6.249</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #e0e0e0; height: 4px; border-radius: 2px; display: inline-block; width: 8px;"></span></span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='white'">
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #ddd; border-radius: 3px; display: inline-block;"></span></span>
+                <span style="flex: 1; color: #333;">FUNDEP</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">4.891</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #e0e0e0; height: 4px; border-radius: 2px; display: inline-block; width: 7px;"></span></span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 6px 10px; font-size: 11px; cursor: pointer;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='white'">
+                <span style="width: 24px;"><span style="width: 13px; height: 13px; border: 1.5px solid #ddd; border-radius: 3px; display: inline-block;"></span></span>
+                <span style="flex: 1; color: #333;">FUNDATEC</span>
+                <span style="width: 60px; text-align: right; color: #aaa; font-size: 10px;">3.204</span>
+                <span style="width: 50px; text-align: right;"><span style="background: #e0e0e0; height: 4px; border-radius: 2px; display: inline-block; width: 5px;"></span></span>
+              </div>
+            </div>
+            <!-- Footer -->
+            <div style="padding: 6px 10px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fafafa;">
+              <span style="font-size: 9px; color: #aaa;">498 bancas disponiveis</span>
+              <span style="font-size: 9px; color: #E8930C; cursor: pointer; font-weight: 500;">1 selecionada</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A) Tabela com barra de proporcao</h3>
+      <p>Colunas: checkbox + nome + contagem + barra visual de proporcao. O usuario ve de relance quais bancas tem mais questoes. Selecionado fica amber.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Table with 2 columns layout -->
+  <div class="card" data-choice="b-table-2col" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: #f8f9fb;">
+      <div style="max-width: 720px; margin: 16px auto; padding: 0 16px;">
+
+        <!-- Search + filter bar (collapsed) -->
+        <div style="display: flex; align-items: center; height: 40px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 10px 10px 0 0; padding: 0 14px; gap: 8px;">
+          <span style="color: #ccc; font-size: 14px;">&#128269;</span>
+          <span style="font-size: 12px; color: #bbb; flex: 1;">Buscar questoes...</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: linear-gradient(135deg, #f8f9fb 0%, #f0f1f5 100%); border: 1px solid #e2e5ea; border-radius: 0 0 10px 10px;">
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(232,147,12,0.12); color: #B45309; border: 1px solid rgba(232,147,12,0.35); box-shadow: 0 0 0 2px rgba(232,147,12,0.08);">
+            &#128197; Ano &#9662;
+          </div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(232,147,12,0.1); color: #B45309; border: 1px solid rgba(232,147,12,0.3);">&#128218; Dir. Admin. &#10005;</div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">&#127979; Banca <span style="opacity: 0.4;">&#9662;</span></div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">&#127963; Orgao <span style="opacity: 0.4;">&#9662;</span></div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">&#128188; Cargo <span style="opacity: 0.4;">&#9662;</span></div>
+          <div style="font-size: 10px; padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.8); color: #666; border: 1px solid rgba(0,0,0,0.06);">&#128209; Assunto <span style="opacity: 0.4;">&#9662;</span></div>
+        </div>
+
+        <!-- Popover: Year grid -->
+        <div style="position: relative;">
+          <div style="position: absolute; top: 6px; left: 0; width: 340px; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); z-index: 10; overflow: hidden; border: 1px solid #e8e8e8;">
+            <!-- Quick ranges -->
+            <div style="padding: 8px 10px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 4px;">
+              <span style="font-size: 9px; padding: 3px 8px; border-radius: 4px; background: #FEF3C7; color: #92400E; border: 1px solid #FBBF24; cursor: pointer;">Ult. 3 anos</span>
+              <span style="font-size: 9px; padding: 3px 8px; border-radius: 4px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">Ult. 5 anos</span>
+              <span style="font-size: 9px; padding: 3px 8px; border-radius: 4px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">Ult. 10</span>
+              <span style="font-size: 9px; padding: 3px 8px; border-radius: 4px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">Todos</span>
+            </div>
+            <!-- Year grid -->
+            <div style="padding: 8px 10px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;">
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #E8930C; color: white; font-weight: 500; cursor: pointer;">2025</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #E8930C; color: white; font-weight: 500; cursor: pointer;">2024</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #E8930C; color: white; font-weight: 500; cursor: pointer;">2023</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2022</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2021</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2020</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2019</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2018</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2017</div>
+              <div style="font-size: 11px; padding: 6px 0; text-align: center; border-radius: 6px; background: #f5f5f5; color: #666; cursor: pointer;" onmouseover="this.style.background='#FEF3C7'" onmouseout="this.style.background='#f5f5f5'">2016</div>
+            </div>
+            <!-- Footer -->
+            <div style="padding: 6px 10px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; background: #fafafa;">
+              <span style="font-size: 9px; color: #aaa;">31 anos disponiveis</span>
+              <span style="font-size: 9px; color: #E8930C; cursor: pointer; font-weight: 500;">3 selecionados</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Popover adaptativo por tipo</h3>
+      <p>Cada filtro abre um popover diferente: Ano mostra grid + atalhos rapidos. Banca/Orgao/Cargo mostra tabela com busca. Materia mostra arvore com assuntos.</p>
+    </div>
+  </div>
+
+</div>

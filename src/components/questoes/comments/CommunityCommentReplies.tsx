@@ -16,6 +16,9 @@ interface CommunityCommentRepliesProps {
   onReply?: (commentId: string) => void;
   onEdit?: (commentId: string) => void;
   onDelete?: (commentId: string) => void;
+  onReport?: (commentId: string) => void;
+  onPin?: (commentId: string, isPinned: boolean) => void;
+  onEndorse?: (commentId: string, isEndorsed: boolean) => void;
   defaultExpanded?: boolean; // true if replies.length <= 3
 }
 
@@ -30,6 +33,9 @@ export function CommunityCommentReplies({
   onReply,
   onEdit,
   onDelete,
+  onReport,
+  onPin,
+  onEndorse,
   defaultExpanded,
 }: CommunityCommentRepliesProps) {
   const isMobile = useIsMobile();
@@ -60,6 +66,9 @@ export function CommunityCommentReplies({
               onReply={onReply}
               onEdit={onEdit}
               onDelete={onDelete}
+              onReport={onReport}
+              onPin={onPin}
+              onEndorse={onEndorse}
             />
           ))}
         </div>

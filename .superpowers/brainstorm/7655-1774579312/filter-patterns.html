@@ -1,0 +1,128 @@
+<h2>Qual padrao de filtro para a pagina de questoes?</h2>
+<p class="subtitle">Clique no que mais agrada. Cada um mostra como os filtros apareceriam no layout.</p>
+
+<div class="cards">
+
+  <!-- OPTION A: Filter Drawer -->
+  <div class="card" data-choice="a-drawer" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #f8f9fa;">
+      <div style="display: flex; height: 280px; gap: 0; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+        <!-- Main content -->
+        <div style="flex: 1; padding: 12px; background: white;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <div style="width: 32px; height: 32px; background: #E8930C; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; cursor: pointer;">&#9776;</div>
+            <div style="flex: 1; height: 32px; background: #f1f1f1; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 11px; color: #999;">Buscar questoes...</div>
+          </div>
+          <div style="display: flex; gap: 4px; margin-bottom: 10px;">
+            <span style="font-size: 10px; background: #FEF3C7; padding: 2px 8px; border-radius: 10px; color: #92400E;">CESPE x</span>
+            <span style="font-size: 10px; background: #FEF3C7; padding: 2px 8px; border-radius: 10px; color: #92400E;">2024 x</span>
+          </div>
+          <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 10px; color: #666;">Questao 1 - Direito Administrativo...</div>
+          <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 10px; color: #666;">Questao 2 - Principio da legalidade...</div>
+          <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; font-size: 10px; color: #666;">Questao 3 - Ato administrativo...</div>
+        </div>
+        <!-- Drawer panel -->
+        <div style="width: 140px; background: #1B1D21; padding: 10px; color: white; font-size: 10px;">
+          <div style="font-weight: bold; margin-bottom: 8px; color: #E8930C;">Filtros</div>
+          <div style="margin-bottom: 6px;">
+            <div style="color: #aaa; margin-bottom: 2px;">Materia</div>
+            <div style="background: #2a2d33; padding: 3px 6px; border-radius: 4px; font-size: 9px;">Dir. Administrativo</div>
+          </div>
+          <div style="margin-bottom: 6px;">
+            <div style="color: #aaa; margin-bottom: 2px;">Banca</div>
+            <div style="background: #2a2d33; padding: 3px 6px; border-radius: 4px; font-size: 9px;">CESPE, FCC</div>
+          </div>
+          <div style="margin-bottom: 6px;">
+            <div style="color: #aaa; margin-bottom: 2px;">Ano</div>
+            <div style="background: #2a2d33; padding: 3px 6px; border-radius: 4px; font-size: 9px;">2023-2025</div>
+          </div>
+          <div style="margin-top: 10px; background: #E8930C; padding: 4px; border-radius: 4px; text-align: center; font-size: 9px;">Buscar</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A) Filter Drawer</h3>
+      <p>Botao abre painel lateral que desliza. Quando fecha, mais espaco para questoes. Similar ao atual mas controlado por botao.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B: Filter Bar Horizontal -->
+  <div class="card" data-choice="b-bar" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #f8f9fa;">
+      <div style="height: 280px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: white; padding: 12px;">
+        <!-- Search -->
+        <div style="height: 32px; background: #f1f1f1; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 11px; color: #999; margin-bottom: 8px;">Buscar questoes...</div>
+        <!-- Filter bar -->
+        <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+          <div style="font-size: 10px; background: white; border: 1px solid #ddd; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 4px;">Materia <span style="color: #999;">&#9662;</span></div>
+          <div style="font-size: 10px; background: #FEF3C7; border: 1px solid #F59E0B; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 4px;">Banca: CESPE <span style="color: #92400E;">x</span></div>
+          <div style="font-size: 10px; background: #FEF3C7; border: 1px solid #F59E0B; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 4px;">Ano: 2024 <span style="color: #92400E;">x</span></div>
+          <div style="font-size: 10px; background: white; border: 1px solid #ddd; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 4px;">Orgao <span style="color: #999;">&#9662;</span></div>
+          <div style="font-size: 10px; background: white; border: 1px solid #ddd; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 4px;">Mais <span style="color: #999;">&#9662;</span></div>
+        </div>
+        <!-- Tabs -->
+        <div style="display: flex; gap: 12px; margin-bottom: 8px; font-size: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+          <span style="color: #E8930C; border-bottom: 2px solid #E8930C; padding-bottom: 4px;">Todas</span>
+          <span style="color: #999;">Nao resolvidas</span>
+          <span style="color: #999;">Erradas</span>
+        </div>
+        <!-- Questions -->
+        <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 10px; color: #666;">Questao 1 - Direito Administrativo...</div>
+        <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 10px; color: #666;">Questao 2 - Principio da legalidade...</div>
+        <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; font-size: 10px; color: #666;">Questao 3 - Ato administrativo...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Filter Bar Horizontal</h3>
+      <p>Dropdowns inline no topo. Filtros ativos viram chips. Sem painel lateral — tudo visivel, compacto. Estilo Google Flights / Notion.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C: Filter Modal -->
+  <div class="card" data-choice="c-modal" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #f8f9fa;">
+      <div style="height: 280px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: white; position: relative;">
+        <!-- Background (dimmed) -->
+        <div style="padding: 12px; opacity: 0.3;">
+          <div style="height: 32px; background: #f1f1f1; border-radius: 6px; margin-bottom: 8px;"></div>
+          <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 10px;">Questao 1...</div>
+          <div style="background: #f8f8f8; border-radius: 6px; padding: 8px; font-size: 10px;">Questao 2...</div>
+        </div>
+        <!-- Modal overlay -->
+        <div style="position: absolute; top: 30px; left: 20px; right: 20px; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-weight: bold; font-size: 12px;">Filtros</span>
+            <span style="color: #999; font-size: 12px; cursor: pointer;">X</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px;">
+            <div>
+              <div style="color: #666; margin-bottom: 3px;">Materia</div>
+              <div style="background: #f1f1f1; padding: 5px 8px; border-radius: 4px;">Selecionar...</div>
+            </div>
+            <div>
+              <div style="color: #666; margin-bottom: 3px;">Banca</div>
+              <div style="background: #FEF3C7; padding: 5px 8px; border-radius: 4px; color: #92400E;">CESPE</div>
+            </div>
+            <div>
+              <div style="color: #666; margin-bottom: 3px;">Ano</div>
+              <div style="background: #FEF3C7; padding: 5px 8px; border-radius: 4px; color: #92400E;">2024</div>
+            </div>
+            <div>
+              <div style="color: #666; margin-bottom: 3px;">Orgao</div>
+              <div style="background: #f1f1f1; padding: 5px 8px; border-radius: 4px;">Selecionar...</div>
+            </div>
+          </div>
+          <div style="margin-top: 10px; display: flex; gap: 8px;">
+            <div style="flex: 1; background: #E8930C; color: white; padding: 6px; border-radius: 6px; text-align: center; font-size: 10px;">Aplicar filtros</div>
+            <div style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 10px; color: #999;">Limpar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C) Filter Modal</h3>
+      <p>Botao "Filtros" abre modal centralizado. Todos os filtros num formulario. Fecha e aplica. Estilo apps mobile / e-commerce.</p>
+    </div>
+  </div>
+
+</div>

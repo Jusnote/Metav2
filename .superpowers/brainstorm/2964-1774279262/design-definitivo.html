@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Design Definitivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,300;1,8..60,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f8f7f4;
+    color: #2c2c2c;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.85;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 60px 48px;
+  }
+
+  /* ===== STRUCTURAL HEADERS ===== */
+
+  .parte {
+    text-align: center;
+    margin: 56px 0 44px;
+    position: relative;
+  }
+  .parte::before {
+    content: '';
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    top: 50%;
+    height: 1px;
+    background: #d5d0c8;
+  }
+  .parte span {
+    position: relative;
+    background: #f8f7f4;
+    padding: 0 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #8a8078;
+  }
+
+  .titulo {
+    text-align: center;
+    margin: 40px 0 6px;
+  }
+  .titulo-nome {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #3d3832;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .titulo-desc {
+    font-size: 15px;
+    color: #9a9186;
+    margin-top: 4px;
+  }
+  .titulo + .subtitulo { margin-top: 0; }
+
+  .capitulo {
+    text-align: center;
+    margin: 36px 0 4px;
+  }
+  .capitulo-nome {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5a534b;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .capitulo-desc {
+    font-size: 14px;
+    color: #9a9186;
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .subtitulo {
+    text-align: center;
+    margin: 0 0 28px;
+  }
+
+  /* ===== EPIGRAFE ===== */
+
+  .epigrafe {
+    margin-top: 36px;
+    margin-bottom: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5a534b;
+    letter-spacing: 0.3px;
+  }
+
+  /* ===== ARTIGO ===== */
+
+  .artigo {
+    margin-bottom: 4px;
+    padding: 8px 0 8px 16px;
+    border-left: 2px solid #d5d0c8;
+    position: relative;
+  }
+  .artigo::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #d5d0c8;
+    transition: background 0.2s;
+  }
+  .artigo:hover::before {
+    background: #8a7e72;
+  }
+  .artigo strong {
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  /* ===== PENA ===== */
+
+  .pena {
+    padding-left: 36px;
+    color: #b5ada3;
+    font-size: 14.5px;
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  /* ===== ANOTACAO ===== */
+
+  .anotacao {
+    padding-left: 36px;
+    color: #c8c1b8;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  /* ===== PARAGRAFO ===== */
+
+  .paragrafo {
+    padding-left: 36px;
+    margin-bottom: 4px;
+  }
+  .paragrafo strong {
+    font-weight: 600;
+  }
+
+  /* ===== INCISO ===== */
+
+  .inciso {
+    padding-left: 60px;
+    margin-bottom: 3px;
+    color: #2c2c2c;
+  }
+  .inciso .num {
+    font-weight: 500;
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  /* ===== ALINEA ===== */
+
+  .alinea {
+    padding-left: 84px;
+    margin-bottom: 2px;
+    color: #3d3832;
+  }
+  .alinea .num {
+    font-weight: 500;
+  }
+
+  /* ===== REVOGADO ===== */
+
+  .revogado {
+    padding-left: 36px;
+    margin-top: 8px;
+    opacity: 0.2;
+    text-decoration: line-through;
+  }
+
+  /* ===== SEPARADOR ===== */
+
+  .separador {
+    margin: 40px 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d5d0c8 25%, #d5d0c8 75%, transparent);
+  }
+
+  /* ===== SUTIL HOVER ===== */
+  .artigo, .paragrafo, .inciso, .alinea {
+    transition: background 0.15s;
+    border-radius: 0 4px 4px 0;
+  }
+  .artigo:hover { background: rgba(138, 126, 114, 0.03); }
+
+  /* ===== LABEL ===== */
+  .design-label {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: #b5ada3;
+    background: #f8f7f4;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e8e3dc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- PARTE -->
+  <div class="parte">
+    <span>Parte Especial</span>
+  </div>
+
+  <!-- TITULO -->
+  <div class="titulo">
+    <div class="titulo-nome">Título I</div>
+    <div class="titulo-desc">Dos crimes contra a pessoa</div>
+  </div>
+
+  <!-- CAPITULO -->
+  <div class="capitulo">
+    <div class="capitulo-nome">Capítulo I</div>
+    <div class="capitulo-desc">Dos crimes contra a vida</div>
+  </div>
+  <div class="subtitulo"></div>
+
+  <!-- EPIGRAFE -->
+  <div class="epigrafe">Homicídio simples</div>
+
+  <!-- ARTIGO 121 -->
+  <div class="artigo">
+    <strong>Art. 121.</strong> Matar alguem:
+  </div>
+
+  <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+
+  <div class="anotacao">(Vide Lei nº 8.072, de 25.7.90)</div>
+
+  <!-- EPIGRAFE -->
+  <div class="epigrafe">Caso de diminuição de pena</div>
+
+  <div class="paragrafo">
+    <strong>§ 1º</strong> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.
+  </div>
+
+  <!-- EPIGRAFE -->
+  <div class="epigrafe">Homicídio qualificado</div>
+
+  <div class="paragrafo">
+    <strong>§ 2º</strong> Se o homicídio é cometido:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — mediante paga ou promessa de recompensa, ou por outro motivo torpe;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — por motivo futil;
+  </div>
+  <div class="inciso">
+    <span class="num">III</span> — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel, ou de que possa resultar perigo comum;
+  </div>
+  <div class="inciso">
+    <span class="num">IV</span> — à traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossivel a defesa do ofendido;
+  </div>
+  <div class="inciso">
+    <span class="num">V</span> — para assegurar a execução, a ocultação, a impunidade ou vantagem de outro crime:
+  </div>
+
+  <div class="pena">Pena — reclusão, de doze a trinta anos.</div>
+
+  <div class="anotacao">(Redação dada pela Lei nº 13.104, de 2015)</div>
+
+  <!-- § 2-A -->
+  <div class="paragrafo">
+    <strong>§ 2º-A</strong> Considera-se que há razões de condição de sexo feminino quando o crime envolve:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — violência doméstica e familiar;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — menosprezo ou discriminação à condição de mulher.
+  </div>
+
+  <div class="anotacao">(Incluído pela Lei nº 13.104, de 2015)</div>
+
+  <!-- § 2-B -->
+  <div class="paragrafo">
+    <strong>§ 2º-B</strong> A pena do homicídio contra menor de 14 (quatorze) anos é aumentada de:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — 1/3 (um terço) até a metade se a vítima é pessoa com deficiência ou com doença que acarrete condição limitante;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — 2/3 (dois terços) se o autor é ascendente, padrasto ou madrasta da vítima.
+  </div>
+
+  <!-- REVOGADO -->
+  <div class="revogado">
+    § 3º Se o homicídio é culposo:
+  </div>
+
+  <!-- SEPARADOR -->
+  <div class="separador"></div>
+
+  <!-- ARTIGO 122 -->
+  <div class="epigrafe">Induzimento, instigação ou auxílio a suicídio ou a automutilação</div>
+
+  <div class="artigo">
+    <strong>Art. 122.</strong> Induzir ou instigar alguém a suicidar-se ou a praticar automutilação ou prestar-lhe auxílio material para que o faça:
+  </div>
+
+  <div class="pena">Pena — reclusão, de 6 (seis) meses a 2 (dois) anos.</div>
+
+  <div class="paragrafo">
+    <strong>§ 1º</strong> Se da automutilação ou da tentativa de suicídio resulta lesão corporal de natureza grave ou gravíssima:
+  </div>
+
+  <div class="pena">Pena — reclusão, de 1 (um) a 3 (três) anos.</div>
+
+  <div class="paragrafo">
+    <strong>§ 2º</strong> Se o suicídio se consuma ou se da automutilação resulta morte:
+  </div>
+
+  <div class="pena">Pena — reclusão, de 2 (dois) a 6 (seis) anos.</div>
+
+  <div class="paragrafo">
+    <strong>§ 3º</strong> A pena é duplicada:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — se o crime é praticado por motivo egoístico, torpe ou fútil;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — se a vítima é menor ou tem diminuída, por qualquer causa, a capacidade de resistência.
+  </div>
+
+  <div class="anotacao">(Incluído pela Lei nº 13.968, de 2019)</div>
+
+  <!-- SEPARADOR -->
+  <div class="separador"></div>
+
+  <!-- NOVO CAPITULO -->
+  <div class="capitulo">
+    <div class="capitulo-nome">Capítulo II</div>
+    <div class="capitulo-desc">Das lesões corporais</div>
+  </div>
+  <div class="subtitulo"></div>
+
+  <div class="epigrafe">Lesão corporal</div>
+
+  <div class="artigo">
+    <strong>Art. 129.</strong> Ofender a integridade corporal ou a saúde de outrem:
+  </div>
+
+  <div class="pena">Pena — detenção, de três meses a um ano.</div>
+
+  <div class="epigrafe">Lesão corporal de natureza grave</div>
+
+  <div class="paragrafo">
+    <strong>§ 1º</strong> Se resulta:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — Incapacidade para as ocupações habituais, por mais de trinta dias;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — perigo de vida;
+  </div>
+  <div class="inciso">
+    <span class="num">III</span> — debilidade permanente de membro, sentido ou função;
+  </div>
+  <div class="inciso">
+    <span class="num">IV</span> — aceleração de parto:
+  </div>
+
+  <div class="pena">Pena — reclusão, de um a cinco anos.</div>
+
+  <div class="paragrafo">
+    <strong>§ 2º</strong> Se resulta:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — Incapacidade permanente para o trabalho;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — enfermidade incuravel;
+  </div>
+  <div class="inciso">
+    <span class="num">III</span> — perda ou inutilização do membro, sentido ou função;
+  </div>
+  <div class="inciso">
+    <span class="num">IV</span> — deformidade permanente;
+  </div>
+  <div class="inciso">
+    <span class="num">V</span> — aborto:
+  </div>
+
+  <div class="pena">Pena — reclusão, de dois a oito anos.</div>
+
+  <div class="paragrafo">
+    <strong>§ 3º</strong> Se resulta morte e as circunstâncias evidenciam que o agente não quis o resultado, nem assumiu o risco de produzí-lo:
+  </div>
+
+  <div class="pena">Pena — reclusão, de quatro a doze anos.</div>
+
+  <div class="epigrafe">Diminuição de pena</div>
+
+  <div class="paragrafo">
+    <strong>§ 4º</strong> Se o agente comete o crime impelido por motivo de relevante valor social ou moral ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.
+  </div>
+
+  <div class="epigrafe">Substituição da pena</div>
+
+  <div class="paragrafo">
+    <strong>§ 5º</strong> O juiz, não sendo graves as lesões, pode ainda substituir a pena de detenção pela de multa, de duzentos mil réis a dois contos de réis:
+  </div>
+
+  <div class="inciso">
+    <span class="num">I</span> — se ocorre qualquer das hipóteses do parágrafo anterior;
+  </div>
+  <div class="inciso">
+    <span class="num">II</span> — se as lesões são recíprocas.
+  </div>
+
+</div>
+
+<div class="design-label">
+  Source Serif 4 + DM Sans · Background #f8f7f4 · Warm neutrals
+</div>
+
+</body>
+</html>

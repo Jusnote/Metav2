@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Slash Inline — V4 Amber Hierarchy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0e0e0e; color: #ccc; }
+
+  h1 { font-size: 15px; color: #E8930C; text-align: center; padding: 24px 0 4px; font-weight: 600; letter-spacing: 1px; }
+  h2 { font-size: 11px; color: #555; text-align: center; padding: 0 0 24px; font-weight: 300; }
+
+  .frame { max-width: 780px; margin: 0 auto 20px; background: #f5f6f8; border-radius: 16px; overflow: hidden; border: 1px solid #222; }
+  .frame-header { padding: 8px 14px; background: #1a1a1a; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 8px; }
+  .frame-step { width: 22px; height: 22px; border-radius: 50%; background: #E8930C; color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .frame-label { font-size: 12px; color: #ddd; font-weight: 500; }
+  .frame-desc { font-size: 10px; color: #666; margin-left: auto; }
+  .frame-body { padding: 20px; }
+  .page { max-width: 720px; margin: 0 auto; }
+
+  .sb { display: flex; align-items: center; height: 46px; background: white; padding: 0 16px; gap: 10px; }
+  .sb-connected { border: 1.5px solid #E8930C; border-radius: 14px 14px 0 0; border-bottom: 1px solid #f0f1f3; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); }
+  .sb-icon { color: #c0c4cc; font-size: 15px; flex-shrink: 0; }
+  .sb-text { font-size: 14px; flex: 1; }
+  .cursor { display: inline-block; width: 2px; height: 17px; background: #E8930C; border-radius: 1px; vertical-align: middle; margin-left: 1px; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Color hierarchy */
+  .txt { color: #333; }
+  .slash-cat { color: #E8930C; font-weight: 600; }          /* /banca — amber forte */
+  .slash-val { color: #D4A06A; font-weight: 500; }          /* cespe — amber fraco (has match) */
+  .slash-val-nomatch { color: #999; font-weight: 400; }     /* bancada — cinza (no match) */
+  .ghost { color: #d0d3d9; font-weight: 400; }              /* pe — ghost autocomplete */
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; padding: 8px 14px; font-size: 10px; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Dropdown */
+  .dd {
+    background: white; border: 1.5px solid #E8930C; border-top: none;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .dd-meta { padding: 5px 14px; font-size: 10px; color: #b0b4bc; display: flex; justify-content: space-between; border-bottom: 1px solid #f5f6f8; }
+  .dd-row {
+    display: flex; align-items: center; padding: 8px 14px;
+    font-size: 13px; cursor: pointer; transition: background 0.1s;
+    border-bottom: 1px solid #fafbfc;
+  }
+  .dd-row:hover { background: #f8f9fb; }
+  .dd-row-hl { background: #FFFBEB; border-left: 3px solid #E8930C; padding-left: 11px; }
+  .dd-check { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid #d0d3d9; margin-right: 10px; flex-shrink: 0; }
+  .dd-name { flex: 1; color: #333; }
+  .dd-hl { color: #E8930C; font-weight: 700; }
+  .dd-count { font-size: 10px; color: #b0b4bc; margin-left: 8px; }
+  .dd-bar { width: 50px; margin-left: 8px; flex-shrink: 0; }
+  .dd-bar-bg { height: 4px; border-radius: 2px; background: #f0f1f3; overflow: hidden; }
+  .dd-bar-fill { height: 100%; border-radius: 2px; }
+  .dd-hints {
+    padding: 6px 14px; background: #fafbfc; border-top: 1px solid #f0f1f3;
+    font-size: 10px; color: #999; display: flex; gap: 14px;
+  }
+  .dd-hints kbd { font-size: 9px; background: #eef0f3; padding: 1px 5px; border-radius: 3px; border: 1px solid #e0e0e0; font-family: monospace; color: #666; }
+
+  /* Hint bar */
+  .hint-bar {
+    padding: 6px 16px; background: white;
+    border: 1.5px solid #E8930C; border-top: none;
+    border-radius: 0 0 14px 14px;
+    font-size: 11px; color: #bbb;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    display: flex; justify-content: space-between;
+  }
+
+  .container { padding: 0 20px 40px; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 12px 20px; }
+  .section-label { font-size: 9px; color: #555; text-align: center; padding: 10px 0 4px; text-transform: uppercase; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<h1>Hierarquia de Cores no Input</h1>
+<h2>/banca forte · cespe fraco · pe ghost · bancada cinza</h2>
+
+<!-- Legend -->
+<div style="max-width:780px;margin:0 auto 16px;background:#1a1a1a;border-radius:12px;border:1px solid #222;overflow:hidden;">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#E8930C;"></div> <span>/categoria</span> <span style="color:#666;">— amber forte</span></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#D4A06A;"></div> <span>valor (match)</span> <span style="color:#666;">— amber fraco</span></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#d0d3d9;"></div> <span>autocomplete</span> <span style="color:#666;">— ghost</span></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#999;"></div> <span>valor (sem match)</span> <span style="color:#666;">— cinza</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Com match + ghost -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">1</span>
+      <span class="frame-label">Digitando valor com match</span>
+      <span class="frame-desc">/banca ces → match CESPE</span>
+    </div>
+    <div class="frame-body"><div class="page">
+      <div class="sb sb-connected">
+        <span class="sb-icon">&#128269;</span>
+        <span class="sb-text">
+          <span class="txt">individuo que mata outro </span><span class="slash-cat">/banca </span><span class="slash-val">ces</span><span class="ghost">pe</span><span class="cursor"></span>
+        </span>
+      </div>
+      <div class="dd">
+        <div class="dd-meta"><span>2 resultados</span><span></span></div>
+        <div class="dd-row dd-row-hl">
+          <div class="dd-check"></div>
+          <span class="dd-name"><span class="dd-hl">CES</span>BRASPE (<span class="dd-hl">CES</span>PE)</span>
+          <span class="dd-count">23.203</span>
+          <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span>
+        </div>
+        <div class="dd-row">
+          <div class="dd-check"></div>
+          <span class="dd-name">Instituto <span class="dd-hl">CES</span>EP</span>
+          <span class="dd-count">142</span>
+          <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:1%;background:#d0d3d9;"></div></div></span>
+        </div>
+        <div class="dd-hints">
+          <span><kbd>,</kbd> seleciona + continua</span>
+          <span><kbd>Enter</kbd> seleciona + sai</span>
+          <span><kbd>Esc</kbd> cancela</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Mais texto, match unico → ghost completa mais -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">2</span>
+      <span class="frame-label">Match unico → ghost completa</span>
+      <span class="frame-desc">/banca cesp → so CESPE</span>
+    </div>
+    <div class="frame-body"><div class="page">
+      <div class="sb sb-connected">
+        <span class="sb-icon">&#128269;</span>
+        <span class="sb-text">
+          <span class="txt">individuo que mata outro </span><span class="slash-cat">/banca </span><span class="slash-val">cesp</span><span class="ghost">e</span><span class="cursor"></span>
+        </span>
+      </div>
+      <div class="dd">
+        <div class="dd-meta"><span>1 resultado</span><span></span></div>
+        <div class="dd-row dd-row-hl">
+          <div class="dd-check"></div>
+          <span class="dd-name"><span class="dd-hl">CESP</span>E (CEBRASPE)</span>
+          <span class="dd-count">23.203</span>
+          <span class="dd-bar"><div class="dd-bar-bg"><div class="dd-bar-fill" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span>
+        </div>
+        <div class="dd-hints">
+          <span><kbd>,</kbd> seleciona + continua</span>
+          <span><kbd>Enter</kbd> seleciona + sai</span>
+          <span><kbd>Tab</kbd> autocompleta</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-label">Sem match → cinza</div>
+
+  <!-- Sem match -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step">3</span>
+      <span class="frame-label">Sem match → cinza</span>
+      <span class="frame-desc">/banca xyz → nenhum resultado</span>
+    </div>
+    <div class="frame-body"><div class="page">
+      <div class="sb sb-connected">
+        <span class="sb-icon">&#128269;</span>
+        <span class="sb-text">
+          <span class="txt">individuo que mata outro </span><span class="slash-cat">/banca </span><span class="slash-val-nomatch">xyz</span><span class="cursor"></span>
+        </span>
+      </div>
+      <div class="dd">
+        <div style="padding:20px 14px;text-align:center;">
+          <span style="font-size:12px;color:#bbb;">Nenhuma banca encontrada para "xyz"</span>
+        </div>
+        <div class="dd-hints">
+          <span><kbd>Backspace</kbd> corrigir</span>
+          <span><kbd>Esc</kbd> cancela</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-label">Comparacao lado a lado</div>
+
+  <!-- Side by side: match vs no match -->
+  <div class="frame">
+    <div class="frame-header">
+      <span class="frame-step" style="background:#7C3AED;">&#9733;</span>
+      <span class="frame-label">Comparacao visual</span>
+      <span class="frame-desc">A cor comunica o estado</span>
+    </div>
+    <div class="frame-body">
+      <div style="display:flex;gap:20px;">
+        <!-- Match -->
+        <div style="flex:1;">
+          <div style="font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;text-align:center;">Com match</div>
+          <div style="background:white;border-radius:10px;border:1px solid #e2e5ea;padding:12px 16px;display:flex;align-items:center;gap:6px;">
+            <span style="color:#ccc;font-size:14px;">&#128269;</span>
+            <span style="font-size:14px;">
+              <span class="txt">busca </span><span class="slash-cat">/banca </span><span class="slash-val">ces</span><span class="ghost">pe</span>
+            </span>
+          </div>
+          <div style="text-align:center;margin-top:6px;font-size:10px;color:#22c55e;">&#10003; Valor em amber fraco = tem resultado</div>
+        </div>
+        <!-- No match -->
+        <div style="flex:1;">
+          <div style="font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;text-align:center;">Sem match</div>
+          <div style="background:white;border-radius:10px;border:1px solid #e2e5ea;padding:12px 16px;display:flex;align-items:center;gap:6px;">
+            <span style="color:#ccc;font-size:14px;">&#128269;</span>
+            <span style="font-size:14px;">
+              <span class="txt">busca </span><span class="slash-cat">/banca </span><span class="slash-val-nomatch">xyz</span>
+            </span>
+          </div>
+          <div style="text-align:center;margin-top:6px;font-size:10px;color:#ef4444;">&#10007; Valor em cinza = sem resultado</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:10px;background:#1a1a1a;border-radius:8px;">
+        <div class="legend" style="justify-content:center;">
+          <div class="legend-item"><div class="legend-swatch" style="background:#E8930C;"></div> <span>/banca</span></div>
+          <div class="legend-item"><span style="font-size:16px;">→</span></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#D4A06A;"></div> <span>ces (match)</span></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#d0d3d9;"></div> <span>pe (ghost)</span></div>
+          <div class="legend-item"><span style="font-size:16px;">|</span></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#999;"></div> <span>xyz (no match)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

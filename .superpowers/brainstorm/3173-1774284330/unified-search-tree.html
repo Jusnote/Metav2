@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Unified Search + Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; font-family: 'Outfit', sans-serif; color: #1d1d1f; }
+  h2 { font-size: 16px; font-weight: 600; text-align: center; padding: 20px 0 6px; color: #333; }
+  .sub { text-align: center; color: #999; font-size: 12px; margin-bottom: 20px; }
+
+  .frame {
+    background: #fff;
+    max-width: 1000px;
+    margin: 0 auto 32px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid #e8e8e8;
+  }
+
+  /* ===== APP LAYOUT ===== */
+  .app { display: flex; flex-direction: column; min-height: 560px; }
+
+  .top-bar {
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .lei-select {
+    font-family: Outfit; font-size: 12px; padding: 6px 10px;
+    border: 1px solid #e5e5e5; border-radius: 8px; color: #555; background: #fafafa;
+  }
+
+  /* Unified search bar */
+  .search-unified {
+    flex: 1; max-width: 520px; position: relative;
+  }
+  .search-input-wrap {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #e5e5e5; border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    transition: all 0.2s;
+  }
+  .search-input-wrap.open {
+    border-radius: 16px 16px 0 0;
+    border-bottom-color: #f0f0f0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+
+  .toggles { display: flex; gap: 6px; margin-left: auto; }
+  .tog { font-size: 11px; padding: 4px 10px; border-radius: 12px; background: #f4f4f4; color: #888; border: none; cursor: pointer; }
+  .tog:hover { background: #eee; }
+  .font-btns { display: flex; align-items: center; gap: 2px; }
+  .fbtn { width: 26px; height: 26px; border-radius: 50%; border: none; background: #f4f4f4; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .flabel { font-size: 10px; color: #ccc; width: 20px; text-align: center; }
+  .hints { font-size: 10px; color: #ddd; }
+
+  .progress { height: 3px; background: #f4f4f4; }
+  .progress-fill { height: 100%; width: 34%; background: rgb(67,80,92); }
+
+  /* ===== DROPDOWN ===== */
+  .dropdown {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #fff;
+    border: 1px solid #e5e5e5; border-top: none;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .dd-section-label {
+    font-size: 10px; font-weight: 600; color: #bbb;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 10px 16px 4px;
+  }
+
+  .dd-item {
+    display: flex; align-items: baseline; gap: 6px;
+    padding: 7px 16px; cursor: pointer;
+    transition: background 0.1s; font-size: 13px;
+  }
+  .dd-item:hover { background: #f8f8f8; }
+  .dd-item.active { background: #f0f0ff; }
+
+  .dd-arrow { color: #ccc; font-size: 10px; width: 14px; flex-shrink: 0; text-align: center; }
+  .dd-name { color: #333; }
+  .dd-desc { color: #999; font-size: 12px; font-style: italic; }
+  .dd-count { color: #ddd; font-size: 10px; margin-left: auto; flex-shrink: 0; }
+
+  .dd-indent-1 { padding-left: 30px; }
+  .dd-indent-2 { padding-left: 46px; }
+  .dd-indent-3 { padding-left: 62px; }
+
+  .dd-arts {
+    padding: 4px 16px 4px 62px;
+    font-size: 11px; color: #bbb;
+  }
+
+  .dd-divider { height: 1px; background: #f4f4f4; margin: 4px 12px; }
+
+  /* Search results */
+  .dd-result {
+    padding: 8px 16px; cursor: pointer;
+    transition: background 0.1s;
+  }
+  .dd-result:hover { background: #f8f8f8; }
+  .dd-result-text { font-size: 13px; color: rgb(67,80,92); }
+  .dd-result-text mark { background: #fef08a; padding: 0 1px; border-radius: 2px; }
+  .dd-result-meta { font-size: 11px; color: #bbb; margin-top: 2px; }
+
+  .dd-footer {
+    padding: 8px 16px; border-top: 1px solid #f4f4f4;
+    font-size: 11px; color: #ccc; display: flex; gap: 12px;
+  }
+
+  /* Content */
+  .content-inner {
+    max-width: 820px; margin: 0 auto;
+    padding: 32px 20px 60px;
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px; line-height: 1.9; color: rgb(67,80,92);
+  }
+  .estrutura { text-align: center; margin: 36px 0 24px; font-family: Outfit; }
+  .estrutura-nome { font-size: 13px; font-weight: 600; color: #444; letter-spacing: 1.5px; text-transform: uppercase; }
+  .estrutura-desc { font-size: 13px; color: #999; font-style: italic; margin-top: 2px; }
+  .epigrafe { margin-top: 28px; margin-bottom: 8px; font-family: Outfit; font-size: 13px; font-weight: 500; color: #666; }
+  .artigo { margin-bottom: 8px; }
+  .artigo b { font-weight: 700; }
+  .pena { padding-left: 34px; font-weight: 300; font-style: italic; color: #aaa; font-size: 15px; margin-bottom: 10px; }
+  .anot { font-size: 12px; font-weight: 300; color: #ccc; margin-left: 6px; }
+  .par { padding-left: 34px; margin-bottom: 8px; position: relative; }
+  .par::before { content: '›'; position: absolute; left: 20px; color: #d0d0d0; font-size: 14px; }
+  .par b { font-weight: 600; }
+  .inc { padding-left: 58px; margin-bottom: 6px; position: relative; }
+  .inc::before { content: '›'; position: absolute; left: 44px; color: #d8d8d8; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ===== ESTADO 1: Foco na barra, sem texto → mostra árvore ===== -->
+<h2>Estado 1: Clicou na barra (vazia) → mostra hierarquia</h2>
+<div class="sub">A árvore aparece automaticamente ao focar. Digitar filtra a árvore ou busca no texto.</div>
+
+<div class="frame">
+  <div class="app">
+    <div class="top-bar">
+      <select class="lei-select"><option>Código Penal</option></select>
+
+      <div class="search-unified">
+        <div class="search-input-wrap open">
+          <span style="color:#bbb; font-size:14px;">🔍</span>
+          <span style="color:#333; font-size:13px; flex:1; border:none; outline:none;">|</span>
+          <span style="color:#ddd; font-size:10px;">Ctrl+F</span>
+        </div>
+
+        <div class="dropdown">
+          <div class="dd-section-label">Navegação</div>
+
+          <div class="dd-item">
+            <span class="dd-arrow">▼</span>
+            <span class="dd-name" style="font-weight:600;">PARTE GERAL</span>
+            <span class="dd-count">209 art.</span>
+          </div>
+          <div class="dd-item dd-indent-1">
+            <span class="dd-arrow">▶</span>
+            <span class="dd-name">Título I</span>
+            <span class="dd-desc">— Da aplicação da lei penal</span>
+            <span class="dd-count">12</span>
+          </div>
+          <div class="dd-item dd-indent-1">
+            <span class="dd-arrow">▶</span>
+            <span class="dd-name">Título II</span>
+            <span class="dd-desc">— Do crime</span>
+            <span class="dd-count">28</span>
+          </div>
+
+          <div class="dd-divider"></div>
+
+          <div class="dd-item">
+            <span class="dd-arrow">▼</span>
+            <span class="dd-name" style="font-weight:600;">PARTE ESPECIAL</span>
+            <span class="dd-count">406 art.</span>
+          </div>
+          <div class="dd-item dd-indent-1">
+            <span class="dd-arrow">▼</span>
+            <span class="dd-name">Título I</span>
+            <span class="dd-desc">— Dos crimes contra a pessoa</span>
+            <span class="dd-count">98</span>
+          </div>
+          <div class="dd-item dd-indent-2 active">
+            <span class="dd-arrow">▼</span>
+            <span class="dd-name">Cap. I</span>
+            <span class="dd-desc">— Dos crimes contra a vida</span>
+            <span class="dd-count">14</span>
+          </div>
+          <div class="dd-arts">Art. 121 · 122 · 123 · 124 · 125 · 126 · 127 · 128</div>
+          <div class="dd-item dd-indent-2">
+            <span class="dd-arrow">▶</span>
+            <span class="dd-name">Cap. II</span>
+            <span class="dd-desc">— Das lesões corporais</span>
+            <span class="dd-count">1</span>
+          </div>
+          <div class="dd-item dd-indent-2">
+            <span class="dd-arrow">▶</span>
+            <span class="dd-name">Cap. III</span>
+            <span class="dd-desc">— Da periclitação da vida e da saúde</span>
+            <span class="dd-count">8</span>
+          </div>
+          <div class="dd-item dd-indent-2">
+            <span class="dd-arrow">▶</span>
+            <span class="dd-name">Cap. V</span>
+            <span class="dd-desc">— Dos crimes contra a honra</span>
+            <span class="dd-count">7</span>
+          </div>
+          <div class="dd-item dd-indent-1">
+            <span class="dd-arrow">▶</span>
+            <span class="dd-name">Título II</span>
+            <span class="dd-desc">— Dos crimes contra o patrimônio</span>
+            <span class="dd-count">52</span>
+          </div>
+
+          <div class="dd-footer">
+            <span>↑↓ navegar</span>
+            <span>↵ ir para</span>
+            <span>esc fechar</span>
+            <span>/ filtros</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggles">
+        <button class="tog">Lei Seca</button>
+        <button class="tog">Revogados</button>
+      </div>
+      <div class="font-btns">
+        <button class="fbtn" style="font-size:10px;">A-</button>
+        <span class="flabel">16</span>
+        <button class="fbtn" style="font-size:13px;">A+</button>
+      </div>
+    </div>
+
+    <div class="progress"><div class="progress-fill"></div></div>
+
+    <div style="flex:1; overflow-y:auto; background:#fff;">
+      <div class="content-inner" style="opacity:0.3;">
+        <div class="estrutura">
+          <div class="estrutura-nome">Capítulo I</div>
+          <div class="estrutura-desc">Dos crimes contra a vida</div>
+        </div>
+        <div class="epigrafe">Homicídio simples</div>
+        <div class="artigo"><b>Art. 121.</b> Matar alguem:</div>
+        <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ESTADO 2: Digitando → mostra resultados de busca ===== -->
+<h2>Estado 2: Digitou "homicídio" → mostra resultados</h2>
+<div class="sub">Debounce 500ms. Resultados com highlight. Clica → scrolla até o dispositivo.</div>
+
+<div class="frame">
+  <div class="app">
+    <div class="top-bar">
+      <select class="lei-select"><option>Código Penal</option></select>
+
+      <div class="search-unified">
+        <div class="search-input-wrap open">
+          <span style="color:#bbb; font-size:14px;">🔍</span>
+          <span style="color:#333; font-size:13px; flex:1;">homicídio</span>
+          <span style="color:#999; font-size:10px;">22 resultados</span>
+          <span style="color:#ddd; cursor:pointer;">✕</span>
+        </div>
+
+        <div class="dropdown">
+          <div class="dd-result">
+            <div class="dd-result-text">§ 2º Se o <mark>homicídio</mark> é cometido: I — mediante paga ou promessa de recompensa...</div>
+            <div class="dd-result-meta">Art. 121 · Código Penal</div>
+          </div>
+          <div class="dd-result">
+            <div class="dd-result-text"><mark>Homicídio</mark> simples</div>
+            <div class="dd-result-meta">Epígrafe · Art. 121 · Código Penal</div>
+          </div>
+          <div class="dd-result">
+            <div class="dd-result-text"><mark>Homicídio</mark> qualificado</div>
+            <div class="dd-result-meta">Epígrafe · Art. 121 · Código Penal</div>
+          </div>
+          <div class="dd-result">
+            <div class="dd-result-text">§ 3º Se o <mark>homicídio</mark> é culposo:</div>
+            <div class="dd-result-meta">Art. 121 · Código Penal</div>
+          </div>
+          <div class="dd-result">
+            <div class="dd-result-text">VII — o cônjuge sobrevivente com o condenado por <mark>homicídio</mark> ou tentativa de <mark>homicídio</mark> contra o seu consorte.</div>
+            <div class="dd-result-meta">Art. 1.814 · Código Civil</div>
+          </div>
+
+          <div class="dd-footer">
+            <span>↑↓ navegar</span>
+            <span>↵ ir para</span>
+            <span>esc fechar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggles">
+        <button class="tog">Lei Seca</button>
+        <button class="tog">Revogados</button>
+      </div>
+      <div class="font-btns">
+        <button class="fbtn" style="font-size:10px;">A-</button>
+        <span class="flabel">16</span>
+        <button class="fbtn" style="font-size:13px;">A+</button>
+      </div>
+    </div>
+
+    <div class="progress"><div class="progress-fill"></div></div>
+
+    <div style="flex:1; overflow-y:auto; background:#fff;">
+      <div class="content-inner" style="opacity:0.3;">
+        <div class="estrutura">
+          <div class="estrutura-nome">Capítulo I</div>
+          <div class="estrutura-desc">Dos crimes contra a vida</div>
+        </div>
+        <div class="epigrafe">Homicídio simples</div>
+        <div class="artigo"><b>Art. 121.</b> Matar alguem:</div>
+        <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ESTADO 3: Barra fechada, lendo normalmente ===== -->
+<h2>Estado 3: Barra fechada → leitura normal (todo o espaço para o texto)</h2>
+<div class="sub">Sem sidebar. Sem dropdown. Clica na barra ou Ctrl+F para abrir novamente.</div>
+
+<div class="frame">
+  <div class="app">
+    <div class="top-bar">
+      <select class="lei-select"><option>Código Penal</option></select>
+
+      <div class="search-unified">
+        <div class="search-input-wrap">
+          <span style="color:#bbb; font-size:14px;">🔍</span>
+          <span style="color:#bbb; font-size:13px; flex:1;">Buscar na lei...</span>
+          <span style="color:#ddd; font-size:10px;">Ctrl+F</span>
+        </div>
+      </div>
+
+      <div class="toggles">
+        <button class="tog">Lei Seca</button>
+        <button class="tog">Revogados</button>
+      </div>
+      <div class="font-btns">
+        <button class="fbtn" style="font-size:10px;">A-</button>
+        <span class="flabel">16</span>
+        <button class="fbtn" style="font-size:13px;">A+</button>
+      </div>
+      <span class="hints">J/K · L · R · Ctrl+F</span>
+    </div>
+
+    <div class="progress"><div class="progress-fill"></div></div>
+
+    <div style="flex:1; overflow-y:auto; background:#fff;">
+      <div class="content-inner">
+        <div class="estrutura">
+          <div class="estrutura-nome">Capítulo I</div>
+          <div class="estrutura-desc">Dos crimes contra a vida</div>
+        </div>
+
+        <div class="epigrafe">Homicídio simples</div>
+        <div class="artigo"><b>Art. 121.</b> Matar alguem:</div>
+        <div class="pena">Pena — reclusão, de seis a vinte anos.</div>
+
+        <div class="epigrafe">Caso de diminuição de pena</div>
+        <div class="par"><b>§ 1º</b> Se o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima, o juiz pode reduzir a pena de um sexto a um terço.</div>
+
+        <div class="epigrafe">Homicídio qualificado</div>
+        <div class="par"><b>§ 2º</b> Se o homicídio é cometido:</div>
+        <div class="inc">I — mediante paga ou promessa de recompensa, ou por outro motivo torpe;</div>
+        <div class="inc">II — por motivo futil;</div>
+        <div class="inc">III — com emprego de veneno, fogo, explosivo, asfixia, tortura ou outro meio insidioso ou cruel, ou de que possa resultar perigo comum;</div>
+        <div class="inc">IV — à traição, de emboscada, ou mediante dissimulação ou outro recurso que dificulte ou torne impossivel a defesa do ofendido;</div>
+        <div class="inc">V — para assegurar a execução, a ocultação, a impunidade ou vantagem de outro crime:</div>
+
+        <div class="pena">Pena — reclusão, de doze a trinta anos. <span class="anot">(Redação dada pela Lei nº 13.104, de 2015)</span></div>
+
+        <div class="par"><b>§ 2º-A</b> Considera-se que há razões de condição de sexo feminino quando o crime envolve: <span class="anot">(Incluído pela Lei nº 13.104, de 2015)</span></div>
+        <div class="inc">I — violência doméstica e familiar;</div>
+        <div class="inc">II — menosprezo ou discriminação à condição de mulher.</div>
+
+        <div class="par"><b>§ 2º-B</b> A pena do homicídio contra menor de 14 (quatorze) anos é aumentada de:</div>
+        <div class="inc">I — 1/3 (um terço) até a metade se a vítima é pessoa com deficiência; <span class="anot">(Incluído pela Lei nº 14.344, de 2022)</span></div>
+        <div class="inc">II — 2/3 (dois terços) se o autor é ascendente, padrasto ou madrasta da vítima.</div>
+
+        <div class="epigrafe">Homicídio culposo</div>
+        <div class="par"><b>§ 3º</b> Se o homicídio é culposo:</div>
+        <div class="pena">Pena — detenção, de um a três anos.</div>
+
+        <div class="epigrafe">Aumento de pena</div>
+        <div class="par"><b>§ 4º</b> No homicídio culposo, a pena é aumentada de 1/3 (um terço), se o crime resulta de inobservância de regra técnica de profissão, arte ou ofício. <span class="anot">(Redação dada pela Lei nº 10.741, de 2003)</span></div>
+
+        <div class="par"><b>§ 5º</b> Na hipótese de homicídio culposo, o juiz poderá deixar de aplicar a pena, se as conseqüências da infração atingirem o próprio agente de forma tão grave que a sanção penal se torne desnecessária. <span class="anot">(Incluído pela Lei nº 6.416, de 24.5.1977)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<h2>Notion-like — Sem linhas laterais</h2>
+<p class="subtitle">Replies com indent puro, sem borda lateral. Clique se aprova.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px; background: #ffffff;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 520px; margin: 0 auto;">
+
+        <!-- Section header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: #2563EB;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              3 comentários
+            </div>
+            <span style="color: #e5e7eb;">·</span>
+            <span style="font-size: 12px; color: #9ca3af;">Mais votados</span>
+          </div>
+          <div style="padding: 5px 12px; border-radius: 6px; background: #111827; color: white; font-size: 12px; font-weight: 500;">Escrever</div>
+        </div>
+
+        <!-- Pinned — flat, só badge -->
+        <div style="padding: 10px 0; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #EF4444, #F97316); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Prof. Marcos</span>
+                <span style="font-size: 11px; color: #c0c0c0;">1d</span>
+                <span style="font-size: 10px; font-weight: 600; color: #2563EB; display: flex; align-items: center; gap: 3px;">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="#2563EB" stroke="none"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="2.5" fill="none"/></svg>
+                  Fixado
+                </span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0 0 8px 0;">A banca CESPE considera que autarquias são criadas por lei específica (art. 37, XIX CF).</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="display: flex; align-items: center; gap: 3px; color: #2563EB; font-weight: 500;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  15
+                </span>
+                <span style="color: #9ca3af; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Normal comment -->
+        <div style="padding: 10px 0; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #6366F1, #8B5CF6); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Carlos Lima</span>
+                <span style="font-size: 11px; color: #c0c0c0;">4h</span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0 0 8px 0;">Importante lembrar que a Lei Orgânica Municipal equivale à Constituição Estadual no âmbito municipal.</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="display: flex; align-items: center; gap: 3px; color: #2563EB; font-weight: 500;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  5
+                </span>
+                <span style="color: #9ca3af; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply — só indent, sem borda lateral -->
+        <div style="padding: 6px 0; margin-left: 38px;">
+          <div style="display: flex; gap: 8px;">
+            <div style="width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #F59E0B, #EF4444); flex-shrink: 0;"></div>
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 2px;">
+                <span style="font-size: 12px; font-weight: 600; color: #111827;">Bia Souza</span>
+                <span style="font-size: 11px; color: #c0c0c0;">2h</span>
+              </div>
+              <p style="font-size: 12px; color: #4b5563; line-height: 1.45; margin: 0 0 6px 0;"><span style="color: #2563EB; font-weight: 500;">@Carlos</span> Complementando: a competência legislativa do município está no art. 30 da CF.</p>
+              <span style="font-size: 11px; display: flex; align-items: center; gap: 3px; color: #9ca3af;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                3
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Another reply -->
+        <div style="padding: 6px 0; margin-left: 38px;">
+          <div style="display: flex; gap: 8px;">
+            <div style="width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #06B6D4, #3B82F6); flex-shrink: 0;"></div>
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 2px;">
+                <span style="font-size: 12px; font-weight: 600; color: #111827;">Pedro Alves</span>
+                <span style="font-size: 11px; color: #c0c0c0;">1h</span>
+              </div>
+              <p style="font-size: 12px; color: #4b5563; line-height: 1.45; margin: 0 0 6px 0;"><span style="color: #2563EB; font-weight: 500;">@Carlos</span> Boa dica! Salvei pra revisão.</p>
+              <span style="font-size: 11px; display: flex; align-items: center; gap: 3px; color: #9ca3af;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                1
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endorsed — flat, só badge -->
+        <div style="padding: 10px 0; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #10B981, #06B6D4); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Prof. Ana Beatriz</span>
+                <span style="font-size: 11px; color: #c0c0c0;">1h</span>
+                <span style="font-size: 10px; font-weight: 600; color: #D97706; display: flex; align-items: center; gap: 2px;">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#D97706" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  Endossado
+                </span>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0 0 8px 0;">Resposta perfeita do Carlos. A Lei Orgânica é a "Constituição" do município.</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="display: flex; align-items: center; gap: 3px; color: #2563EB; font-weight: 500;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  8
+                </span>
+                <span style="color: #9ca3af; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quoted text comment -->
+        <div style="padding: 10px 0; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #EC4899, #F43F5E); flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 13px; font-weight: 600; color: #111827;">Fernanda Dias</span>
+                <span style="font-size: 11px; color: #c0c0c0;">30min</span>
+              </div>
+              <div style="padding: 6px 10px; margin-bottom: 6px; background: #f9fafb; border-radius: 6px;">
+                <p style="font-size: 12px; color: #9ca3af; line-height: 1.4; margin: 0; font-style: italic;">"...composição da Câmara Municipal e define as características das entidades..."</p>
+              </div>
+              <p style="font-size: 13px; color: #4b5563; line-height: 1.55; margin: 0 0 8px 0;">Esse trecho é a chave da questão. A banca quer saber se o aluno diferencia administração direta da indireta.</p>
+              <div style="display: flex; align-items: center; gap: 14px; font-size: 12px;">
+                <span style="display: flex; align-items: center; gap: 3px; color: #9ca3af;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  0
+                </span>
+                <span style="color: #9ca3af; cursor: pointer;">Responder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Flat Puro — Sem linhas</h3>
+      <p>Replies com indent puro (sem borda lateral). Citação em bloco cinza arredondado (sem borda). Badges inline. Zero decorações laterais em qualquer lugar.</p>
+    </div>
+  </div>
+
+</div>

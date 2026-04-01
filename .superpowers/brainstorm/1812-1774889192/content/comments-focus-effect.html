@@ -1,0 +1,154 @@
+<h2>Efeito de foco ao abrir comentários</h2>
+<p class="subtitle">Como destacar o card ativo? Clique na opção preferida.</p>
+
+<div class="cards">
+
+  <!-- Option A: Dimming nos outros cards -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f9fa;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 480px; margin: 0 auto;">
+
+        <!-- Card anterior (dimmed) -->
+        <div style="opacity: 0.35; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; background: white; transition: opacity 0.3s;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Materia</span>
+            <span style="font-size: 10px; color: #9ca3af;">|</span>
+            <span style="font-size: 10px; color: #6b7280;">Assunto</span>
+          </div>
+          <p style="font-size: 13px; color: #374151; line-height: 1.5; margin: 0;">A Lei Orgânica Municipal estabelece a composição da Câmara Municipal e define as características das entidades...</p>
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+          </div>
+        </div>
+
+        <!-- Card ATIVO (full opacity, com comentários) -->
+        <div style="padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; background: white;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Dir. Constitucional</span>
+            <span style="font-size: 10px; color: #9ca3af;">|</span>
+            <span style="font-size: 10px; color: #6b7280;">Leis Orgânicas</span>
+          </div>
+          <p style="font-size: 13px; color: #374151; line-height: 1.5; margin: 0 0 10px 0;">Considerando o regime jurídico das autarquias municipais, assinale a alternativa correta...</p>
+
+          <!-- Footer -->
+          <div style="display: flex; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid #f3f4f6; margin-bottom: 12px;">
+            <span style="font-size: 12px; color: #2563EB; font-weight: 600;">💬 3</span>
+            <span style="font-size: 12px; color: #9ca3af;">✏️</span>
+          </div>
+
+          <!-- Comentários abertos -->
+          <div style="border-top: 1px solid #f3f4f6; padding-top: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 13px; font-weight: 600; color: #2563EB;">💬 3 comentários</span>
+              <div style="padding: 4px 10px; border-radius: 5px; background: #111827; color: white; font-size: 11px;">Escrever</div>
+            </div>
+            <div style="display: flex; gap: 8px; padding: 6px 0;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #6366F1, #8B5CF6); flex-shrink: 0;"></div>
+              <div>
+                <span style="font-size: 12px; font-weight: 600; color: #111827;">Carlos Lima</span>
+                <span style="font-size: 10px; color: #c0c0c0; margin-left: 4px;">4h</span>
+                <p style="font-size: 12px; color: #4b5563; margin: 2px 0 0 0;">A Lei Orgânica equivale à Constituição...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card posterior (dimmed) -->
+        <div style="opacity: 0.35; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: white; transition: opacity 0.3s;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Dir. Administrativo</span>
+            <span style="font-size: 10px; color: #9ca3af;">|</span>
+            <span style="font-size: 10px; color: #6b7280;">Atos Administrativos</span>
+          </div>
+          <p style="font-size: 13px; color: #374151; line-height: 1.5; margin: 0;">Acerca dos atos administrativos, julgue o item a seguir...</p>
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Dimming</h3>
+      <p>Outros cards ficam com <code>opacity: 0.35</code> + transição suave. Card ativo permanece 100%. Leve, performático, foco claro. Conteúdo dos outros cards ainda legível se necessário.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Destaque no card ativo -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f9fa;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 480px; margin: 0 auto;">
+
+        <!-- Card anterior (normal, sem efeito) -->
+        <div style="padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; background: white;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Materia</span>
+            <span style="font-size: 10px; color: #9ca3af;">|</span>
+            <span style="font-size: 10px; color: #6b7280;">Assunto</span>
+          </div>
+          <p style="font-size: 13px; color: #374151; line-height: 1.5; margin: 0;">A Lei Orgânica Municipal estabelece a composição da Câmara Municipal e define as características das entidades...</p>
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+          </div>
+        </div>
+
+        <!-- Card ATIVO (sombra + borda azul sutil) -->
+        <div style="padding: 14px 16px; border: 1.5px solid rgba(37,99,235,0.2); border-radius: 10px; margin-bottom: 10px; background: white; box-shadow: 0 0 0 4px rgba(37,99,235,0.04), 0 4px 16px rgba(0,0,0,0.04);">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Dir. Constitucional</span>
+            <span style="font-size: 10px; color: #9ca3af;">|</span>
+            <span style="font-size: 10px; color: #6b7280;">Leis Orgânicas</span>
+          </div>
+          <p style="font-size: 13px; color: #374151; line-height: 1.5; margin: 0 0 10px 0;">Considerando o regime jurídico das autarquias municipais, assinale a alternativa correta...</p>
+
+          <!-- Footer -->
+          <div style="display: flex; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid #f3f4f6; margin-bottom: 12px;">
+            <span style="font-size: 12px; color: #2563EB; font-weight: 600;">💬 3</span>
+            <span style="font-size: 12px; color: #9ca3af;">✏️</span>
+          </div>
+
+          <!-- Comentários abertos -->
+          <div style="border-top: 1px solid #f3f4f6; padding-top: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 13px; font-weight: 600; color: #2563EB;">💬 3 comentários</span>
+              <div style="padding: 4px 10px; border-radius: 5px; background: #111827; color: white; font-size: 11px;">Escrever</div>
+            </div>
+            <div style="display: flex; gap: 8px; padding: 6px 0;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #6366F1, #8B5CF6); flex-shrink: 0;"></div>
+              <div>
+                <span style="font-size: 12px; font-weight: 600; color: #111827;">Carlos Lima</span>
+                <span style="font-size: 10px; color: #c0c0c0; margin-left: 4px;">4h</span>
+                <p style="font-size: 12px; color: #4b5563; margin: 2px 0 0 0;">A Lei Orgânica equivale à Constituição...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card posterior (normal, sem efeito) -->
+        <div style="padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: white;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Dir. Administrativo</span>
+            <span style="font-size: 10px; color: #9ca3af;">|</span>
+            <span style="font-size: 10px; color: #6b7280;">Atos Administrativos</span>
+          </div>
+          <p style="font-size: 13px; color: #374151; line-height: 1.5; margin: 0;">Acerca dos atos administrativos, julgue o item a seguir...</p>
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #d1d5db;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Glow sutil no ativo</h3>
+      <p>Outros cards ficam iguais. O card ativo ganha borda azul sutil <code>rgba(37,99,235,0.2)</code> + sombra difusa azul + drop shadow leve. Elegante, não interfere com virtualização, foco visual claro.</p>
+    </div>
+  </div>
+
+</div>

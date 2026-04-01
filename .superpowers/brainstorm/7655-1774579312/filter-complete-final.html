@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questoes Filter — Complete Design (Desktop + Mobile)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0e0e0e; color: #ccc; overflow-x: hidden; }
+
+  /* ========== LAYOUT ========== */
+  .page-title { font-size: 16px; color: #E8930C; text-align: center; padding: 28px 0 4px; font-weight: 600; letter-spacing: 1px; }
+  .page-subtitle { font-size: 11px; color: #555; text-align: center; padding: 0 0 24px; font-weight: 300; }
+  .section {
+    max-width: 1400px; margin: 0 auto; padding: 0 20px 32px;
+  }
+  .section-title {
+    font-size: 10px; color: #E8930C; text-align: center; padding: 20px 0 6px;
+    font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .section-desc { font-size: 10px; color: #555; text-align: center; padding-bottom: 16px; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 8px 0 0; }
+
+  /* Step cards */
+  .steps-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .step-card {
+    background: #151515; border-radius: 16px; border: 1px solid #222;
+    overflow: hidden; flex: 1; min-width: 340px; max-width: 480px;
+  }
+  .step-card-wide { max-width: 860px; min-width: 600px; }
+  .step-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #1e1e1e; }
+  .step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #E8930C; color: white; font-size: 9px;
+    font-weight: 700; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .step-num-alt { background: #7C3AED; }
+  .step-num-gray { background: #444; }
+  .step-label { font-size: 11px; color: #ccc; font-weight: 500; }
+  .step-tag { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: auto; }
+  .tag-primary { background: rgba(232,147,12,0.15); color: #E8930C; }
+  .tag-secondary { background: rgba(124,58,237,0.15); color: #7C3AED; }
+  .step-body { padding: 16px; background: #f0f2f5; }
+
+  /* ========== SHARED COMPONENTS ========== */
+  .icon-svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; opacity: 0.7; }
+
+  /* Search bar */
+  .sb { display: flex; align-items: center; height: 44px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 14px 14px 0 0; padding: 0 16px; gap: 10px; }
+  .sb-focus { border-color: #E8930C; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); position: relative; z-index: 2; }
+  .sb-icon { color: #c0c4cc; font-size: 15px; }
+  .sb-text { font-size: 13px; color: #333; flex: 1; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .sb-ph { font-size: 13px; color: #b0b4bc; flex: 1; }
+  .sb-ia { font-size: 9px; padding: 3px 8px; border-radius: 6px; font-weight: 500; border: 1px solid #e0e0e0; color: #888; cursor: pointer; }
+  .sb-ia-on { border-color: #7C3AED; color: #7C3AED; background: #F4F0FF; }
+  .sb-badge { font-size: 8px; color: #E8930C; background: #FEF3C7; padding: 2px 7px; border-radius: 8px; font-weight: 600; white-space: nowrap; }
+  .sb-key { font-size: 10px; color: #c0c4cc; background: #f5f6f8; padding: 2px 6px; border-radius: 4px; border: 1px solid #e8eaed; font-family: monospace; }
+  .cursor { width: 2px; height: 16px; background: #E8930C; border-radius: 1px; display: inline-block; vertical-align: middle; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .inline-chip { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 500; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+  .ic-purple { background: #F4F0FF; color: #7C3AED; border: 1px solid #C4B5FD; }
+  .slash-text { color: #E8930C; font-weight: 600; }
+
+  /* Filter bar */
+  .fb { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(180deg, #f6f7f9 0%, #eef0f3 100%); border: 1px solid #e2e5ea; border-top: 1px solid #eaecf0; border-radius: 0 0 14px 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); overflow-x: auto; scrollbar-width: none; }
+  .fb::-webkit-scrollbar { display: none; }
+
+  .p { font-size: 11px; padding: 5px 11px; border-radius: 8px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; font-weight: 450; flex-shrink: 0; transition: all 0.2s; }
+  .p-off { background: rgba(255,255,255,0.85); color: #5f6368; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+  .p-off:hover { background: white; border-color: #E8930C; color: #B45309; }
+  .p-click { background: white; border: 1px solid #E8930C; box-shadow: 0 1px 4px rgba(232,147,12,0.15); color: #B45309; }
+  .p-click .icon-svg { opacity: 1; stroke: #B45309; }
+  .p-amber { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); color: #92400E; border: 1px solid #F59E0B; box-shadow: 0 1px 3px rgba(245,158,11,0.2); }
+  .p-amber .icon-svg { opacity: 0.8; stroke: #92400E; }
+  .p-blue { background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); color: #1E40AF; border: 1px solid #60A5FA; box-shadow: 0 1px 3px rgba(96,165,250,0.2); }
+  .p-blue .icon-svg { opacity: 0.8; stroke: #1E40AF; }
+  .p-purple { background: linear-gradient(135deg, #F4F0FF 0%, #E9E3FF 100%); color: #5B21B6; border: 1px solid #C4B5FD; }
+  .p-purple .icon-svg { opacity: 0.8; stroke: #5B21B6; }
+  .p-green { background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); color: #166534; border: 1px solid #4ADE80; }
+  .p .ar { opacity: 0.35; font-size: 8px; }
+  .p .cl { opacity: 0.5; font-size: 10px; }
+  .p .cb { font-size: 8px; background: rgba(0,0,0,0.1); color: inherit; padding: 0 5px; border-radius: 6px; font-weight: 600; min-width: 14px; text-align: center; line-height: 14px; }
+  .p-amber .cb { background: rgba(146,64,14,0.15); }
+  .p-purple .cb { background: rgba(91,33,182,0.12); }
+  .p-green .cb { background: rgba(22,101,52,0.12); }
+  .clr { margin-left: auto; font-size: 10px; color: #c0c4cc; cursor: pointer; flex-shrink: 0; }
+
+  /* Popover */
+  .pop { position: absolute; width: 380px; background: white; border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e0e3e8; overflow: hidden; z-index: 30; }
+  .pop-s { padding: 10px 12px; border-bottom: 1px solid #f0f1f3; position: relative; }
+  .pop-si { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #c0c4cc; font-size: 13px; }
+  .pop-inp { width: 100%; height: 34px; border: 1px solid #e8eaed; background: #f8f9fb; border-radius: 8px; padding: 0 10px 0 32px; font-size: 12px; color: #333; outline: none; font-family: inherit; }
+  .pop-inp:focus { border-color: #E8930C; background: white; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); }
+  .pop-inp::placeholder { color: #b0b4bc; }
+  .pop-hint { padding: 4px 12px; font-size: 9px; color: #c0c4cc; background: #fafbfc; border-bottom: 1px solid #f5f5f5; display: flex; align-items: center; gap: 4px; }
+  .pop-hint kbd { font-size: 8px; background: #eef0f3; padding: 1px 4px; border-radius: 3px; border: 1px solid #e0e0e0; font-family: monospace; }
+  .pop-rec { padding: 6px 12px; border-bottom: 1px solid #f0f1f3; }
+  .pop-rec-l { font-size: 9px; color: #b0b4bc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 500; }
+  .pop-rec-i { display: flex; align-items: center; gap: 6px; padding: 3px 6px; border-radius: 6px; font-size: 11px; color: #666; cursor: pointer; }
+  .pop-rec-i:hover { background: #f8f9fb; }
+  .pop-hdr { display: flex; padding: 6px 12px; font-size: 9px; color: #a0a4ac; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #f5f6f8; font-weight: 500; }
+  .pop-scr { max-height: 200px; overflow-y: auto; }
+  .pr { display: flex; align-items: center; padding: 7px 12px; font-size: 12px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid #fafbfc; }
+  .pr:hover { background: #f8f9fb; }
+  .pr-on { background: #FFFBEB; }
+  .pr-on:hover { background: #FEF3C7; }
+  .ck { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid #d0d3d9; display: flex; align-items: center; justify-content: center; margin-right: 10px; flex-shrink: 0; }
+  .ck-on { background: #E8930C; border-color: #E8930C; box-shadow: 0 1px 3px rgba(232,147,12,0.3); }
+  .bw { width: 55px; padding-left: 8px; flex-shrink: 0; }
+  .bbg { height: 5px; border-radius: 3px; background: #f0f1f3; overflow: hidden; }
+  .bfl { height: 100%; border-radius: 3px; }
+  .pop-ft { padding: 8px 12px; border-top: 1px solid #f0f1f3; display: flex; justify-content: space-between; align-items: center; background: #fafbfc; }
+  .pop-ft-b { font-size: 10px; padding: 3px 10px; border-radius: 6px; cursor: pointer; font-weight: 500; color: #a0a4ac; }
+  .pop-ft-b:hover { color: #555; background: #eef0f3; }
+
+  /* Slash dropdown */
+  .slash-dd { position: absolute; width: 250px; background: white; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e8eaed; overflow: hidden; z-index: 30; }
+  .slash-hint { padding: 6px 12px; font-size: 9px; color: #b0b4bc; border-bottom: 1px solid #f0f1f3; background: #fafbfc; }
+  .slash-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; font-size: 12px; color: #333; cursor: pointer; transition: background 0.1s; }
+  .slash-item:hover { background: #f8f9fb; }
+  .slash-item-on { background: #FFFBEB; }
+  .slash-ic { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .slash-ic svg { width: 13px; height: 13px; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .slash-ct { margin-left: auto; font-size: 9px; color: #ccc; }
+
+  /* Filter results dropdown */
+  .fdd { position: absolute; width: 280px; background: white; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.14); border: 1px solid #e8eaed; overflow: hidden; z-index: 30; }
+  .fdd-row { padding: 8px 12px; font-size: 12px; cursor: pointer; display: flex; align-items: center; border-bottom: 1px solid #f5f5f5; }
+  .fdd-row:hover { background: #f8f9fb; }
+  .fdd-row-on { background: #FFFBEB; }
+  .fdd-hl { color: #E8930C; font-weight: 700; }
+  .fdd-ct { margin-left: auto; font-size: 10px; color: #b0b4bc; }
+
+  /* Tabs */
+  .tabs-row { display: flex; align-items: center; margin-top: 12px; }
+  .tabs { display: flex; gap: 2px; background: #eef0f3; border-radius: 10px; padding: 3px; width: fit-content; }
+  .tab { font-size: 11px; padding: 5px 14px; border-radius: 8px; color: #888; cursor: pointer; font-weight: 450; }
+  .tab-on { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .meta { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #a0a4ac; }
+  .meta b { color: #E8930C; font-weight: 600; }
+  .vt { display: flex; border: 1px solid #e0e3e8; border-radius: 8px; overflow: hidden; }
+  .vt span { padding: 4px 8px; cursor: pointer; font-size: 12px; }
+  .vt-on { background: #f0f2f5; }
+
+  /* Questions */
+  .qs { margin-top: 10px; }
+  .q { background: white; border-radius: 12px; border: 1px solid #e8eaed; padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+  .q:hover { border-color: #d0d3d9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transform: translateY(-1px); }
+  .q-dim { opacity: 0.3; filter: blur(1px); pointer-events: none; }
+  .tg { font-size: 9px; padding: 2px 8px; border-radius: 5px; font-weight: 500; }
+  .tg-b { background: #F4F0FF; color: #7C3AED; }
+  .tg-a { background: #DBEAFE; color: #1D4ED8; }
+  .tg-m { background: #FEF3C7; color: #D97706; }
+  .hl { background: #FEF3C7; padding: 0 2px; border-radius: 2px; }
+
+  /* ========== MOBILE ========== */
+  .phone { width: 375px; height: 780px; border-radius: 36px; border: 7px solid #222; background: #f0f2f5; overflow: hidden; position: relative; box-shadow: 0 16px 48px rgba(0,0,0,0.4); margin: 0 auto; }
+  .phone-notch { width: 120px; height: 28px; background: #222; border-radius: 0 0 16px 16px; margin: 0 auto; position: relative; z-index: 50; }
+  .phone-content { height: calc(100% - 28px); overflow-y: auto; position: relative; }
+
+  .msb { display: flex; align-items: center; height: 40px; background: white; border: 1px solid #e2e5ea; border-bottom: none; border-radius: 12px 12px 0 0; padding: 0 12px; gap: 6px; }
+  .msb-focus { border-color: #E8930C; box-shadow: 0 0 0 3px rgba(232,147,12,0.06); position: relative; z-index: 2; }
+  .mfb { display: flex; align-items: center; gap: 5px; padding: 6px 10px; background: linear-gradient(180deg, #f6f7f9 0%, #eef0f3 100%); border: 1px solid #e2e5ea; border-top: 1px solid #eaecf0; border-radius: 0 0 12px 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .mfb::-webkit-scrollbar { display: none; }
+
+  .mp { font-size: 10px; padding: 4px 8px; border-radius: 7px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; font-weight: 450; flex-shrink: 0; }
+
+  .mtabs { display: flex; gap: 2px; background: #eef0f3; border-radius: 8px; padding: 2px; flex: 1; }
+  .mtab { font-size: 10px; padding: 5px 0; border-radius: 6px; color: #888; font-weight: 450; flex: 1; text-align: center; }
+  .mtab-on { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .mmeta { font-size: 10px; color: #a0a4ac; padding: 4px 12px 0; text-align: right; }
+  .mmeta b { color: #E8930C; font-weight: 600; }
+
+  .mqs { padding: 8px 12px 20px; }
+  .mq { background: white; border-radius: 12px; border: 1px solid #e8eaed; padding: 12px 14px; margin-bottom: 8px; }
+  .mtg { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+
+  /* Mobile overlay + bottom sheet */
+  .m-ov { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); z-index: 30; }
+  .m-ov-kb { bottom: 44px; }
+  .bsheet { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-radius: 18px 18px 0 0; z-index: 40; display: flex; flex-direction: column; box-shadow: 0 -8px 30px rgba(0,0,0,0.12); }
+  .bsheet-kb { bottom: 44px; }
+  .bs-handle { width: 36px; height: 4px; background: #d0d3d9; border-radius: 2px; margin: 8px auto 0; flex-shrink: 0; }
+  .bs-hdr { display: flex; align-items: center; padding: 10px 14px 6px; flex-shrink: 0; }
+  .bs-title { font-size: 14px; font-weight: 600; color: #333; flex: 1; }
+  .bs-done { font-size: 12px; color: #E8930C; font-weight: 600; cursor: pointer; }
+  .bs-back { display: flex; align-items: center; gap: 3px; margin-right: 6px; cursor: pointer; }
+  .bs-back svg { width: 16px; height: 16px; stroke: #E8930C; stroke-width: 2.5; fill: none; }
+  .bs-search { padding: 0 14px 6px; }
+  .bs-inp { width: 100%; height: 34px; border: 1px solid #e8eaed; background: #f5f6f8; border-radius: 10px; padding: 0 12px; font-size: 13px; color: #333; outline: none; font-family: inherit; }
+  .bs-crumb { display: flex; align-items: center; gap: 4px; padding: 0 14px 6px; font-size: 10px; color: #b0b4bc; }
+  .bs-crumb-active { color: #E8930C; font-weight: 500; }
+  .bs-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .bs-row { display: flex; align-items: center; padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #f5f6f8; cursor: pointer; }
+  .bs-row:active { background: #f8f9fb; }
+  .bs-row-on { background: #FFFBEB; }
+  .bs-chk { width: 18px; height: 18px; border-radius: 5px; border: 2px solid #d0d3d9; display: flex; align-items: center; justify-content: center; margin-right: 10px; flex-shrink: 0; }
+  .bs-chk-on { background: #E8930C; border-color: #E8930C; }
+  .bs-row-name { flex: 1; color: #333; }
+  .bs-row-on .bs-row-name { color: #92400E; font-weight: 500; }
+  .bs-row-ct { font-size: 10px; color: #b0b4bc; margin-right: 8px; }
+  .bs-bar-w { width: 44px; flex-shrink: 0; }
+  .bs-ft { padding: 8px 14px; border-top: 1px solid #f0f1f3; display: flex; justify-content: space-between; align-items: center; background: #fafbfc; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom, 8px); }
+
+  /* Drill-down category rows */
+  .cat-row { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid #f5f6f8; cursor: pointer; }
+  .cat-row:active { background: #f8f9fb; }
+  .cat-ic { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 10px; flex-shrink: 0; }
+  .cat-ic svg { width: 16px; height: 16px; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .cat-info { flex: 1; }
+  .cat-name { font-size: 13px; color: #333; font-weight: 500; }
+  .cat-sub { font-size: 10px; color: #a0a4ac; margin-top: 1px; }
+  .cat-sel { font-size: 10px; color: #E8930C; font-weight: 500; margin-right: 4px; }
+  .cat-dot { width: 6px; height: 6px; border-radius: 50%; background: #E8930C; margin-right: 6px; flex-shrink: 0; }
+  .cat-chev { width: 14px; height: 14px; stroke: #c0c4cc; stroke-width: 2; fill: none; flex-shrink: 0; }
+
+  /* Toggle rows */
+  .cat-div { padding: 6px 14px 3px; font-size: 9px; color: #b0b4bc; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; background: #fafbfc; border-bottom: 1px solid #f0f1f3; }
+  .tgl-row { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid #f5f6f8; }
+  .tgl-info { flex: 1; }
+  .tgl-name { font-size: 13px; color: #333; font-weight: 450; }
+  .tgl-desc { font-size: 10px; color: #a0a4ac; margin-top: 1px; }
+  .tgl { width: 40px; height: 24px; background: #e0e3e8; border-radius: 12px; position: relative; cursor: pointer; flex-shrink: 0; }
+  .tgl::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 10px; top: 2px; left: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: transform 0.2s; }
+  .tgl-on { background: #E8930C; }
+  .tgl-on::after { transform: translateX(16px); }
+
+  /* Keyboard bar */
+  .kb { position: absolute; bottom: 0; left: 0; right: 0; height: 44px; background: #d1d3d9; display: flex; align-items: center; padding: 0 8px; gap: 6px; z-index: 45; }
+  .kb-btn { font-size: 12px; padding: 6px 14px; border-radius: 8px; background: white; color: #333; font-weight: 450; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .kb-btn-on { background: #E8930C; color: white; }
+  .kb-slash { font-size: 16px; padding: 4px 12px; border-radius: 8px; background: white; color: #E8930C; font-weight: 700; border: 2px solid #E8930C; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+  /* Mobile sheet for slash */
+  .m-slash-sheet { position: absolute; bottom: 44px; left: 0; right: 0; background: white; border-radius: 16px 16px 0 0; z-index: 42; box-shadow: 0 -6px 20px rgba(0,0,0,0.1); }
+  .m-slash-handle { width: 36px; height: 4px; background: #d0d3d9; border-radius: 2px; margin: 6px auto 0; }
+  .m-slash-title { padding: 6px 14px 4px; font-size: 12px; font-weight: 600; color: #333; }
+  .m-slash-row { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 12px; color: #333; border-bottom: 1px solid #f5f6f8; }
+  .m-slash-ic { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .m-slash-ic svg { width: 14px; height: 14px; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .m-slash-ct { margin-left: auto; font-size: 9px; color: #ccc; }
+
+  /* SVG icon paths (reusable) */
+  .ic-banca { }
+  .ic-materia { }
+  .ic-ano { }
+  .ic-orgao { }
+  .ic-cargo { }
+  .ic-assunto { }
+  .ic-settings { }
+</style>
+</head>
+<body>
+
+<div class="page-title">Questoes Filter — Design Completo</div>
+<div class="page-subtitle">Desktop (pill click + slash) &bull; Mobile (drill-down + slash)</div>
+<hr class="divider">
+
+<!-- ============================================================ -->
+<!-- DESKTOP — PILL CLICK (PRIMARY) -->
+<!-- ============================================================ -->
+<div class="section-title">Desktop — Pill Click</div>
+<div class="section-desc">Caminho primario: clica no pill, popover abre embaixo</div>
+
+<div class="section">
+<div class="steps-row">
+
+  <!-- D1: Idle -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num">1</span>
+      <span class="step-label">Estado inicial</span>
+      <span class="step-tag tag-primary">PRIMARY</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop">
+        <div class="sb"><span class="sb-icon">&#128269;</span><span class="sb-ph">Buscar questoes ou digite / para filtros...</span><span class="sb-ia">&#10024; IA</span><span class="sb-key">&#8984;K</span></div>
+        <div class="fb">
+          <div class="p p-off"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg> Banca <span class="ar">&#9662;</span></div>
+          <div class="p p-off"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Materia <span class="ar">&#9662;</span></div>
+          <div class="p p-off"><svg class="icon-svg" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> Ano <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Orgao <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Cargo <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Assunto <span class="ar">&#9662;</span></div>
+          <div class="p p-off" style="border-style:dashed;">Mais <span class="ar">&#9662;</span></div>
+          <span class="clr">Limpar</span>
+        </div>
+        <div class="tabs-row"><div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div><div class="tab">Marcadas</div></div><div class="meta"><b>137.672</b> questoes <div class="vt"><span class="vt-on">&#9776;</span><span>&#9744;</span></div></div></div>
+        <div class="qs">
+          <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Admin.</span><span style="margin-left:auto;font-size:9px;color:#EF4444;">&#9679; Dificil</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Acerca dos principios que regem a administracao publica, julgue o item subsecutivo...</div></div>
+          <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;"><span class="tg tg-b">FCC</span><span class="tg tg-a">2025</span><span class="tg tg-m">Dir. Admin.</span><span style="margin-left:auto;font-size:9px;color:#F59E0B;">&#9679; Medio</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Sobre os atos administrativos, assinale a alternativa correta...</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D2: Popover open -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num">2</span>
+      <span class="step-label">Clica "Banca" — popover</span>
+      <span class="step-tag tag-primary">PRIMARY</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop" style="position:relative;">
+        <div class="sb"><span class="sb-icon">&#128269;</span><span class="sb-ph">Buscar questoes ou digite / para filtros...</span><span class="sb-ia">&#10024; IA</span><span class="sb-key">&#8984;K</span></div>
+        <div class="fb" style="position:relative;">
+          <div class="p p-click"><svg class="icon-svg" style="stroke:#B45309;opacity:1;" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg> Banca <span class="ar" style="opacity:.6;">&#9652;</span></div>
+          <div class="p p-off">Materia <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Ano <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Orgao <span class="ar">&#9662;</span></div>
+          <span class="clr">Limpar</span>
+          <div class="pop" style="left:0;top:calc(100% + 6px);">
+            <div class="pop-s"><span class="pop-si">&#128269;</span><input class="pop-inp" placeholder="Filtrar banca..." /></div>
+            <div class="pop-hint"><kbd>&#8593;&#8595;</kbd> navegar <kbd>Enter</kbd> selecionar <kbd>Esc</kbd> fechar</div>
+            <div class="pop-rec"><div class="pop-rec-l">Recentes</div><div class="pop-rec-i">&#128338; CESPE + FCC</div><div class="pop-rec-i">&#128338; VUNESP</div></div>
+            <div class="pop-hdr"><span style="width:26px;"></span><span style="flex:1;">Banca</span><span style="width:50px;text-align:right;">Total</span><span style="width:55px;"></span></div>
+            <div class="pop-scr">
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">CEBRASPE (CESPE)</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">23.203</span><span class="bw"><div class="bbg"><div class="bfl" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span></div>
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">FCC</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">10.151</span><span class="bw"><div class="bbg"><div class="bfl" style="width:44%;background:#d0d3d9;"></div></div></span></div>
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">QUADRIX</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">9.632</span><span class="bw"><div class="bbg"><div class="bfl" style="width:41%;background:#d0d3d9;"></div></div></span></div>
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">VUNESP</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">7.503</span><span class="bw"><div class="bbg"><div class="bfl" style="width:32%;background:#d0d3d9;"></div></div></span></div>
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">FGV</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">6.249</span><span class="bw"><div class="bbg"><div class="bfl" style="width:27%;background:#d0d3d9;"></div></div></span></div>
+            </div>
+            <div class="pop-ft"><div style="display:flex;gap:6px;"><span class="pop-ft-b">Selecionar todos</span><span class="pop-ft-b">Inverter</span></div><span style="font-size:10px;color:#a0a4ac;">498 bancas</span></div>
+          </div>
+        </div>
+        <div class="qs"><div class="q q-dim"><div style="font-size:13px;color:#333;">Acerca dos principios...</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="steps-row" style="margin-top:16px;">
+
+  <!-- D3: Selections made -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num">3</span>
+      <span class="step-label">Seleciona CESPE + FCC — pill atualiza</span>
+      <span class="step-tag tag-primary">PRIMARY</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop" style="position:relative;">
+        <div class="sb"><span class="sb-icon">&#128269;</span><span class="sb-ph">Buscar questoes ou digite / para filtros...</span><span class="sb-ia">&#10024; IA</span><span class="sb-badge">1 filtro</span><span class="sb-key">&#8984;K</span></div>
+        <div class="fb" style="position:relative;">
+          <div class="p p-purple"><svg class="icon-svg" style="stroke:#5B21B6;" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg> Banca <span class="cb" style="background:rgba(91,33,182,0.12);">2</span> <span class="ar" style="opacity:.6;">&#9652;</span></div>
+          <div class="p p-off">Materia <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Ano <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Orgao <span class="ar">&#9662;</span></div>
+          <span class="clr">Limpar</span>
+          <div class="pop" style="left:0;top:calc(100% + 6px);">
+            <div class="pop-s"><span class="pop-si">&#128269;</span><input class="pop-inp" placeholder="Filtrar banca..." /></div>
+            <div class="pop-hdr"><span style="width:26px;"></span><span style="flex:1;">Banca</span><span style="width:50px;text-align:right;">Total</span><span style="width:55px;"></span></div>
+            <div class="pop-scr">
+              <div class="pr pr-on"><div class="ck ck-on"><span style="color:white;font-size:10px;">&#10003;</span></div><span style="flex:1;color:#92400E;font-weight:500;">CEBRASPE (CESPE)</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">23.203</span><span class="bw"><div class="bbg"><div class="bfl" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span></div>
+              <div class="pr pr-on"><div class="ck ck-on"><span style="color:white;font-size:10px;">&#10003;</span></div><span style="flex:1;color:#92400E;font-weight:500;">FCC</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">10.151</span><span class="bw"><div class="bbg"><div class="bfl" style="width:44%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span></div>
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">QUADRIX</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">9.632</span><span class="bw"><div class="bbg"><div class="bfl" style="width:41%;background:#d0d3d9;"></div></div></span></div>
+              <div class="pr"><div class="ck"></div><span style="flex:1;color:#333;">VUNESP</span><span style="width:50px;text-align:right;color:#a0a4ac;font-size:10px;">7.503</span><span class="bw"><div class="bbg"><div class="bfl" style="width:32%;background:#d0d3d9;"></div></div></span></div>
+            </div>
+            <div class="pop-ft"><div style="display:flex;gap:6px;"><span class="pop-ft-b">Selecionar todos</span><span class="pop-ft-b">Inverter</span></div><span style="font-size:10px;color:#E8930C;font-weight:600;">2 selecionadas &#10003;</span></div>
+          </div>
+        </div>
+        <div class="qs"><div class="q q-dim"><div style="font-size:13px;color:#333;">Questoes dimmed...</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D4: Final state -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num">4</span>
+      <span class="step-label">Estado final — filtros + busca semantica</span>
+      <span class="step-tag tag-primary">PRIMARY</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop">
+        <div class="sb sb-focus"><span class="sb-icon">&#128269;</span><span class="sb-text">individuo que mata outro</span><span class="sb-ia sb-ia-on">&#10024; IA</span><span class="sb-badge">3 filtros</span><span class="sb-key">&#8984;K</span></div>
+        <div class="fb">
+          <div class="p p-purple"><svg class="icon-svg" style="stroke:#5B21B6;" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg> Banca <span class="cb" style="background:rgba(91,33,182,0.12);">2</span> <span class="cl">&#10005;</span></div>
+          <div class="p p-amber"><svg class="icon-svg" style="stroke:#92400E;" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Dir. Penal <span class="cl">&#10005;</span></div>
+          <div class="p p-blue"><svg class="icon-svg" style="stroke:#1E40AF;" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> 2024 <span class="cl">&#10005;</span></div>
+          <div class="p p-off">Orgao <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Cargo <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Assunto <span class="ar">&#9662;</span></div>
+          <div class="p p-green" style="border-style:dashed;"><svg class="icon-svg" style="stroke:#166534;width:12px;height:12px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9"/></svg> Mais <span class="cb" style="background:rgba(22,101,52,0.12);">1</span></div>
+          <span class="clr">Limpar</span>
+        </div>
+        <div class="tabs-row"><div class="tabs"><div class="tab tab-on">Todas</div><div class="tab">Pendentes</div><div class="tab">Erradas</div><div class="tab">Marcadas</div></div><div class="meta"><span style="font-size:9px;background:#F4F0FF;color:#7C3AED;padding:2px 8px;border-radius:10px;font-weight:500;">&#10024; Semantica</span><b>1.847</b> questoes</div></div>
+        <div class="qs">
+          <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;"><span class="tg tg-b">CESPE</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Penal</span><span style="margin-left:auto;font-size:9px;color:#7C3AED;">&#10024; 98%</span></div><div style="font-size:13px;color:#333;line-height:1.7;">O <span class="hl">individuo</span> que, com animus necandi, desfere golpes contra outrem, causando-lhe a <span class="hl">morte</span>, pratica o crime de homicidio simples.</div></div>
+          <div class="q"><div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;"><span class="tg tg-b">FCC</span><span class="tg tg-a">2024</span><span class="tg tg-m">Dir. Penal</span><span style="margin-left:auto;font-size:9px;color:#7C3AED;">&#10024; 94%</span></div><div style="font-size:13px;color:#333;line-height:1.7;">Em relacao ao crime de <span class="hl">homicidio</span>, a conduta de <span class="hl">matar</span> alguem pode ser qualificada por motivo torpe.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DESKTOP — SLASH (SECONDARY) -->
+<!-- ============================================================ -->
+<hr class="divider">
+<div class="section-title" style="color:#7C3AED;">Desktop — Slash /</div>
+<div class="section-desc">Atalho power-user: sem tirar a mao do teclado</div>
+
+<div class="section">
+<div class="steps-row">
+
+  <!-- D/1: Types / -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num step-num-alt">/</span>
+      <span class="step-label">Digita "/" — dropdown de categorias</span>
+      <span class="step-tag tag-secondary">SLASH</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop" style="position:relative;">
+        <div class="sb sb-focus"><span class="sb-icon">&#128269;</span><span class="sb-text">individuo que mata outro <span class="slash-text">/</span><span class="cursor"></span></span><span class="sb-ia sb-ia-on">&#10024; IA</span></div>
+        <div class="fb"><div class="p p-off">Banca <span class="ar">&#9662;</span></div><div class="p p-off">Materia <span class="ar">&#9662;</span></div><div class="p p-off">Ano <span class="ar">&#9662;</span></div><div class="p p-off">Orgao <span class="ar">&#9662;</span></div><span class="clr">Limpar</span></div>
+        <div class="slash-dd" style="left:320px;top:48px;">
+          <div class="slash-hint">Selecione um filtro</div>
+          <div class="slash-item slash-item-on"><div class="slash-ic" style="background:#F4F0FF;"><svg viewBox="0 0 24 24" stroke="#7C3AED"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg></div> Banca <span class="slash-ct">498</span></div>
+          <div class="slash-item"><div class="slash-ic" style="background:#FEF3C7;"><svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div> Materia <span class="slash-ct">42</span></div>
+          <div class="slash-item"><div class="slash-ic" style="background:#DBEAFE;"><svg viewBox="0 0 24 24" stroke="#2563EB"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></div> Ano <span class="slash-ct">26</span></div>
+          <div class="slash-item"><div class="slash-ic" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" stroke="#16A34A"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg></div> Orgao <span class="slash-ct">312</span></div>
+          <div class="slash-item"><div class="slash-ic" style="background:#FFF7ED;"><svg viewBox="0 0 24 24" stroke="#EA580C"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div> Cargo <span class="slash-ct">1.204</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D/2: Filtering -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num step-num-alt">/</span>
+      <span class="step-label">Seleciona Banca → digita "cespe"</span>
+      <span class="step-tag tag-secondary">SLASH</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop" style="position:relative;">
+        <div class="sb sb-focus"><span class="sb-icon">&#128269;</span><span class="sb-text">individuo que mata outro <span class="inline-chip ic-purple">&#127979; banca:</span> cespe<span class="cursor"></span></span><span class="sb-ia sb-ia-on">&#10024; IA</span></div>
+        <div class="fb"><div class="p p-off">Banca <span class="ar">&#9662;</span></div><div class="p p-off">Materia <span class="ar">&#9662;</span></div><div class="p p-off">Ano <span class="ar">&#9662;</span></div><span class="clr">Limpar</span></div>
+        <div class="fdd" style="left:340px;top:48px;">
+          <div class="fdd-row fdd-row-on"><span style="flex:1;"><span class="fdd-hl">CESPE</span>BRASPE (CESPE)</span><span class="fdd-ct">23.203</span></div>
+          <div class="fdd-row"><span style="flex:1;">Instituto <span class="fdd-hl">CESE</span>P</span><span class="fdd-ct">142</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D/3: Enter — pill appears -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-num step-num-alt">&#9166;</span>
+      <span class="step-label">Enter — pill CESPE aplicado</span>
+      <span class="step-tag tag-secondary">SLASH</span>
+    </div>
+    <div class="step-body">
+      <div class="desktop">
+        <div class="sb sb-focus"><span class="sb-icon">&#128269;</span><span class="sb-text">individuo que mata outro<span class="cursor"></span></span><span class="sb-ia sb-ia-on">&#10024; IA</span><span class="sb-badge">1 filtro</span><span class="sb-key">&#8984;K</span></div>
+        <div class="fb">
+          <div class="p p-purple"><svg class="icon-svg" style="stroke:#5B21B6;" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg> CESPE <span class="cl">&#10005;</span></div>
+          <div class="p p-off">Materia <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Ano <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Orgao <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Cargo <span class="ar">&#9662;</span></div>
+          <div class="p p-off">Assunto <span class="ar">&#9662;</span></div>
+          <span class="clr">Limpar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MOBILE — DRILL-DOWN (PRIMARY) -->
+<!-- ============================================================ -->
+<hr class="divider">
+<div class="section-title">Mobile — Drill-Down</div>
+<div class="section-desc">Toque no pill → bottom sheet com categorias → drill into lista</div>
+
+<div class="section">
+<div class="steps-row">
+
+  <!-- M1: Categories -->
+  <div class="step-card" style="min-width:auto;max-width:420px;">
+    <div class="step-header">
+      <span class="step-num">1</span>
+      <span class="step-label">Toque em pill → categorias</span>
+      <span class="step-tag tag-primary">PRIMARY</span>
+    </div>
+    <div class="step-body" style="padding:12px;display:flex;justify-content:center;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div style="padding:8px 12px 0;">
+            <div class="msb"><span style="color:#c0c4cc;font-size:14px;">&#128269;</span><span style="font-size:13px;color:#b0b4bc;flex:1;">Buscar...</span><span class="sb-ia sb-ia-on" style="font-size:8px;">&#10024; IA</span><span class="sb-badge">2</span></div>
+            <div class="mfb">
+              <div class="mp p-amber"><svg class="icon-svg" style="stroke:#92400E;width:11px;height:11px;" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Dir. Admin. <span class="cl">&#10005;</span></div>
+              <div class="mp p-blue"><svg class="icon-svg" style="stroke:#1E40AF;width:11px;height:11px;" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> 2024 <span class="cl">&#10005;</span></div>
+              <div class="mp p-off">Banca <span class="ar">&#9662;</span></div>
+              <div class="mp p-off">Orgao <span class="ar">&#9662;</span></div>
+              <div class="mp p-off">Cargo <span class="ar">&#9662;</span></div>
+            </div>
+          </div>
+          <div style="padding:6px 12px 0;"><div class="mtabs"><div class="mtab mtab-on">Todas</div><div class="mtab">Pend.</div><div class="mtab">Erradas</div><div class="mtab">Marc.</div></div></div>
+          <div class="mmeta"><b>137.672</b> questoes</div>
+          <div class="mqs" style="opacity:0.25;filter:blur(1px);pointer-events:none;">
+            <div class="mq"><div style="display:flex;gap:4px;margin-bottom:4px;"><span class="mtg tg-b">CESPE</span><span class="mtg tg-a">2024</span></div><div style="font-size:12px;color:#333;line-height:1.5;">Acerca dos principios...</div></div>
+          </div>
+          <div class="m-ov"></div>
+          <div class="bsheet" style="position:absolute;max-height:70vh;">
+            <div class="bs-handle"></div>
+            <div class="bs-hdr"><span class="bs-title">Filtros</span><span class="bs-done">Pronto</span></div>
+            <div class="bs-list">
+              <div class="cat-row"><div class="cat-ic" style="background:#F4F0FF;"><svg viewBox="0 0 24 24" stroke="#7C3AED"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg></div><div class="cat-info"><div class="cat-name">Banca</div><div class="cat-sub">498 bancas</div></div><svg class="cat-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+              <div class="cat-row"><div class="cat-ic" style="background:#FEF3C7;"><svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="cat-info"><div class="cat-name">Materia</div><div class="cat-sub">42 materias</div></div><div class="cat-dot"></div><span class="cat-sel">1</span><svg class="cat-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+              <div class="cat-row"><div class="cat-ic" style="background:#DBEAFE;"><svg viewBox="0 0 24 24" stroke="#2563EB"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></div><div class="cat-info"><div class="cat-name">Ano</div><div class="cat-sub">2000 — 2025</div></div><div class="cat-dot"></div><span class="cat-sel">2024</span><svg class="cat-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+              <div class="cat-row"><div class="cat-ic" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" stroke="#16A34A"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg></div><div class="cat-info"><div class="cat-name">Orgao</div><div class="cat-sub">312 orgaos</div></div><svg class="cat-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+              <div class="cat-row"><div class="cat-ic" style="background:#FFF7ED;"><svg viewBox="0 0 24 24" stroke="#EA580C"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><div class="cat-info"><div class="cat-name">Cargo</div><div class="cat-sub">1.204 cargos</div></div><svg class="cat-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+              <div class="cat-row"><div class="cat-ic" style="background:#EEF2FF;"><svg viewBox="0 0 24 24" stroke="#4F46E5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="cat-info"><div class="cat-name">Assunto</div><div class="cat-sub">Por materia</div></div><svg class="cat-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+              <div class="cat-div">Avancado</div>
+              <div class="tgl-row"><div class="tgl-info"><div class="tgl-name">Excluir anuladas</div><div class="tgl-desc">Remove questoes anuladas</div></div><div class="tgl tgl-on"></div></div>
+              <div class="tgl-row"><div class="tgl-info"><div class="tgl-name">Excluir desatualizadas</div><div class="tgl-desc">Legislacao desatualizada</div></div><div class="tgl"></div></div>
+              <div class="tgl-row" style="border-bottom:none;"><div class="tgl-info"><div class="tgl-name">Excluir resolvidas</div><div class="tgl-desc">Somente nao respondidas</div></div><div class="tgl"></div></div>
+            </div>
+            <div class="bs-ft"><span style="font-size:10px;color:#E8930C;font-weight:500;">2 filtros + 1 avanc.</span><span style="font-size:10px;color:#a0a4ac;">Limpar tudo</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M2: Drilled into Banca -->
+  <div class="step-card" style="min-width:auto;max-width:420px;">
+    <div class="step-header">
+      <span class="step-num">2</span>
+      <span class="step-label">Drill into Banca</span>
+      <span class="step-tag tag-primary">PRIMARY</span>
+    </div>
+    <div class="step-body" style="padding:12px;display:flex;justify-content:center;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div style="padding:8px 12px 0;">
+            <div class="msb"><span style="color:#c0c4cc;font-size:14px;">&#128269;</span><span style="font-size:13px;color:#b0b4bc;flex:1;">Buscar...</span><span class="sb-ia sb-ia-on" style="font-size:8px;">&#10024; IA</span><span class="sb-badge">2</span></div>
+            <div class="mfb">
+              <div class="mp p-amber">Dir. Admin. <span class="cl">&#10005;</span></div>
+              <div class="mp p-blue">2024 <span class="cl">&#10005;</span></div>
+              <div class="mp p-off">Banca <span class="ar">&#9662;</span></div>
+              <div class="mp p-off">Orgao <span class="ar">&#9662;</span></div>
+            </div>
+          </div>
+          <div class="mqs" style="opacity:0.25;filter:blur(1px);pointer-events:none;padding:8px 12px;">
+            <div class="mq"><div style="font-size:12px;color:#333;">Acerca dos principios...</div></div>
+          </div>
+          <div class="m-ov"></div>
+          <div class="bsheet" style="position:absolute;max-height:75vh;">
+            <div class="bs-handle"></div>
+            <div class="bs-hdr"><div class="bs-back"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div><span class="bs-title">Banca</span><span class="bs-done">Pronto</span></div>
+            <div class="bs-crumb"><span>Filtros</span><svg width="10" height="10" viewBox="0 0 24 24" stroke="#ccc" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"/></svg><span class="bs-crumb-active">Banca</span></div>
+            <div class="bs-search"><input class="bs-inp" placeholder="&#128269;  Filtrar banca..." /></div>
+            <div class="bs-list">
+              <div class="bs-row bs-row-on"><div class="bs-chk bs-chk-on"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><span class="bs-row-name">CEBRASPE (CESPE)</span><span class="bs-row-ct">23.203</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:100%;background:linear-gradient(90deg,#F59E0B,#E8930C);"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">FCC</span><span class="bs-row-ct">10.151</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:44%;background:#d0d3d9;"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">QUADRIX</span><span class="bs-row-ct">9.632</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:41%;background:#d0d3d9;"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">VUNESP</span><span class="bs-row-ct">7.503</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:32%;background:#d0d3d9;"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">FGV</span><span class="bs-row-ct">6.249</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:27%;background:#d0d3d9;"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">FUNDEP</span><span class="bs-row-ct">4.891</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:21%;background:#d0d3d9;"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">FUNDATEC</span><span class="bs-row-ct">3.204</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:14%;background:#d0d3d9;"></div></div></span></div>
+              <div class="bs-row"><div class="bs-chk"></div><span class="bs-row-name">IBFC</span><span class="bs-row-ct">2.987</span><span class="bs-bar-w"><div class="bbg"><div class="bfl" style="width:13%;background:#d0d3d9;"></div></div></span></div>
+            </div>
+            <div class="bs-ft"><span style="font-size:10px;color:#a0a4ac;">498 bancas</span><span style="font-size:11px;color:#E8930C;font-weight:600;">1 selecionada &#10003;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M3: Mobile slash -->
+  <div class="step-card" style="min-width:auto;max-width:420px;">
+    <div class="step-header">
+      <span class="step-num step-num-alt">/</span>
+      <span class="step-label">Mobile slash — teclado + sheet</span>
+      <span class="step-tag tag-secondary">SLASH</span>
+    </div>
+    <div class="step-body" style="padding:12px;display:flex;justify-content:center;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div style="padding:8px 12px 0;">
+            <div class="msb msb-focus"><span style="color:#c0c4cc;font-size:14px;">&#128269;</span><span style="font-size:13px;flex:1;"><span style="color:#333;">individuo que mata </span><span class="slash-text">/</span><span class="cursor"></span></span></div>
+            <div class="mfb">
+              <div class="mp p-off">Banca <span class="ar">&#9662;</span></div>
+              <div class="mp p-off">Materia <span class="ar">&#9662;</span></div>
+              <div class="mp p-off">Ano <span class="ar">&#9662;</span></div>
+            </div>
+          </div>
+          <div class="m-ov m-ov-kb"></div>
+          <div class="m-slash-sheet">
+            <div class="m-slash-handle"></div>
+            <div class="m-slash-title">Adicionar filtro</div>
+            <div class="m-slash-row"><div class="m-slash-ic" style="background:#F4F0FF;"><svg viewBox="0 0 24 24" stroke="#7C3AED"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg></div> Banca <span class="m-slash-ct">498</span></div>
+            <div class="m-slash-row"><div class="m-slash-ic" style="background:#FEF3C7;"><svg viewBox="0 0 24 24" stroke="#D97706"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div> Materia <span class="m-slash-ct">42</span></div>
+            <div class="m-slash-row"><div class="m-slash-ic" style="background:#DBEAFE;"><svg viewBox="0 0 24 24" stroke="#2563EB"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></div> Ano <span class="m-slash-ct">26</span></div>
+            <div class="m-slash-row"><div class="m-slash-ic" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" stroke="#16A34A"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg></div> Orgao <span class="m-slash-ct">312</span></div>
+            <div class="m-slash-row" style="border-bottom:none;"><div class="m-slash-ic" style="background:#FFF7ED;"><svg viewBox="0 0 24 24" stroke="#EA580C"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div> Cargo <span class="m-slash-ct">1.204</span></div>
+          </div>
+          <div class="kb">
+            <div class="kb-slash">/</div>
+            <div class="kb-btn kb-btn-on">banca</div>
+            <div class="kb-btn">materia</div>
+            <div class="kb-btn">ano</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
