@@ -61,42 +61,42 @@ export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRev
   else if (item.tipo === 'PENA') content = <Pena item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
   else content = <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 
-  return (
-    <>
-      <div className="group/disp flex items-start">
-        <div className="flex-1 min-w-0">
-          {content}
-        </div>
-
-        {leiId && onToggleReaction && (
-          <DispositivoActions
-            dispositivoId={String(item.id)}
-            leiId={leiId}
-            texto={item.texto}
-            tipo={item.tipo}
-            posicao={item.posicao}
-            reaction={reaction}
-            onToggleReaction={(emoji) => onToggleReaction(String(item.id), emoji)}
-          />
+  if (leiId && onToggleReaction) {
+    return (
+      <DispositivoActions
+        dispositivoId={String(item.id)}
+        leiId={leiId}
+        texto={item.texto}
+        tipo={item.tipo}
+        posicao={item.posicao}
+        reaction={reaction}
+        onToggleReaction={(emoji) => onToggleReaction(String(item.id), emoji)}
+      >
+        {(gutter, below) => (
+          <div className="group/disp">
+            <div className="flex items-start">
+              <div className="flex-1 min-w-0">{content}</div>
+              {gutter}
+            </div>
+            {below}
+            {noteOpenGrifo && onSaveNote && (
+              <GrifoNoteInline grifoId={noteOpenGrifo.id} color={noteOpenGrifo.color} initialNote={noteOpenGrifo.note} onSave={onSaveNote} onCancel={() => grifoPopupStore.closeNote()} />
+            )}
+            {!noteOpenGrifo && grifosWithNotes.length > 0 && <NoteBadge grifos={grifosWithNotes} />}
+          </div>
         )}
-      </div>
+      </DispositivoActions>
+    )
+  }
 
-      {/* Note editor (open) */}
+  return (
+    <div className="group/disp">
+      {content}
       {noteOpenGrifo && onSaveNote && (
-        <GrifoNoteInline
-          grifoId={noteOpenGrifo.id}
-          color={noteOpenGrifo.color}
-          initialNote={noteOpenGrifo.note}
-          onSave={onSaveNote}
-          onCancel={() => grifoPopupStore.closeNote()}
-        />
+        <GrifoNoteInline grifoId={noteOpenGrifo.id} color={noteOpenGrifo.color} initialNote={noteOpenGrifo.note} onSave={onSaveNote} onCancel={() => grifoPopupStore.closeNote()} />
       )}
-
-      {/* Saved notes — badge counter (collapsed) or expanded cards */}
-      {!noteOpenGrifo && grifosWithNotes.length > 0 && (
-        <NoteBadge grifos={grifosWithNotes} />
-      )}
-    </>
+      {!noteOpenGrifo && grifosWithNotes.length > 0 && <NoteBadge grifos={grifosWithNotes} />}
+    </div>
   )
 }
 
