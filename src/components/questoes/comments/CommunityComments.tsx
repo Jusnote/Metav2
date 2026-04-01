@@ -11,6 +11,7 @@ import { CommunityCommentReplies } from './CommunityCommentReplies';
 import { CommunityCommentEditor } from './CommunityCommentEditor';
 import { CollapsedThread } from './CollapsedThread';
 import { usePendingReportCounts } from '@/hooks/moderation/usePendingReportCounts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -198,6 +199,8 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
   }, [externalUserId]);
   const currentUserId = resolvedUserId;
 
+  const isMobile = useIsMobile();
+  const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [sortOption, setSortOption] = useState<CommentSortOption>('top');
   const [activeEditor, setActiveEditor] = useState<ActiveEditor | null>(null);
 
@@ -357,7 +360,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
       {/* Comment threads */}
       {!isLoading && sortedRoots.length > 0 && (
         <div>
-          {sortedRoots.map((root, index) => {
+          {(isMobile && !commentsExpanded ? sortedRoots.slice(0, 3) : sortedRoots).map((root, index) => {
             const replies = repliesByRoot[root.id] ?? [];
             const isEditingThis =
               activeEditor?.type === 'edit' && activeEditor.commentId === root.id;
@@ -444,6 +447,14 @@ export function CommunityComments({ questionId, currentUserId: externalUserId }:
               </div>
             );
           })}
+          {isMobile && !commentsExpanded && sortedRoots.length > 3 && (
+            <button
+              onClick={() => setCommentsExpanded(true)}
+              className="mt-2 w-full py-2 text-center text-[12px] font-medium text-violet-600 transition-colors hover:text-violet-700"
+            >
+              Ver {sortedRoots.length - 3} comentários restantes
+            </button>
+          )}
         </div>
       )}
 
