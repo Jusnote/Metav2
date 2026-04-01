@@ -113,9 +113,31 @@ Current: uses `DispositivoActions` with render prop to position gutter inside fl
 
 New: direct composition in JSX.
 
+**Accordion behavior:** Only one footer open at a time across all dispositivos. The `footerOpen` state is NOT local to `DispositivoRenderer` — it's managed by the parent (`DispositivoList`) or via a lightweight context/store. Opening a footer on one dispositivo automatically closes the previously open one.
+
+This limits Platejs Static instances to ~20-30 comments max (one footer's worth), which the browser handles without issues.
+
 ```tsx
-function DispositivoRenderer({ item, leiId, ... }) {
-  const [footerOpen, setFooterOpen] = useState(false);
+// DispositivoList manages which dispositivo has its footer open
+function DispositivoList({ dispositivos, leiId, ... }) {
+  const [openFooterId, setOpenFooterId] = useState<string | null>(null);
+
+  return dispositivos.map(item => (
+    <DispositivoRenderer
+      key={item.id}
+      item={item}
+      leiId={leiId}
+      footerOpen={openFooterId === String(item.id)}
+      onToggleFooter={() => setOpenFooterId(prev =>
+        prev === String(item.id) ? null : String(item.id)
+      )}
+      ...
+    />
+  ));
+}
+
+// DispositivoRenderer receives footerOpen + onToggleFooter as props
+function DispositivoRenderer({ item, leiId, footerOpen, onToggleFooter, ... }) {
   const [reportOpen, setReportOpen] = useState(false);
 
   // ... content selection logic (Artigo, Paragrafo, etc.) unchanged ...
@@ -131,7 +153,7 @@ function DispositivoRenderer({ item, leiId, ... }) {
           commentsCount={commentsCount}
           hasNote={hasNote}
           footerOpen={footerOpen}
-          onToggleFooter={() => setFooterOpen(prev => !prev)}
+          onToggleFooter={onToggleFooter}
         />
       </div>
       {footerOpen && (
@@ -141,7 +163,7 @@ function DispositivoRenderer({ item, leiId, ... }) {
           leiId={leiId}
           commentsCount={commentsCount}
           hasNote={hasNote}
-          onReport={() => { setReportOpen(true); setFooterOpen(false); }}
+          onReport={() => { setReportOpen(true); onToggleFooter(); }}
         />
       )}
       {reportOpen && <LeiReportModal ... />}
@@ -519,6 +541,12 @@ useEffect(() => {
   };
 }, []);
 ```
+
+### 11.4 Platejs Static Performance (Accordion)
+
+**Problem:** A lei renders all dispositivos on one page (~2,000 for Código Civil). If multiple footers with comments are open simultaneously, each comment renders a Platejs Static instance. 200 open footers × 10 comments = 2,000 Platejs instances — the browser will freeze.
+
+**Rule:** Only one footer open at a time (accordion behavior). The `openFooterId` state lives in `DispositivoList` (parent), not in individual `DispositivoRenderer` instances. Opening a new footer closes the previous one. This caps Platejs Static instances at ~20-30 max (one footer's worth).
 
 ---
 
