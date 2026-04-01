@@ -17,11 +17,14 @@ interface DispositivoActionsProps {
   onToggleReaction: (emoji: string) => void;
   onAnnotate?: () => void;
   onHighlight?: () => void;
+  commentsCount?: number;
+  hasNote?: boolean;
 }
 
 export function DispositivoActions({
   dispositivoId, leiId, texto, tipo, posicao,
   reaction, onToggleReaction, onAnnotate, onHighlight,
+  commentsCount = 0, hasNote = false,
 }: DispositivoActionsProps) {
   const heartBtnRef = useRef<HTMLButtonElement>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -50,7 +53,7 @@ export function DispositivoActions({
     <>
       <div
         className={`flex items-center flex-shrink-0 ml-3 pt-[6px] transition-opacity duration-200 ${
-          hasReacted ? 'opacity-100' : 'opacity-0 group-hover/disp:opacity-100'
+          hasReacted || commentsCount > 0 || hasNote ? 'opacity-100' : 'opacity-0 group-hover/disp:opacity-100'
         }`}
       >
         {/* Zone 1: Personal */}
@@ -90,17 +93,32 @@ export function DispositivoActions({
 
         <div className="w-px h-4 bg-[#eceae7] flex-shrink-0" />
 
-        {/* Zone 3: More */}
+        {/* Zone 3: More + badges */}
         <div className="flex items-center px-[5px]">
           <button
             onClick={handleToggleFooter}
-            className={`w-[26px] h-[26px] flex items-center justify-center rounded-[7px] border-none bg-transparent cursor-pointer transition-all duration-150 ${
+            className={`h-[26px] flex items-center gap-[3px] px-[5px] rounded-[7px] border-none bg-transparent cursor-pointer transition-all duration-150 ${
               footerOpen ? 'bg-[#f0f0ef] text-[#555]' : 'text-[#d4d4d4] hover:bg-[#f5f5f4] hover:text-[#888]'
             }`}
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
             </svg>
+            {(commentsCount > 0 || hasNote) && (
+              <span className="flex items-center gap-[2px] ml-[1px]">
+                {commentsCount > 0 && (
+                  <span className="flex items-center gap-[1px] text-[9px] font-[Inter,sans-serif] text-[#7c3aed]">
+                    💬<span className="text-[8px] font-bold">{commentsCount}</span>
+                  </span>
+                )}
+                {commentsCount > 0 && hasNote && (
+                  <span className="w-px h-[8px] bg-[#e8e8e6]" />
+                )}
+                {hasNote && (
+                  <span className="text-[9px] text-[#d97706]">✏️</span>
+                )}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -109,6 +127,7 @@ export function DispositivoActions({
         <DispositivoFooter
           texto={texto} dispositivoId={dispositivoId} leiId={leiId}
           dispositivoTipo={tipo} dispositivoPosicao={posicao}
+          commentsCount={commentsCount} hasNote={hasNote}
           onAnnotate={onAnnotate} onHighlight={onHighlight}
           onReport={() => { setReportOpen(true); setFooterOpen(false); }}
         />
