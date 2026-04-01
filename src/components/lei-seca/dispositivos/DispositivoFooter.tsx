@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Copy, Highlighter, Flag, GraduationCap, BarChart3, MessageCircle, PenLine } from 'lucide-react';
+import { Copy, Highlighter, Flag } from 'lucide-react';
 import { toast } from 'sonner';
+import { DispositivoCommentsSection } from '@/components/lei-seca/comments/DispositivoCommentsSection';
 
 interface DispositivoFooterProps {
   texto: string;
@@ -12,6 +13,7 @@ interface DispositivoFooterProps {
   dispositivoPosicao: number | string;
   commentsCount?: number;
   hasNote?: boolean;
+  leiUpdatedAt?: string;
   onAnnotate?: () => void;
   onHighlight?: () => void;
   onReport?: () => void;
@@ -21,9 +23,11 @@ type ActiveTab = 'comunidade' | 'nota' | null;
 
 export function DispositivoFooter({
   texto,
+  dispositivoId,
+  leiId,
   commentsCount = 0,
   hasNote = false,
-  onAnnotate,
+  leiUpdatedAt,
   onHighlight,
   onReport,
 }: DispositivoFooterProps) {
@@ -82,23 +86,13 @@ export function DispositivoFooter({
         </button>
       </div>
 
-      {/* Tab content placeholder — will be wired to real comments/notes in future */}
-      {activeTab === 'comunidade' && (
-        <div className="mt-1 px-3 py-3 bg-[#fafafa] rounded-[8px] font-[Inter,sans-serif] text-[12px] text-[#999]" style={{ animation: 'dispFootSlide 0.18s ease-out' }}>
-          {commentsCount > 0
-            ? `${commentsCount} comentários — sistema completo em breve`
-            : 'Nenhum comentário ainda. Sistema completo em breve.'
-          }
-        </div>
-      )}
-      {activeTab === 'nota' && (
-        <div className="mt-1 px-3 py-3 bg-[#fffdf5] border border-[#fef3c7] rounded-[8px] font-[Inter,sans-serif] text-[12px] text-[#92400e]" style={{ animation: 'dispFootSlide 0.18s ease-out' }}>
-          {hasNote
-            ? 'Sua anotação aparecerá aqui — sistema completo em breve.'
-            : 'Escreva uma anotação pessoal — sistema completo em breve.'
-          }
-        </div>
-      )}
+      {/* Tab content — community comments or private note */}
+      <DispositivoCommentsSection
+        dispositivoId={dispositivoId}
+        leiId={leiId}
+        activeSection={activeTab}
+        leiUpdatedAt={leiUpdatedAt}
+      />
     </div>
   );
 }
