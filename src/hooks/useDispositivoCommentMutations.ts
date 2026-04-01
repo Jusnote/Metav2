@@ -32,7 +32,7 @@ export function useDispositivoCommentMutations(dispositivoId: string | null, lei
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase.from('dispositivo_comments')
+      const { data, error } = await (supabase as any).from('dispositivo_comments')
         .insert({
           dispositivo_id: params.dispositivo_id,
           lei_id: params.lei_id,
@@ -49,12 +49,12 @@ export function useDispositivoCommentMutations(dispositivoId: string | null, lei
 
       // If this is a reply, increment the parent's reply_count
       if (params.root_id) {
-        const { data: parent } = await supabase.from('dispositivo_comments')
+        const { data: parent } = await (supabase as any).from('dispositivo_comments')
           .select('reply_count')
           .eq('id', params.root_id)
           .single();
         if (parent) {
-          await supabase.from('dispositivo_comments')
+          await (supabase as any).from('dispositivo_comments')
             .update({ reply_count: (parent.reply_count ?? 0) + 1 })
             .eq('id', params.root_id);
         }
@@ -70,12 +70,12 @@ export function useDispositivoCommentMutations(dispositivoId: string | null, lei
   const editComment = useMutation({
     mutationFn: async (params: EditDispositivoCommentParams) => {
       // Fetch current edit_count to increment
-      const { data: current } = await supabase.from('dispositivo_comments')
+      const { data: current } = await (supabase as any).from('dispositivo_comments')
         .select('edit_count')
         .eq('id', params.comment_id)
         .single();
 
-      const { error } = await supabase.from('dispositivo_comments')
+      const { error } = await (supabase as any).from('dispositivo_comments')
         .update({
           content_json: params.content_json,
           content_text: params.content_text,
@@ -95,7 +95,7 @@ export function useDispositivoCommentMutations(dispositivoId: string | null, lei
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.rpc('handle_dispositivo_soft_delete', {
+      const { error } = await (supabase as any).rpc('handle_dispositivo_soft_delete', {
         p_comment_id: commentId,
         p_user_id: user.id,
       });
@@ -108,7 +108,7 @@ export function useDispositivoCommentMutations(dispositivoId: string | null, lei
 
   const pinComment = useMutation({
     mutationFn: async ({ commentId, isPinned }: { commentId: string; isPinned: boolean }) => {
-      const { error } = await supabase.from('dispositivo_comments')
+      const { error } = await (supabase as any).from('dispositivo_comments')
         .update({ is_pinned: isPinned })
         .eq('id', commentId);
       if (error) throw error;
@@ -120,7 +120,7 @@ export function useDispositivoCommentMutations(dispositivoId: string | null, lei
 
   const endorseComment = useMutation({
     mutationFn: async ({ commentId, isEndorsed }: { commentId: string; isEndorsed: boolean }) => {
-      const { error } = await supabase.from('dispositivo_comments')
+      const { error } = await (supabase as any).from('dispositivo_comments')
         .update({ is_endorsed: isEndorsed })
         .eq('id', commentId);
       if (error) throw error;

@@ -14,7 +14,7 @@ export function useDispositivoNote(dispositivoId: string | null, leiId: string |
     queryKey,
     queryFn: async () => {
       if (!user) return null;
-      const { data, error } = await supabase.from('dispositivo_notes')
+      const { data, error } = await (supabase as any).from('dispositivo_notes')
         .select('*')
         .eq('dispositivo_id', dispositivoId!)
         .eq('user_id', user.id)
@@ -29,7 +29,7 @@ export function useDispositivoNote(dispositivoId: string | null, leiId: string |
   const saveMutation = useMutation({
     mutationFn: async (params: { content_json: Record<string, unknown>; content_text: string }) => {
       if (!user) throw new Error('Not authenticated');
-      const { data, error } = await supabase.from('dispositivo_notes')
+      const { data, error } = await (supabase as any).from('dispositivo_notes')
         .upsert({
           user_id: user.id,
           dispositivo_id: dispositivoId!,
@@ -52,7 +52,7 @@ export function useDispositivoNote(dispositivoId: string | null, leiId: string |
   const removeMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
-      const { error } = await supabase.from('dispositivo_notes')
+      const { error } = await (supabase as any).from('dispositivo_notes')
         .delete()
         .eq('user_id', user.id)
         .eq('dispositivo_id', dispositivoId!);
