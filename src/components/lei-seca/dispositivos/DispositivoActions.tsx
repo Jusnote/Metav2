@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { ReactionPicker } from './ReactionPicker';
 import { CommunityPopover } from './CommunityPopover';
 import { DispositivoFooter } from './DispositivoFooter';
@@ -23,6 +23,7 @@ export function DispositivoActions({
   dispositivoId, leiId, texto, tipo, posicao,
   reaction, onToggleReaction, onAnnotate, onHighlight,
 }: DispositivoActionsProps) {
+  const heartBtnRef = useRef<HTMLButtonElement>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [footerOpen, setFooterOpen] = useState(false);
@@ -55,6 +56,7 @@ export function DispositivoActions({
         {/* Zone 1: Personal */}
         <div className="flex items-center gap-[3px] px-[5px] relative">
           <button
+            ref={heartBtnRef}
             onClick={() => { setPickerOpen(!pickerOpen); setPopoverOpen(false); }}
             className={`w-[26px] h-[26px] flex items-center justify-center rounded-[7px] border-none bg-transparent cursor-pointer transition-all duration-150 ${
               hasReacted ? 'text-[15px] hover:bg-[#f5f5f4] hover:scale-110' : 'text-[#d4d4d4] hover:bg-[#f5f5f4] hover:text-[#dc7c7c]'
@@ -66,7 +68,7 @@ export function DispositivoActions({
               </svg>
             )}
           </button>
-          {pickerOpen && <ReactionPicker onSelect={handleSelectEmoji} onClose={() => setPickerOpen(false)} />}
+          {pickerOpen && <ReactionPicker anchorRef={heartBtnRef} onSelect={handleSelectEmoji} onClose={() => setPickerOpen(false)} />}
         </div>
 
         <div className="w-px h-4 bg-[#eceae7] flex-shrink-0" />
