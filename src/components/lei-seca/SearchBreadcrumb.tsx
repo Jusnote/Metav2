@@ -213,13 +213,13 @@ export function SearchBreadcrumb({
       {/* ---- OPEN: Glass Search Input ---- */}
       {open && (
         <div
-          className="flex items-center gap-2 py-2 px-[14px] bg-[#fafcfb] rounded-[10px] border border-[rgba(22,163,74,0.2)]"
+          className="flex items-center gap-[10px] h-[42px] px-4 bg-white rounded-[12px] border border-[#d0d3d8]"
           style={{
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), 0 0 0 3px rgba(22,163,74,0.06)',
+            boxShadow: '0 0 0 3px rgba(0,0,0,0.03)',
           }}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-70">
-            <circle cx="11" cy="11" r="7" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" className="shrink-0">
+            <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
           <input
@@ -227,14 +227,14 @@ export function SearchBreadcrumb({
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Buscar artigo, tema, palavra..."
-            className="hidden sm:block flex-1 text-[12.5px] outline-none text-[#2a3a30] placeholder:text-[#a0b0a5] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
+            className="hidden sm:block flex-1 text-[13.5px] outline-none text-[#2a2a2a] placeholder:text-[#a0a0a0] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
           />
           <input
             ref={el => { if (el && !inputRef.current) (inputRef as React.MutableRefObject<HTMLInputElement>).current = el }}
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Buscar..."
-            className="sm:hidden flex-1 text-[12.5px] outline-none text-[#2a3a30] placeholder:text-[#a0b0a5] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
+            className="sm:hidden flex-1 text-[13.5px] outline-none text-[#2a2a2a] placeholder:text-[#a0a0a0] placeholder:font-light bg-transparent font-[Outfit,sans-serif] min-w-0"
           />
           {hasInput && (
             <>
@@ -244,7 +244,7 @@ export function SearchBreadcrumb({
               )}
               <button
                 onClick={handleClear}
-                className="w-4 h-4 flex items-center justify-center text-[#b0c0b5] hover:bg-[rgba(22,163,74,0.06)] rounded-full text-[14px] shrink-0 transition-colors"
+                className="w-4 h-4 flex items-center justify-center text-[#b0b0b0] hover:bg-[rgba(0,0,0,0.04)] rounded-full text-[14px] shrink-0 transition-colors"
               >
                 ×
               </button>
@@ -260,7 +260,7 @@ export function SearchBreadcrumb({
       {open && (
         <div className="flex gap-0 mt-3 border-b border-[#e8ede9]">
           <button
-            className="px-4 py-2 text-[12px] font-semibold text-[#16a34a] border-b-2 border-[#16a34a]"
+            className="px-4 py-2 text-[12px] font-semibold text-[#3a3a3a] border-b-2 border-[#3a3a3a]"
           >
             Navegar
           </button>
