@@ -142,6 +142,40 @@ Editor inline como hoje. Sem sheet, sem toggle.
 - Vídeo embed
 - Undo / Redo
 
+### Unidades de viewport: dvh obrigatório
+
+**Problema:** Quando o teclado virtual sobe no iOS/Android, `100vh` e `%` continuam referenciando a viewport original — o sheet encolhe ou a toolbar some atrás do teclado.
+
+**Solução:** Todas as alturas de sheet usam `dvh` (Dynamic Viewport Height), que recalcula automaticamente subtraindo o teclado e a barra de endereço do Safari.
+
+```css
+/* Modo escrita celular */
+.editor-sheet { height: 82dvh; }
+
+/* Modo leitura celular */
+.editor-sheet--peeking { height: 30dvh; }
+
+/* Fallback para browsers sem dvh */
+@supports not (height: 1dvh) {
+  .editor-sheet { height: calc(var(--visual-vh, 82vh)); }
+}
+```
+
+**Fallback JS:** Para browsers sem suporte a `dvh`, calcular via `window.visualViewport.height` e setar uma CSS custom property `--visual-vh` no resize do visualViewport.
+
+### Proteção do draft (confirmação ao fechar)
+
+**Problema:** Se o usuário toca no overlay ou no ✕ por acidente, o sheet desmonta e o state React morre — o draft inteiro se perde.
+
+**Solução:** Se o editor Plate.js tiver **mais de 5 caracteres** digitados e o usuário tentar fechar o sheet (via overlay ou ✕):
+
+1. Interceptar o fechamento
+2. Mostrar bottom dialog de confirmação: **"Você tem um texto não salvo. Deseja realmente descartar?"**
+3. Dois botões: "Continuar editando" (primário, `#7c3aed`) e "Descartar" (secundário, texto vermelho)
+4. Só desmonta o sheet se o usuário confirmar "Descartar"
+
+**Não usar `window.confirm`** — é bloqueante e feio no mobile. Usar um mini-dialog nativo do app (mesmo componente de confirmação usado em outros lugares).
+
 ### Animações
 
 - Sheet open: `transform: translateY(0)` com `transition: 300ms cubic-bezier(0.32, 0.72, 0, 1)`
@@ -230,8 +264,9 @@ Um único componente `MobileSheet` usado em 4 contextos:
 4. **Report modals** — adaptação mobile dos dialogs
 
 Props:
-- `height`: porcentagem (`'25%' | '30%' | '60%' | '65%' | '70%' | '82%' | '85%'`)
+- `height`: valor em dvh (`'25dvh' | '30dvh' | '60dvh' | '65dvh' | '82dvh' | '85dvh'`)
 - `onClose`: callback
+- `confirmClose?`: `() => boolean` — se retorna `true`, exibe dialog de confirmação antes de fechar (usado pro draft do editor)
 - `header`: ReactNode
 - `footer`: ReactNode (toolbar no caso do editor)
 - `overlay`: boolean (default true)
@@ -297,9 +332,9 @@ Cada fase mergeia independente — se parar na 1, já tem valor.
 
 ## 9. Decisões Técnicas
 
-- **`react-modal-sheet`** (v5.4.0) já instalada mas não usada. Avaliar se serve ou manter implementação custom (como `QuestoesFilterSheet`).
+- **`react-modal-sheet` — NÃO usar.** A biblioteca injeta eventos de drag/swipe via Framer Motion que conflitam com seleção de texto e scroll do Plate.js dentro do sheet. Implementação custom com CSS transitions (mesmo padrão do `QuestoesFilterSheet` existente). Fechamento restrito a overlay click + botão ✕, sem swipe-to-close.
 - **`useIsMobile()`** (768px) como corte principal mobile/desktop.
 - **Sem detecção de orientação** — breakpoints por largura. Tablet landscape (>1024px largura) usa layout desktop naturalmente.
 - **CSS transitions** (não Framer Motion) para animações de sheet — menor bundle, mais performático.
 - **`overflow: hidden` no body** quando sheet aberto — previne scroll da lista por baixo.
-- **Draft no editor** persiste em state React (não localStorage) entre toggles — recria ao fechar/abrir o sheet.
+- **Draft no editor** persiste em state React entre toggles. Ao fechar o sheet com draft > 5 chars, exibir confirmação antes de descartar (ver seção 3 — Proteção do draft).
