@@ -11,7 +11,7 @@ import { CommunityCommentItem } from './CommunityCommentItem';
 import { CommunityCommentReplies } from './CommunityCommentReplies';
 import { CommunityCommentEditor } from './CommunityCommentEditor';
 import { CommentReportModal } from './CommentReportModal';
-import { CollapsedThread } from './CollapsedThread';
+import { CollapsedThread } from '@/components/shared/comments/CollapsedThread';
 import { usePendingReportCounts } from '@/hooks/moderation/usePendingReportCounts';
 import { useIsMobile } from '@/hooks/use-mobile';
 

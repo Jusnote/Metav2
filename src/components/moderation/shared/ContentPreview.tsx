@@ -1,7 +1,7 @@
 'use client';
 
 import { type Value } from 'platejs';
-import { CommunityCommentStatic } from '@/components/questoes/comments/CommunityCommentStatic';
+import { CommentStatic as CommunityCommentStatic } from '@/components/shared/comments/CommentStatic';
 
 interface ContentPreviewProps {
   type: 'comment' | 'question' | 'law_article';

@@ -8,7 +8,7 @@ import { type Value } from 'platejs';
 import { useQuestionNote } from '@/hooks/useQuestionNote';
 import { cn } from '@/lib/utils';
 
-import { CommunityCommentStatic } from './CommunityCommentStatic';
+import { CommentStatic as CommunityCommentStatic } from '@/components/shared/comments/CommentStatic';
 import { CommunityCommentEditor } from './CommunityCommentEditor';
 
 // ---------------------------------------------------------------------------
