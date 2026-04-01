@@ -37,6 +37,7 @@ import CadernosPage from "./views/CadernosPage";
 import NotesPage from "./views/NotesPage";
 import GoalsPage from "./views/GoalsPage";
 import { useAuth } from "./hooks/useAuth";
+import { useVisualViewport } from '@/hooks/useVisualViewport';
 import GlobalTimer from "./components/GlobalTimer";
 import React, { useState } from "react";
 // import { TestScheduleHooks } from "./components/TestScheduleHooks";
@@ -129,6 +130,8 @@ const AppContent = () => {
 };
 
 const App = () => {
+  useVisualViewport();
+
   // Only render BrowserRouter on the client side
   if (typeof window === 'undefined') {
     return (
