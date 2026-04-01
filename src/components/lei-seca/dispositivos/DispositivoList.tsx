@@ -75,7 +75,7 @@ export function DispositivoList({
 
   return (
     <div
-      className="max-w-[820px] mx-auto px-5 font-[Literata,Georgia,serif] leading-[1.9] text-[rgb(67,80,92)] text-justify"
+      className="max-w-5xl mx-auto px-5 font-[Literata,Georgia,serif] leading-[1.9] text-[rgb(67,80,92)] text-justify"
       style={{ fontSize: `${fontSize}px` }}
     >
       {grouped.map(entry => {

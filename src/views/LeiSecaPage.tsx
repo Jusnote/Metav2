@@ -280,7 +280,7 @@ export default function LeiSecaPage() {
         {/* List area — full width so scrollbar stays at right edge */}
         <div className="flex-1 flex flex-col bg-white relative">
           {/* SearchBreadcrumb: aligned with text column, overflow-visible for dropdown */}
-          <div className="max-w-[820px] mx-auto px-5 w-full relative z-20">
+          <div className="max-w-5xl mx-auto px-5 w-full relative z-20">
             <SearchBreadcrumb
               currentLei={currentLei}
               dispositivos={dispositivos}
