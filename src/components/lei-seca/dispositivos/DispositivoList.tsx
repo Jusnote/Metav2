@@ -16,6 +16,8 @@ interface DispositivoListProps {
   grifosByDispositivo?: Map<string, Grifo[]>
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
   onSaveNote?: (grifoId: string, note: string) => void
+  reactionsMap?: Map<string, import('@/hooks/useDispositivoReactions').DispositivoReaction>
+  onToggleReaction?: (dispositivoId: string, emoji: string) => void
 }
 
 type RenderItem =
@@ -68,6 +70,8 @@ export function DispositivoList({
   grifosByDispositivo,
   onGrifoClick,
   onSaveNote,
+  reactionsMap,
+  onToggleReaction,
 }: DispositivoListProps) {
   const fontSize = useFontSize()
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
@@ -103,6 +107,8 @@ export function DispositivoList({
               onGrifoClick={onGrifoClick}
               onSaveNote={onSaveNote}
               noteOpenGrifoId={noteOpenGrifoId}
+              reaction={reactionsMap?.get(entry.item.id)}
+              onToggleReaction={onToggleReaction}
             />
           </div>
         )

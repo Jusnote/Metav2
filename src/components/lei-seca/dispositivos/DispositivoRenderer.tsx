@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
-import { Flag } from 'lucide-react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
+import type { DispositivoReaction } from '@/hooks/useDispositivoReactions'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
 import { grifoPopupStore } from '@/stores/grifoPopupStore'
 import { GrifoNoteInline } from '@/components/lei-seca/GrifoNoteInline'
-import { LeiReportModal } from '@/components/lei-seca/LeiReportModal'
+import { DispositivoActions } from './DispositivoActions'
 import { GRIFO_COLORS } from '@/types/grifo'
 import { EstruturaHeader } from './EstruturaHeader'
 import { Epigrafe } from './Epigrafe'
@@ -28,10 +28,11 @@ interface Props {
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
   onSaveNote?: (grifoId: string, note: string) => void
   noteOpenGrifoId?: string | null
+  reaction?: DispositivoReaction
+  onToggleReaction?: (dispositivoId: string, emoji: string) => void
 }
 
-export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId }: Props) {
-  const [reportModalOpen, setReportModalOpen] = useState(false)
+export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId, reaction, onToggleReaction }: Props) {
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
     texto: normalizeOrdinals(rawItem.texto),
@@ -61,31 +62,24 @@ export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRev
   else content = <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 
   return (
-    <div className="group/disp relative">
-      {content}
+    <>
+      <div className="group/disp flex items-start">
+        <div className="flex-1 min-w-0">
+          {content}
+        </div>
 
-      {/* Report flag — appears on hover */}
-      {leiId && (
-        <button
-          onClick={() => setReportModalOpen(true)}
-          className="absolute right-0 top-0 hidden group-hover/disp:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-zinc-400 hover:text-amber-500 transition-colors"
-          title="Reportar dispositivo"
-        >
-          <Flag className="h-3 w-3" />
-        </button>
-      )}
-
-      {reportModalOpen && (
-        <LeiReportModal
-          open={reportModalOpen}
-          onClose={() => setReportModalOpen(false)}
-          dispositivoId={String(item.id)}
-          leiId={leiId}
-          dispositivoTipo={item.tipo}
-          dispositivoNumero={item.posicao || ''}
-          dispositivoTexto={item.texto}
-        />
-      )}
+        {leiId && onToggleReaction && (
+          <DispositivoActions
+            dispositivoId={String(item.id)}
+            leiId={leiId}
+            texto={item.texto}
+            tipo={item.tipo}
+            posicao={item.posicao}
+            reaction={reaction}
+            onToggleReaction={(emoji) => onToggleReaction(String(item.id), emoji)}
+          />
+        )}
+      </div>
 
       {/* Note editor (open) */}
       {noteOpenGrifo && onSaveNote && (
@@ -102,7 +96,7 @@ export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRev
       {!noteOpenGrifo && grifosWithNotes.length > 0 && (
         <NoteBadge grifos={grifosWithNotes} />
       )}
-    </div>
+    </>
   )
 }
 

@@ -19,6 +19,7 @@ import { useGrifos } from "@/hooks/useGrifos";
 import { GrifoPopup } from "@/components/lei-seca/GrifoPopup";
 import { grifoPopupStore } from "@/stores/grifoPopupStore";
 import type { Grifo, GrifoColor } from "@/types/grifo";
+import { useDispositivoReactions, useToggleDispositivoReaction } from '@/hooks/useDispositivoReactions';
 
 const StudyCompanionPanel = dynamic(
   () =>
@@ -66,6 +67,12 @@ export default function LeiSecaPage() {
   useCopyWithReference(dispositivos, currentLei);
 
   const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId)
+  const { data: reactionsMap } = useDispositivoReactions(currentLeiId);
+  const toggleReaction = useToggleDispositivoReaction();
+  const handleToggleReaction = useCallback((dispositivoId: string, emoji: string) => {
+    if (!currentLeiId) return;
+    toggleReaction.mutate({ dispositivoId, leiId: currentLeiId, emoji });
+  }, [currentLeiId, toggleReaction]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Selection handler — opens grifo popup on text selection
@@ -300,6 +307,8 @@ export default function LeiSecaPage() {
               grifosByDispositivo={grifosByDispositivo}
               onGrifoClick={handleGrifoClick}
               onSaveNote={handleSaveNote}
+              reactionsMap={reactionsMap}
+              onToggleReaction={handleToggleReaction}
             />
           </div>
         </div>
