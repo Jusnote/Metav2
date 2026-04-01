@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { useNoteOpenGrifoId } from '@/stores/grifoPopupStore'
@@ -83,6 +83,20 @@ export function DispositivoList({
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
   const noteOpenGrifoId = useNoteOpenGrifoId()
   const [openFooterId, setOpenFooterId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash.startsWith('#disp_')) {
+      const dispId = hash.replace('#disp_', '')
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`disp_${dispId}`)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          setOpenFooterId(dispId)
+        }
+      })
+    }
+  }, [dispositivos])
 
   return (
     <div
