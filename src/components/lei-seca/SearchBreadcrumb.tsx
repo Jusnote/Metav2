@@ -256,6 +256,26 @@ export function SearchBreadcrumb({
         </div>
       )}
 
+      {/* ---- TABS: Navegar / Buscar ---- */}
+      {open && (
+        <div className="flex gap-0 mt-3 border-b border-[#e8ede9]">
+          <button
+            className="px-4 py-2 text-[12px] font-semibold text-[#16a34a] border-b-2 border-[#16a34a]"
+          >
+            Navegar
+          </button>
+          <button
+            disabled
+            className="px-4 py-2 text-[12px] font-medium text-[#c4ccc8] cursor-default flex items-center gap-[6px]"
+          >
+            Buscar
+            <span className="text-[9px] font-semibold bg-[#f0f5f2] text-[#a0afa5] px-[6px] py-[2px] rounded">
+              Em breve
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* ---- DROPDOWN ---- */}
       {open && (
         <SearchBreadcrumbDropdown
