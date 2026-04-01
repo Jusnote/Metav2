@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { useNoteOpenGrifoId } from '@/stores/grifoPopupStore'
@@ -16,8 +16,11 @@ interface DispositivoListProps {
   grifosByDispositivo?: Map<string, Grifo[]>
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
   onSaveNote?: (grifoId: string, note: string) => void
-  reactionsMap?: Map<string, import('@/hooks/useDispositivoReactions').DispositivoReaction>
-  onToggleReaction?: (dispositivoId: string, emoji: string) => void
+  likesSet?: Set<string>
+  onToggleLike?: (dispositivoId: string) => void
+  incidenciaMap?: Record<string, number>
+  commentCountsMap?: Record<string, number>
+  noteFlagsSet?: Set<string>
 }
 
 type RenderItem =
@@ -70,12 +73,16 @@ export function DispositivoList({
   grifosByDispositivo,
   onGrifoClick,
   onSaveNote,
-  reactionsMap,
-  onToggleReaction,
+  likesSet,
+  onToggleLike,
+  incidenciaMap,
+  commentCountsMap,
+  noteFlagsSet,
 }: DispositivoListProps) {
   const fontSize = useFontSize()
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
   const noteOpenGrifoId = useNoteOpenGrifoId()
+  const [openFooterId, setOpenFooterId] = useState<string | null>(null)
 
   return (
     <div
@@ -107,8 +114,17 @@ export function DispositivoList({
               onGrifoClick={onGrifoClick}
               onSaveNote={onSaveNote}
               noteOpenGrifoId={noteOpenGrifoId}
-              reaction={reactionsMap?.get(entry.item.id)}
-              onToggleReaction={onToggleReaction}
+              // Accordion
+              footerOpen={openFooterId === String(entry.item.id)}
+              onToggleFooter={() => setOpenFooterId(prev =>
+                prev === String(entry.item.id) ? null : String(entry.item.id)
+              )}
+              // Batch data
+              liked={likesSet?.has(String(entry.item.id)) ?? false}
+              onToggleLike={() => onToggleLike?.(String(entry.item.id))}
+              incidencia={incidenciaMap?.[String(entry.item.id)] ?? null}
+              commentsCount={commentCountsMap?.[String(entry.item.id)] ?? 0}
+              hasNote={noteFlagsSet?.has(String(entry.item.id)) ?? false}
             />
           </div>
         )
