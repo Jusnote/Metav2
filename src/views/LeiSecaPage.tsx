@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileSheet } from '@/components/ui/MobileSheet';
 import dynamic from "next/dynamic";
 import { DispositivoList } from "@/components/lei-seca/dispositivos/DispositivoList";
 import { LeiToolbar } from "@/components/lei-seca/LeiToolbar";
@@ -52,6 +54,8 @@ export default function LeiSecaPage() {
   } = useLeiSeca();
 
   const commentsOpen = useLeiCommentsOpen();
+  const isMobile = useIsMobile();
+  const [mobilePanel, setMobilePanel] = useState<'companion' | 'comments' | null>(null);
 
   useKeyboardNav({
     dispositivos,
@@ -242,6 +246,35 @@ export default function LeiSecaPage() {
     <div className="h-full flex flex-col min-w-0 flex-1">
       <LeiToolbar />
       <ReadingProgressBar />
+
+      {/* Mobile panel buttons */}
+      {isMobile && (
+        <div className="flex items-center gap-2 border-b px-4 py-2">
+          <button
+            onClick={() => setMobilePanel(mobilePanel === 'companion' ? null : 'companion')}
+            className={`flex h-8 items-center gap-1.5 rounded-lg border px-3 text-[12px] font-medium transition-colors ${
+              mobilePanel === 'companion'
+                ? 'border-violet-300 bg-violet-50 text-violet-600'
+                : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
+            }`}
+          >
+            <span>🤖</span>
+            <span>Companion</span>
+          </button>
+          <button
+            onClick={() => setMobilePanel(mobilePanel === 'comments' ? null : 'comments')}
+            className={`flex h-8 items-center gap-1.5 rounded-lg border px-3 text-[12px] font-medium transition-colors ${
+              mobilePanel === 'comments'
+                ? 'border-violet-300 bg-violet-50 text-violet-600'
+                : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
+            }`}
+          >
+            <span>💬</span>
+            <span>Notas</span>
+          </button>
+        </div>
+      )}
+
       {/* Main content: DispositivoList + side panels */}
       <div className="flex-1 flex min-h-0">
         {/* List area — full width so scrollbar stays at right edge */}
@@ -271,8 +304,8 @@ export default function LeiSecaPage() {
           </div>
         </div>
 
-        {/* Study Companion Panel */}
-        {!commentsOpen && companionOpen && (
+        {/* Study Companion Panel (desktop only) */}
+        {!isMobile && !commentsOpen && companionOpen && (
           <div
             className="w-[360px] flex-shrink-0 border-l border-border/50 overflow-y-auto"
           >
@@ -280,13 +313,53 @@ export default function LeiSecaPage() {
           </div>
         )}
 
-        {/* Comments panel — fixed panel, outside scroll */}
-        {commentsOpen && (
+        {/* Comments panel — fixed panel, outside scroll (desktop only) */}
+        {!isMobile && commentsOpen && (
           <div className="w-[340px] flex-shrink-0 bg-[#F8FAFD] dark:bg-zinc-900 border-l border-border/50 overflow-y-auto">
             <LeiCommentsPanel onScrollToSlug={scrollToCommentSlug} />
           </div>
         )}
       </div>
+      {/* Mobile: Companion panel as sheet */}
+      {isMobile && (
+        <MobileSheet
+          open={mobilePanel === 'companion'}
+          onClose={() => setMobilePanel(null)}
+          height="65dvh"
+          header={
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[14px]">🤖</span>
+                <span className="text-[13px] font-semibold text-zinc-900">Study Companion</span>
+              </div>
+              <button onClick={() => setMobilePanel(null)} className="text-[13px] text-zinc-400 hover:text-zinc-600">✕</button>
+            </div>
+          }
+        >
+          <StudyCompanionPanel />
+        </MobileSheet>
+      )}
+
+      {/* Mobile: Comments panel as sheet */}
+      {isMobile && (
+        <MobileSheet
+          open={mobilePanel === 'comments'}
+          onClose={() => setMobilePanel(null)}
+          height="65dvh"
+          header={
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[14px]">💬</span>
+                <span className="text-[13px] font-semibold text-zinc-900">Comentários</span>
+              </div>
+              <button onClick={() => setMobilePanel(null)} className="text-[13px] text-zinc-400 hover:text-zinc-600">✕</button>
+            </div>
+          }
+        >
+          <LeiCommentsPanel onScrollToSlug={scrollToCommentSlug} />
+        </MobileSheet>
+      )}
+
       <GrifoPopup
         scrollContainerRef={scrollContainerRef}
         onCreateGrifo={handleCreateGrifo}

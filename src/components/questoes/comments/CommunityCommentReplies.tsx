@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { QuestionComment } from '@/types/question-comments';
 import { CommunityCommentItem } from './CommunityCommentItem';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -37,8 +38,9 @@ export function CommunityCommentReplies({
   onEndorse,
   defaultExpanded,
 }: CommunityCommentRepliesProps) {
+  const isMobile = useIsMobile();
   const autoExpand = defaultExpanded ?? replies.length <= 3;
-  const [expanded, setExpanded] = useState(autoExpand);
+  const [expanded, setExpanded] = useState(!isMobile && autoExpand);
 
   if (replies.length === 0) return null;
 
@@ -48,9 +50,9 @@ export function CommunityCommentReplies({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="py-1 text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
+          className="py-1.5 text-[11px] font-medium text-violet-600 hover:text-violet-700"
         >
-          Ver {replies.length} respostas
+          {replies.length} {replies.length === 1 ? 'resposta' : 'respostas'}
         </button>
       ) : (
         <div className="space-y-1">

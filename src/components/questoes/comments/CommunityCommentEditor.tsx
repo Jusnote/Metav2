@@ -23,6 +23,8 @@ import { NumberedListToolbarButton, BulletedListToolbarButton } from '@/componen
 import { ToolbarButton, ToolbarGroup } from '@/components/ui/toolbar';
 import { InlineEquationToolbarButton } from '@/components/ui/equation-toolbar-button';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileCommentEditor } from './MobileCommentEditor';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -164,6 +166,13 @@ export function CommunityCommentEditor({
   };
 
   const isEmpty = isEditorEmpty(currentValue);
+  const isMobile = useIsMobile();
+  const [mobileEditorOpen, setMobileEditorOpen] = React.useState(false);
+
+  const getTextLength = React.useCallback(() => {
+    return extractPlainText(currentValue).length;
+  }, [currentValue]);
+
   const isEditMode = mode === 'edit' || mode === 'note';
   const submitLabel = isEditMode ? 'Salvar' : 'Publicar';
   const defaultPlaceholder = mode === 'reply'
@@ -176,7 +185,7 @@ export function CommunityCommentEditor({
 
   return (
     <Plate editor={editor} onChange={({ value }) => handleChange(value)}>
-      {/* Reply context banner */}
+      {/* Reply context banner — shown in both mobile and desktop */}
       {mode === 'reply' && replyToName && (
         <div className="flex items-center gap-1.5 border-b border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground rounded-t-lg">
           <span>Respondendo a</span>
@@ -184,117 +193,143 @@ export function CommunityCommentEditor({
         </div>
       )}
 
-      {/*
-        EditorContainer is the scroll container.
-        variant="comment" base classes: relative w-full overflow-y-auto
-        Toolbar INSIDE the container with sticky so it stays visible on scroll.
-        Popovers use Radix Portal (render on <body>) — never clipped by overflow.
-        Resize handles use position:absolute inside the editor — overflow-y-auto allows them.
-      */}
-      <EditorContainer
-        variant="comment"
-        className="max-h-[400px] rounded-lg border border-border bg-background"
-      >
-        {/* Sticky toolbar inside scroll container */}
-        <FixedToolbar className="sticky top-0 z-50 rounded-t-lg border-b border-border bg-background/95">
-          <ToolbarGroup>
-            <MarkToolbarButton nodeType={KEYS.bold} tooltip="Negrito">
-              <BoldIcon className="size-4" />
-            </MarkToolbarButton>
-            <MarkToolbarButton nodeType={KEYS.italic} tooltip="Itálico">
-              <ItalicIcon className="size-4" />
-            </MarkToolbarButton>
-            <MarkToolbarButton nodeType={KEYS.underline} tooltip="Sublinhado">
-              <UnderlineIcon className="size-4" />
-            </MarkToolbarButton>
-            <MarkToolbarButton nodeType={KEYS.strikethrough} tooltip="Tachado">
-              <StrikethroughIcon className="size-4" />
-            </MarkToolbarButton>
-            <MarkToolbarButton nodeType={KEYS.code} tooltip="Código">
-              <Code2Icon className="size-4" />
-            </MarkToolbarButton>
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <H3ToolbarButton />
-            <BlockquoteToolbarButton />
-            <CodeBlockToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <NumberedListToolbarButton />
-            <BulletedListToolbarButton />
-            <IndentToolbarButton />
-            <OutdentToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <FontColorToolbarButton nodeType={KEYS.color} tooltip="Cor do texto">
-              <BaselineIcon className="size-4" />
-            </FontColorToolbarButton>
-            <FontColorToolbarButton nodeType={KEYS.backgroundColor} tooltip="Cor de fundo">
-              <PaintBucketIcon className="size-4" />
-            </FontColorToolbarButton>
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <MediaToolbarButton nodeType={KEYS.img} />
-            <EmbedVideoToolbarButton />
-            <MediaToolbarButton nodeType={KEYS.file} />
-            <TableToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <InlineEquationToolbarButton />
-            <LinkToolbarButton />
-          </ToolbarGroup>
-
-          <ToolbarGroup>
-            <UndoToolbarButton />
-            <RedoToolbarButton />
-          </ToolbarGroup>
-        </FixedToolbar>
-
-        {/* Editor content area */}
-        <Editor
-          variant="comment"
-          placeholder={placeholder ?? defaultPlaceholder}
-          className="min-h-[80px] px-3 py-2"
-        />
-      </EditorContainer>
-
-      {/* Footer: actions — outside EditorContainer to not scroll */}
-      <div className="flex items-center justify-end gap-2 rounded-b-lg border border-t-0 border-border bg-background px-3 py-2">
-        <button
-          type="button"
-          onClick={handleCancel}
-          disabled={isSubmitting}
-          className="cursor-pointer text-sm text-zinc-500 hover:text-zinc-700 disabled:opacity-50"
-        >
-          Cancelar
-        </button>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isEmpty || isSubmitting}
-          className={cn(
-            'rounded-md px-4 py-1.5 text-sm font-medium text-white transition-opacity',
-            'disabled:cursor-not-allowed disabled:opacity-40',
-            isEditMode
-              ? 'bg-zinc-700 hover:bg-zinc-800'
-              : 'bg-[#2563EB] hover:bg-blue-700'
+      {isMobile ? (
+        <>
+          {/* Mobile: trigger button */}
+          {!mobileEditorOpen && (
+            <button
+              onClick={() => setMobileEditorOpen(true)}
+              className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-left text-[12px] text-zinc-400 transition-colors hover:bg-zinc-100"
+            >
+              {placeholder ?? defaultPlaceholder}
+            </button>
           )}
-        >
-          {isSubmitting ? (
-            <span className="flex items-center gap-1.5">
-              <span className="size-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              {submitLabel}…
-            </span>
-          ) : (
-            submitLabel
-          )}
-        </button>
-      </div>
+
+          {/* Mobile: fullscreen editor sheet */}
+          <MobileCommentEditor
+            open={mobileEditorOpen}
+            onClose={() => setMobileEditorOpen(false)}
+            onPublish={handleSubmit}
+            questionId={questionId}
+            questionLabel={mode === 'note' ? 'Anotação' : undefined}
+            getTextLength={getTextLength}
+            editorContent={
+              <Editor
+                variant="comment"
+                placeholder={placeholder ?? defaultPlaceholder}
+                className="min-h-[120px] px-3 py-2"
+              />
+            }
+            isSubmitting={isSubmitting}
+          />
+        </>
+      ) : (
+        <>
+          {/* Desktop: existing inline editor — UNCHANGED */}
+          <EditorContainer
+            variant="comment"
+            className="max-h-[400px] rounded-lg border border-border bg-background"
+          >
+            <FixedToolbar className="sticky top-0 z-50 rounded-t-lg border-b border-border bg-background/95">
+              <ToolbarGroup>
+                <MarkToolbarButton nodeType={KEYS.bold} tooltip="Negrito">
+                  <BoldIcon className="size-4" />
+                </MarkToolbarButton>
+                <MarkToolbarButton nodeType={KEYS.italic} tooltip="Itálico">
+                  <ItalicIcon className="size-4" />
+                </MarkToolbarButton>
+                <MarkToolbarButton nodeType={KEYS.underline} tooltip="Sublinhado">
+                  <UnderlineIcon className="size-4" />
+                </MarkToolbarButton>
+                <MarkToolbarButton nodeType={KEYS.strikethrough} tooltip="Tachado">
+                  <StrikethroughIcon className="size-4" />
+                </MarkToolbarButton>
+                <MarkToolbarButton nodeType={KEYS.code} tooltip="Código">
+                  <Code2Icon className="size-4" />
+                </MarkToolbarButton>
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <H3ToolbarButton />
+                <BlockquoteToolbarButton />
+                <CodeBlockToolbarButton />
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <NumberedListToolbarButton />
+                <BulletedListToolbarButton />
+                <IndentToolbarButton />
+                <OutdentToolbarButton />
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <FontColorToolbarButton nodeType={KEYS.color} tooltip="Cor do texto">
+                  <BaselineIcon className="size-4" />
+                </FontColorToolbarButton>
+                <FontColorToolbarButton nodeType={KEYS.backgroundColor} tooltip="Cor de fundo">
+                  <PaintBucketIcon className="size-4" />
+                </FontColorToolbarButton>
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <MediaToolbarButton nodeType={KEYS.img} />
+                <EmbedVideoToolbarButton />
+                <MediaToolbarButton nodeType={KEYS.file} />
+                <TableToolbarButton />
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <InlineEquationToolbarButton />
+                <LinkToolbarButton />
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <UndoToolbarButton />
+                <RedoToolbarButton />
+              </ToolbarGroup>
+            </FixedToolbar>
+
+            <Editor
+              variant="comment"
+              placeholder={placeholder ?? defaultPlaceholder}
+              className="min-h-[80px] px-3 py-2"
+            />
+          </EditorContainer>
+
+          {/* Footer: actions */}
+          <div className="flex items-center justify-end gap-2 rounded-b-lg border border-t-0 border-border bg-background px-3 py-2">
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              className="cursor-pointer text-sm text-zinc-500 hover:text-zinc-700 disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isEmpty || isSubmitting}
+              className={cn(
+                'rounded-md px-4 py-1.5 text-sm font-medium text-white transition-opacity',
+                'disabled:cursor-not-allowed disabled:opacity-40',
+                isEditMode
+                  ? 'bg-zinc-700 hover:bg-zinc-800'
+                  : 'bg-[#2563EB] hover:bg-blue-700'
+              )}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="size-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  {submitLabel}…
+                </span>
+              ) : (
+                submitLabel
+              )}
+            </button>
+          </div>
+        </>
+      )}
     </Plate>
   );
 }
