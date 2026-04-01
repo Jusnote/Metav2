@@ -18,7 +18,7 @@ export function useDispositivoCommentCounts(leiId: string | undefined) {
 
       const counts: Record<string, number> = {};
       for (const row of data ?? []) {
-        counts[row.dispositivo_id] = Number(row.comment_count);
+        counts[row.dispositivo_id] = Number(row.count);
       }
       return counts;
     },
