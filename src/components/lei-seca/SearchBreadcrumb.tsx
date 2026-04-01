@@ -151,29 +151,35 @@ export function SearchBreadcrumb({
 
   return (
     <div ref={containerRef} className="relative font-[Outfit,sans-serif]">
-      {/* ---- CLOSED: Glass Breadcrumb ---- */}
+      {/* ---- CLOSED: Clean search bar + breadcrumb below ---- */}
       {!open && (
-        <button
-          onClick={handleOpen}
-          className="w-full flex items-center gap-2 py-2 px-[14px] cursor-pointer transition-opacity hover:opacity-80 bg-white/65 backdrop-blur-[12px] rounded-[10px] border border-white/50"
-          style={{
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)',
-          }}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-50">
-            <circle cx="11" cy="11" r="7" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
+        <>
+          <button
+            onClick={handleOpen}
+            className="w-full flex items-center gap-[10px] h-[42px] px-4 cursor-pointer bg-white rounded-[12px] border border-[#e2e5ea] transition-all duration-150 hover:border-[#d0d3d8]"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" className="shrink-0 transition-colors duration-150 group-hover:stroke-[#16a34a]">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <span className="flex-1 text-[13.5px] text-[#a0a0a0] text-left">
+              Buscar artigo, tema, palavra...
+            </span>
+            <span className="text-[10px] font-mono text-[#888] bg-[#f5f6f8] border border-[#e8eaed] px-[6px] py-[2px] rounded hidden sm:inline">
+              {isMac ? '⌘F' : 'Ctrl+F'}
+            </span>
+          </button>
 
-          {segments.length > 0 ? (
-            <span className="flex items-center gap-2 min-w-0 overflow-hidden">
+          {/* Breadcrumb — informational, below the bar */}
+          {segments.length > 0 && (
+            <div className="flex items-center gap-[5px] pt-[6px] px-1">
               {/* Desktop: all segments */}
               <span className="hidden sm:contents">
                 {segments.map((seg, i) => (
-                  <span key={seg.path} className="flex items-center gap-2 shrink-0">
-                    {i > 0 && <span className="w-[3px] h-[3px] rounded-full bg-[#c5d4c9] shrink-0" />}
-                    <span className={`text-[11.5px] ${
-                      i === segments.length - 1 ? 'text-[#3a5540] font-medium' : 'text-[#8a9a8f]'
+                  <span key={seg.path} className="flex items-center gap-[5px] shrink-0">
+                    {i > 0 && <span className="text-[9px] text-[#d4dbd7]">›</span>}
+                    <span className={`text-[11px] ${
+                      i === segments.length - 1 ? 'text-[#4a6350] font-medium' : 'text-[#a0afa5]'
                     }`}>
                       {seg.label}
                     </span>
@@ -184,36 +190,24 @@ export function SearchBreadcrumb({
               <span className="sm:hidden contents">
                 {segments.length > 2 && (
                   <>
-                    <span className="text-[10.5px] text-[#b0c0b5]">...</span>
-                    <span className="w-[2.5px] h-[2.5px] rounded-full bg-[#c5d4c9] shrink-0" />
+                    <span className="text-[10px] text-[#b0c0b5]">...</span>
+                    <span className="text-[9px] text-[#d4dbd7]">›</span>
                   </>
                 )}
                 {segments.slice(segments.length > 2 ? -2 : 0).map((seg, i) => (
-                  <span key={seg.path} className="flex items-center gap-2 shrink-0">
-                    {i > 0 && <span className="w-[2.5px] h-[2.5px] rounded-full bg-[#c5d4c9] shrink-0" />}
-                    <span className={`text-[10.5px] ${
-                      i === (segments.length > 2 ? 1 : segments.length - 1) ? 'text-[#3a5540] font-medium' : 'text-[#8a9a8f]'
+                  <span key={seg.path} className="flex items-center gap-[5px] shrink-0">
+                    {i > 0 && <span className="text-[9px] text-[#d4dbd7]">›</span>}
+                    <span className={`text-[10px] ${
+                      i === (segments.length > 2 ? 1 : segments.length - 1) ? 'text-[#4a6350] font-medium' : 'text-[#a0afa5]'
                     }`}>
                       {abbreviateLabel(seg.label)}
                     </span>
                   </span>
                 ))}
               </span>
-            </span>
-          ) : (
-            <span className="text-[11.5px] text-[#8a9a8f] font-light">Buscar na lei...</span>
+            </div>
           )}
-
-          <span className="ml-auto flex items-center gap-2 shrink-0 pl-3">
-            <span className="text-[10px] text-[#9aaa9f] tabular-nums">
-              <span className="hidden sm:inline">{activeIndex + 1} / {totalArtigos}</span>
-              <span className="sm:hidden">{activeIndex + 1}/{totalArtigos}</span>
-            </span>
-            <span className="text-[9px] text-[#9aaa9f] bg-white/60 border border-black/[0.06] px-[6px] py-[1px] rounded font-mono hidden sm:inline">
-              {isMac ? '⌘F' : 'Ctrl+F'}
-            </span>
-          </span>
-        </button>
+        </>
       )}
 
       {/* ---- OPEN: Glass Search Input ---- */}
