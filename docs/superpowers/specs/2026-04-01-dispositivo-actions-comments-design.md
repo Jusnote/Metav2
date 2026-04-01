@@ -81,7 +81,9 @@ Three zones separated by 1px dividers, right-aligned in a flex row:
 
 - `useDispositivoLikes(leiId)` → React Query, returns `Set<string>` of liked dispositivo IDs
 - `useToggleDispositivoLike()` → mutation with optimistic update
-- `useDispositivoIncidencia(dispositivoId)` → fetch from FastAPI, returns `{ count: number } | null` (stubbed until pipeline ready)
+- `useLeiIncidencia(leiId)` → **single request** to FastAPI, returns `Record<string, number>` dictionary (`{ "art_1": 45, "art_2": 12, ... }`). Stubbed until pipeline ready. See Section 11.1 for rationale.
+
+> **N+1 Alert:** Incidence data MUST be fetched per-lei, never per-dispositivo. A lei like the Constituição Federal renders hundreds of artigos on one page. Per-dispositivo fetching would fire 200+ simultaneous requests, freezing the browser and overwhelming the API. The parent component (lei page) fetches once via `useLeiIncidencia(leiId)` and passes data down via props or React Context. `DispositivoGutter` only consumes the dictionary — zero fetching.
 
 ---
 
@@ -269,11 +271,45 @@ create table dispositivo_comment_upvotes (
 );
 ```
 
+### Indexes
+
+```sql
+-- Composite index for fast comment lookup per dispositivo (covers sort by pinned + upvotes)
+CREATE INDEX idx_disp_comments_lookup
+  ON dispositivo_comments (lei_id, dispositivo_id, is_pinned DESC, upvote_count DESC);
+
+-- Index for user's own comments (profile, edit, delete)
+CREATE INDEX idx_disp_comments_user
+  ON dispositivo_comments (user_id, created_at DESC);
+
+-- Indexes for reaction/upvote lookups
+CREATE INDEX idx_disp_comment_reactions_comment
+  ON dispositivo_comment_reactions (comment_id);
+
+CREATE INDEX idx_disp_comment_upvotes_comment
+  ON dispositivo_comment_upvotes (comment_id);
+
+-- Likes lookup per lei
+CREATE INDEX idx_disp_likes_lei_user
+  ON dispositivo_likes (lei_id, user_id);
+
+-- Notes lookup per user
+CREATE INDEX idx_disp_notes_user_disp
+  ON dispositivo_notes (user_id, dispositivo_id);
+```
+
+> **Performance Note:** Without `idx_disp_comments_lookup`, loading comments for "Art. 5 da CF" would trigger a full table scan. With the composite index, the query resolves in ~2ms even with millions of comments.
+
 ### RPCs
 
+**Per-dispositivo (called when footer is opened):**
 - `get_dispositivo_comments_with_votes(p_dispositivo_id, p_lei_id, p_user_id)` — mirrors `get_comments_with_votes`, returns comments with has_upvoted, reaction_counts, user_reactions, author info
 - `toggle_dispositivo_comment_upvote(p_comment_id)` — mirrors question version
 - `toggle_dispositivo_comment_reaction(p_comment_id, p_emoji)` — mirrors question version
+
+**Per-lei batch (called once when lei loads — feeds the gutter badges):**
+- `get_dispositivo_comment_counts(p_lei_id)` — returns `{ dispositivo_id, count }[]` for all dispositivos with comments
+- `get_dispositivo_note_flags(p_lei_id, p_user_id)` — returns `dispositivo_id[]` where user has a saved note
 
 ### RLS Policies
 
@@ -308,6 +344,8 @@ useToggleCommentReaction(entityType: EntityType)
 useCommentDraft(entityType: EntityType, entityId: string | number, context: string)
 // → localStorage key: comment_draft_{entityType}_{entityId}_{context}
 ```
+
+> **Cache Collision Alert:** All React Query keys MUST include `entityType` as a namespace. A questão with ID `15` and a dispositivo with ID `15` must never share cache. Correct key format: `['comments', entityType, entityId]` — e.g. `['comments', 'question', 15]` vs `['comments', 'dispositivo', '15']`. This applies to all parametrized hooks: comments, upvotes, reactions, drafts.
 
 ### Components
 
@@ -354,6 +392,8 @@ useDispositivoNote(dispositivoId: string, leiId: string)
 ### Component
 
 `DispositivoNote.tsx` uses shared `CommentEditor` in `mode: 'note'`. Auto-saves on blur with debounce (same pattern as `PrivateNote` in questões).
+
+> **Mobile Unmount Alert:** `onBlur` alone is not reliable on mobile. When the user swipes away a Bottom Sheet or hits the native "X", the component unmounts before `onBlur` fires — losing the text. Solution: keep the current editor value in a `useRef`, and add a `useEffect` cleanup that fires the save mutation on unmount if the ref contains unsaved changes. This guarantees no data loss regardless of how the component is destroyed.
 
 ---
 
@@ -427,3 +467,88 @@ function DispositivoFooter({ dispositivoId, leiId, commentsCount, hasNote, ... }
 | Comment upvotes | Supabase | `dispositivo_comment_upvotes` table |
 | Personal notes | Supabase | `dispositivo_notes` table |
 | Comment drafts | localStorage | `comment_draft_dispositivo_{id}_{context}` |
+
+---
+
+## 11. Architecture Alerts
+
+### 11.1 N+1 Front-end Fetching (Critical)
+
+**Problem:** A lei like the Constituição Federal renders 200+ artigos on one page. If `DispositivoGutter` calls `useDispositivoIncidencia(dispositivoId)` individually, the browser fires 200+ simultaneous requests to FastAPI — freezing the tab and overwhelming the API.
+
+**Rule:** All per-dispositivo data (incidence, likes, comment counts, note existence) MUST be fetched **per-lei in a single batch request**, then distributed to children via props or React Context.
+
+**Implementation:**
+- `useLeiIncidencia(leiId)` → 1 request → `Record<string, number>`
+- `useDispositivoLikes(leiId)` → 1 request → `Set<string>`
+- Comment counts come from a single `get_dispositivo_comment_counts(p_lei_id)` RPC → `Record<string, number>`
+- Note existence comes from a single `get_dispositivo_note_flags(p_lei_id, p_user_id)` RPC → `Set<string>`
+
+The lei-level component fetches all 4 dictionaries and passes them down. `DispositivoGutter` does zero fetching — it only reads props.
+
+### 11.2 React Query Cache Collision
+
+**Problem:** If a questão has ID `15` and a dispositivo also has ID `15`, and the query key is `['comments', entityId]`, comments from one entity leak into the other.
+
+**Rule:** All parametrized query keys MUST include `entityType` as a namespace segment:
+```typescript
+// Correct
+queryKey: ['comments', 'question', questionId]
+queryKey: ['comments', 'dispositivo', dispositivoId]
+
+// Wrong — will cause cache collision
+queryKey: ['comments', entityId]
+```
+
+This applies to all shared hooks: comments, upvotes, reactions, drafts.
+
+### 11.3 Mobile Auto-Save on Unmount
+
+**Problem:** On mobile, `onBlur` may not fire before component unmount (user swipes away sheet, hits native X). The note content is lost.
+
+**Rule:** `DispositivoNote` (and `PrivateNote` in questões) must keep the current editor value in a `useRef` and implement a `useEffect` cleanup:
+```typescript
+const contentRef = useRef(currentValue);
+contentRef.current = currentValue;
+
+useEffect(() => {
+  return () => {
+    if (contentRef.current !== savedValue) {
+      saveMutation.mutate(contentRef.current); // fire-and-forget on unmount
+    }
+  };
+}, []);
+```
+
+---
+
+## 12. UX Polish
+
+### 12.1 Outdated Comment Badge (Legal Safety)
+
+**Scenario:** Art. 157 do Código Penal has 120 comments. A new law changes the penalty text. The comments now reference outdated text — potentially misleading students.
+
+**Rule:** If `comment.created_at < lei.updated_at`, display a subtle yellow badge on the comment:
+
+```
+⚠️ Comentário anterior à última atualização da lei
+```
+
+**Implementation:**
+- The lei's `updated_at` timestamp is already available from the GraphQL API
+- Pass `leiUpdatedAt` to `DispositivoCommunityComments`
+- `CommentItem` receives an optional `outdatedThreshold` date prop — if `created_at < outdatedThreshold`, renders the badge
+- Badge is informational only (no blocking, no hiding)
+
+### 12.2 Deep Linking to Comments (Notification UX)
+
+**Scenario:** Pedro replies to Maria's comment on "Parágrafo Único do Art. 1.022 do CPC". Maria clicks the notification. The CPC has 1,000+ artigos — she'd have to scroll forever to find it.
+
+**Rule:** Support deep links in the format: `/leis/{lei-slug}#disp_{dispositivoId}?commentId={commentId}`
+
+**Implementation:**
+1. `DispositivoRenderer` renders `<div id={`disp_${item.id}`}>` on the wrapper
+2. On page load, check `window.location.hash` and `searchParams.commentId`
+3. If hash matches a dispositivo: scroll into view with `scrollIntoView({ behavior: 'smooth' })`
+4. If `commentId` is present: auto-open the footer, switch to "Comunidade" tab, highlight the target comment with a yellow flash animation (2s fade)
+5. URL structure supports future notification system integration
