@@ -10,7 +10,7 @@ export function useDispositivoCommentCounts(leiId: string | undefined) {
     queryFn: async () => {
       if (!leiId) return {} as Record<string, number>;
 
-      const { data, error } = await (supabase as any).rpc('get_dispositivo_comment_counts', {
+      const { data, error } = await supabase.rpc('get_dispositivo_comment_counts', {
         p_lei_id: leiId,
       });
 
@@ -35,7 +35,7 @@ export function useDispositivoNoteFlags(leiId: string | undefined) {
     queryFn: async () => {
       if (!leiId || !user) return new Set<string>();
 
-      const { data, error } = await (supabase as any).rpc('get_dispositivo_note_flags', {
+      const { data, error } = await supabase.rpc('get_dispositivo_note_flags', {
         p_lei_id: leiId,
         p_user_id: user.id,
       });

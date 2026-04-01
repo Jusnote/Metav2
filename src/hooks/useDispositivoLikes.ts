@@ -12,7 +12,7 @@ export function useDispositivoLikes(leiId: string | undefined) {
     queryFn: async () => {
       if (!leiId || !user) return new Set<string>();
 
-      const { data, error } = await (supabase as any).rpc('get_dispositivo_likes', {
+      const { data, error } = await supabase.rpc('get_dispositivo_likes', {
         p_lei_id: leiId,
         p_user_id: user.id,
       });
@@ -41,7 +41,7 @@ export function useToggleDispositivoLike() {
       dispositivoId: string;
       leiId: string;
     }) => {
-      const { data, error } = await (supabase as any).rpc('toggle_dispositivo_like', {
+      const { data, error } = await supabase.rpc('toggle_dispositivo_like', {
         p_dispositivo_id: dispositivoId,
         p_lei_id: leiId,
       });
