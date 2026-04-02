@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
@@ -19,6 +19,7 @@ import { RevogadoCollapsed } from './RevogadoCollapsed'
 import { GenericDispositivo } from './GenericDispositivo'
 
 const STRUCTURAL = ['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO', 'SUBSECAO', 'SUBTITULO']
+const EMPTY_GRIFOS: Grifo[] = []
 
 interface Props {
   item: Dispositivo
@@ -30,15 +31,19 @@ interface Props {
   onSaveNote?: (grifoId: string, note: string) => void
   noteOpenGrifoId?: string | null
   footerOpen: boolean
-  onToggleFooter: () => void
+  onToggleFooter: (id: string) => void
   liked: boolean
-  onToggleLike: () => void
+  onToggleLike: (id: string) => void
   commentsCount: number
   hasNote: boolean
 }
 
-export const DispositivoRenderer = memo(function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, commentsCount, hasNote }: Props) {
+export const DispositivoRenderer = memo(function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos: grifosProp, onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, commentsCount, hasNote }: Props) {
+  const grifos = grifosProp ?? EMPTY_GRIFOS
   const [reportOpen, setReportOpen] = useState(false)
+  const itemId = String(rawItem.id)
+  const handleToggleFooter = useCallback(() => onToggleFooter(itemId), [onToggleFooter, itemId])
+  const handleToggleLike = useCallback(() => onToggleLike(itemId), [onToggleLike, itemId])
 
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
@@ -75,11 +80,11 @@ export const DispositivoRenderer = memo(function DispositivoRenderer({ item: raw
         {leiId && (
           <DispositivoGutter
             liked={liked}
-            onToggleLike={onToggleLike}
+            onToggleLike={handleToggleLike}
             commentsCount={commentsCount}
             hasNote={hasNote}
             footerOpen={footerOpen}
-            onToggleFooter={onToggleFooter}
+            onToggleFooter={handleToggleFooter}
           />
         )}
       </div>
@@ -92,7 +97,7 @@ export const DispositivoRenderer = memo(function DispositivoRenderer({ item: raw
           dispositivoPosicao={item.posicao}
           commentsCount={commentsCount}
           hasNote={hasNote}
-          onReport={() => { setReportOpen(true); onToggleFooter(); }}
+          onReport={() => { setReportOpen(true); handleToggleFooter(); }}
         />
       )}
       {reportOpen && (

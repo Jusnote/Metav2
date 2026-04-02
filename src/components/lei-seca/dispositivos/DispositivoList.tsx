@@ -1,6 +1,8 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
+
+const EMPTY_GRIFOS: Grifo[] = []
 import { useNoteOpenGrifoId } from '@/stores/grifoPopupStore'
 import { DispositivoRenderer } from './DispositivoRenderer'
 import { EstruturaBlock } from './EstruturaBlock'
@@ -84,6 +86,14 @@ export function DispositivoList({
   const noteOpenGrifoId = useNoteOpenGrifoId()
   const [openFooterId, setOpenFooterId] = useState<string | null>(null)
 
+  const handleToggleFooter = useCallback((id: string) => {
+    setOpenFooterId(prev => prev === id ? null : id)
+  }, [])
+
+  const handleToggleLike = useCallback((id: string) => {
+    onToggleLike?.(id)
+  }, [onToggleLike])
+
   useEffect(() => {
     const hash = window.location.hash
     if (hash.startsWith('#disp_')) {
@@ -124,18 +134,16 @@ export function DispositivoList({
               leiId={leiId}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
-              grifos={grifosByDispositivo?.get(entry.item.id) ?? []}
+              grifos={grifosByDispositivo?.get(entry.item.id) ?? EMPTY_GRIFOS}
               onGrifoClick={onGrifoClick}
               onSaveNote={onSaveNote}
               noteOpenGrifoId={noteOpenGrifoId}
               // Accordion
               footerOpen={openFooterId === String(entry.item.id)}
-              onToggleFooter={() => setOpenFooterId(prev =>
-                prev === String(entry.item.id) ? null : String(entry.item.id)
-              )}
+              onToggleFooter={handleToggleFooter}
               // Batch data
               liked={likesSet?.has(String(entry.item.id)) ?? false}
-              onToggleLike={() => onToggleLike?.(String(entry.item.id))}
+              onToggleLike={handleToggleLike}
               commentsCount={commentCountsMap?.[String(entry.item.id)] ?? 0}
               hasNote={noteFlagsSet?.has(String(entry.item.id)) ?? false}
             />
