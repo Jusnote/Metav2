@@ -20,6 +20,7 @@ import type { Grifo, GrifoColor } from "@/types/grifo";
 import { useDispositivoLikes, useToggleDispositivoLike } from '@/hooks/useDispositivoLikes';
 
 import { useDispositivoCommentCounts, useDispositivoNoteFlags } from '@/hooks/useDispositivoBadges';
+import { useLeiIncidencia } from '@/hooks/useLeiIncidencia';
 
 const StudyCompanionPanel = dynamic(
   () =>
@@ -60,6 +61,7 @@ export default function LeiSecaPage() {
   const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId)
   const { data: likesSet } = useDispositivoLikes(currentLeiId);
   const toggleLike = useToggleDispositivoLike();
+  const { data: incidenciaMap } = useLeiIncidencia(currentLeiId);
   const { data: commentCountsMap } = useDispositivoCommentCounts(currentLeiId);
   const { data: noteFlagsSet } = useDispositivoNoteFlags(currentLeiId);
 
@@ -282,6 +284,7 @@ export default function LeiSecaPage() {
               onSaveNote={handleSaveNote}
               likesSet={likesSet}
               onToggleLike={handleToggleLike}
+              incidenciaMap={incidenciaMap}
               commentCountsMap={commentCountsMap}
               noteFlagsSet={noteFlagsSet}
             />

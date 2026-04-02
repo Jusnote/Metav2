@@ -20,7 +20,7 @@ interface DispositivoListProps {
   onSaveNote?: (grifoId: string, note: string) => void
   likesSet?: Set<string>
   onToggleLike?: (dispositivoId: string) => void
-
+  incidenciaMap?: Record<string, number>
   commentCountsMap?: Record<string, number>
   noteFlagsSet?: Set<string>
 }
@@ -77,6 +77,7 @@ export function DispositivoList({
   onSaveNote,
   likesSet,
   onToggleLike,
+  incidenciaMap,
   commentCountsMap,
   noteFlagsSet,
 }: DispositivoListProps) {
@@ -139,8 +140,10 @@ export function DispositivoList({
               // Batch data
               liked={likesSet?.has(String(entry.item.id)) ?? false}
               onToggleLike={onToggleLike!}
+              incidencia={incidenciaMap?.[String(entry.item.id)] ?? null}
               commentsCount={commentCountsMap?.[String(entry.item.id)] ?? 0}
               hasNote={noteFlagsSet?.has(String(entry.item.id)) ?? false}
+              likesCount={0}
             />
           </div>
         )

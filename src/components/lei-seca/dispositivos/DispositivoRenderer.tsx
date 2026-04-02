@@ -34,11 +34,13 @@ interface Props {
   onToggleFooter: (id: string) => void
   liked: boolean
   onToggleLike: (id: string) => void
+  incidencia: number | null
   commentsCount: number
   hasNote: boolean
+  likesCount: number
 }
 
-export const DispositivoRenderer = memo(function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos: grifosProp, onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, commentsCount, hasNote }: Props) {
+export const DispositivoRenderer = memo(function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos: grifosProp, onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, incidencia, commentsCount, hasNote, likesCount }: Props) {
   const grifos = grifosProp ?? EMPTY_GRIFOS
   const [reportOpen, setReportOpen] = useState(false)
   const itemId = String(rawItem.id)
@@ -81,6 +83,7 @@ export const DispositivoRenderer = memo(function DispositivoRenderer({ item: raw
           <DispositivoGutter
             liked={liked}
             onToggleLike={handleToggleLike}
+            incidencia={incidencia}
             commentsCount={commentsCount}
             hasNote={hasNote}
             footerOpen={footerOpen}
@@ -97,6 +100,8 @@ export const DispositivoRenderer = memo(function DispositivoRenderer({ item: raw
           dispositivoPosicao={item.posicao}
           commentsCount={commentsCount}
           hasNote={hasNote}
+          likesCount={likesCount}
+          incidencia={incidencia}
           onReport={() => { setReportOpen(true); handleToggleFooter(); }}
         />
       )}
