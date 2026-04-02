@@ -18,7 +18,7 @@ import { GrifoPopup } from "@/components/lei-seca/GrifoPopup";
 import { grifoPopupStore } from "@/stores/grifoPopupStore";
 import type { Grifo, GrifoColor } from "@/types/grifo";
 import { useDispositivoLikes, useToggleDispositivoLike } from '@/hooks/useDispositivoLikes';
-import { useLeiIncidencia } from '@/hooks/useLeiIncidencia';
+
 import { useDispositivoCommentCounts, useDispositivoNoteFlags } from '@/hooks/useDispositivoBadges';
 
 const StudyCompanionPanel = dynamic(
@@ -60,14 +60,19 @@ export default function LeiSecaPage() {
   const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId)
   const { data: likesSet } = useDispositivoLikes(currentLeiId);
   const toggleLike = useToggleDispositivoLike();
-  const { data: incidenciaMap } = useLeiIncidencia(currentLeiId);
   const { data: commentCountsMap } = useDispositivoCommentCounts(currentLeiId);
   const { data: noteFlagsSet } = useDispositivoNoteFlags(currentLeiId);
 
+  // Stabilize via ref so useCallback deps stay empty
+  const toggleLikeRef = useRef(toggleLike);
+  toggleLikeRef.current = toggleLike;
+  const leiIdRef = useRef(currentLeiId);
+  leiIdRef.current = currentLeiId;
+
   const handleToggleLike = useCallback((dispositivoId: string) => {
-    if (!currentLeiId) return;
-    toggleLike.mutate({ dispositivoId, leiId: currentLeiId });
-  }, [currentLeiId, toggleLike]);
+    if (!leiIdRef.current) return;
+    toggleLikeRef.current.mutate({ dispositivoId, leiId: leiIdRef.current });
+  }, []);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Selection handler — opens grifo popup on text selection

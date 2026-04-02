@@ -90,10 +90,6 @@ export function DispositivoList({
     setOpenFooterId(prev => prev === id ? null : id)
   }, [])
 
-  const handleToggleLike = useCallback((id: string) => {
-    onToggleLike?.(id)
-  }, [onToggleLike])
-
   useEffect(() => {
     const hash = window.location.hash
     if (hash.startsWith('#disp_')) {
@@ -143,7 +139,7 @@ export function DispositivoList({
               onToggleFooter={handleToggleFooter}
               // Batch data
               liked={likesSet?.has(String(entry.item.id)) ?? false}
-              onToggleLike={handleToggleLike}
+              onToggleLike={onToggleLike!}
               commentsCount={commentCountsMap?.[String(entry.item.id)] ?? 0}
               hasNote={noteFlagsSet?.has(String(entry.item.id)) ?? false}
             />
