@@ -282,7 +282,6 @@ export default function LeiSecaPage() {
               onSaveNote={handleSaveNote}
               likesSet={likesSet}
               onToggleLike={handleToggleLike}
-              incidenciaMap={incidenciaMap}
               commentCountsMap={commentCountsMap}
               noteFlagsSet={noteFlagsSet}
             />

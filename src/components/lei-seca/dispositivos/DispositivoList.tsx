@@ -20,7 +20,7 @@ interface DispositivoListProps {
   onSaveNote?: (grifoId: string, note: string) => void
   likesSet?: Set<string>
   onToggleLike?: (dispositivoId: string) => void
-  incidenciaMap?: Record<string, number>
+
   commentCountsMap?: Record<string, number>
   noteFlagsSet?: Set<string>
 }
@@ -77,7 +77,6 @@ export function DispositivoList({
   onSaveNote,
   likesSet,
   onToggleLike,
-  incidenciaMap,
   commentCountsMap,
   noteFlagsSet,
 }: DispositivoListProps) {
