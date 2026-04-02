@@ -100,7 +100,7 @@ export function DispositivoList({
 
   return (
     <div
-      className="max-w-5xl mx-auto px-5 font-[Literata,Georgia,serif] leading-[1.9] text-[rgb(67,80,92)] text-justify"
+      className="max-w-5xl mx-auto px-5 font-[Nunito,sans-serif] leading-[1.8] text-[#374151] text-justify"
       style={{ fontSize: `${fontSize}px` }}
     >
       {grouped.map(entry => {
@@ -136,7 +136,6 @@ export function DispositivoList({
               // Batch data
               liked={likesSet?.has(String(entry.item.id)) ?? false}
               onToggleLike={() => onToggleLike?.(String(entry.item.id))}
-              incidencia={incidenciaMap?.[String(entry.item.id)] ?? null}
               commentsCount={commentCountsMap?.[String(entry.item.id)] ?? 0}
               hasNote={noteFlagsSet?.has(String(entry.item.id)) ?? false}
             />

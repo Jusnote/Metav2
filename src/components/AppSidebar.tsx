@@ -19,6 +19,7 @@ import {
   IconShield,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "../hooks/useAuth";
 import { useUserRole } from "@/hooks/moderation/useUserRole";
 import { toast } from "sonner";
@@ -118,6 +119,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { isModerator } = useUserRole();
+  const isMobile = useIsMobile();
 
   const allNavItems = [...mainNavigation, ...toolsNavigation, ...(isModerator ? moderationNav : [])];
   const panelItem = allNavItems.find(item => item.href === panelSection);
@@ -157,7 +159,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* ===== DESKTOP: 3 containers aninhados ===== */}
-      <div className="hidden md:flex h-screen w-full bg-[#1B1D21] p-1.5 overflow-hidden">
+      {!isMobile && <div className="flex h-screen w-full bg-[#1B1D21] p-1.5 overflow-hidden">
         {/* Container 1 (externo): Icon Rail */}
         <div className="flex h-full w-full rounded-2xl bg-[#1B1D21] overflow-hidden">
           {/* Coluna de ícones */}
@@ -327,10 +329,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* ===== MOBILE: Top bar + Content + Overlay ===== */}
-      <div className="flex md:hidden flex-col h-screen w-full">
+      {isMobile && <div className="flex flex-col h-screen w-full">
         <div className="flex h-10 px-4 py-4 items-center justify-between bg-gray-100 border-b border-gray-200 w-full shrink-0">
           <a href="/" className="flex items-center gap-2 text-gray-800 text-sm font-medium">
             <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-[#E8930C]" />
@@ -344,7 +346,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         <div className="flex-1 overflow-auto bg-white">
           {children}
         </div>
-      </div>
+      </div>}
 
       {/* Mobile overlay */}
       <AnimatePresence>

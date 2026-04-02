@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
@@ -33,12 +33,11 @@ interface Props {
   onToggleFooter: () => void
   liked: boolean
   onToggleLike: () => void
-  incidencia: number | null
   commentsCount: number
   hasNote: boolean
 }
 
-export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, incidencia, commentsCount, hasNote }: Props) {
+export const DispositivoRenderer = memo(function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, commentsCount, hasNote }: Props) {
   const [reportOpen, setReportOpen] = useState(false)
 
   const item = useMemo<Dispositivo>(() => ({
@@ -77,7 +76,6 @@ export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRev
           <DispositivoGutter
             liked={liked}
             onToggleLike={onToggleLike}
-            incidencia={incidencia}
             commentsCount={commentsCount}
             hasNote={hasNote}
             footerOpen={footerOpen}
@@ -114,7 +112,7 @@ export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRev
       {!noteOpenGrifo && grifosWithNotes.length > 0 && <NoteBadge grifos={grifosWithNotes} />}
     </div>
   )
-}
+})
 
 function NoteBadge({ grifos }: { grifos: Grifo[] }) {
   const [expanded, setExpanded] = useState(false)
