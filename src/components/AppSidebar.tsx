@@ -37,6 +37,7 @@ interface SubItem {
 
 interface NavItem {
   label: string;
+  shortLabel?: string;
   href: string;
   icon: React.ReactNode;
   subItems?: SubItem[];
@@ -47,6 +48,7 @@ interface NavItem {
 const mainNavigation: NavItem[] = [
   {
     label: "Dashboard",
+    shortLabel: "Home",
     href: "/",
     icon: <IconHome className="h-5 w-5" />,
   },
@@ -88,6 +90,7 @@ const mainNavigation: NavItem[] = [
 const moderationNav: NavItem[] = [
   {
     label: "Moderação",
+    shortLabel: "Mod.",
     href: "/moderacao",
     icon: <IconShield className="h-5 w-5" />,
   },
@@ -96,6 +99,7 @@ const moderationNav: NavItem[] = [
 const toolsNavigation: NavItem[] = [
   {
     label: "Cronograma",
+    shortLabel: "Crono",
     href: "/cronograma",
     icon: <IconCalendar className="h-5 w-5" />,
   },
@@ -162,7 +166,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       {/* ===== DESKTOP: flat flex layout ===== */}
       {!isMobile && <div className="flex h-screen w-full overflow-hidden">
         {/* Icon Rail */}
-        <div className="w-14 shrink-0 flex flex-col py-4 px-2 bg-white">
+        <div className="w-[76px] shrink-0 flex flex-col items-center py-4 px-2 bg-white">
           {/* Logo */}
           <a href="/" className="flex items-center justify-center py-1 mb-6">
             <div className="h-6 w-7 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-gradient-to-br from-[#1E40AF] to-[#3B82F6] shadow-[0_2px_8px_rgba(30,64,175,0.3)]" />
@@ -175,7 +179,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 onClick={() => handleNavClick(item)}
                 className={cn(
-                  "flex items-center justify-center h-9 w-9 rounded-[10px] transition-all duration-150 relative",
+                  "flex flex-col items-center gap-0.5 w-[60px] py-1.5 px-1 rounded-[10px] transition-all duration-150 relative",
                   isActive(item.href)
                     ? "bg-[#DBEAFE]/80 text-[#1E40AF] shadow-[0_1px_4px_rgba(30,64,175,0.08)]"
                     : "bg-transparent text-[#8b8fa3] hover:text-[#64748b] hover:bg-black/[0.04]",
@@ -184,9 +188,15 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 title={item.label}
               >
                 {item.icon}
+                <span className={cn(
+                  "text-[9px] font-medium leading-tight truncate max-w-[56px]",
+                  isActive(item.href) ? "font-semibold" : ""
+                )}>
+                  {item.shortLabel || item.label}
+                </span>
                 {isActive(item.href) && (
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-[2.5px] h-[18px] rounded-r-[3px]"
+                    className="absolute top-1/2 -translate-y-1/2 w-[2.5px] h-[22px] rounded-r-[3px]"
                     style={{ left: '-1px', background: 'linear-gradient(180deg, #1E40AF, #3B82F6)' }}
                   />
                 )}
@@ -203,7 +213,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 onClick={() => handleNavClick(item)}
                 className={cn(
-                  "flex items-center justify-center h-9 w-9 rounded-[10px] transition-all duration-150 relative",
+                  "flex flex-col items-center gap-0.5 w-[60px] py-1.5 px-1 rounded-[10px] transition-all duration-150 relative",
                   isActive(item.href)
                     ? "bg-[#DBEAFE]/80 text-[#1E40AF] shadow-[0_1px_4px_rgba(30,64,175,0.08)]"
                     : "bg-transparent text-[#8b8fa3] hover:text-[#64748b] hover:bg-black/[0.04]"
@@ -211,9 +221,15 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 title={item.label}
               >
                 {item.icon}
+                <span className={cn(
+                  "text-[9px] font-medium leading-tight truncate max-w-[56px]",
+                  isActive(item.href) ? "font-semibold" : ""
+                )}>
+                  {item.shortLabel || item.label}
+                </span>
                 {isActive(item.href) && (
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-[2.5px] h-[18px] rounded-r-[3px]"
+                    className="absolute top-1/2 -translate-y-1/2 w-[2.5px] h-[22px] rounded-r-[3px]"
                     style={{ left: '-1px', background: 'linear-gradient(180deg, #1E40AF, #3B82F6)' }}
                   />
                 )}
@@ -231,7 +247,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     onClick={() => handleNavClick(item)}
                     className={cn(
-                      "flex items-center justify-center h-9 w-9 rounded-[10px] transition-all duration-150 relative",
+                      "flex flex-col items-center gap-0.5 w-[60px] py-1.5 px-1 rounded-[10px] transition-all duration-150 relative",
                       isActive(item.href)
                         ? "bg-violet-500/20 text-violet-300"
                         : "bg-transparent text-[#8b8fa3] hover:text-violet-300 hover:bg-violet-500/10"
@@ -239,6 +255,12 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     title={item.label}
                   >
                     {item.icon}
+                    <span className={cn(
+                      "text-[9px] font-medium leading-tight truncate max-w-[56px]",
+                      isActive(item.href) ? "font-semibold" : ""
+                    )}>
+                      {item.shortLabel || item.label}
+                    </span>
                     {isActive(item.href) && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 bg-violet-400 rounded-r" />
                     )}
@@ -248,10 +270,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             )}
             <button
               onClick={() => { setPanelSection(null); navigate("/settings"); }}
-              className="flex items-center justify-center h-9 w-9 rounded-[10px] bg-transparent text-[#8b8fa3] hover:text-[#64748b] hover:bg-black/[0.04] transition-all duration-150"
+              className="flex flex-col items-center gap-0.5 w-[60px] py-1.5 px-1 rounded-[10px] bg-transparent text-[#8b8fa3] hover:text-[#64748b] hover:bg-black/[0.04] transition-all duration-150"
               title="Configurações"
             >
               <IconSettings className="h-5 w-5" />
+              <span className="text-[9px] font-medium leading-tight truncate max-w-[56px]">Config</span>
             </button>
 
             {user && (
