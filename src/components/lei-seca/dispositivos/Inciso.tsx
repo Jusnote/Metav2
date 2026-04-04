@@ -11,7 +11,7 @@ interface IncisoProps {
 
 export function Inciso({ item, leiSecaMode, grifos = [], onGrifoClick }: IncisoProps) {
   return (
-    <div className="pl-[58px] mb-1.5 relative" data-id={item.id} data-posicao={item.posicao}>
+    <div className="pl-[58px] mb-1.5 relative text-[13px]" data-id={item.id} data-posicao={item.posicao}>
       <span className="absolute left-[44px] text-[13px] text-[#d8d8d8]">›</span>
       <span data-texto><GrifoText texto={item.texto} tipo={item.tipo} grifos={grifos} onGrifoClick={onGrifoClick} /></span>
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (

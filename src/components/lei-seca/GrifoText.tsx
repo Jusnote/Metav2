@@ -39,7 +39,7 @@ export const GrifoText = memo(function GrifoText({
   // If no grifos, render with BoldPrefix logic only (fast path)
   if (grifos.length === 0) {
     if (boldEnd > 0) {
-      return <><strong>{texto.slice(0, boldEnd)}</strong>{texto.slice(boldEnd)}</>
+      return <><strong style={tipo === 'ARTIGO' ? { color: '#b45309' } : undefined}>{texto.slice(0, boldEnd)}</strong>{texto.slice(boldEnd)}</>
     }
     return <>{texto}</>
   }
@@ -47,7 +47,7 @@ export const GrifoText = memo(function GrifoText({
   return (
     <>
       {segments.map((seg, i) => {
-        const content = renderSegmentContent(seg, boldEnd)
+        const content = renderSegmentContent(seg, boldEnd, tipo)
 
         if (seg.grifo) {
           if (renderMark) {
@@ -85,14 +85,15 @@ export const GrifoText = memo(function GrifoText({
   )
 })
 
-function renderSegmentContent(seg: GrifoSegment, boldEnd: number): React.ReactNode {
+function renderSegmentContent(seg: GrifoSegment, boldEnd: number, tipo?: string): React.ReactNode {
   if (boldEnd <= 0) return seg.text
 
   const segStart = seg.startOffset
   const segEnd = seg.endOffset
+  const amberStyle = tipo === 'ARTIGO' ? { color: '#b45309' } as const : undefined
 
   if (segEnd <= boldEnd) {
-    return <strong>{seg.text}</strong>
+    return <strong style={amberStyle}>{seg.text}</strong>
   }
 
   if (segStart >= boldEnd) {
@@ -102,7 +103,7 @@ function renderSegmentContent(seg: GrifoSegment, boldEnd: number): React.ReactNo
   const boldChars = boldEnd - segStart
   return (
     <>
-      <strong>{seg.text.slice(0, boldChars)}</strong>
+      <strong style={amberStyle}>{seg.text.slice(0, boldChars)}</strong>
       {seg.text.slice(boldChars)}
     </>
   )

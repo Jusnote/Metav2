@@ -11,7 +11,7 @@ interface AlineaProps {
 
 export function Alinea({ item, leiSecaMode, grifos = [], onGrifoClick }: AlineaProps) {
   return (
-    <div className="pl-[82px] mb-[5px] text-[#333] relative" data-id={item.id} data-posicao={item.posicao}>
+    <div className="pl-[82px] mb-[5px] text-[#333] relative text-[13px]" data-id={item.id} data-posicao={item.posicao}>
       <span className="absolute left-[68px] text-[12px] text-[#e0e0e0]">›</span>
       <span data-texto><GrifoText texto={item.texto} tipo={item.tipo} grifos={grifos} onGrifoClick={onGrifoClick} /></span>
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (

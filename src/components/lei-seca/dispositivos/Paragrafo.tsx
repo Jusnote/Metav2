@@ -11,7 +11,7 @@ interface ParagrafoProps {
 
 export function Paragrafo({ item, leiSecaMode, grifos = [], onGrifoClick }: ParagrafoProps) {
   return (
-    <div className="pl-[34px] mb-2 relative" data-id={item.id} data-posicao={item.posicao}>
+    <div className="pl-[34px] mb-2 relative text-[13px]" data-id={item.id} data-posicao={item.posicao}>
       <span className="absolute left-[20px] text-[14px] text-[#d0d0d0]">›</span>
       <span data-texto><GrifoText texto={item.texto} tipo={item.tipo} grifos={grifos} onGrifoClick={onGrifoClick} /></span>
       {!leiSecaMode && item.anotacoes && item.anotacoes.length > 0 && (
