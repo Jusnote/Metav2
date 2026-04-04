@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
+
+const EMPTY_GRIFOS: Grifo[] = []
 import { useNoteOpenGrifoId } from '@/stores/grifoPopupStore'
 import { DispositivoRenderer } from './DispositivoRenderer'
 import { EstruturaBlock } from './EstruturaBlock'
@@ -16,8 +18,11 @@ interface DispositivoListProps {
   grifosByDispositivo?: Map<string, Grifo[]>
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
   onSaveNote?: (grifoId: string, note: string) => void
-  reactionsMap?: Map<string, import('@/hooks/useDispositivoReactions').DispositivoReaction>
-  onToggleReaction?: (dispositivoId: string, emoji: string) => void
+  likesSet?: Set<string>
+  onToggleLike?: (dispositivoId: string) => void
+  incidenciaMap?: Record<string, number>
+  commentCountsMap?: Record<string, number>
+  noteFlagsSet?: Set<string>
 }
 
 type RenderItem =
@@ -70,16 +75,38 @@ export function DispositivoList({
   grifosByDispositivo,
   onGrifoClick,
   onSaveNote,
-  reactionsMap,
-  onToggleReaction,
+  likesSet,
+  onToggleLike,
+  incidenciaMap,
+  commentCountsMap,
+  noteFlagsSet,
 }: DispositivoListProps) {
   const fontSize = useFontSize()
   const grouped = useMemo(() => groupItems(dispositivos), [dispositivos])
   const noteOpenGrifoId = useNoteOpenGrifoId()
+  const [openFooterId, setOpenFooterId] = useState<string | null>(null)
+
+  const handleToggleFooter = useCallback((id: string) => {
+    setOpenFooterId(prev => prev === id ? null : id)
+  }, [])
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash.startsWith('#disp_')) {
+      const dispId = hash.replace('#disp_', '')
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`disp_${dispId}`)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          setOpenFooterId(dispId)
+        }
+      })
+    }
+  }, [dispositivos])
 
   return (
     <div
-      className="max-w-5xl mx-auto px-5 font-[Literata,Georgia,serif] leading-[1.9] text-[rgb(67,80,92)] text-justify"
+      className="max-w-5xl mx-auto px-5 font-[Nunito,sans-serif] leading-[1.8] text-[#374151] text-justify"
       style={{ fontSize: `${fontSize}px` }}
     >
       {grouped.map(entry => {
@@ -103,12 +130,20 @@ export function DispositivoList({
               leiId={leiId}
               leiSecaMode={leiSecaMode}
               showRevogados={showRevogados}
-              grifos={grifosByDispositivo?.get(entry.item.id) ?? []}
+              grifos={grifosByDispositivo?.get(entry.item.id) ?? EMPTY_GRIFOS}
               onGrifoClick={onGrifoClick}
               onSaveNote={onSaveNote}
               noteOpenGrifoId={noteOpenGrifoId}
-              reaction={reactionsMap?.get(entry.item.id)}
-              onToggleReaction={onToggleReaction}
+              // Accordion
+              footerOpen={openFooterId === String(entry.item.id)}
+              onToggleFooter={handleToggleFooter}
+              // Batch data
+              liked={likesSet?.has(String(entry.item.id)) ?? false}
+              onToggleLike={onToggleLike!}
+              incidencia={incidenciaMap?.[String(entry.item.id)] ?? null}
+              commentsCount={commentCountsMap?.[String(entry.item.id)] ?? 0}
+              hasNote={noteFlagsSet?.has(String(entry.item.id)) ?? false}
+              likesCount={0}
             />
           </div>
         )

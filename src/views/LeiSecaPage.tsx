@@ -7,8 +7,6 @@ import dynamic from "next/dynamic";
 import { DispositivoList } from "@/components/lei-seca/dispositivos/DispositivoList";
 import { LeiToolbar } from "@/components/lei-seca/LeiToolbar";
 import { useLeiSeca } from "@/contexts/LeiSecaContext";
-import { activeArtigoStore } from "@/stores/activeArtigoStore";
-import { leiCommentsStore, useLeiCommentsOpen } from "@/stores/leiCommentsStore";
 import { useKeyboardNav } from "@/hooks/useKeyboardNav";
 import { useCopyWithReference } from "@/hooks/useCopyWithReference";
 import { ReadingProgressBar } from "@/components/lei-seca/ReadingProgressBar";
@@ -19,20 +17,15 @@ import { useGrifos } from "@/hooks/useGrifos";
 import { GrifoPopup } from "@/components/lei-seca/GrifoPopup";
 import { grifoPopupStore } from "@/stores/grifoPopupStore";
 import type { Grifo, GrifoColor } from "@/types/grifo";
-import { useDispositivoReactions, useToggleDispositivoReaction } from '@/hooks/useDispositivoReactions';
+import { useDispositivoLikes, useToggleDispositivoLike } from '@/hooks/useDispositivoLikes';
+
+import { useDispositivoCommentCounts, useDispositivoNoteFlags } from '@/hooks/useDispositivoBadges';
+import { useLeiIncidencia } from '@/hooks/useLeiIncidencia';
 
 const StudyCompanionPanel = dynamic(
   () =>
     import("@/components/lei-seca/study-companion-panel").then((mod) => ({
       default: mod.StudyCompanionPanel,
-    })),
-  { ssr: false }
-);
-
-const LeiCommentsPanel = dynamic(
-  () =>
-    import("@/components/lei-seca/lei-comments-panel").then((mod) => ({
-      default: mod.LeiCommentsPanel,
     })),
   { ssr: false }
 );
@@ -54,9 +47,8 @@ export default function LeiSecaPage() {
     companionOpen,
   } = useLeiSeca();
 
-  const commentsOpen = useLeiCommentsOpen();
   const isMobile = useIsMobile();
-  const [mobilePanel, setMobilePanel] = useState<'companion' | 'comments' | null>(null);
+  const [mobilePanel, setMobilePanel] = useState<'companion' | null>(null);
 
   useKeyboardNav({
     dispositivos,
@@ -67,12 +59,22 @@ export default function LeiSecaPage() {
   useCopyWithReference(dispositivos, currentLei);
 
   const { grifosByDispositivo, createGrifo, updateGrifo, deleteGrifo } = useGrifos(currentLeiId)
-  const { data: reactionsMap } = useDispositivoReactions(currentLeiId);
-  const toggleReaction = useToggleDispositivoReaction();
-  const handleToggleReaction = useCallback((dispositivoId: string, emoji: string) => {
-    if (!currentLeiId) return;
-    toggleReaction.mutate({ dispositivoId, leiId: currentLeiId, emoji });
-  }, [currentLeiId, toggleReaction]);
+  const { data: likesSet } = useDispositivoLikes(currentLeiId);
+  const toggleLike = useToggleDispositivoLike();
+  const { data: incidenciaMap } = useLeiIncidencia(currentLeiId);
+  const { data: commentCountsMap } = useDispositivoCommentCounts(currentLeiId);
+  const { data: noteFlagsSet } = useDispositivoNoteFlags(currentLeiId);
+
+  // Stabilize via ref so useCallback deps stay empty
+  const toggleLikeRef = useRef(toggleLike);
+  toggleLikeRef.current = toggleLike;
+  const leiIdRef = useRef(currentLeiId);
+  leiIdRef.current = currentLeiId;
+
+  const handleToggleLike = useCallback((dispositivoId: string) => {
+    if (!leiIdRef.current) return;
+    toggleLikeRef.current.mutate({ dispositivoId, leiId: leiIdRef.current });
+  }, []);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Selection handler — opens grifo popup on text selection
@@ -182,11 +184,6 @@ export default function LeiSecaPage() {
   const activeIndex = useActiveArtigoIndex();
   useReadingProgressTracker(currentLeiId, dispositivos, totalDispositivos, activeIndex);
 
-  // Sync comments store with current lei
-  useEffect(() => {
-    if (currentLeiId) leiCommentsStore.setLeiId(currentLeiId);
-  }, [currentLeiId]);
-
   // Scroll to a dispositivo by posicao (used by SearchBreadcrumb)
   const handleScrollToDispositivo = useCallback(
     (posicao: number) => {
@@ -210,17 +207,6 @@ export default function LeiSecaPage() {
       }
     },
     [dispositivos]
-  );
-
-  // Scroll to a dispositivo by slug (used by LeiCommentsPanel)
-  const scrollToCommentSlug = useCallback(
-    (slug: string) => {
-      const el = document.querySelector(`[data-id="${slug}"]`);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    },
-    []
   );
 
   if (isLoading) {
@@ -268,17 +254,6 @@ export default function LeiSecaPage() {
             <span>🤖</span>
             <span>Companion</span>
           </button>
-          <button
-            onClick={() => setMobilePanel(mobilePanel === 'comments' ? null : 'comments')}
-            className={`flex h-8 items-center gap-1.5 rounded-lg border px-3 text-[12px] font-medium transition-colors ${
-              mobilePanel === 'comments'
-                ? 'border-violet-300 bg-violet-50 text-violet-600'
-                : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
-            }`}
-          >
-            <span>💬</span>
-            <span>Notas</span>
-          </button>
         </div>
       )}
 
@@ -307,25 +282,21 @@ export default function LeiSecaPage() {
               grifosByDispositivo={grifosByDispositivo}
               onGrifoClick={handleGrifoClick}
               onSaveNote={handleSaveNote}
-              reactionsMap={reactionsMap}
-              onToggleReaction={handleToggleReaction}
+              likesSet={likesSet}
+              onToggleLike={handleToggleLike}
+              incidenciaMap={incidenciaMap}
+              commentCountsMap={commentCountsMap}
+              noteFlagsSet={noteFlagsSet}
             />
           </div>
         </div>
 
         {/* Study Companion Panel (desktop only) */}
-        {!isMobile && !commentsOpen && companionOpen && (
+        {!isMobile && companionOpen && (
           <div
             className="w-[360px] flex-shrink-0 border-l border-border/50 overflow-y-auto"
           >
             <StudyCompanionPanel />
-          </div>
-        )}
-
-        {/* Comments panel — fixed panel, outside scroll (desktop only) */}
-        {!isMobile && commentsOpen && (
-          <div className="w-[340px] flex-shrink-0 bg-[#F8FAFD] dark:bg-zinc-900 border-l border-border/50 overflow-y-auto">
-            <LeiCommentsPanel onScrollToSlug={scrollToCommentSlug} />
           </div>
         )}
       </div>
@@ -346,26 +317,6 @@ export default function LeiSecaPage() {
           }
         >
           <StudyCompanionPanel />
-        </MobileSheet>
-      )}
-
-      {/* Mobile: Comments panel as sheet */}
-      {isMobile && (
-        <MobileSheet
-          open={mobilePanel === 'comments'}
-          onClose={() => setMobilePanel(null)}
-          height="65dvh"
-          header={
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="text-[14px]">💬</span>
-                <span className="text-[13px] font-semibold text-zinc-900">Comentários</span>
-              </div>
-              <button onClick={() => setMobilePanel(null)} className="text-[13px] text-zinc-400 hover:text-zinc-600">✕</button>
-            </div>
-          }
-        >
-          <LeiCommentsPanel onScrollToSlug={scrollToCommentSlug} />
         </MobileSheet>
       )}
 

@@ -1,29 +1,29 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { type Value } from 'platejs';
 import { ChevronDownIcon, MessageCircleIcon } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useQuestionComments } from '@/hooks/useQuestionComments';
-import { useCommentMutations } from '@/hooks/useCommentMutations';
-import type { QuestionComment, CommentSortOption } from '@/types/question-comments';
-import { CommunityCommentItem } from './CommunityCommentItem';
-import { CommunityCommentReplies } from './CommunityCommentReplies';
-import { CommunityCommentEditor } from './CommunityCommentEditor';
-import { CommentReportModal } from './CommentReportModal';
+
+import { useAuth } from '@/hooks/useAuth';
+import { useDispositivoComments } from '@/hooks/useDispositivoComments';
+import { useDispositivoCommentMutations } from '@/hooks/useDispositivoCommentMutations';
+import { useToggleDispositivoCommentUpvote } from '@/hooks/useToggleDispositivoCommentUpvote';
+import { useToggleDispositivoCommentReaction } from '@/hooks/useToggleDispositivoCommentReaction';
+import type { DispositivoComment, CommentSortOption } from '@/types/comments';
+
+import { CommentItem } from '@/components/shared/comments/CommentItem';
+import { CommentEditor } from '@/components/shared/comments/CommentEditor';
 import { CollapsedThread } from '@/components/shared/comments/CollapsedThread';
-import { usePendingReportCounts } from '@/hooks/moderation/usePendingReportCounts';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
-interface CommunityCommentsProps {
-  questionId: number;
-  currentUserId?: string;
-  /** Pre-fill the editor with content (e.g. from "Post to Community" on a private note) */
-  initialContent?: Value | null;
+interface DispositivoCommunityCommentsProps {
+  dispositivoId: string;
+  leiId: string;
+  leiUpdatedAt?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -36,7 +36,7 @@ const SORT_LABELS: Record<CommentSortOption, string> = {
   teacher: 'Professor primeiro',
 };
 
-function sortRoots(roots: QuestionComment[], option: CommentSortOption): QuestionComment[] {
+function sortComments(roots: DispositivoComment[], option: CommentSortOption): DispositivoComment[] {
   return [...roots].sort((a, b) => {
     // Pinned always first
     if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
@@ -138,33 +138,32 @@ function SortDropdown({ value, onChange }: SortDropdownProps) {
 }
 
 // ---------------------------------------------------------------------------
-// DeletedRootWithReplies — collapsed thread for a deleted root that has replies
+// DeletedRootWithReplies
 // ---------------------------------------------------------------------------
 
 interface DeletedRootWithRepliesProps {
-  rootId: string;
-  replies: QuestionComment[];
-  questionId: number;
+  replies: DispositivoComment[];
+  dispositivoId: string;
+  leiId: string;
   currentUserId?: string;
   onReply: (commentId: string) => void;
   onEdit: (commentId: string) => void;
   onDelete: (commentId: string) => void;
-  onReport: (commentId: string) => void;
-  onPin: (commentId: string, isPinned: boolean) => void;
-  onEndorse: (commentId: string, isEndorsed: boolean) => void;
+  onToggleUpvote: (commentId: string) => void;
+  onToggleReaction: (commentId: string, emoji: string) => void;
+  outdatedThreshold?: string;
 }
 
 function DeletedRootWithReplies({
-  rootId,
   replies,
-  questionId,
+  dispositivoId,
   currentUserId,
   onReply,
   onEdit,
   onDelete,
-  onReport,
-  onPin,
-  onEndorse,
+  onToggleUpvote,
+  onToggleReaction,
+  outdatedThreshold,
 }: DeletedRootWithRepliesProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -176,18 +175,24 @@ function DeletedRootWithReplies({
         onToggle={() => setExpanded((e) => !e)}
       />
       {expanded && (
-        <CommunityCommentReplies
-          replies={replies}
-          questionId={questionId}
-          currentUserId={currentUserId}
-          onReply={onReply}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onReport={onReport}
-          onPin={onPin}
-          onEndorse={onEndorse}
-          defaultExpanded
-        />
+        <div className="ml-[38px] space-y-1">
+          {replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              entityType="dispositivo"
+              entityId={dispositivoId}
+              isReply
+              currentUserId={currentUserId}
+              onReply={onReply}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onToggleUpvote={onToggleUpvote}
+              onToggleReaction={onToggleReaction}
+              outdatedThreshold={outdatedThreshold}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -197,52 +202,40 @@ function DeletedRootWithReplies({
 // Main component
 // ---------------------------------------------------------------------------
 
-export function CommunityComments({ questionId, currentUserId: externalUserId, initialContent }: CommunityCommentsProps) {
-  const { data: comments, isLoading } = useQuestionComments(questionId);
-  const { createComment, editComment, deleteComment, pinComment, endorseComment, isCreating, isEditing, isDeleting } =
-    useCommentMutations(questionId);
+export function DispositivoCommunityComments({
+  dispositivoId,
+  leiId,
+  leiUpdatedAt,
+}: DispositivoCommunityCommentsProps) {
+  const { user } = useAuth();
+  const currentUserId = user?.id;
 
-  // Resolve currentUserId from Supabase auth if not passed as prop
-  const [resolvedUserId, setResolvedUserId] = useState<string | undefined>(externalUserId);
-  useEffect(() => {
-    if (externalUserId) { setResolvedUserId(externalUserId); return; }
-    supabase.auth.getUser().then(({ data }) => {
-      setResolvedUserId(data.user?.id);
-    });
-  }, [externalUserId]);
-  const currentUserId = resolvedUserId;
+  const { data: comments, isLoading } = useDispositivoComments(dispositivoId, leiId);
+  const {
+    createComment,
+    editComment,
+    deleteComment,
+    pinComment,
+    endorseComment,
+    isCreating,
+    isEditing,
+  } = useDispositivoCommentMutations(dispositivoId, leiId);
+
+  const { mutate: toggleUpvote } = useToggleDispositivoCommentUpvote(dispositivoId, leiId);
+  const { mutate: toggleReaction } = useToggleDispositivoCommentReaction(dispositivoId, leiId);
 
   const isMobile = useIsMobile();
   const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [sortOption, setSortOption] = useState<CommentSortOption>('top');
   const [activeEditor, setActiveEditor] = useState<ActiveEditor | null>(null);
 
-  // Report modal state
-  const [reportCommentId, setReportCommentId] = useState<string | null>(null);
-  const [reportOpen, setReportOpen] = useState(false);
-
-  // Pre-fill content from "Post to Community" (private note)
-  const [prefillContent, setPrefillContent] = useState<Value | null>(initialContent ?? null);
-
-  // When initialContent changes externally, open the editor with it
-  useEffect(() => {
-    if (initialContent) {
-      setPrefillContent(initialContent);
-      setActiveEditor({ type: 'new' });
-    }
-  }, [initialContent]);
-
-  // Batch report counts for inline badges
-  const commentIds = (comments ?? []).map(c => c.id);
-  const { data: reportCounts } = usePendingReportCounts(commentIds);
-
   // ---- Derived data -------------------------------------------------------
 
-  const roots: QuestionComment[] = (comments ?? []).filter((c) => c.root_id === null);
-  const allReplies: QuestionComment[] = (comments ?? []).filter((c) => c.root_id !== null);
+  const roots: DispositivoComment[] = (comments ?? []).filter((c) => c.root_id === null);
+  const allReplies: DispositivoComment[] = (comments ?? []).filter((c) => c.root_id !== null);
 
   // Group replies by root_id
-  const repliesByRoot = allReplies.reduce<Record<string, QuestionComment[]>>((acc, reply) => {
+  const repliesByRoot = allReplies.reduce<Record<string, DispositivoComment[]>>((acc, reply) => {
     const key = reply.root_id!;
     if (!acc[key]) acc[key] = [];
     acc[key].push(reply);
@@ -254,7 +247,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
     bucket.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
   );
 
-  const sortedRoots = sortRoots(roots, sortOption);
+  const sortedRoots = sortComments(roots, sortOption);
 
   // ---- Editor management --------------------------------------------------
 
@@ -268,9 +261,8 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
 
   const handleReply = useCallback(
     (commentId: string) => {
-      // Reply at root level but track the actual comment being replied to
       const comment = comments?.find((c) => c.id === commentId);
-      const rootId = comment?.root_id ?? commentId; // if it's already a root, use itself
+      const rootId = comment?.root_id ?? commentId;
       openEditor({ type: 'reply', commentId: rootId, replyToId: commentId });
     },
     [comments, openEditor]
@@ -285,16 +277,11 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
 
   const handleDelete = useCallback(
     async (commentId: string) => {
-      if (!window.confirm('Remover este comentário?')) return;
+      if (!window.confirm('Remover este comentario?')) return;
       await deleteComment(commentId);
     },
     [deleteComment]
   );
-
-  const handleReport = useCallback((commentId: string) => {
-    setReportCommentId(commentId);
-    setReportOpen(true);
-  }, []);
 
   const handlePin = useCallback(
     async (commentId: string, isPinned: boolean) => {
@@ -310,15 +297,33 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
     [endorseComment]
   );
 
+  const handleToggleUpvote = useCallback(
+    (commentId: string) => {
+      toggleUpvote(commentId);
+    },
+    [toggleUpvote]
+  );
+
+  const handleToggleReaction = useCallback(
+    (commentId: string, emoji: string) => {
+      toggleReaction({ commentId, emoji });
+    },
+    [toggleReaction]
+  );
+
   // ---- Submit handlers ----------------------------------------------------
 
   const handleSubmitNew = useCallback(
     async (content_json: Record<string, unknown>, content_text: string) => {
-      await createComment({ question_id: questionId, content_json, content_text });
-      setPrefillContent(null);
+      await createComment({
+        dispositivo_id: dispositivoId,
+        lei_id: leiId,
+        content_json,
+        content_text,
+      });
       closeEditor();
     },
-    [createComment, questionId, closeEditor]
+    [createComment, dispositivoId, leiId, closeEditor]
   );
 
   const handleSubmitReply = useCallback(
@@ -329,7 +334,8 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
       content_text: string
     ) => {
       await createComment({
-        question_id: questionId,
+        dispositivo_id: dispositivoId,
+        lei_id: leiId,
         content_json,
         content_text,
         root_id: rootId,
@@ -337,7 +343,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
       });
       closeEditor();
     },
-    [createComment, questionId, closeEditor]
+    [createComment, dispositivoId, leiId, closeEditor]
   );
 
   const handleSubmitEdit = useCallback(
@@ -362,15 +368,15 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
   // -------------------------------------------------------------------------
 
   return (
-    <div className="flex flex-col gap-0">
+    <div className="flex flex-col gap-0 rounded-lg bg-[#fafafa] px-3 py-3">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 pb-3">
         <div className="flex items-center gap-1.5">
           <MessageCircleIcon className="size-3.5 text-blue-600" />
           <span className="text-[13px] font-semibold text-blue-600">
-            {(comments ?? []).filter((c) => c.root_id === null && !c.is_deleted).length} comentários
+            {(comments ?? []).filter((c) => c.root_id === null && !c.is_deleted).length} comentarios
           </span>
-          <span className="text-zinc-300">·</span>
+          <span className="text-zinc-300">*</span>
           <SortDropdown value={sortOption} onChange={setSortOption} />
         </div>
 
@@ -379,20 +385,20 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
           onClick={() => openEditor({ type: 'new' })}
           className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
-          Escrever comentário
+          Escrever comentario
         </button>
       </div>
 
       {/* New comment editor */}
       {activeEditor?.type === 'new' && (
         <div className="mb-4">
-          <CommunityCommentEditor
-            questionId={questionId}
+          <CommentEditor
+            entityType="dispositivo"
+            entityId={dispositivoId}
             mode="new"
             draftContext="new"
-            initialValue={prefillContent ?? undefined}
             onSubmit={handleSubmitNew}
-            onCancel={() => { setPrefillContent(null); closeEditor(); }}
+            onCancel={closeEditor}
             isSubmitting={isCreating}
           />
         </div>
@@ -418,25 +424,23 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
               activeEditor?.type === 'reply' && activeEditor.commentId === root.id;
 
             if (root.is_deleted && replies.length === 0) {
-              // Deleted root with no replies — skip rendering entirely
               return null;
             }
 
             if (root.is_deleted && replies.length > 0) {
-              // Deleted root with replies — show collapsed thread
               return (
                 <div key={root.id} className={index > 0 ? 'border-t border-zinc-100 dark:border-zinc-800/50' : ''}>
                   <DeletedRootWithReplies
-                    rootId={root.id}
                     replies={replies}
-                    questionId={questionId}
+                    dispositivoId={dispositivoId}
+                    leiId={leiId}
                     currentUserId={currentUserId}
                     onReply={handleReply}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    onReport={handleReport}
-                    onPin={handlePin}
-                    onEndorse={handleEndorse}
+                    onToggleUpvote={handleToggleUpvote}
+                    onToggleReaction={handleToggleReaction}
+                    outdatedThreshold={leiUpdatedAt}
                   />
                 </div>
               );
@@ -446,11 +450,12 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
               <div key={root.id} className={index > 0 ? 'border-t border-zinc-100 dark:border-zinc-800/50' : ''}>
                 {/* Root comment (or inline edit editor) */}
                 {isEditingThis ? (
-                  <CommunityCommentEditor
-                    questionId={questionId}
+                  <CommentEditor
+                    entityType="dispositivo"
+                    entityId={dispositivoId}
                     mode="edit"
                     draftContext={`edit_${root.id}`}
-                    initialValue={root.content_json as unknown as import('platejs').Value}
+                    initialValue={root.content_json as unknown as Value}
                     onSubmit={(content_json, content_text) =>
                       handleSubmitEdit(root.id, content_json, content_text)
                     }
@@ -458,40 +463,73 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
                     isSubmitting={isEditing}
                   />
                 ) : (
-                  <CommunityCommentItem
+                  <CommentItem
                     comment={root}
-                    questionId={questionId}
+                    entityType="dispositivo"
+                    entityId={dispositivoId}
                     currentUserId={currentUserId}
                     onReply={handleReply}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    onReport={handleReport}
                     onPin={handlePin}
                     onEndorse={handleEndorse}
-                    pendingReportCount={reportCounts?.get(root.id) ?? 0}
+                    onToggleUpvote={handleToggleUpvote}
+                    onToggleReaction={handleToggleReaction}
+                    outdatedThreshold={leiUpdatedAt}
                   />
                 )}
 
                 {/* Replies */}
                 {replies.length > 0 && (
-                  <CommunityCommentReplies
-                    replies={replies}
-                    questionId={questionId}
-                    currentUserId={currentUserId}
-                    onReply={handleReply}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onReport={handleReport}
-                    onPin={handlePin}
-                    onEndorse={handleEndorse}
-                  />
+                  <div className="ml-[38px] space-y-1">
+                    {replies.map((reply) => {
+                      const isEditingReply =
+                        activeEditor?.type === 'edit' && activeEditor.commentId === reply.id;
+
+                      if (isEditingReply) {
+                        return (
+                          <CommentEditor
+                            key={reply.id}
+                            entityType="dispositivo"
+                            entityId={dispositivoId}
+                            mode="edit"
+                            draftContext={`edit_${reply.id}`}
+                            initialValue={reply.content_json as unknown as Value}
+                            onSubmit={(content_json, content_text) =>
+                              handleSubmitEdit(reply.id, content_json, content_text)
+                            }
+                            onCancel={closeEditor}
+                            isSubmitting={isEditing}
+                          />
+                        );
+                      }
+
+                      return (
+                        <CommentItem
+                          key={reply.id}
+                          comment={reply}
+                          entityType="dispositivo"
+                          entityId={dispositivoId}
+                          isReply
+                          currentUserId={currentUserId}
+                          onReply={handleReply}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                          onToggleUpvote={handleToggleUpvote}
+                          onToggleReaction={handleToggleReaction}
+                          outdatedThreshold={leiUpdatedAt}
+                        />
+                      );
+                    })}
+                  </div>
                 )}
 
                 {/* Reply editor below this thread */}
                 {isReplyingToThis && activeEditor?.type === 'reply' && (
                   <div className="ml-[38px] mt-2">
-                    <CommunityCommentEditor
-                      questionId={questionId}
+                    <CommentEditor
+                      entityType="dispositivo"
+                      entityId={dispositivoId}
                       mode="reply"
                       draftContext={`reply_${root.id}`}
                       replyToName={replyToNameFor(activeEditor.replyToId)}
@@ -511,7 +549,7 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
               onClick={() => setCommentsExpanded(true)}
               className="mt-2 w-full py-2 text-center text-[12px] font-medium text-violet-600 transition-colors hover:text-violet-700"
             >
-              Ver {sortedRoots.length - 3} comentários restantes
+              Ver {sortedRoots.length - 3} comentarios restantes
             </button>
           )}
         </div>
@@ -521,16 +559,9 @@ export function CommunityComments({ questionId, currentUserId: externalUserId, i
       {!isLoading && sortedRoots.length === 0 && (
         <div className="flex flex-col items-center gap-2 py-10 text-center text-zinc-400">
           <MessageCircleIcon className="size-8 opacity-40" />
-          <p className="text-sm">Nenhum comentário. Seja o primeiro!</p>
+          <p className="text-sm">Nenhum comentario. Seja o primeiro!</p>
         </div>
       )}
-
-      {/* Report modal */}
-      <CommentReportModal
-        open={reportOpen}
-        onOpenChange={setReportOpen}
-        commentId={reportCommentId}
-      />
     </div>
   );
 }

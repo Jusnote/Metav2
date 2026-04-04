@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import type { Dispositivo } from '@/types/lei-api'
 import type { Grifo } from '@/types/grifo'
-import type { DispositivoReaction } from '@/hooks/useDispositivoReactions'
 import { normalizeOrdinals } from '@/lib/lei-text-normalizer'
 import { grifoPopupStore } from '@/stores/grifoPopupStore'
 import { GrifoNoteInline } from '@/components/lei-seca/GrifoNoteInline'
-import { DispositivoActions } from './DispositivoActions'
+import { DispositivoGutter } from './DispositivoGutter'
+import { DispositivoFooter } from './DispositivoFooter'
+import { LeiReportModal } from '@/components/lei-seca/LeiReportModal'
 import { GRIFO_COLORS } from '@/types/grifo'
 import { EstruturaHeader } from './EstruturaHeader'
 import { Epigrafe } from './Epigrafe'
@@ -18,6 +19,7 @@ import { RevogadoCollapsed } from './RevogadoCollapsed'
 import { GenericDispositivo } from './GenericDispositivo'
 
 const STRUCTURAL = ['PARTE', 'LIVRO', 'TITULO', 'CAPITULO', 'SECAO', 'SUBSECAO', 'SUBTITULO']
+const EMPTY_GRIFOS: Grifo[] = []
 
 interface Props {
   item: Dispositivo
@@ -28,11 +30,23 @@ interface Props {
   onGrifoClick?: (grifo: Grifo, rect: DOMRect) => void
   onSaveNote?: (grifoId: string, note: string) => void
   noteOpenGrifoId?: string | null
-  reaction?: DispositivoReaction
-  onToggleReaction?: (dispositivoId: string, emoji: string) => void
+  footerOpen: boolean
+  onToggleFooter: (id: string) => void
+  liked: boolean
+  onToggleLike: (id: string) => void
+  incidencia: number | null
+  commentsCount: number
+  hasNote: boolean
+  likesCount: number
 }
 
-export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos = [], onGrifoClick, onSaveNote, noteOpenGrifoId, reaction, onToggleReaction }: Props) {
+export const DispositivoRenderer = memo(function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRevogados, grifos: grifosProp, onGrifoClick, onSaveNote, noteOpenGrifoId, footerOpen, onToggleFooter, liked, onToggleLike, incidencia, commentsCount, hasNote, likesCount }: Props) {
+  const grifos = grifosProp ?? EMPTY_GRIFOS
+  const [reportOpen, setReportOpen] = useState(false)
+  const itemId = String(rawItem.id)
+  const handleToggleFooter = useCallback(() => onToggleFooter(itemId), [onToggleFooter, itemId])
+  const handleToggleLike = useCallback(() => onToggleLike(itemId), [onToggleLike, itemId])
+
   const item = useMemo<Dispositivo>(() => ({
     ...rawItem,
     texto: normalizeOrdinals(rawItem.texto),
@@ -61,44 +75,54 @@ export function DispositivoRenderer({ item: rawItem, leiId, leiSecaMode, showRev
   else if (item.tipo === 'PENA') content = <Pena item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
   else content = <GenericDispositivo item={item} grifos={grifos} onGrifoClick={onGrifoClick} />
 
-  if (leiId && onToggleReaction) {
-    return (
-      <DispositivoActions
-        dispositivoId={String(item.id)}
-        leiId={leiId}
-        texto={item.texto}
-        tipo={item.tipo}
-        posicao={item.posicao}
-        reaction={reaction}
-        onToggleReaction={(emoji) => onToggleReaction(String(item.id), emoji)}
-      >
-        {(gutter, below) => (
-          <div className="group/disp">
-            <div className="flex items-start">
-              <div className="flex-1 min-w-0">{content}</div>
-              {gutter}
-            </div>
-            {below}
-            {noteOpenGrifo && onSaveNote && (
-              <GrifoNoteInline grifoId={noteOpenGrifo.id} color={noteOpenGrifo.color} initialNote={noteOpenGrifo.note} onSave={onSaveNote} onCancel={() => grifoPopupStore.closeNote()} />
-            )}
-            {!noteOpenGrifo && grifosWithNotes.length > 0 && <NoteBadge grifos={grifosWithNotes} />}
-          </div>
-        )}
-      </DispositivoActions>
-    )
-  }
-
   return (
-    <div className="group/disp">
-      {content}
+    <div className="group/disp" id={`disp_${item.id}`}>
+      <div className="flex items-start">
+        <div className="flex-1 min-w-0">{content}</div>
+        {leiId && (
+          <DispositivoGutter
+            liked={liked}
+            onToggleLike={handleToggleLike}
+            incidencia={incidencia}
+            commentsCount={commentsCount}
+            hasNote={hasNote}
+            footerOpen={footerOpen}
+            onToggleFooter={handleToggleFooter}
+          />
+        )}
+      </div>
+      {footerOpen && (
+        <DispositivoFooter
+          texto={item.texto}
+          dispositivoId={String(item.id)}
+          leiId={leiId!}
+          dispositivoTipo={item.tipo}
+          dispositivoPosicao={item.posicao}
+          commentsCount={commentsCount}
+          hasNote={hasNote}
+          likesCount={likesCount}
+          incidencia={incidencia}
+          onReport={() => { setReportOpen(true); handleToggleFooter(); }}
+        />
+      )}
+      {reportOpen && (
+        <LeiReportModal
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          dispositivoId={String(item.id)}
+          leiId={leiId!}
+          dispositivoTipo={item.tipo}
+          dispositivoNumero={String(item.posicao)}
+          dispositivoTexto={item.texto}
+        />
+      )}
       {noteOpenGrifo && onSaveNote && (
         <GrifoNoteInline grifoId={noteOpenGrifo.id} color={noteOpenGrifo.color} initialNote={noteOpenGrifo.note} onSave={onSaveNote} onCancel={() => grifoPopupStore.closeNote()} />
       )}
       {!noteOpenGrifo && grifosWithNotes.length > 0 && <NoteBadge grifos={grifosWithNotes} />}
     </div>
   )
-}
+})
 
 function NoteBadge({ grifos }: { grifos: Grifo[] }) {
   const [expanded, setExpanded] = useState(false)

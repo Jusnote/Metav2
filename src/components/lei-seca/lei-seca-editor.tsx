@@ -22,7 +22,6 @@ import {
   Zap,
   Copy,
   MessageSquare,
-  MessageSquarePlus,
   Bookmark,
   MoreHorizontal,
   PanelRight,
@@ -40,10 +39,7 @@ import { useLeiSeca } from '@/contexts/LeiSecaContext';
 import { cn } from '@/lib/utils';
 import { useCadernosOptional } from '@/contexts/CadernosContext';
 import type { ContextChainItem } from '@/types/caderno';
-import { leiCommentsStore, useLeiCommentsOpen } from '@/stores/leiCommentsStore';
-
-// Feature flag: set to true to re-enable the legacy comments sidebar panel
-const FEATURE_LEGACY_COMMENTS_PANEL = true;
+// Legacy comments panel has been removed — inline comments via DispositivoFooter replace it.
 
 // ============ Extract parent context from DOM ============
 
@@ -189,21 +185,17 @@ function LeiSecaToolbar({
   focusEnabled,
   spotlightEnabled,
   companionOpen,
-  commentsOpen,
   onToggleFocus,
   onToggleSpotlight,
   onToggleCompanion,
-  onToggleComments,
 }: {
   editor: ReturnType<typeof useEditor>;
   focusEnabled: boolean;
   spotlightEnabled: boolean;
   companionOpen: boolean;
-  commentsOpen: boolean;
   onToggleFocus: () => void;
   onToggleSpotlight: () => void;
   onToggleCompanion: () => void;
-  onToggleComments: () => void;
 }) {
   if (!editor) return null;
 
@@ -318,19 +310,6 @@ function LeiSecaToolbar({
           <span>Painel</span>
         </button>
 
-        {FEATURE_LEGACY_COMMENTS_PANEL && (
-          <button
-            onMouseDown={(e) => { e.preventDefault(); onToggleComments(); }}
-            className={`flex items-center gap-1 px-2 py-1 rounded-sm text-xs transition-colors ${
-              commentsOpen
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-            }`}
-            title="Comentários"
-          >
-            <MessageSquarePlus className="h-3.5 w-3.5" />
-          </button>
-        )}
       </div>
     </div>
   );
@@ -352,7 +331,6 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
   } = useLeiSeca();
 
   const cadernosCtx = useCadernosOptional();
-  const commentsOpen = useLeiCommentsOpen();
   const annotationState = useAnnotationState();
 
   // ---- View effect toggles (persisted in localStorage) ----
@@ -614,9 +592,6 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
       const nodePos = $pos.before($pos.depth);
 
       setFocusedProvision({ slug, role, text, nodePos });
-      if (FEATURE_LEGACY_COMMENTS_PANEL) {
-        leiCommentsStore.setActiveSlug(slug);
-      }
     },
     [showAiPanel, editor, setFocusedProvision]
   );
@@ -657,18 +632,6 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
     setActionExpanded(false);
   }, [actionPara]);
 
-  const handleCommentAction = useCallback(() => {
-    if (!actionPara || !FEATURE_LEGACY_COMMENTS_PANEL) return;
-    const para = getParaEl(actionPara.slug);
-    leiCommentsStore.startComment(
-      actionPara.slug,
-      para?.dataset?.role || 'artigo',
-      actionPara.text.substring(0, 120),
-    );
-    setActionPara(null);
-    setActionExpanded(false);
-  }, [actionPara, getParaEl]);
-
   const handleSaveAction = useCallback(async () => {
     if (!cadernosCtx || !actionPara) return;
     const slug = actionPara.slug;
@@ -700,26 +663,6 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
     setActionPara(null);
   }, [cadernosCtx, actionPara, currentLeiId, currentLei]);
 
-  // ---- Comment highlights (sync DOM with store) ----
-
-  useEffect(() => {
-    if (!FEATURE_LEGACY_COMMENTS_PANEL) return;
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const apply = () => {
-      const slugs = leiCommentsStore.getCommentSlugs();
-      container.querySelectorAll<HTMLElement>('p[data-slug]').forEach((p) => {
-        const slug = p.dataset.slug || '';
-        p.classList.toggle('lei-has-comment', slugs.has(slug));
-      });
-    };
-
-    apply();
-    const unsub = leiCommentsStore.subscribe(apply);
-    return unsub;
-  }, [tiptapDoc]);
-
   // ---- Sync content updates ----
 
   useEffect(() => {
@@ -745,11 +688,9 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
         focusEnabled={focusEnabled}
         spotlightEnabled={spotlightEnabled}
         companionOpen={companionOpen}
-        commentsOpen={commentsOpen}
         onToggleFocus={toggleFocus}
         onToggleSpotlight={toggleSpotlight}
         onToggleCompanion={() => setCompanionOpen(!companionOpen)}
-        onToggleComments={() => FEATURE_LEGACY_COMMENTS_PANEL && leiCommentsStore.togglePanel()}
       />
 
       {/* Bubble Menu (appears on text selection) */}
@@ -829,11 +770,6 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
               </button>
             ) : (
               <div className="flex items-center rounded-full border border-border/40 bg-background/95 backdrop-blur-sm shadow-md px-1 py-0.5" style={{ transform: 'translateX(calc(-100% + 1.75rem))' }}>
-                {FEATURE_LEGACY_COMMENTS_PANEL && (
-                  <button onClick={handleCommentAction} className="p-1.5 rounded-full text-muted-foreground/60 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors" title="Comentar">
-                    <MessageSquarePlus className="h-3.5 w-3.5" />
-                  </button>
-                )}
                 <button onClick={handleCopyAction} className="p-1.5 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-accent transition-colors" title="Copiar">
                   <Copy className="h-3.5 w-3.5" />
                 </button>

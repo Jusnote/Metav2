@@ -1,3 +1,7 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
 export type Json =
   | string
   | number
@@ -243,6 +247,205 @@ export type Database = {
           icon?: string | null
           id?: string
           title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dispositivo_comment_reactions: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          emoji: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          emoji: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          emoji?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispositivo_comment_reactions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "dispositivo_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispositivo_comment_upvotes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispositivo_comment_upvotes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "dispositivo_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispositivo_comments: {
+        Row: {
+          content_json: Json
+          content_text: string
+          created_at: string | null
+          dispositivo_id: string
+          edit_count: number | null
+          id: string
+          is_author_shadowbanned: boolean | null
+          is_deleted: boolean | null
+          is_endorsed: boolean | null
+          is_pinned: boolean | null
+          last_edited_at: string | null
+          lei_id: string
+          quoted_text: string | null
+          reply_count: number | null
+          reply_to_id: string | null
+          root_id: string | null
+          updated_at: string | null
+          upvote_count: number | null
+          user_id: string
+        }
+        Insert: {
+          content_json?: Json
+          content_text?: string
+          created_at?: string | null
+          dispositivo_id: string
+          edit_count?: number | null
+          id?: string
+          is_author_shadowbanned?: boolean | null
+          is_deleted?: boolean | null
+          is_endorsed?: boolean | null
+          is_pinned?: boolean | null
+          last_edited_at?: string | null
+          lei_id: string
+          quoted_text?: string | null
+          reply_count?: number | null
+          reply_to_id?: string | null
+          root_id?: string | null
+          updated_at?: string | null
+          upvote_count?: number | null
+          user_id: string
+        }
+        Update: {
+          content_json?: Json
+          content_text?: string
+          created_at?: string | null
+          dispositivo_id?: string
+          edit_count?: number | null
+          id?: string
+          is_author_shadowbanned?: boolean | null
+          is_deleted?: boolean | null
+          is_endorsed?: boolean | null
+          is_pinned?: boolean | null
+          last_edited_at?: string | null
+          lei_id?: string
+          quoted_text?: string | null
+          reply_count?: number | null
+          reply_to_id?: string | null
+          root_id?: string | null
+          updated_at?: string | null
+          upvote_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispositivo_comments_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "dispositivo_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispositivo_comments_root_id_fkey"
+            columns: ["root_id"]
+            isOneToOne: false
+            referencedRelation: "dispositivo_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispositivo_likes: {
+        Row: {
+          created_at: string | null
+          dispositivo_id: string
+          id: string
+          lei_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dispositivo_id: string
+          id?: string
+          lei_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dispositivo_id?: string
+          id?: string
+          lei_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dispositivo_notes: {
+        Row: {
+          content_json: Json
+          content_text: string
+          created_at: string | null
+          dispositivo_id: string
+          id: string
+          lei_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content_json?: Json
+          content_text?: string
+          created_at?: string | null
+          dispositivo_id: string
+          id?: string
+          lei_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content_json?: Json
+          content_text?: string
+          created_at?: string | null
+          dispositivo_id?: string
+          id?: string
+          lei_id?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -849,9 +1052,11 @@ export type Database = {
       }
       question_reports: {
         Row: {
+          assunto: string | null
           created_at: string
           details: string | null
           id: string
+          materia: string | null
           question_id: number
           reason: string
           reporter_id: string
@@ -860,9 +1065,11 @@ export type Database = {
           status: string
         }
         Insert: {
+          assunto?: string | null
           created_at?: string
           details?: string | null
           id?: string
+          materia?: string | null
           question_id: number
           reason: string
           reporter_id: string
@@ -871,9 +1078,11 @@ export type Database = {
           status?: string
         }
         Update: {
+          assunto?: string | null
           created_at?: string
           details?: string | null
           id?: string
+          materia?: string | null
           question_id?: number
           reason?: string
           reporter_id?: string
@@ -1723,6 +1932,55 @@ export type Database = {
         }[]
       }
       get_daily_capacity: { Args: { intensity_level: string }; Returns: number }
+      get_dispositivo_comment_counts: {
+        Args: { p_lei_id: string }
+        Returns: {
+          count: number
+          dispositivo_id: string
+        }[]
+      }
+      get_dispositivo_comments_with_votes: {
+        Args: { p_dispositivo_id: string; p_lei_id: string; p_user_id: string }
+        Returns: {
+          author_avatar_url: string
+          author_email: string
+          author_name: string
+          content_json: Json
+          content_text: string
+          created_at: string
+          dispositivo_id: string
+          edit_count: number
+          has_upvoted: boolean
+          id: string
+          is_author_shadowbanned: boolean
+          is_deleted: boolean
+          is_endorsed: boolean
+          is_pinned: boolean
+          last_edited_at: string
+          lei_id: string
+          quoted_text: string
+          reaction_counts: Json
+          reply_count: number
+          reply_to_id: string
+          root_id: string
+          updated_at: string
+          upvote_count: number
+          user_id: string
+          user_reactions: Json
+        }[]
+      }
+      get_dispositivo_likes: {
+        Args: { p_lei_id: string; p_user_id: string }
+        Returns: {
+          dispositivo_id: string
+        }[]
+      }
+      get_dispositivo_note_flags: {
+        Args: { p_lei_id: string; p_user_id: string }
+        Returns: {
+          dispositivo_id: string
+        }[]
+      }
       get_hard_limit_capacity: {
         Args: { intensity_level: string }
         Returns: number
@@ -1849,6 +2107,10 @@ export type Database = {
         }[]
       }
       get_user_role: { Args: { p_user_id: string }; Returns: string }
+      handle_dispositivo_soft_delete: {
+        Args: { p_comment_id: string }
+        Returns: undefined
+      }
       handle_soft_delete: {
         Args: { p_comment_id: string; p_user_id: string }
         Returns: Json
@@ -1868,6 +2130,18 @@ export type Database = {
           rank: number
           texto_plano: string
         }[]
+      }
+      toggle_dispositivo_comment_reaction: {
+        Args: { p_comment_id: string; p_emoji: string }
+        Returns: string
+      }
+      toggle_dispositivo_comment_upvote: {
+        Args: { p_comment_id: string }
+        Returns: string
+      }
+      toggle_dispositivo_like: {
+        Args: { p_dispositivo_id: string; p_lei_id: string }
+        Returns: string
       }
       toggle_reaction: {
         Args: { p_comment_id: string; p_emoji: string; p_user_id: string }
@@ -2013,3 +2287,5 @@ export const Constants = {
     Enums: {},
   },
 } as const
+A new version of Supabase CLI is available: v2.84.2 (currently installed v2.51.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
