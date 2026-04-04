@@ -274,8 +274,8 @@ function EstatisticasSection({ resposta, taxaAcertoGlobal }: { resposta: Respost
 function AIExplanation({ text, isLoading }: { text: string; isLoading: boolean }) {
   if (!text && isLoading) {
     return (
-      <div className="mt-1.5 pl-3 border-l-2 border-amber-400/30 dark:border-amber-500/25 flex items-center gap-1.5 qc-ai-enter">
-        <Loader2 className="w-3 h-3 animate-spin text-amber-500/60" />
+      <div className="mt-1.5 pl-3 border-l-2 border-blue-400/30 dark:border-blue-500/25 flex items-center gap-1.5 qc-ai-enter">
+        <Loader2 className="w-3 h-3 animate-spin text-blue-500/60" />
         <span className="text-[12px] text-zinc-400 dark:text-zinc-500">Analisando...</span>
       </div>
     );
@@ -284,7 +284,7 @@ function AIExplanation({ text, isLoading }: { text: string; isLoading: boolean }
   if (!text.trim()) return null;
 
   return (
-    <div className="mt-1.5 pl-3 border-l-2 border-amber-400/30 dark:border-amber-500/25 qc-ai-enter">
+    <div className="mt-1.5 pl-3 border-l-2 border-blue-400/30 dark:border-blue-500/25 qc-ai-enter">
       <p className="text-[12px] leading-[1.65] text-zinc-600 dark:text-zinc-400 whitespace-pre-line">
         {text.trim()}
         {isLoading && <span className="qc-ai-cursor" />}
@@ -649,7 +649,7 @@ export const QuestionCard = React.memo(function QuestionCard({
 
         {/* Row 1: Materia / Assunto inside highlighted box */}
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="qc-prova-box flex items-center gap-3 min-w-0 flex-1 px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/30 rounded-md border-l-2 border-l-amber-400/40 dark:border-l-amber-500/30">
+          <div className="qc-prova-box flex items-center gap-3 min-w-0 flex-1 px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/30 rounded-md border-l-2 border-l-blue-400/40 dark:border-l-blue-500/30">
             {/* Icon */}
             <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/40 rounded-full">
               <GraduationCap className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
@@ -676,7 +676,7 @@ export const QuestionCard = React.memo(function QuestionCard({
               </span>
             )}
             {caracteristicas?.desatualizada && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-amber-300/40 text-amber-500/70 shrink-0">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-blue-300/40 text-blue-500/70 shrink-0">
                 Desatualizada
               </span>
             )}
@@ -706,12 +706,12 @@ export const QuestionCard = React.memo(function QuestionCard({
             {/* Bookmark */}
             <button
               onClick={toggleBookmark}
-              className="p-0.5 rounded hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+              className="p-0.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               aria-label={bookmarked ? 'Remover marcacao' : 'Salvar questao'}
             >
               <Bookmark
                 className={`w-[18px] h-[18px] transition-colors ${
-                  bookmarked ? 'text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400' : 'text-zinc-400 dark:text-zinc-500 hover:text-amber-500'
+                  bookmarked ? 'text-blue-500 dark:text-blue-400 fill-blue-500 dark:fill-blue-400' : 'text-zinc-400 dark:text-zinc-500 hover:text-blue-500'
                 }`}
               />
             </button>
@@ -730,8 +730,8 @@ export const QuestionCard = React.memo(function QuestionCard({
               onClick={() => setHighlightMode('highlight')}
               className={`p-1 rounded transition-colors ${
                 highlightMode === 'highlight'
-                  ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                  : 'text-zinc-400 dark:text-zinc-500 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  : 'text-zinc-400 dark:text-zinc-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'
               }`}
               title="Modo destaque"
             >
@@ -862,7 +862,7 @@ export const QuestionCard = React.memo(function QuestionCard({
                         className="p-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer qc-icon-reveal"
                         title="Explicar com IA"
                       >
-                        <Sparkles className="w-3.5 h-3.5 text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors" />
+                        <Sparkles className="w-3.5 h-3.5 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" />
                       </button>
                     )}
                   </span>
@@ -929,13 +929,13 @@ export const QuestionCard = React.memo(function QuestionCard({
               onClick={() => toggleTab('nota')}
               className={`qc-footer-btn relative inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'nota'
-                  ? 'text-[#D97706] bg-[#FFFBEB] dark:text-amber-400 dark:bg-amber-950/30'
+                  ? 'text-[#2563EB] bg-[#EFF6FF] dark:text-blue-400 dark:bg-blue-950/30'
                   : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
               <PenLine className="w-[15px] h-[15px]" />
               {hasNote && (
-                <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-amber-500" />
+                <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-blue-500" />
               )}
             </button>
 
@@ -943,8 +943,8 @@ export const QuestionCard = React.memo(function QuestionCard({
               onClick={() => setReportModalOpen(true)}
               className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 hasReported
-                  ? 'text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:text-amber-400 dark:hover:bg-amber-900/20'
+                  ? 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/20'
               }`}
               title={hasReported ? 'Ja reportada' : 'Reportar erro'}
             >
@@ -989,7 +989,7 @@ export const QuestionCard = React.memo(function QuestionCard({
             <button
               onClick={handleResponder}
               disabled={!selectedAlternative || loading}
-              className="qc-submit-btn px-5 py-2 text-[13px] font-semibold text-white rounded-lg bg-[#E8930C] hover:bg-[#D4860B] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 focus-visible:ring-offset-2 shadow-[0_1px_4px_rgba(232,147,12,0.25)] hover:shadow-[0_2px_8px_rgba(232,147,12,0.30)] transition-all duration-200"
+              className="qc-submit-btn px-5 py-2 text-[13px] font-semibold text-white rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 shadow-[0_1px_4px_rgba(37,99,235,0.25)] hover:shadow-[0_2px_8px_rgba(37,99,235,0.30)] transition-all duration-200"
             >
               {loading ? (
                 <span className="inline-flex items-center gap-1.5">

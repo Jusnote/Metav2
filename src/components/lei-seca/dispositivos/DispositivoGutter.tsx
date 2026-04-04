@@ -77,7 +77,7 @@ export const DispositivoGutter = memo(function DispositivoGutter({
 
       <span className="text-muted-foreground/20">|</span>
 
-      {/* Badge unificado: 💬N + dot amber para nota */}
+      {/* Badge unificado: 💬N + dot blue para nota */}
       {(commentsCount > 0 || hasNote) && (
         <>
           <button
@@ -99,7 +99,7 @@ export const DispositivoGutter = memo(function DispositivoGutter({
               <span className="text-[10px] font-bold text-violet-500 tabular-nums">{commentsCount}</span>
             )}
             {hasNote && (
-              <span className="w-[5px] h-[5px] rounded-full bg-amber-500 ml-[1px]" />
+              <span className="w-[5px] h-[5px] rounded-full bg-blue-500 ml-[1px]" />
             )}
           </button>
           <span className="text-muted-foreground/20">|</span>

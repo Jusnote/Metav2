@@ -388,7 +388,7 @@ export function DocumentsOrganizationSidebar() {
               <>
                 <button
                   onClick={() => setGoalDialogOpen(true)}
-                  className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
+                  className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200"
                   title="Criar Nova Meta"
                 >
                   <Target className="w-4 h-4" />
@@ -526,7 +526,7 @@ export function DocumentsOrganizationSidebar() {
                                   topicId: topic.id,
                                 });
                               }}
-                              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-amber-600 transition-all"
+                              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-blue-600 transition-all"
                             >
                               <span className="text-base font-semibold">+</span>
                               <span className="font-medium text-xs">Adicionar Subtópico</span>
@@ -547,7 +547,7 @@ export function DocumentsOrganizationSidebar() {
                           topicId: null,
                         });
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-amber-600 transition-all"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-blue-600 transition-all"
                     >
                       <span className="text-lg font-semibold">+</span>
                       <span className="font-medium text-sm">Adicionar Tópico</span>

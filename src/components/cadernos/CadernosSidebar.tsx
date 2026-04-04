@@ -258,13 +258,13 @@ export function CadernosSidebar() {
                       className={cn(
                         "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-colors",
                         isActive
-                          ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                          ? "bg-blue-500/10 text-blue-700 dark:text-blue-400"
                           : "text-foreground/80 hover:bg-accent"
                       )}
                     >
                       <span className={cn(
                         "w-2 h-2 rounded-sm flex-shrink-0 border transition-colors",
-                        isActive ? "bg-amber-500 border-amber-500" : "border-muted-foreground/40"
+                        isActive ? "bg-blue-500 border-blue-500" : "border-muted-foreground/40"
                       )} />
                       <span className="text-[11px] flex-1">#{marker}</span>
                       <span className="text-[10px] text-muted-foreground flex-shrink-0">{count}</span>

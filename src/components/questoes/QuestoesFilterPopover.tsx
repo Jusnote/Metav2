@@ -136,10 +136,10 @@ function CheckboxList({
           height: ROW_HEIGHT,
           background: isHighlighted
             ? checked
-              ? "#FEF3C7"
+              ? "#DBEAFE"
               : "#F9FAFB"
             : checked
-              ? "#FFFBEB"
+              ? "#EFF6FF"
               : "transparent",
           ...style,
         }}
@@ -153,8 +153,8 @@ function CheckboxList({
             width: 16,
             height: 16,
             borderRadius: 5,
-            border: checked ? "1.5px solid #E8930C" : "1.5px solid #d0d3d9",
-            background: checked ? "#E8930C" : "#fff",
+            border: checked ? "1.5px solid #2563EB" : "1.5px solid #d0d3d9",
+            background: checked ? "#2563EB" : "#fff",
             flexShrink: 0,
           }}
           className="inline-flex items-center justify-center transition-colors duration-100"
@@ -196,7 +196,7 @@ function CheckboxList({
                   height: "100%",
                   borderRadius: 3,
                   background: checked
-                    ? "linear-gradient(90deg, #F59E0B, #E8930C)"
+                    ? "linear-gradient(90deg, #3B82F6, #2563EB)"
                     : "#d0d3d9",
                 }}
               />
@@ -422,7 +422,7 @@ export function QuestoesFilterPopover({
               style={{ lineHeight: "20px" }}
               onFocus={(e) => {
                 const parent = e.currentTarget.parentElement;
-                if (parent) parent.style.borderColor = "#E8930C";
+                if (parent) parent.style.borderColor = "#2563EB";
               }}
               onBlur={(e) => {
                 const parent = e.currentTarget.parentElement;
@@ -509,14 +509,14 @@ export function QuestoesFilterPopover({
             <button
               type="button"
               onClick={handleSelectAll}
-              className="text-[11px] font-medium text-[#E8930C] hover:text-[#B45309] transition-colors cursor-pointer"
+              className="text-[11px] font-medium text-[#2563EB] hover:text-[#1E40AF] transition-colors cursor-pointer"
             >
               Selecionar todos
             </button>
             <button
               type="button"
               onClick={handleInvert}
-              className="text-[11px] font-medium text-[#E8930C] hover:text-[#B45309] transition-colors cursor-pointer"
+              className="text-[11px] font-medium text-[#2563EB] hover:text-[#1E40AF] transition-colors cursor-pointer"
             >
               Inverter
             </button>

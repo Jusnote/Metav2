@@ -86,10 +86,10 @@ export const QuestoesFilterPill = React.forwardRef<
         "font-medium leading-none",
         // Hover state (only when inactive)
         !isActive && !isOpen
-          ? "hover:border-[#E8930C] hover:text-[#B45309]"
+          ? "hover:border-[#2563EB] hover:text-[#1E40AF]"
           : "",
         // Open state (only when inactive)
-        !isActive && isOpen ? "!border-[#E8930C] !text-[#B45309]" : "",
+        !isActive && isOpen ? "!border-[#2563EB] !text-[#1E40AF]" : "",
       ]
         .filter(Boolean)
         .join(" ")}

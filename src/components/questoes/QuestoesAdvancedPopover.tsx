@@ -66,7 +66,7 @@ function ToggleSwitch({ checked, onChange }: ToggleSwitchProps) {
         width: 44,
         height: 26,
         borderRadius: 13,
-        background: checked ? "#E8930C" : "#e0e3e8",
+        background: checked ? "#2563EB" : "#e0e3e8",
         border: "none",
         padding: 2,
         cursor: "pointer",
@@ -193,7 +193,7 @@ export function QuestoesAdvancedPopover({
             style={{
               fontSize: 11,
               fontWeight: 500,
-              color: activeCount > 0 ? "#E8930C" : "#a0a4ac",
+              color: activeCount > 0 ? "#2563EB" : "#a0a4ac",
             }}
           >
             {activeCount} filtro{activeCount !== 1 ? "s" : ""} ativo{activeCount !== 1 ? "s" : ""}
@@ -205,7 +205,7 @@ export function QuestoesAdvancedPopover({
             style={{
               fontSize: 11,
               fontWeight: 500,
-              color: "#E8930C",
+              color: "#2563EB",
               background: "none",
               border: "none",
               padding: 0,

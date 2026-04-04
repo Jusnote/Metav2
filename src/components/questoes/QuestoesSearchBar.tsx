@@ -568,7 +568,7 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
     ? "Buscar..."
     : "Buscar questoes ou digite / para filtros...";
 
-  // ---- Is the input border in slash mode (amber) ----
+  // ---- Is the input border in slash mode (blue) ----
   const inSlashMode = slash.active;
 
   return (
@@ -577,7 +577,7 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
         style={{
           height: 44,
           background: "#fff",
-          border: inSlashMode ? "1.5px solid #E8930C" : "1px solid #e2e5ea",
+          border: inSlashMode ? "1.5px solid #2563EB" : "1px solid #e2e5ea",
           borderBottom: inSlashMode ? "none" : "none",
           borderRadius: inSlashMode ? "14px 14px 0 0" : "14px 14px 0 0",
           padding: "0 16px",
@@ -590,13 +590,13 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
         className={
           inSlashMode
             ? "questoes-search-bar"
-            : "questoes-search-bar focus-within:border-[#E8930C] focus-within:shadow-[0_0_0_3px_rgba(232,147,12,0.06)]"
+            : "questoes-search-bar focus-within:border-[#2563EB] focus-within:shadow-[0_0_0_3px_rgba(37,99,235,0.06)]"
         }
       >
         {/* Search icon */}
         <Search
           size={16}
-          color={inSlashMode ? "#E8930C" : "#888"}
+          color={inSlashMode ? "#2563EB" : "#888"}
           style={{ flexShrink: 0, transition: "color 150ms ease" }}
         />
 
@@ -622,12 +622,12 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
               aria-hidden="true"
             >
               <span style={{ color: "#333" }}>{mirrorContent.beforeSlash}</span>
-              <span style={{ color: "#E8930C", fontWeight: 600 }}>
+              <span style={{ color: "#2563EB", fontWeight: 600 }}>
                 /{mirrorContent.categoryText}
               </span>
               {slash.phase === "value" && (
                 <>
-                  <span style={{ color: "#E8930C" }}> </span>
+                  <span style={{ color: "#2563EB" }}> </span>
                   <span
                     style={{
                       color: mirrorContent.hasMatch ? "#D4A06A" : "#999",
@@ -664,7 +664,7 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
               background: "transparent",
               fontSize: 14,
               color: inSlashMode ? "transparent" : "#1a1a1a",
-              caretColor: inSlashMode ? "#E8930C" : undefined,
+              caretColor: inSlashMode ? "#2563EB" : undefined,
               minWidth: 0,
               position: "relative",
               zIndex: 1,
@@ -701,8 +701,8 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
           <span
             style={{
               fontSize: 8,
-              color: "#E8930C",
-              background: "#FEF3C7",
+              color: "#2563EB",
+              background: "#EFF6FF",
               borderRadius: 8,
               padding: "2px 7px",
               fontWeight: 600,
@@ -791,10 +791,10 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
               fontSize: 16,
               padding: "4px 12px",
               borderRadius: 8,
-              background: mobileSlashActive ? "#E8930C" : "#fff",
-              color: mobileSlashActive ? "#fff" : "#E8930C",
+              background: mobileSlashActive ? "#2563EB" : "#fff",
+              color: mobileSlashActive ? "#fff" : "#2563EB",
               fontWeight: 700,
-              border: "2px solid #E8930C",
+              border: "2px solid #2563EB",
               cursor: "pointer",
               lineHeight: 1.2,
               flexShrink: 0,
@@ -819,7 +819,7 @@ export function QuestoesSearchBar({ autoFocus = false }: QuestoesSearchBarProps)
                     fontSize: 12,
                     padding: "6px 14px",
                     borderRadius: 8,
-                    background: isActive ? "#E8930C" : "#fff",
+                    background: isActive ? "#2563EB" : "#fff",
                     color: isActive ? "#fff" : "#374151",
                     fontWeight: 500,
                     border: "none",

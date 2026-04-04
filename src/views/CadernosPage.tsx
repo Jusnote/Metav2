@@ -122,7 +122,7 @@ function ProvisionCard({
               {markers.map((m) => (
                 <span
                   key={m}
-                  className="group/tag inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                  className="group/tag inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
                 >
                   #{m}
                   <button
@@ -147,16 +147,16 @@ function ProvisionCard({
                     }}
                     onBlur={() => { if (!newMarker.trim()) setIsAdding(false); }}
                     placeholder="tag..."
-                    className="w-16 text-[10px] bg-transparent border-b border-amber-400 outline-none py-0.5"
+                    className="w-16 text-[10px] bg-transparent border-b border-blue-400 outline-none py-0.5"
                   />
-                  <button onClick={handleAdd} className="p-0.5 text-amber-600">
+                  <button onClick={handleAdd} className="p-0.5 text-blue-600">
                     <Check className="h-2.5 w-2.5" />
                   </button>
                 </span>
               ) : (
                 <button
                   onClick={() => setIsAdding(true)}
-                  className="opacity-0 group-hover:opacity-100 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[10px] text-muted-foreground hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all"
+                  className="opacity-0 group-hover:opacity-100 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[10px] text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
                 >
                   <Plus className="h-2.5 w-2.5" />
                   tag
@@ -165,8 +165,8 @@ function ProvisionCard({
             </div>
 
             {item.note && (
-              <div className="mt-2 px-3 py-2 rounded bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30">
-                <p className="text-xs text-amber-800 dark:text-amber-200">{item.note}</p>
+              <div className="mt-2 px-3 py-2 rounded bg-blue-50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/30">
+                <p className="text-xs text-blue-800 dark:text-blue-200">{item.note}</p>
               </div>
             )}
           </div>
@@ -421,8 +421,8 @@ export default function CadernosPage() {
                 className={cn(
                   "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors",
                   activeMarkerParams.includes(marker)
-                    ? "bg-amber-500 text-white"
-                    : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50"
+                    ? "bg-blue-500 text-white"
+                    : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50"
                 )}
               >
                 #{marker}
@@ -447,7 +447,7 @@ export default function CadernosPage() {
             ))}
             {/* Tag chips */}
             {effectiveMarkers.map((m) => (
-              <span key={`tag-${m}`} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+              <span key={`tag-${m}`} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
                 #{m}
                 {!activeView && (
                   <button onClick={() => removeFilterChip('tag', m)} className="hover:text-red-500">

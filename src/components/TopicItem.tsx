@@ -134,7 +134,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
         <button
           onClick={handleClick}
           className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-150 border-l-2 ${
-            isSelected ? 'bg-zinc-200/50 border-[#E8930C] font-medium' : 'border-transparent hover:bg-zinc-100/40'
+            isSelected ? 'bg-zinc-200/50 border-[#2563EB] font-medium' : 'border-transparent hover:bg-zinc-100/40'
           }`}
         >
           {/* Chevron */}

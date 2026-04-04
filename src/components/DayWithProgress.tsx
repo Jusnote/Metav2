@@ -37,19 +37,19 @@ export function DayWithProgress({
     if (loadPercentage > 100) {
       return {
         trackColor: '#f87171',      // red-400 — sobrecarga
-        progressColor: '#E8930C',    // amber brand
+        progressColor: '#2563EB',    // brand blue
       };
     }
     if (loadPercentage >= 80) {
       return {
-        trackColor: '#fde68a',       // amber-200 — alerta
-        progressColor: '#E8930C',    // amber brand
+        trackColor: '#fde68a',       // blue-200 — alerta
+        progressColor: '#2563EB',    // brand blue
       };
     }
 
     return {
       trackColor: hasException ? '#a1a1aa' : '#d4d4d8', // zinc-400/zinc-300 track
-      progressColor: '#E8930C',     // amber brand
+      progressColor: '#2563EB',     // brand blue
     };
   };
 
@@ -123,7 +123,7 @@ export function DayWithProgress({
       <div className={`
         relative z-10 text-[11px] font-medium transition-all duration-200
         ${isSelected
-          ? 'text-white bg-[#E8930C] rounded-full w-[22px] h-[22px] flex items-center justify-center font-semibold shadow-[0_0_0_2px_rgba(232,147,12,0.2)]'
+          ? 'text-white bg-[#2563EB] rounded-full w-[22px] h-[22px] flex items-center justify-center font-semibold shadow-[0_0_0_2px_rgba(37,99,235,0.2)]'
           : isToday
             ? 'text-zinc-800 font-bold'
             : hasTasks
@@ -137,7 +137,7 @@ export function DayWithProgress({
 
       {/* Today dot */}
       {isToday && !isSelected && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full bg-[#E8930C]" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full bg-[#2563EB]" />
       )}
     </div>
   );

@@ -257,7 +257,7 @@ export function VirtualizedQuestionList() {
             </span>
           )}
           {isExactSearch && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600">
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600">
               <Quote className="h-3 w-3" />
               Busca exata
             </span>

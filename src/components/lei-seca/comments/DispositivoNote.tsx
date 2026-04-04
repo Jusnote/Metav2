@@ -21,15 +21,15 @@ interface DispositivoNoteProps {
 }
 
 // ---------------------------------------------------------------------------
-// Loading skeleton (amber shimmer)
+// Loading skeleton (blue shimmer)
 // ---------------------------------------------------------------------------
 
 function NoteSkeleton() {
   return (
     <div className="animate-pulse space-y-2 px-4 py-3">
-      <div className="h-3 w-32 rounded bg-amber-200/60 dark:bg-amber-800/40" />
-      <div className="h-3 w-full rounded bg-amber-200/60 dark:bg-amber-800/40" />
-      <div className="h-3 w-3/4 rounded bg-amber-200/60 dark:bg-amber-800/40" />
+      <div className="h-3 w-32 rounded bg-blue-200/60 dark:bg-blue-800/40" />
+      <div className="h-3 w-full rounded bg-blue-200/60 dark:bg-blue-800/40" />
+      <div className="h-3 w-3/4 rounded bg-blue-200/60 dark:bg-blue-800/40" />
     </div>
   );
 }
@@ -102,13 +102,13 @@ export function DispositivoNote({ dispositivoId, leiId }: DispositivoNoteProps) 
   return (
     <div
       className={cn(
-        'rounded-lg border bg-[#fffdf5] border-[#fef3c7]',
-        'dark:border-amber-800/30 dark:bg-amber-950/10',
+        'rounded-lg border bg-[#EFF6FF] border-[#BFDBFE]',
+        'dark:border-blue-800/30 dark:bg-blue-950/10',
       )}
     >
       {/* Header */}
       <div className="flex items-center gap-2 px-4 pt-3 pb-2">
-        <Lock className="size-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
+        <Lock className="size-3.5 shrink-0 text-blue-600 dark:text-blue-500" />
         <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
           Minha anotacao
         </span>
@@ -120,7 +120,7 @@ export function DispositivoNote({ dispositivoId, leiId }: DispositivoNoteProps) 
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-zinc-500 hover:bg-amber-100/80 hover:text-zinc-700 dark:hover:bg-amber-900/30 dark:hover:text-zinc-300"
+              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-zinc-500 hover:bg-blue-100/80 hover:text-zinc-700 dark:hover:bg-blue-900/30 dark:hover:text-zinc-300"
             >
               <Pencil className="size-3" />
               <span>Editar</span>

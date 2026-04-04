@@ -39,7 +39,7 @@ export const GrifoText = memo(function GrifoText({
   // If no grifos, render with BoldPrefix logic only (fast path)
   if (grifos.length === 0) {
     if (boldEnd > 0) {
-      return <><strong style={tipo === 'ARTIGO' ? { color: '#b45309' } : undefined}>{texto.slice(0, boldEnd)}</strong>{texto.slice(boldEnd)}</>
+      return <><strong style={tipo === 'ARTIGO' ? { color: '#1E40AF' } : undefined}>{texto.slice(0, boldEnd)}</strong>{texto.slice(boldEnd)}</>
     }
     return <>{texto}</>
   }
@@ -90,10 +90,10 @@ function renderSegmentContent(seg: GrifoSegment, boldEnd: number, tipo?: string)
 
   const segStart = seg.startOffset
   const segEnd = seg.endOffset
-  const amberStyle = tipo === 'ARTIGO' ? { color: '#b45309' } as const : undefined
+  const brandStyle = tipo === 'ARTIGO' ? { color: '#1E40AF' } as const : undefined
 
   if (segEnd <= boldEnd) {
-    return <strong style={amberStyle}>{seg.text}</strong>
+    return <strong style={brandStyle}>{seg.text}</strong>
   }
 
   if (segStart >= boldEnd) {
@@ -103,7 +103,7 @@ function renderSegmentContent(seg: GrifoSegment, boldEnd: number, tipo?: string)
   const boldChars = boldEnd - segStart
   return (
     <>
-      <strong style={amberStyle}>{seg.text.slice(0, boldChars)}</strong>
+      <strong style={brandStyle}>{seg.text.slice(0, boldChars)}</strong>
       {seg.text.slice(boldChars)}
     </>
   )

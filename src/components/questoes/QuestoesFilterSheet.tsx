@@ -120,7 +120,7 @@ function ToggleSwitch({
         width: 44,
         height: 26,
         borderRadius: 13,
-        background: checked ? "#E8930C" : "#e0e3e8",
+        background: checked ? "#2563EB" : "#e0e3e8",
         border: "none",
         padding: 2,
         cursor: "pointer",
@@ -215,7 +215,7 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
           className="flex items-center gap-1 cursor-pointer"
           style={{ background: "none", border: "none", padding: 0 }}
         >
-          <ChevronLeft size={18} style={{ color: "#E8930C" }} />
+          <ChevronLeft size={18} style={{ color: "#2563EB" }} />
           <span
             style={{
               fontSize: 15,
@@ -233,7 +233,7 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
           style={{
             fontSize: 14,
             fontWeight: 600,
-            color: "#E8930C",
+            color: "#2563EB",
             background: "none",
             border: "none",
             padding: 0,
@@ -248,7 +248,7 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
         <span style={{ fontSize: 10, color: "#a0a4ac" }}>
           Filtros{" "}
           <span style={{ color: "#c0c4cc" }}>&gt;</span>{" "}
-          <span style={{ color: "#E8930C" }}>{category.label}</span>
+          <span style={{ color: "#2563EB" }}>{category.label}</span>
         </span>
       </div>
 
@@ -302,7 +302,7 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
                 className="flex items-center gap-3 cursor-pointer active:bg-gray-50 transition-colors"
                 style={{
                   padding: "11px 16px",
-                  background: checked ? "#FFFBEB" : "transparent",
+                  background: checked ? "#EFF6FF" : "transparent",
                 }}
               >
                 {/* Checkbox (larger for touch) */}
@@ -312,9 +312,9 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
                     height: 20,
                     borderRadius: 6,
                     border: checked
-                      ? "1.5px solid #E8930C"
+                      ? "1.5px solid #2563EB"
                       : "1.5px solid #d0d3d9",
-                    background: checked ? "#E8930C" : "#fff",
+                    background: checked ? "#2563EB" : "#fff",
                     flexShrink: 0,
                   }}
                   className="inline-flex items-center justify-center"
@@ -365,7 +365,7 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
                           height: "100%",
                           borderRadius: 3,
                           background: checked
-                            ? "linear-gradient(90deg, #F59E0B, #E8930C)"
+                            ? "linear-gradient(90deg, #3B82F6, #2563EB)"
                             : "#d0d3d9",
                         }}
                       />
@@ -393,7 +393,7 @@ function InnerListView({ category, onBack, onClose, autoCloseOnSelect }: InnerLi
         </span>
         {selectedSet.size > 0 && (
           <span
-            style={{ fontSize: 11, fontWeight: 500, color: "#E8930C" }}
+            style={{ fontSize: 11, fontWeight: 500, color: "#2563EB" }}
           >
             {selectedSet.size} selecionada{selectedSet.size !== 1 ? "s" : ""}{" "}
             &#10003;
@@ -469,7 +469,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: 
             style={{
               fontSize: 14,
               fontWeight: 600,
-              color: "#E8930C",
+              color: "#2563EB",
               background: "none",
               border: "none",
               padding: 0,
@@ -485,7 +485,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: 
             style={{
               fontSize: 14,
               fontWeight: 600,
-              color: "#E8930C",
+              color: "#2563EB",
               background: "none",
               border: "none",
               padding: 0,
@@ -543,7 +543,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: 
                           width: 6,
                           height: 6,
                           borderRadius: "50%",
-                          background: "#E8930C",
+                          background: "#2563EB",
                           display: "inline-block",
                         }}
                       />
@@ -551,7 +551,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: 
                         style={{
                           fontSize: 10,
                           fontWeight: 500,
-                          color: "#E8930C",
+                          color: "#2563EB",
                         }}
                       >
                         {subtitle}
@@ -646,7 +646,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: 
         </div>
       </div>
 
-      {/* Footer — full-width amber Buscar button */}
+      {/* Footer — full-width blue Buscar button */}
       <div
         className="shrink-0"
         style={{
@@ -665,7 +665,7 @@ function CategoriesView({ onDrill, onClose, slashMode: isSlashMode, onSearch }: 
           style={{
             width: "100%",
             height: 42,
-            background: "#E8930C",
+            background: "#2563EB",
             color: "white",
             fontSize: 14,
             fontWeight: 600,

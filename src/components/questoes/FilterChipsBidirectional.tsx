@@ -261,7 +261,7 @@ export const FilterChipsBidirectional = React.memo(function FilterChipsBidirecti
         style={{
           height: 30,
           padding: "0 14px",
-          background: "#E8930C",
+          background: "#2563EB",
           color: "white",
           fontSize: 11,
           fontWeight: 600,

@@ -286,7 +286,7 @@ function LeiSecaToolbar({
           onMouseDown={(e) => { e.preventDefault(); onToggleSpotlight(); }}
           className={`flex items-center gap-1 px-2 py-1 rounded-sm text-xs transition-colors ${
             spotlightEnabled
-              ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+              ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
               : 'text-muted-foreground hover:text-foreground hover:bg-accent'
           }`}
           title="Spotlight: ilumina dispositivo em foco, apaga os demais"
@@ -778,7 +778,7 @@ export function LeiSecaEditor({ content }: LeiSecaEditorProps) {
                 </button>
                 {cadernosCtx && (
                   <button onClick={handleSaveAction} className="p-1.5 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-accent transition-colors" title={cadernosCtx.isSaved(actionPara.slug) ? 'Remover do caderno' : 'Salvar no caderno'}>
-                    <Bookmark className={cn("h-3.5 w-3.5", cadernosCtx.isSaved(actionPara.slug) && "fill-current text-amber-500")} />
+                    <Bookmark className={cn("h-3.5 w-3.5", cadernosCtx.isSaved(actionPara.slug) && "fill-current text-blue-500")} />
                   </button>
                 )}
                 <button

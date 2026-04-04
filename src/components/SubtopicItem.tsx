@@ -105,8 +105,8 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
           }}
           className={`shrink-0 w-4 h-4 rounded-[3.5px] border-[1.5px] flex items-center justify-center transition-all ${
             isCompleted
-              ? 'bg-[#E8930C] border-[#E8930C] animate-check-bounce'
-              : 'border-zinc-300 dark:border-zinc-600 hover:border-[#E8930C]/60'
+              ? 'bg-[#2563EB] border-[#2563EB] animate-check-bounce'
+              : 'border-zinc-300 dark:border-zinc-600 hover:border-[#2563EB]/60'
           }`}
           title={isCompleted ? 'Marcar como não concluído' : 'Marcar como concluído'}
         >
@@ -122,7 +122,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
             }
           }}
           className={`flex-1 flex items-center gap-1.5 px-1.5 py-1 rounded-md transition-all duration-150 border-l-2 ${
-            isSelected ? 'bg-zinc-200/50 border-[#E8930C]' : 'border-transparent hover:bg-zinc-100/40'
+            isSelected ? 'bg-zinc-200/50 border-[#2563EB]' : 'border-transparent hover:bg-zinc-100/40'
           }`}
         >
           {/* Título e Relevância */}
@@ -157,7 +157,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
                       return (
                         <svg
                           key={star}
-                          className={`w-2.5 h-2.5 ${star <= relevance ? 'text-[#E8930C]' : 'text-zinc-200 dark:text-zinc-700'}`}
+                          className={`w-2.5 h-2.5 ${star <= relevance ? 'text-[#2563EB]' : 'text-zinc-200 dark:text-zinc-700'}`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >

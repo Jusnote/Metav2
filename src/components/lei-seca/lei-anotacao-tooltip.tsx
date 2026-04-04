@@ -29,7 +29,7 @@ const TIPO_COLORS: Record<string, string> = {
   regulamento: 'text-purple-400',
   veto: 'text-red-500',
   acrescimo: 'text-emerald-400',
-  alteracao: 'text-amber-400',
+  alteracao: 'text-blue-400',
   supressao: 'text-rose-400',
   renumeracao: 'text-cyan-400',
   promulgacao: 'text-indigo-400',

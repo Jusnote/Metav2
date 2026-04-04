@@ -108,14 +108,14 @@ export function DispositivoFooter({
           <button
             onClick={() => toggleTab('nota')}
             className={`relative ${notaActive
-              ? `${btnBase} text-[#D97706] bg-[#FFFBEB] dark:text-amber-400 dark:bg-amber-950/30`
+              ? `${btnBase} text-[#2563EB] bg-[#EFF6FF] dark:text-blue-400 dark:bg-blue-950/30`
               : btnInactive
             }`}
           >
             <PenLine className="w-[15px] h-[15px]" />
             Nota
             {hasNote && !notaActive && (
-              <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-amber-500" />
+              <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-blue-500" />
             )}
           </button>
 

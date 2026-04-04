@@ -362,7 +362,7 @@ function IngestaoToolbar({
         <>
           <button
             onMouseDown={(e) => { e.preventDefault(); onHighlightAnnotations(); }}
-            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950 transition-colors"
             title="Destacar em amarelo os dispositivos com anotações legislativas (clique novamente para remover)"
           >
             <Highlighter className="h-3 w-3" />

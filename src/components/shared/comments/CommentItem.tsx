@@ -20,7 +20,7 @@ function getAvatarColor(name: string): string {
     'from-blue-400 to-blue-600',
     'from-green-400 to-green-600',
     'from-purple-400 to-purple-600',
-    'from-amber-400 to-amber-600',
+    'from-blue-400 to-blue-600',
     'from-rose-400 to-rose-600',
     'from-cyan-400 to-cyan-600',
   ];
@@ -150,7 +150,7 @@ export function CommentItem({
             <InlineReportBadge commentId={comment.id} pendingCount={pendingReportCount} />
             <span className="text-[11px] text-zinc-300">{relativeTime(comment.created_at)}</span>
             {outdatedThreshold && new Date(comment.created_at) < new Date(outdatedThreshold) && (
-              <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
                 ⚠️ Comentário anterior à última atualização da lei
               </span>
             )}

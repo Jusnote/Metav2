@@ -42,7 +42,7 @@ function highlightMatch(text: string, query: string): React.ReactNode {
   return (
     <>
       {text.slice(0, idx)}
-      <span style={{ color: "#E8930C", fontWeight: 700 }}>
+      <span style={{ color: "#2563EB", fontWeight: 700 }}>
         {text.slice(idx, idx + query.length)}
       </span>
       {text.slice(idx + query.length)}
@@ -85,7 +85,7 @@ export function QuestoesSlashInlineDropdown({
       <div
         style={{
           background: "white",
-          border: "1.5px solid #E8930C",
+          border: "1.5px solid #2563EB",
           borderTop: "none",
           borderRadius: "0 0 14px 14px",
           boxShadow: "0 12px 32px rgba(0,0,0,0.1)",
@@ -108,7 +108,7 @@ export function QuestoesSlashInlineDropdown({
               <React.Fragment key={cat.key}>
                 <span
                   style={{
-                    color: isMatched ? "#E8930C" : "#9ca3af",
+                    color: isMatched ? "#2563EB" : "#9ca3af",
                     fontWeight: isMatched ? 700 : 400,
                     transition: "color 100ms ease, font-weight 100ms ease",
                   }}
@@ -144,7 +144,7 @@ export function QuestoesSlashInlineDropdown({
     <div
       style={{
         background: "white",
-        border: "1.5px solid #E8930C",
+        border: "1.5px solid #2563EB",
         borderTop: "none",
         borderRadius: "0 0 14px 14px",
         boxShadow: "0 12px 32px rgba(0,0,0,0.1)",
@@ -172,9 +172,9 @@ export function QuestoesSlashInlineDropdown({
                 gap: 4,
                 fontSize: 11,
                 fontWeight: 500,
-                color: "#E8930C",
-                background: "#FFFBEB",
-                border: "1px solid #FDE68A",
+                color: "#2563EB",
+                background: "#EFF6FF",
+                border: "1px solid #BFDBFE",
                 borderRadius: 6,
                 padding: "2px 8px",
                 lineHeight: 1.4,
@@ -189,7 +189,7 @@ export function QuestoesSlashInlineDropdown({
               >
                 <path
                   d="M2 5.5L4 7.5L8 3"
-                  stroke="#E8930C"
+                  stroke="#2563EB"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -301,12 +301,12 @@ export function QuestoesSlashInlineDropdown({
                   cursor: "pointer",
                   transition: "background 75ms ease",
                   background: isHighlighted
-                    ? "#FFFBEB"
+                    ? "#EFF6FF"
                     : isSelected
                       ? "#f8f5ff"
                       : "transparent",
                   borderLeft: isHighlighted
-                    ? "3px solid #E8930C"
+                    ? "3px solid #2563EB"
                     : "3px solid transparent",
                 }}
               >
@@ -317,9 +317,9 @@ export function QuestoesSlashInlineDropdown({
                     height: 16,
                     borderRadius: 5,
                     border: isSelected
-                      ? "1.5px solid #E8930C"
+                      ? "1.5px solid #2563EB"
                       : "1.5px solid #d0d3d9",
-                    background: isSelected ? "#E8930C" : "#fff",
+                    background: isSelected ? "#2563EB" : "#fff",
                     flexShrink: 0,
                     display: "inline-flex",
                     alignItems: "center",
