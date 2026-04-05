@@ -311,22 +311,22 @@
   :root {
     --sidebar-background: 210 14% 95.5%;
     --sidebar-foreground: 240 6% 10%;
-    --sidebar-primary: 37 91% 48%;
+    --sidebar-primary: 220 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 12% 93.3%;
     --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 210 12% 91%;
-    --sidebar-ring: 37 91% 48%;
+    --sidebar-ring: 220 83% 53%;
   }
   .dark {
     --sidebar-background: 240 6% 10%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 37 91% 55%;
+    --sidebar-primary: 220 83% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4% 16.1%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 4% 16.1%;
-    --sidebar-ring: 37 91% 55%;
+    --sidebar-ring: 220 83% 60%;
   }
 }
 
@@ -359,25 +359,25 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 240 6% 10%;
 
-    --primary: 37 91% 48%;
+    --primary: 220 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 37 91% 42%;
+    --primary-hover: 220 83% 45%;
 
-    --secondary: 240 6% 95.7%;
-    --secondary-foreground: 240 6% 10%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 20% 10%;
 
-    --muted: 240 7% 90.8%;
-    --muted-foreground: 240 4% 46.1%;
+    --muted: 220 14% 91%;
+    --muted-foreground: 220 10% 46%;
 
-    --accent: 240 6% 95.7%;
-    --accent-foreground: 240 6% 10%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 20% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 7% 90.8%;
-    --input: 240 7% 90.8%;
-    --ring: 37 91% 48%;
+    --border: 220 14% 90%;
+    --input: 220 14% 90%;
+    --ring: 220 83% 53%;
 
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
@@ -409,12 +409,12 @@ All colors MUST be HSL.
 
     --sidebar-background: 210 14% 95.5%;
     --sidebar-foreground: 240 6% 10%;
-    --sidebar-primary: 37 91% 48%;
+    --sidebar-primary: 220 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 12% 93.3%;
     --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 210 12% 91%;
-    --sidebar-ring: 37 91% 48%;
+    --sidebar-ring: 220 83% 53%;
 
     /* Variáveis específicas do cronograma de estudos */
     --schedule-primary: 221 83% 53%;
@@ -446,8 +446,8 @@ All colors MUST be HSL.
     --popover: 240 8% 12.5%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 37 91% 55%;
-    --primary-foreground: 240 6% 10%;
+    --primary: 220 83% 60%;
+    --primary-foreground: 220 20% 10%;
 
     --secondary: 240 4% 16.1%;
     --secondary-foreground: 0 0% 98%;
@@ -472,15 +472,15 @@ All colors MUST be HSL.
 
     --border: 240 4% 16.1%;
     --input: 240 4% 16.1%;
-    --ring: 37 91% 55%;
-    --sidebar-background: 240 6% 10%;
+    --ring: 220 83% 60%;
+    --sidebar-background: 220 14% 10%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 37 91% 55%;
+    --sidebar-primary: 220 83% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4% 16.1%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 4% 16.1%;
-    --sidebar-ring: 37 91% 55%;
+    --sidebar-ring: 220 83% 60%;
   }
 }
 
