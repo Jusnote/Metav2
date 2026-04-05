@@ -22,6 +22,7 @@ import NotFound from "./views/NotFound";
 import EditorPage from "./views/EditorPage";
 import PlateEditorPage from "./components/pages/PlateEditorPage";
 import LeiSecaPage from "./views/LeiSecaPage";
+import LeiSecaLandingPage from "./views/LeiSecaLandingPage";
 import LeiSecaTestPage from "./views/LeiSecaTestPage";
 import LeiSecaTestV3Page from "./views/LeiSecaTestV3Page";
 import ImportLeiPage from "./views/ImportLeiPage";
@@ -172,7 +173,7 @@ const App = () => {
                     <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
                     <Route path="plate-editor" element={<PrivateRoute><PlateEditorPage /></PrivateRoute>} />
                     {/* Lei Seca - rotas dinâmicas */}
-                    <Route path="lei-seca" element={<PrivateRoute><LeiSecaPage /></PrivateRoute>} />
+                    <Route path="lei-seca" element={<PrivateRoute><LeiSecaLandingPage /></PrivateRoute>} />
                     <Route path="lei-seca/:leiId" element={<PrivateRoute><LeiSecaPage /></PrivateRoute>} />
                     <Route path="lei-seca/:leiId/:slug" element={<PrivateRoute><LeiSecaPage /></PrivateRoute>} />
                     <Route path="lei-seca-test" element={<PrivateRoute><LeiSecaTestPage /></PrivateRoute>} />

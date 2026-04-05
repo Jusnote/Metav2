@@ -2080,3 +2080,25 @@ All colors MUST be HSL.
   color: #1e40af;
   border-color: #93c5fd;
 }
+
+@layer utilities {
+  .glass {
+    background: hsl(0 0% 100% / 0.80);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  .glass-hover {
+    transition: all 0.3s;
+  }
+  .glass-hover:hover {
+    background: hsl(0 0% 100% / 0.90);
+    border-color: hsl(var(--border));
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
