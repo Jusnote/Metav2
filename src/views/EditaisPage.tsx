@@ -24,7 +24,7 @@ function getEsferaStyle(esfera: string | null) {
 // --- Format large numbers ---
 function formatTopicos(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2).replace(".", ",") + "M"
-  if (n >= 1_000) return (n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(".", ".") + ""
+  if (n >= 1_000) return (n / 1_000).toFixed(n >= 10_000 ? 0 : 1).replace(".", ",")
   return String(n)
 }
 
@@ -39,7 +39,7 @@ const esferaOptions: { value: EsferaFilter; label: string }[] = [
 export default function EditaisPage() {
   const navigate = useNavigate()
   const {
-    busca, esfera, openEditalId, loadingDetail,
+    busca, esfera, openEditalId, loadingDetailId, detailError,
     editais, paginacao, isLoading, error, expandedEdital,
     setBusca, setEsfera, setPagina, toggleEdital,
   } = useEditais()
@@ -138,7 +138,8 @@ export default function EditaisPage() {
                 isOpen={openEditalId === ed.id}
                 onToggle={() => toggleEdital(ed.id)}
                 expandedCargos={openEditalId === ed.id ? expandedEdital?.cargos ?? null : null}
-                loadingCargos={openEditalId === ed.id && loadingDetail}
+                loadingCargos={openEditalId === ed.id && loadingDetailId === ed.id}
+                detailError={openEditalId === ed.id ? detailError : null}
                 onGoToCargo={(cargoId) => handleGoToCargo(ed.id, cargoId)}
               />
             ))}
@@ -191,10 +192,11 @@ interface EditalCardProps {
   onToggle: () => void
   expandedCargos: { id: number; nome: string; qtdDisciplinas: number | null; qtdTopicos: number | null }[] | null
   loadingCargos: boolean
+  detailError: string | null
   onGoToCargo: (cargoId: number) => void
 }
 
-function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, onGoToCargo }: EditalCardProps) {
+function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, detailError, onGoToCargo }: EditalCardProps) {
   const esferaStyle = getEsferaStyle(edital.esfera)
 
   return (
@@ -265,6 +267,12 @@ function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, o
                 <div className="flex items-center gap-2 py-3 text-xs text-[#b0adb8]">
                   <IconLoader2 className="h-3.5 w-3.5 animate-spin" />
                   Carregando cargos...
+                </div>
+              )}
+
+              {detailError && !expandedCargos && (
+                <div className="py-3 text-xs text-red-400">
+                  Erro ao carregar cargos: {detailError}
                 </div>
               )}
 

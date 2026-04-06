@@ -55,7 +55,14 @@ export function useEditais() {
   const [pagina, setPagina] = useState(1)
   const [openEditalId, setOpenEditalId] = useState<number | null>(null)
   const [expandedCache, setExpandedCache] = useState<Record<number, Edital>>({})
-  const [loadingDetail, setLoadingDetail] = useState(false)
+  const [loadingDetailId, setLoadingDetailId] = useState<number | null>(null)
+  const [detailError, setDetailError] = useState<string | null>(null)
+
+  // Refs to avoid stale closures in toggleEdital
+  const openEditalIdRef = useRef(openEditalId)
+  openEditalIdRef.current = openEditalId
+  const expandedCacheRef = useRef(expandedCache)
+  expandedCacheRef.current = expandedCache
 
   // List state
   const [editaisPaginados, setEditaisPaginados] = useState<EditaisPaginados | null>(null)
@@ -107,24 +114,31 @@ export function useEditais() {
 
   // Toggle expand + fetch cargos
   const toggleEdital = useCallback(async (id: number) => {
-    if (openEditalId === id) {
+    if (openEditalIdRef.current === id) {
       setOpenEditalId(null)
       return
     }
     setOpenEditalId(id)
+    setDetailError(null)
 
-    if (expandedCache[id]) return
+    if (expandedCacheRef.current[id]) return
 
-    setLoadingDetail(true)
+    setLoadingDetailId(id)
     try {
       const result = await editaisClient.query(EDITAL_DETAIL_QUERY, { id }).toPromise()
+      if (result.error) {
+        setDetailError(result.error.message)
+        return
+      }
       if (result.data?.edital) {
         setExpandedCache(prev => ({ ...prev, [id]: result.data.edital }))
       }
+    } catch (err) {
+      setDetailError(err instanceof Error ? err.message : 'Erro ao carregar cargos')
     } finally {
-      setLoadingDetail(false)
+      setLoadingDetailId(null)
     }
-  }, [openEditalId, expandedCache])
+  }, [])
 
   const handleEsferaChange = useCallback((e: EsferaFilter) => {
     setEsfera(e)
@@ -136,7 +150,8 @@ export function useEditais() {
     esfera,
     pagina,
     openEditalId,
-    loadingDetail,
+    loadingDetailId,
+    detailError,
 
     editais: editaisPaginados?.dados ?? [],
     paginacao: editaisPaginados?.paginacao ?? null,
