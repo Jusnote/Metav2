@@ -102,9 +102,13 @@ type Mutation {
 ### Auth nas mutations
 
 - Extrair JWT do header Authorization
-- Validar com SUPABASE_JWT_SECRET
-- Verificar role do usuario no Supabase (`user_roles` table) — somente role = 'admin'
+- Validar com SUPABASE_JWT_SECRET (ja existente)
+- Extrair `sub` (user_id) do JWT payload
+- Consultar role do usuario via Supabase REST API: `GET /rest/v1/user_roles?user_id=eq.{sub}&select=role` usando SUPABASE_SERVICE_ROLE_KEY
+- Cache a role por 5 minutos em memoria (evita query a cada mutation)
+- Somente role = 'admin' pode executar mutations
 - Rejeitar com 403 se nao for admin
+- Env vars necessarias no Coolify: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
 ### Validacao
 
