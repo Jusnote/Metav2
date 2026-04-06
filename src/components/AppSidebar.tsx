@@ -17,6 +17,7 @@ import {
   IconX,
   IconNotebook,
   IconShield,
+  IconClipboardList,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -84,6 +85,11 @@ const mainNavigation: NavItem[] = [
     icon: <IconNotebook className="h-5 w-5" />,
     customPanel: true,
     panelWidth: 300,
+  },
+  {
+    label: "Editais",
+    href: "/editais",
+    icon: <IconClipboardList className="h-5 w-5" />,
   },
 ];
 

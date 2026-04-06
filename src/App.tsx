@@ -25,6 +25,7 @@ import LeiSecaPage from "./views/LeiSecaPage";
 import LeiSecaLandingPage from "./views/LeiSecaLandingPage";
 import LeiSecaTestPage from "./views/LeiSecaTestPage";
 import LeiSecaTestV3Page from "./views/LeiSecaTestV3Page";
+import EditaisPage from "./views/EditaisPage";
 import ImportLeiPage from "./views/ImportLeiPage";
 import ImportLeiV2Page from "./views/ImportLeiV2Page";
 import { Provider as UrqlProvider } from 'urql'
@@ -73,7 +74,7 @@ const AppContent = () => {
   const isStudyMode = location?.pathname === '/flashcards' && searchParams.has('study');
 
   // Detectar páginas full-width (sem padding no main)
-  const isFullWidth = (location?.pathname?.startsWith('/lei-seca') || location?.pathname?.startsWith('/documents-organization') || location?.pathname?.startsWith('/cadernos')) ?? false;
+  const isFullWidth = (location?.pathname?.startsWith('/lei-seca') || location?.pathname?.startsWith('/documents-organization') || location?.pathname?.startsWith('/cadernos') || location?.pathname?.startsWith('/editais')) ?? false;
   
   // Expor função para mostrar/esconder timer globalmente
   React.useEffect(() => {
@@ -183,6 +184,9 @@ const App = () => {
 
                     {/* Caderno Temático */}
                     <Route path="cadernos" element={<PrivateRoute><CadernosPage /></PrivateRoute>} />
+
+                    {/* Editais */}
+                    <Route path="editais" element={<PrivateRoute><EditaisPage /></PrivateRoute>} />
 
                     <Route path="documents-organization" element={<PrivateRoute><DocumentsOrganizationPage /></PrivateRoute>} />
                     <Route path="notes" element={<PrivateRoute><NotesPage /></PrivateRoute>} />
