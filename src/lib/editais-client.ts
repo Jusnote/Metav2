@@ -5,13 +5,26 @@ import { supabase } from '@/integrations/supabase/client'
 const EDITAIS_API_URL = process.env.NEXT_PUBLIC_EDITAIS_API_URL
   ?? 'http://sw8gw00okssc8k8g4k8skskc.95.217.197.95.sslip.io/graphql'
 
+// Token lifecycle: initialized once, kept in sync by onAuthStateChange
 let _cachedToken: string | null = null
+let _tokenReady: Promise<void> | null = null
 
-// Keep token in sync with Supabase auth state
 if (typeof window !== 'undefined') {
+  // Initialize token immediately
+  _tokenReady = supabase.auth.getSession().then(({ data }) => {
+    _cachedToken = data.session?.access_token ?? null
+  })
+
+  // Keep in sync on auth changes (login, logout, refresh)
   supabase.auth.onAuthStateChange((_event, session) => {
     _cachedToken = session?.access_token ?? null
   })
+}
+
+// Ensures token is initialized before first use
+async function ensureToken(): Promise<string | null> {
+  if (_tokenReady) await _tokenReady
+  return _cachedToken
 }
 
 export const editaisClient = new Client({
@@ -19,9 +32,7 @@ export const editaisClient = new Client({
   exchanges: [
     cacheExchange,
     authExchange(async (utils) => {
-      // Await token before processing any operations
-      const { data } = await supabase.auth.getSession()
-      _cachedToken = data.session?.access_token ?? null
+      await ensureToken()
 
       return {
         addAuthToOperation(operation) {
@@ -43,23 +54,16 @@ export const editaisClient = new Client({
   ],
 })
 
-// Lightweight fetch-based helper for queries and mutations.
-// Returns { data, error } — same shape expected by useEditaisAdmin.
+// Fetch-based helper for queries and mutations (used by useEditaisAdmin)
 export async function editaisQuery<T = unknown>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<{ data: T | null; error: string | null }> {
-  try {
-    // Always get fresh token from Supabase session
-    const { data: sessionData } = await supabase.auth.getSession()
-    const token = sessionData.session?.access_token ?? _cachedToken
+  const token = await ensureToken()
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    }
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
+  try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
 
     const res = await fetch(EDITAIS_API_URL, {
       method: 'POST',
@@ -82,5 +86,4 @@ export async function editaisQuery<T = unknown>(
   }
 }
 
-// Alias for clarity — mutations use the same transport
 export const editaisMutation = editaisQuery
