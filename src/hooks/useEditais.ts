@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { editaisClient } from '@/lib/editais-client'
+import { editaisQuery } from '@/lib/editais-client'
 import type { EditaisPaginados, Edital, EsferaFilter } from '@/types/editais'
 
 const EDITAIS_LIST_QUERY = `
@@ -91,13 +91,11 @@ export function useEditais() {
     if (debouncedBusca) filtro.busca = debouncedBusca
     if (esfera !== 'todos') filtro.esfera = esfera
 
-    editaisClient
-      .query(EDITAIS_LIST_QUERY, { filtro, pagina, porPagina })
-      .toPromise()
+    editaisQuery<{ editais: EditaisPaginados }>(EDITAIS_LIST_QUERY, { filtro, pagina, porPagina })
       .then(result => {
         if (cancelled) return
         if (result.error) {
-          setError(result.error.message)
+          setError(result.error)
         } else {
           setEditaisPaginados(result.data?.editais ?? null)
         }
@@ -125,13 +123,13 @@ export function useEditais() {
 
     setLoadingDetailId(id)
     try {
-      const result = await editaisClient.query(EDITAL_DETAIL_QUERY, { id }).toPromise()
+      const result = await editaisQuery<{ edital: Edital }>(EDITAL_DETAIL_QUERY, { id })
       if (result.error) {
-        setDetailError(result.error.message)
+        setDetailError(result.error)
         return
       }
       if (result.data?.edital) {
-        setExpandedCache(prev => ({ ...prev, [id]: result.data.edital }))
+        setExpandedCache(prev => ({ ...prev, [id]: result.data!.edital }))
       }
     } catch (err) {
       setDetailError(err instanceof Error ? err.message : 'Erro ao carregar cargos')
