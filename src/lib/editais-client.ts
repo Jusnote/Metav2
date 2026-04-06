@@ -1,37 +1,44 @@
+import { Client, cacheExchange, fetchExchange } from 'urql'
+import { authExchange } from '@urql/exchange-auth'
 import { supabase } from '@/integrations/supabase/client'
 
 const EDITAIS_API_URL = process.env.NEXT_PUBLIC_EDITAIS_API_URL
   ?? 'http://sw8gw00okssc8k8g4k8skskc.95.217.197.95.sslip.io/graphql'
 
-interface GqlResult<T = any> {
-  data: T | null
-  error: string | null
-}
+let _cachedToken: string | null = null
 
-export async function editaisQuery<T = any>(
-  query: string,
-  variables?: Record<string, unknown>,
-): Promise<GqlResult<T>> {
-  const { data: sessionData } = await supabase.auth.getSession()
-  const token = sessionData.session?.access_token
-
-  const res = await fetch(EDITAIS_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
+// Keep token in sync with Supabase auth state
+if (typeof window !== 'undefined') {
+  supabase.auth.onAuthStateChange((_event, session) => {
+    _cachedToken = session?.access_token ?? null
   })
-
-  if (!res.ok) {
-    return { data: null, error: `${res.status} ${res.statusText}` }
-  }
-
-  const json = await res.json()
-  if (json.errors?.length) {
-    return { data: null, error: json.errors[0].message }
-  }
-
-  return { data: json.data, error: null }
 }
+
+export const editaisClient = new Client({
+  url: EDITAIS_API_URL,
+  exchanges: [
+    cacheExchange,
+    authExchange(async (utils) => {
+      // Await token before processing any operations
+      const { data } = await supabase.auth.getSession()
+      _cachedToken = data.session?.access_token ?? null
+
+      return {
+        addAuthToOperation(operation) {
+          if (!_cachedToken) return operation
+          return utils.appendHeaders(operation, {
+            Authorization: `Bearer ${_cachedToken}`,
+          })
+        },
+        didAuthError(error) {
+          return error.response?.status === 401
+        },
+        async refreshAuth() {
+          const { data } = await supabase.auth.refreshSession()
+          _cachedToken = data.session?.access_token ?? null
+        },
+      }
+    }),
+    fetchExchange,
+  ],
+})
