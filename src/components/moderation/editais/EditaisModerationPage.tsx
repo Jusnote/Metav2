@@ -137,20 +137,40 @@ export function EditaisModerationPage() {
     setLogEntries([])
   }
 
+  // Strip non-input fields before sending to mutation
+  const EDITAL_FIELDS = ['nome','sigla','esfera','tipo','descricao','dataPublicacao','dataEncerramento','dataInicioInscricao','dataFimInscricao','link','cidade','previsto','cancelado','autorizado','ativo','destaque']
+  const CARGO_FIELDS = ['nome','vagas','remuneracao','dataProva','ativo']
+  const DISCIPLINA_FIELDS = ['nome','nomeEdital','ativo']
+  const TOPICO_FIELDS = ['nome','ordem','ativo']
+
+  const pickFields = (data: Record<string, unknown>, fields: string[]) => {
+    const result: Record<string, unknown> = {}
+    for (const f of fields) {
+      if (data[f] !== undefined) result[f] = data[f]
+    }
+    return result
+  }
+
+  const inputFields: Record<HierarchyLevel, string[]> = {
+    editais: EDITAL_FIELDS, cargos: CARGO_FIELDS, disciplinas: DISCIPLINA_FIELDS, topicos: TOPICO_FIELDS,
+  }
+
   // Save handler
   const handleSave = async (formData: Record<string, unknown>) => {
+    const input = pickFields(formData, inputFields[level])
+
     if (drawerMode === 'create') {
-      if (level === 'editais') return admin.criarEdital(formData)
-      if (level === 'cargos' && parentId) return admin.criarCargo(parentId, formData)
-      if (level === 'disciplinas' && parentId) return admin.criarDisciplina(parentId, formData)
-      if (level === 'topicos' && parentId) return admin.criarTopico(parentId, formData)
+      if (level === 'editais') return admin.criarEdital(input)
+      if (level === 'cargos' && parentId) return admin.criarCargo(parentId, input)
+      if (level === 'disciplinas' && parentId) return admin.criarDisciplina(parentId, input)
+      if (level === 'topicos' && parentId) return admin.criarTopico(parentId, input)
     } else {
       const id = drawerItem?.id
       if (!id) return { success: false, message: 'ID nao encontrado' }
-      if (level === 'editais') return admin.atualizarEdital(id, formData)
-      if (level === 'cargos') return admin.atualizarCargo(id, formData)
-      if (level === 'disciplinas') return admin.atualizarDisciplina(id, formData)
-      if (level === 'topicos') return admin.atualizarTopico(id, formData)
+      if (level === 'editais') return admin.atualizarEdital(id, input)
+      if (level === 'cargos') return admin.atualizarCargo(id, input)
+      if (level === 'disciplinas') return admin.atualizarDisciplina(id, input)
+      if (level === 'topicos') return admin.atualizarTopico(id, input)
     }
     return { success: false, message: 'Nivel desconhecido', id: null }
   }

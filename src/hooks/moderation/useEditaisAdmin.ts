@@ -78,7 +78,7 @@ const EDITAIS_ADMIN_QUERY = `
   query EditaisAdmin($filtro: EditalFiltro, $pagina: Int, $porPagina: Int) {
     editais(filtro: $filtro, pagina: $pagina, porPagina: $porPagina) {
       dados {
-        id nome sigla esfera tipo totalCargos totalDisciplinas totalTopicos
+        id nome sigla esfera tipo ativo destaque totalCargos totalDisciplinas totalTopicos
       }
       paginacao { total pagina porPagina totalPaginas }
     }
