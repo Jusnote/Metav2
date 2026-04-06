@@ -52,6 +52,7 @@ import { ReportsPage } from './components/moderation/reports/ReportsPage';
 import { UsersPage } from './components/moderation/users/UsersPage';
 import { QuestionsReportsPage } from './components/moderation/questions/QuestionsReportsPage';
 import { LeiReportsPage } from './components/moderation/lei-seca/LeiReportsPage';
+import { EditaisModerationPage } from './components/moderation/editais/EditaisModerationPage';
 
 const queryClient = new QueryClient();
 
@@ -210,6 +211,7 @@ const App = () => {
                     <Route path="usuarios" element={<UsersPage />} />
                     <Route path="questoes" element={<QuestionsReportsPage />} />
                     <Route path="lei-seca" element={<LeiReportsPage />} />
+                    <Route path="editais" element={<EditaisModerationPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>

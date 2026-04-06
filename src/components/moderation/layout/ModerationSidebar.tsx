@@ -9,6 +9,7 @@ import {
   BookOpen,
   CreditCard,
   LogOut,
+  ClipboardList,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -60,6 +61,11 @@ export function ModerationSidebar({ pendingCount = 0 }: { pendingCount?: number 
       href: '/moderacao/lei-seca',
       icon: <BookOpen className="h-[15px] w-[15px]" />,
       badge: lawReportCount,
+    },
+    {
+      label: 'Editais',
+      href: '/moderacao/editais',
+      icon: <ClipboardList className="h-[15px] w-[15px]" />,
     },
   ];
 
