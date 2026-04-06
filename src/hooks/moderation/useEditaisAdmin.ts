@@ -147,9 +147,25 @@ export function useEditaisAdmin() {
 
   // --- Fetch lists ---
 
-  async function fetchEditais(filtro?: Record<string, unknown>, pagina = 1, porPagina = 20) {
-    const result = await editaisQuery<any>(EDITAIS_ADMIN_QUERY, { filtro, pagina, porPagina })
-    return result.data?.editais ?? { dados: [], paginacao: null }
+  async function fetchEditais(filtro?: Record<string, unknown>) {
+    // Paginate automatically: fetch all pages of 100, concat results
+    const porPagina = 100
+    let pagina = 1
+    let allDados: any[] = []
+
+    while (true) {
+      const result = await editaisQuery<any>(EDITAIS_ADMIN_QUERY, { filtro, pagina, porPagina })
+      const editais = result.data?.editais
+      if (!editais || !editais.dados?.length) break
+
+      allDados = allDados.concat(editais.dados)
+
+      const totalPaginas = editais.paginacao?.totalPaginas ?? 1
+      if (pagina >= totalPaginas) break
+      pagina++
+    }
+
+    return { dados: allDados, paginacao: { total: allDados.length, pagina: 1, porPagina: allDados.length, totalPaginas: 1 } }
   }
 
   async function fetchEditalFull(id: number) {
