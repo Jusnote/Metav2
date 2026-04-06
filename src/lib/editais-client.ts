@@ -50,17 +50,15 @@ export async function editaisQuery<T = unknown>(
   variables?: Record<string, unknown>,
 ): Promise<{ data: T | null; error: string | null }> {
   try {
-    // Ensure we have a fresh token
-    if (!_cachedToken) {
-      const { data } = await supabase.auth.getSession()
-      _cachedToken = data.session?.access_token ?? null
-    }
+    // Always get fresh token from Supabase session
+    const { data: sessionData } = await supabase.auth.getSession()
+    const token = sessionData.session?.access_token ?? _cachedToken
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     }
-    if (_cachedToken) {
-      headers['Authorization'] = `Bearer ${_cachedToken}`
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
     }
 
     const res = await fetch(EDITAIS_API_URL, {
