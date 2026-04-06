@@ -60,7 +60,7 @@ export function EditaisModerationPage() {
         if (ativoFilter === 'ativo') filtro.ativo = true
         if (ativoFilter === 'inativo') filtro.ativo = false
         if (search) filtro.busca = search
-        const result = await admin.fetchEditais(filtro, 1, 10000)
+        const result = await admin.fetchEditais(filtro, 1, 1000)
         setData(result.dados ?? [])
       } else if (level === 'cargos' && parentId) {
         const cargos = await admin.fetchCargos(parentId)
