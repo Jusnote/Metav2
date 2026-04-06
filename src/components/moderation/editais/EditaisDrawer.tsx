@@ -116,8 +116,22 @@ export function EditaisDrawer({
           {level === 'editais' && <>
             <Field label="Sigla" value={form.sigla ?? ''} onChange={v => set('sigla', v)} />
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Esfera" value={form.esfera ?? ''} onChange={v => set('esfera', v)} />
-              <Field label="Tipo" value={form.tipo ?? ''} onChange={v => set('tipo', v)} />
+              <SelectField label="Esfera" value={form.esfera ?? ''} onChange={v => set('esfera', v)} options={[
+                { value: '', label: 'Selecione...' },
+                { value: 'FEDERAL', label: 'Federal' },
+                { value: 'ESTADUAL', label: 'Estadual' },
+                { value: 'MUNICIPAL', label: 'Municipal' },
+              ]} />
+              <SelectField label="Tipo" value={form.tipo ?? ''} onChange={v => set('tipo', v)} options={[
+                { value: '', label: 'Selecione...' },
+                { value: 'CONCURSO_PUBLICO', label: 'Concurso Público' },
+                { value: 'CONCURSO_MILITAR', label: 'Concurso Militar' },
+                { value: 'PROCESSO_SELETIVO', label: 'Processo Seletivo' },
+                { value: 'VESTIBULAR', label: 'Vestibular' },
+                { value: 'ENEM', label: 'ENEM' },
+                { value: 'OAB', label: 'OAB' },
+                { value: 'OUTROS', label: 'Outros' },
+              ]} />
             </div>
             <Field label="Descricao" value={form.descricao ?? ''} onChange={v => set('descricao', v)} multiline />
             <Field label="Link" value={form.link ?? ''} onChange={v => set('link', v)} />
@@ -246,6 +260,22 @@ function Field({ label, value, onChange, type = 'text', multiline }: {
         <input type={type} value={value} onChange={e => onChange(e.target.value)}
           className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-[13px] text-zinc-900 outline-none focus:border-violet-400" />
       )}
+    </div>
+  )
+}
+
+function SelectField({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]
+}) {
+  return (
+    <div>
+      <label className="text-[11px] font-medium text-zinc-500 mb-1 block">{label}</label>
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-[13px] text-zinc-900 outline-none focus:border-violet-400 bg-white">
+        {options.map(opt => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
     </div>
   )
 }
