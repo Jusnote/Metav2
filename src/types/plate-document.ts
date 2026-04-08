@@ -14,7 +14,7 @@ export interface PlateDocument extends BaseEntity {
   content_text?: string; // Versão texto para busca
   is_favorite?: boolean;
   tags?: string[];
-  subtopic_id?: string;
+  subtopico_id?: string;
 }
 
 // Dados para criar novo documento
@@ -24,7 +24,7 @@ export interface PlateDocumentInsert {
   content_text?: string;
   is_favorite?: boolean;
   tags?: string[];
-  subtopic_id?: string;
+  subtopico_id?: string;
 }
 
 // Dados para atualizar documento existente
@@ -34,7 +34,7 @@ export interface PlateDocumentUpdate {
   content_text?: string;
   is_favorite?: boolean;
   tags?: string[];
-  subtopic_id?: string;
+  subtopico_id?: string;
 }
 
 // Status de salvamento para UI

@@ -1,7 +1,7 @@
 export interface Note {
   id: string;
-  subtopic_id: string | null;
-  topic_id: string | null;
+  subtopico_id: string | null;
+  topico_id: string | null;
   title: string;
   content: string;
   created_at: string;
@@ -10,8 +10,8 @@ export interface Note {
 }
 
 export interface CreateNoteRequest {
-  subtopic_id?: string | null;
-  topic_id?: string | null;
+  subtopico_id?: string | null;
+  topico_id?: string | null;
   title?: string;
   content: string;
 }
