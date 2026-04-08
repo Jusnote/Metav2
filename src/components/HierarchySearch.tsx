@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Search, X, ChevronRight } from 'lucide-react';
-import { Unit, Topic, Subtopic } from '../hooks/useUnitsManager';
+import { Disciplina, Topico, Subtopico } from '../hooks/useDisciplinasManager';
 
 interface SearchResult {
-  type: 'unit' | 'topic' | 'subtopic';
+  type: 'disciplina' | 'topico' | 'subtopico';
   id: string;
   title: string;
   path: string;
-  unitId?: string;
-  topicId?: string;
-  item: Unit | Topic | Subtopic;
+  disciplinaId?: string;
+  topicoId?: string;
+  item: Disciplina | Topico | Subtopico;
 }
 
 interface HierarchySearchProps {
-  units: Unit[];
+  disciplinas: Disciplina[];
   onSelect: (result: SearchResult) => void;
   placeholder?: string;
 }
 
 export const HierarchySearch: React.FC<HierarchySearchProps> = ({
-  units,
+  disciplinas,
   onSelect,
-  placeholder = 'Buscar unidades, tópicos ou subtópicos...'
+  placeholder = 'Buscar disciplinas, topicos ou subtopicos...'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -42,48 +42,48 @@ export const HierarchySearch: React.FC<HierarchySearchProps> = ({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, units]);
+  }, [searchTerm, disciplinas]);
 
   const performSearch = (term: string) => {
     const lowerTerm = term.toLowerCase();
     const searchResults: SearchResult[] = [];
 
-    units.forEach((unit) => {
-      // Search in units
-      if (unit.title.toLowerCase().includes(lowerTerm)) {
+    disciplinas.forEach((disciplina) => {
+      // Search in disciplinas
+      if (disciplina.nome.toLowerCase().includes(lowerTerm)) {
         searchResults.push({
-          type: 'unit',
-          id: unit.id,
-          title: unit.title,
-          path: unit.title,
-          item: unit
+          type: 'disciplina',
+          id: disciplina.id,
+          title: disciplina.nome,
+          path: disciplina.nome,
+          item: disciplina
         });
       }
 
-      // Search in topics
-      unit.topics.forEach((topic) => {
-        if (topic.title.toLowerCase().includes(lowerTerm)) {
+      // Search in topicos
+      disciplina.topicos.forEach((topico) => {
+        if (topico.nome.toLowerCase().includes(lowerTerm)) {
           searchResults.push({
-            type: 'topic',
-            id: topic.id,
-            title: topic.title,
-            path: `${unit.title} > ${topic.title}`,
-            unitId: unit.id,
-            item: topic
+            type: 'topico',
+            id: topico.id,
+            title: topico.nome,
+            path: `${disciplina.nome} > ${topico.nome}`,
+            disciplinaId: disciplina.id,
+            item: topico
           });
         }
 
-        // Search in subtopics
-        topic.subtopics?.forEach((subtopic) => {
-          if (subtopic.title.toLowerCase().includes(lowerTerm)) {
+        // Search in subtopicos
+        topico.subtopicos?.forEach((subtopico) => {
+          if (subtopico.nome.toLowerCase().includes(lowerTerm)) {
             searchResults.push({
-              type: 'subtopic',
-              id: subtopic.id,
-              title: subtopic.title,
-              path: `${unit.title} > ${topic.title} > ${subtopic.title}`,
-              unitId: unit.id,
-              topicId: topic.id,
-              item: subtopic
+              type: 'subtopico',
+              id: subtopico.id,
+              title: subtopico.nome,
+              path: `${disciplina.nome} > ${topico.nome} > ${subtopico.nome}`,
+              disciplinaId: disciplina.id,
+              topicoId: topico.id,
+              item: subtopico
             });
           }
         });
@@ -138,11 +138,11 @@ export const HierarchySearch: React.FC<HierarchySearchProps> = ({
 
   const getResultIcon = (type: string) => {
     switch (type) {
-      case 'unit':
+      case 'disciplina':
         return '📚';
-      case 'topic':
+      case 'topico':
         return '📖';
-      case 'subtopic':
+      case 'subtopico':
         return '📄';
       default:
         return '•';

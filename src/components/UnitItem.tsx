@@ -1,10 +1,10 @@
 import React from 'react';
 import { ChevronRight, Edit3, Trash2, Package, Clock } from 'lucide-react';
 import { InlineEditor } from './InlineEditor';
-import type { Unit } from '../hooks/useUnitsManager';
+import type { Disciplina } from '../hooks/useDisciplinasManager';
 
 interface UnitItemProps {
-  unit: Unit;
+  disciplina: Disciplina;
   isExpanded: boolean;
   isEditMode: boolean;
   isEditing: boolean;
@@ -17,7 +17,7 @@ interface UnitItemProps {
 }
 
 export const UnitItem: React.FC<UnitItemProps> = ({
-  unit,
+  disciplina,
   isExpanded,
   isEditMode,
   isEditing,
@@ -28,27 +28,27 @@ export const UnitItem: React.FC<UnitItemProps> = ({
   onDelete,
   children
 }) => {
-  const hasTopics = unit.topics.length > 0;
+  const hasTopicos = disciplina.topicos.length > 0;
 
-  // Calculate total duration for the unit
-  const calculateUnitDuration = (): number => {
-    return unit.topics.reduce((total, topic) => {
-      // If topic has subtopics, sum their durations
-      if (topic.subtopics && topic.subtopics.length > 0) {
-        return total + topic.subtopics.reduce((subtotal, subtopic) => {
-          return subtotal + (subtopic.estimated_duration_minutes || 90);
+  // Calculate total duration for the disciplina
+  const calculateDisciplinaDuration = (): number => {
+    return disciplina.topicos.reduce((total, topico) => {
+      // If topico has subtopicos, sum their durations
+      if (topico.subtopicos && topico.subtopicos.length > 0) {
+        return total + topico.subtopicos.reduce((subtotal, subtopico) => {
+          return subtotal + (subtopico.estimated_duration_minutes || 90);
         }, 0);
       }
-      // If topic has no subtopics, use its manual duration
-      return total + (topic.estimated_duration_minutes || 120);
+      // If topico has no subtopicos, use its manual duration
+      return total + (topico.estimated_duration_minutes || 120);
     }, 0);
   };
 
-  const totalDuration = calculateUnitDuration();
+  const totalDuration = calculateDisciplinaDuration();
 
   return (
     <div className="mb-4">
-      {/* Unit Header - Container Fino */}
+      {/* Disciplina Header - Container Fino */}
       <div className="group relative">
         <button
           onClick={onToggleExpand}
@@ -56,7 +56,7 @@ export const UnitItem: React.FC<UnitItemProps> = ({
         >
           {/* Chevron */}
           <div className="shrink-0">
-            {hasTopics || isEditMode ? (
+            {hasTopicos || isEditMode ? (
               <ChevronRight
                 className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${
                   isExpanded ? 'rotate-90' : ''
@@ -67,16 +67,16 @@ export const UnitItem: React.FC<UnitItemProps> = ({
             )}
           </div>
 
-          {/* Ícone da Unidade */}
+          {/* Icone da Disciplina */}
           <div className="w-6 h-6 rounded-md bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
             <Package className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
 
-          {/* Conteúdo */}
+          {/* Conteudo */}
           <div className="flex-1 min-w-0 text-left">
             {isEditing ? (
               <InlineEditor
-                value={unit.title}
+                value={disciplina.nome}
                 isEditing={true}
                 onSave={onSave}
                 onCancel={onCancelEdit}
@@ -86,7 +86,7 @@ export const UnitItem: React.FC<UnitItemProps> = ({
               <>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-gray-900 text-sm truncate">
-                    {unit.title}
+                    {disciplina.nome}
                   </span>
                   {/* Tempo total estimado (discreto) */}
                   {totalDuration > 0 && (
@@ -109,7 +109,7 @@ export const UnitItem: React.FC<UnitItemProps> = ({
                   onEdit();
                 }}
                 className="p-1.5 hover:bg-zinc-200/60 rounded-md transition-colors"
-                title="Editar unidade"
+                title="Editar disciplina"
               >
                 <Edit3 className="w-3.5 h-3.5 text-zinc-500" />
               </button>
@@ -119,7 +119,7 @@ export const UnitItem: React.FC<UnitItemProps> = ({
                   onDelete();
                 }}
                 className="p-1.5 hover:bg-red-100 rounded-md transition-colors"
-                title="Deletar unidade"
+                title="Deletar disciplina"
               >
                 <Trash2 className="w-3.5 h-3.5 text-red-600" />
               </button>
@@ -128,8 +128,8 @@ export const UnitItem: React.FC<UnitItemProps> = ({
         </button>
       </div>
 
-      {/* Children (Topics) */}
-      {isExpanded && (hasTopics || isEditMode) && (
+      {/* Children (Topicos) */}
+      {isExpanded && (hasTopicos || isEditMode) && (
         <div className="mt-1.5 ml-2 pl-3 border-l border-zinc-200/40 dark:border-zinc-700/40">
           <div className="space-y-1">
             {children}

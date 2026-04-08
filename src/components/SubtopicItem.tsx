@@ -4,7 +4,7 @@ import { TopicSubtopicInlineEditor } from './TopicSubtopicInlineEditor';
 import { QuickSchedulePopover } from './QuickSchedulePopover';
 import { useMaterialCounts } from '../hooks/useMaterialCounts';
 import { useManualSchedule } from '../hooks/useManualSchedule';
-import type { Subtopic } from '../hooks/useUnitsManager';
+import type { Subtopico } from '../hooks/useDisciplinasManager';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface SubtopicItemProps {
-  subtopic: Subtopic;
-  unitId: string;
-  topicId: string;
+  subtopico: Subtopico;
+  disciplinaId: string;
+  topicoId: string;
   isSelected: boolean;
   isEditMode: boolean;
   isEditing: boolean;
@@ -30,9 +30,9 @@ interface SubtopicItemProps {
 }
 
 export const SubtopicItem: React.FC<SubtopicItemProps> = ({
-  subtopic,
-  unitId,
-  topicId,
+  subtopico,
+  disciplinaId,
+  topicoId,
   isSelected,
   isEditMode,
   isEditing,
@@ -45,12 +45,12 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
   onDelete,
   onToggleComplete
 }) => {
-  const { counts } = useMaterialCounts(subtopic.id);
+  const { counts } = useMaterialCounts(subtopico.id);
   const { createManualSchedule } = useManualSchedule();
   const [isMobile, setIsMobile] = useState(false);
-  const isCompleted = subtopic.status === 'completed';
+  const isCompleted = subtopico.status === 'completed';
 
-  // Detectar se é mobile
+  // Detectar se e mobile
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -61,15 +61,15 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
   const handleSchedule = async (data: {
     date: Date;
     durationMinutes: number;
-    topicId?: string;
-    subtopicId?: string;
+    topicoId?: string;
+    subtopicoId?: string;
   }) => {
     await createManualSchedule({
       date: data.date,
       durationMinutes: data.durationMinutes,
-      topicId,
-      subtopicId: subtopic.id,
-      title: subtopic.title,
+      topicoId: topicoId,
+      subtopicoId: subtopico.id,
+      title: subtopico.nome,
     });
   };
 
@@ -79,10 +79,10 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
         {/* Schedule Button - cresce ao clicar no item, empurrando o checkbox */}
         {!isEditing && (
           <QuickSchedulePopover
-            topicId={topicId}
-            subtopicId={subtopic.id}
-            title={subtopic.title}
-            estimatedMinutes={subtopic.estimated_duration_minutes || 90}
+            topicoId={topicoId}
+            subtopicoId={subtopico.id}
+            title={subtopico.nome}
+            estimatedMinutes={subtopico.estimated_duration_minutes || 90}
             onSchedule={handleSchedule}
           >
             <button
@@ -108,7 +108,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
               ? 'bg-[#2563EB] border-[#2563EB] animate-check-bounce'
               : 'border-zinc-300 dark:border-zinc-600 hover:border-[#2563EB]/60'
           }`}
-          title={isCompleted ? 'Marcar como não concluído' : 'Marcar como concluído'}
+          title={isCompleted ? 'Marcar como nao concluido' : 'Marcar como concluido'}
         >
           {isCompleted && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
         </button>
@@ -125,12 +125,12 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
             isSelected ? 'bg-zinc-200/50 border-[#2563EB]' : 'border-transparent hover:bg-zinc-100/40'
           }`}
         >
-          {/* Título e Relevância */}
+          {/* Titulo e Relevancia */}
           <div className="flex-1 min-w-0">
             {isEditing ? (
               <TopicSubtopicInlineEditor
-                value={subtopic.title}
-                estimatedDuration={subtopic.estimated_duration_minutes || 90}
+                value={subtopico.nome}
+                estimatedDuration={subtopico.estimated_duration_minutes || 90}
                 isEditing={true}
                 onSave={async (newTitle, newDuration) => {
                   await onSave(newTitle, newDuration);
@@ -147,13 +147,13 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
                     isCompleted ? 'text-zinc-400/50 line-through' : 'text-zinc-700'
                   }`}
                 >
-                  {subtopic.title}
+                  {subtopico.nome}
                 </span>
-                {/* Estrelas de relevância (3 estrelas) */}
+                {/* Estrelas de relevancia (3 estrelas) */}
                 {!isCompleted && (
-                  <span className="flex items-center gap-px shrink-0" title="Relevância para a prova">
+                  <span className="flex items-center gap-px shrink-0" title="Relevancia para a prova">
                     {[1, 2, 3].map((star) => {
-                      const relevance = (subtopic as any).relevance ?? 2;
+                      const relevance = (subtopico as any).relevance ?? 2;
                       return (
                         <svg
                           key={star}
@@ -184,7 +184,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
                     onEdit();
                   }}
                   className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title="Editar subtópico"
+                  title="Editar subtopico"
                 >
                   <Edit3 className="w-3 h-3 text-gray-600" />
                 </button>
@@ -194,7 +194,7 @@ export const SubtopicItem: React.FC<SubtopicItemProps> = ({
                     onDelete();
                   }}
                   className="p-1 hover:bg-red-100 rounded transition-colors"
-                  title="Deletar subtópico"
+                  title="Deletar subtopico"
                 >
                   <Trash2 className="w-3 h-3 text-red-600" />
                 </button>

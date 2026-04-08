@@ -18,23 +18,23 @@ import {
 } from '@/components/ui/tooltip';
 import { QuickSchedulePopover } from './QuickSchedulePopover';
 import { Calendar, Clock, Loader2, CalendarDays, ListChecks } from 'lucide-react';
-import type { Subtopic } from '@/hooks/useUnitsManager';
+import type { Subtopico } from '@/hooks/useDisciplinasManager';
 import { addDays } from 'date-fns';
 
 interface TopicScheduleDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  topicId: string;
-  topicTitle: string;
-  subtopics: Subtopic[];
-  onScheduleSubtopic: (data: {
+  topicoId: string;
+  topicoTitle: string;
+  subtopics: Subtopico[];
+  onScheduleSubtopico: (data: {
     date: Date;
     durationMinutes: number;
-    subtopicId: string;
+    subtopicoId: string;
     title: string;
   }) => void;
   onDistributeAll: (data: {
-    subtopics: Subtopic[];
+    subtopics: Subtopico[];
     startDate: Date;
     endDate: Date;
   }) => Promise<void>;
@@ -43,10 +43,10 @@ interface TopicScheduleDrawerProps {
 export function TopicScheduleDrawer({
   open,
   onOpenChange,
-  topicId,
-  topicTitle,
+  topicoId,
+  topicoTitle,
   subtopics,
-  onScheduleSubtopic,
+  onScheduleSubtopico,
   onDistributeAll,
 }: TopicScheduleDrawerProps) {
   const [activeTab, setActiveTab] = useState<'all' | 'select'>('all');
@@ -64,12 +64,12 @@ export function TopicScheduleDrawer({
   const totalHours = Math.floor(totalMinutes / 60);
   const totalMins = totalMinutes % 60;
 
-  const toggleSubtopic = (subtopicId: string) => {
+  const toggleSubtopic = (subtopicoId: string) => {
     const newSelected = new Set(selectedSubtopics);
-    if (newSelected.has(subtopicId)) {
-      newSelected.delete(subtopicId);
+    if (newSelected.has(subtopicoId)) {
+      newSelected.delete(subtopicoId);
     } else {
-      newSelected.add(subtopicId);
+      newSelected.add(subtopicoId);
     }
     setSelectedSubtopics(newSelected);
   };
@@ -100,7 +100,7 @@ export function TopicScheduleDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[480px] flex flex-col p-0 sm:max-w-[480px]">
         <SheetHeader className="px-6 pt-6 pb-4 border-b">
-          <SheetTitle className="text-lg">Agendar: {topicTitle}</SheetTitle>
+          <SheetTitle className="text-lg">Agendar: {topicoTitle}</SheetTitle>
           <SheetDescription>
             {subtopics.length} subtópico{subtopics.length > 1 ? 's' : ''} • {totalHours}h{totalMins > 0 ? `${totalMins}m` : ''} total
           </SheetDescription>
@@ -172,10 +172,10 @@ export function TopicScheduleDrawer({
                       <span className="text-xs text-gray-400 shrink-0">{index + 1}.</span>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className="text-sm text-gray-700 truncate cursor-default">{sub.title}</span>
+                          <span className="text-sm text-gray-700 truncate cursor-default">{sub.nome}</span>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="max-w-xs">{sub.title}</p>
+                          <p className="max-w-xs">{sub.nome}</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -234,10 +234,10 @@ export function TopicScheduleDrawer({
                   <div className="flex-1 min-w-0">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <p className="text-sm font-medium truncate cursor-default">{subtopic.title}</p>
+                        <p className="text-sm font-medium truncate cursor-default">{subtopic.nome}</p>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="max-w-xs">{subtopic.title}</p>
+                        <p className="max-w-xs">{subtopic.nome}</p>
                       </TooltipContent>
                     </Tooltip>
                     {subtopic.estimated_duration_minutes && (
@@ -252,15 +252,15 @@ export function TopicScheduleDrawer({
 
                   {/* Schedule Button */}
                   <QuickSchedulePopover
-                    topicId={topicId}
-                    subtopicId={subtopic.id}
-                    title={subtopic.title}
+                    topicoId={topicoId}
+                    subtopicoId={subtopic.id}
+                    title={subtopic.nome}
                     estimatedMinutes={subtopic.estimated_duration_minutes || 90}
-                    onSchedule={(data) => onScheduleSubtopic({
+                    onSchedule={(data) => onScheduleSubtopico({
                       date: data.date,
                       durationMinutes: data.durationMinutes,
-                      subtopicId: subtopic.id,
-                      title: subtopic.title,
+                      subtopicoId: subtopic.id,
+                      title: subtopic.nome,
                     })}
                   >
                     <Button

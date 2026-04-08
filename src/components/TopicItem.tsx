@@ -3,9 +3,9 @@ import { ChevronRight, BookOpen, Clock, Calendar, Edit3, Trash2, MoreVertical } 
 import { TopicSubtopicInlineEditor } from './TopicSubtopicInlineEditor';
 import { QuickSchedulePopover } from './QuickSchedulePopover';
 import { TopicScheduleDrawer } from './TopicScheduleDrawer';
-import { useTopicProgress } from '../hooks/useHierarchyProgress';
+import { useTopicoProgress } from '../hooks/useHierarchyProgress';
 import { useManualSchedule } from '../hooks/useManualSchedule';
-import type { Topic } from '../hooks/useUnitsManager';
+import type { Topico } from '../hooks/useDisciplinasManager';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface TopicItemProps {
-  topic: Topic;
-  unitId: string;
+  topico: Topico;
+  disciplinaId: string;
   isExpanded: boolean;
   isSelected: boolean;
   isEditMode: boolean;
   isEditing: boolean;
-  hasSubtopics: boolean;
+  hasSubtopicos: boolean;
   onToggleExpand: () => void;
   onSelect: () => void;
   onEdit: () => void;
@@ -31,13 +31,13 @@ interface TopicItemProps {
 }
 
 export const TopicItem: React.FC<TopicItemProps> = ({
-  topic,
-  unitId,
+  topico,
+  disciplinaId,
   isExpanded,
   isSelected,
   isEditMode,
   isEditing,
-  hasSubtopics,
+  hasSubtopicos,
   onToggleExpand,
   onSelect,
   onEdit,
@@ -46,12 +46,12 @@ export const TopicItem: React.FC<TopicItemProps> = ({
   onDelete,
   children
 }) => {
-  const progress = useTopicProgress(topic);
+  const progress = useTopicoProgress(topico);
   const { createManualSchedule } = useManualSchedule();
   const [isMobile, setIsMobile] = useState(false);
   const [showScheduleDrawer, setShowScheduleDrawer] = useState(false);
 
-  // Detectar se é mobile
+  // Detectar se e mobile
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -60,31 +60,31 @@ export const TopicItem: React.FC<TopicItemProps> = ({
   }, []);
 
   const handleClick = () => {
-    if (hasSubtopics || isEditMode) {
+    if (hasSubtopicos || isEditMode) {
       onToggleExpand();
     } else {
       onSelect();
     }
   };
 
-  // Agendar tópico sem subtópicos
+  // Agendar topico sem subtopicos
   const handleSchedule = async (data: {
     date: Date;
     durationMinutes: number;
-    topicId?: string;
-    subtopicId?: string;
+    topicoId?: string;
+    subtopicoId?: string;
   }) => {
     await createManualSchedule({
       date: data.date,
       durationMinutes: data.durationMinutes,
-      topicId: topic.id,
-      subtopicId: undefined,
-      title: topic.title,
+      topicoId: topico.id,
+      subtopicoId: undefined,
+      title: topico.nome,
     });
   };
 
-  // Agendar um subtópico específico (do modal de seleção)
-  const handleScheduleSubtopic = async (data: {
+  // Agendar um subtopico especifico (do modal de selecao)
+  const handleScheduleSubtopico = async (data: {
     date: Date;
     durationMinutes: number;
     subtopicId: string;
@@ -93,32 +93,32 @@ export const TopicItem: React.FC<TopicItemProps> = ({
     await createManualSchedule({
       date: data.date,
       durationMinutes: data.durationMinutes,
-      topicId: topic.id,
-      subtopicId: data.subtopicId,
+      topicoId: topico.id,
+      subtopicoId: data.subtopicId,
       title: data.title,
     });
   };
 
-  // Distribuir todos os subtópicos automaticamente
+  // Distribuir todos os subtopicos automaticamente
   const handleDistributeAll = async (data: {
     subtopics: any[];
     startDate: Date;
     endDate: Date;
   }) => {
-    // TODO: Implementar lógica de distribuição sequencial
+    // TODO: Implementar logica de distribuicao sequencial
     // Por enquanto, vamos agendar um por dia sequencialmente
     let currentDate = new Date(data.startDate);
 
-    for (const subtopic of data.subtopics) {
+    for (const subtopico of data.subtopics) {
       await createManualSchedule({
         date: currentDate,
-        durationMinutes: subtopic.estimated_duration_minutes || 90,
-        topicId: topic.id,
-        subtopicId: subtopic.id,
-        title: subtopic.title,
+        durationMinutes: subtopico.estimated_duration_minutes || 90,
+        topicoId: topico.id,
+        subtopicoId: subtopico.id,
+        title: subtopico.nome,
       });
 
-      // Próximo dia
+      // Proximo dia
       currentDate = new Date(currentDate);
       currentDate.setDate(currentDate.getDate() + 1);
 
@@ -129,7 +129,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
 
   return (
     <div className="mb-1 relative">
-      {/* Topic Header - SEM linhas horizontais */}
+      {/* Topico Header - SEM linhas horizontais */}
       <div className="group">
         <button
           onClick={handleClick}
@@ -139,7 +139,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
         >
           {/* Chevron */}
           <div className="shrink-0">
-            {hasSubtopics || isEditMode ? (
+            {hasSubtopicos || isEditMode ? (
               <ChevronRight
                 className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${
                   isExpanded ? 'rotate-90' : ''
@@ -150,11 +150,11 @@ export const TopicItem: React.FC<TopicItemProps> = ({
             )}
           </div>
 
-          {/* Schedule Button - cresce em hover, empurrando o ícone */}
+          {/* Schedule Button - cresce em hover, empurrando o icone */}
           {!isEditing && (
             <>
-              {/* Tópico COM subtópicos: Abrir drawer unificado */}
-              {hasSubtopics ? (
+              {/* Topico COM subtopicos: Abrir drawer unificado */}
+              {hasSubtopicos ? (
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
@@ -169,16 +169,16 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                     }
                   }}
                   className="overflow-hidden transition-all duration-200 ease-in-out w-0 opacity-0 group-hover:w-5 group-hover:opacity-100 group-hover:mr-1 shrink-0 p-0.5 hover:bg-zinc-100/50 rounded cursor-pointer"
-                  title="Agendar subtópicos"
+                  title="Agendar subtopicos"
                 >
                   <Calendar className="w-4 h-4 text-zinc-500" />
                 </div>
               ) : (
-                /* Tópico SEM subtópicos: Agendamento direto */
+                /* Topico SEM subtopicos: Agendamento direto */
                 <QuickSchedulePopover
-                  topicId={topic.id}
-                  title={topic.title}
-                  estimatedMinutes={topic.estimated_duration_minutes || 120}
+                  topicoId={topico.id}
+                  title={topico.nome}
+                  estimatedMinutes={topico.estimated_duration_minutes || 120}
                   onSchedule={handleSchedule}
                 >
                   <div
@@ -200,19 +200,19 @@ export const TopicItem: React.FC<TopicItemProps> = ({
             </>
           )}
 
-          {/* Ícone */}
+          {/* Icone */}
           <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${
-            hasSubtopics ? 'bg-zinc-200 dark:bg-zinc-700' : 'bg-gray-100'
+            hasSubtopicos ? 'bg-zinc-200 dark:bg-zinc-700' : 'bg-gray-100'
           }`}>
-            <BookOpen className={`w-3.5 h-3.5 ${hasSubtopics ? 'text-zinc-500' : 'text-gray-600'}`} />
+            <BookOpen className={`w-3.5 h-3.5 ${hasSubtopicos ? 'text-zinc-500' : 'text-gray-600'}`} />
           </div>
 
-          {/* Conteúdo */}
+          {/* Conteudo */}
           <div className="flex-1 min-w-0 text-left">
             {isEditing ? (
               <TopicSubtopicInlineEditor
-                value={topic.title}
-                estimatedDuration={topic.estimated_duration_minutes || 120}
+                value={topico.nome}
+                estimatedDuration={topico.estimated_duration_minutes || 120}
                 isEditing={true}
                 onSave={async (newTitle, newDuration) => {
                   await onSave(newTitle, newDuration);
@@ -220,30 +220,30 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                 onCancel={onCancelEdit}
                 className="font-medium text-gray-800 text-sm"
                 showDurationInput={true}
-                isCalculated={hasSubtopics}
+                isCalculated={hasSubtopicos}
               />
             ) : (
               <>
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-800 text-sm truncate">
-                    {topic.title}
+                    {topico.nome}
                   </span>
                   {/* Contagem inline */}
-                  {hasSubtopics && topic.subtopics && topic.subtopics.length > 0 && (
+                  {hasSubtopicos && topico.subtopicos && topico.subtopicos.length > 0 && (
                     <span className="text-xs text-gray-400">
-                      ({topic.subtopics.length})
+                      ({topico.subtopicos.length})
                     </span>
                   )}
                   {/* Tempo estimado (discreto) */}
-                  {topic.estimated_duration_minutes && (
+                  {topico.estimated_duration_minutes && (
                     <span className="text-xs text-gray-400 flex items-center gap-0.5">
                       <Clock className="w-3 h-3" />
-                      {Math.floor(topic.estimated_duration_minutes / 60)}h{topic.estimated_duration_minutes % 60 > 0 ? ` ${topic.estimated_duration_minutes % 60}m` : ''}
+                      {Math.floor(topico.estimated_duration_minutes / 60)}h{topico.estimated_duration_minutes % 60 > 0 ? ` ${topico.estimated_duration_minutes % 60}m` : ''}
                     </span>
                   )}
                 </div>
                 {/* Progress inline */}
-                {hasSubtopics && progress.total > 0 && (
+                {hasSubtopicos && progress.total > 0 && (
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <div className="flex-1 h-0.5 bg-gray-200 rounded-full overflow-hidden max-w-[80px]">
                       <div
@@ -280,7 +280,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                       }
                     }}
                     className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
-                    title="Editar tópico"
+                    title="Editar topico"
                   >
                     <Edit3 className="w-3 h-3 text-gray-600" />
                   </div>
@@ -298,7 +298,7 @@ export const TopicItem: React.FC<TopicItemProps> = ({
                       }
                     }}
                     className="p-1 hover:bg-red-100 rounded transition-colors cursor-pointer"
-                    title="Deletar tópico"
+                    title="Deletar topico"
                   >
                     <Trash2 className="w-3 h-3 text-red-600" />
                   </div>
@@ -340,8 +340,8 @@ export const TopicItem: React.FC<TopicItemProps> = ({
         </button>
       </div>
 
-      {/* Children (Subtopics) */}
-      {isExpanded && (hasSubtopics || isEditMode) && (
+      {/* Children (Subtopicos) */}
+      {isExpanded && (hasSubtopicos || isEditMode) && (
         <div className="mt-1 ml-2 pl-3 border-l border-zinc-200/30 dark:border-zinc-700/30">
           <div className="space-y-0.5">
             {children}
@@ -349,15 +349,15 @@ export const TopicItem: React.FC<TopicItemProps> = ({
         </div>
       )}
 
-      {/* Drawer unificado para agendamento de subtópicos */}
-      {hasSubtopics && (
+      {/* Drawer unificado para agendamento de subtopicos */}
+      {hasSubtopicos && (
         <TopicScheduleDrawer
           open={showScheduleDrawer}
           onOpenChange={setShowScheduleDrawer}
-          topicId={topic.id}
-          topicTitle={topic.title}
-          subtopics={topic.subtopics || []}
-          onScheduleSubtopic={handleScheduleSubtopic}
+          topicoId={topico.id}
+          topicoTitle={topico.nome}
+          subtopics={topico.subtopicos || []}
+          onScheduleSubtopico={handleScheduleSubtopico}
           onDistributeAll={handleDistributeAll}
         />
       )}

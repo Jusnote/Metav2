@@ -18,22 +18,22 @@ import { DayExceptionModal } from '@/components/DayExceptionModal';
 
 interface QuickSchedulePopoverProps {
   children: React.ReactNode;
-  topicId?: string;
-  subtopicId?: string;
+  topicoId?: string;
+  subtopicoId?: string;
   title: string;
   estimatedMinutes?: number;
   onSchedule: (data: {
     date: Date;
     durationMinutes: number;
-    topicId?: string;
-    subtopicId?: string;
+    topicoId?: string;
+    subtopicoId?: string;
   }) => void;
 }
 
 export function QuickSchedulePopover({
   children,
-  topicId,
-  subtopicId,
+  topicoId,
+  subtopicoId,
   title,
   estimatedMinutes = 90,
   onSchedule,
@@ -60,8 +60,8 @@ export function QuickSchedulePopover({
       onSchedule({
         date: selectedDate,
         durationMinutes: duration,
-        topicId,
-        subtopicId,
+        topicoId,
+        subtopicoId,
       });
 
       setOpen(false);

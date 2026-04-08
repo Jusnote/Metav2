@@ -7,7 +7,7 @@ interface PreviewItem {
   id: string;
   title: string;
   estimatedMinutes: number;
-  type: 'topic' | 'subtopic';
+  type: 'topico' | 'subtopico';
 }
 
 interface ManualItem {
@@ -144,7 +144,7 @@ export function GoalPreviewSummary({
             {items.map((item) => (
               <div key={item.id} className="flex justify-between">
                 <span>
-                  {item.type === 'subtopic' ? '  └─ ' : '• '}
+                  {item.type === 'subtopico' ? '  └─ ' : '• '}
                   {item.title}
                 </span>
                 <span className="opacity-70">

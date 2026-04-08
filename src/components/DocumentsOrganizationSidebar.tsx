@@ -8,7 +8,7 @@ import { UnitItem } from "@/components/UnitItem";
 import { TopicItem } from "@/components/TopicItem";
 import { SubtopicItem } from "@/components/SubtopicItem";
 import { DayWithProgress } from "@/components/DayWithProgress";
-import { Target, Calendar, ChevronLeft, ChevronRight, ChevronsUpDown, X } from "lucide-react";
+import { Target, Calendar, ChevronLeft, ChevronRight, ChevronsUpDown, X, Package } from "lucide-react";
 
 const DIAS_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -16,11 +16,11 @@ const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julh
 // Mock deterministic data for each day
 function getMockDayData(day: number, month: number) {
   const seed = day * 31 + month * 7;
-  const hasTopics = seed % 3 !== 0;
+  const hasTopicos = seed % 3 !== 0;
   return {
-    progress: hasTopics ? ((seed * 17) % 70) + 10 : 0,
-    load: hasTopics ? ((seed * 13) % 50) + 30 : 0,
-    count: hasTopics ? (seed % 3) + 1 : 0,
+    progress: hasTopicos ? ((seed * 17) % 70) + 10 : 0,
+    load: hasTopicos ? ((seed * 13) % 50) + 30 : 0,
+    count: hasTopicos ? (seed % 3) + 1 : 0,
   };
 }
 
@@ -57,14 +57,14 @@ export function DocumentsOrganizationSidebar() {
   const [viewMonth, setViewMonth] = useState(new Date().getMonth());
   const [viewYear, setViewYear] = useState(new Date().getFullYear());
   const [cronogramaDate, setCronogramaDate] = useState<Date | null>(null);
-  const [prevExpandedUnits, setPrevExpandedUnits] = useState<Set<string> | null>(null);
-  const [prevExpandedTopics, setPrevExpandedTopics] = useState<Set<string> | null>(null);
+  const [prevExpandedDisciplinas, setPrevExpandedDisciplinas] = useState<Set<string> | null>(null);
+  const [prevExpandedTopicos, setPrevExpandedTopicos] = useState<Set<string> | null>(null);
 
   const today = useMemo(() => new Date(), []);
   const weekDays = useMemo(() => getWeekDays(today, weekOffset), [today, weekOffset]);
   const monthGrid = useMemo(() => getMonthGrid(viewYear, viewMonth), [viewYear, viewMonth]);
 
-  // Mock: get scheduled subtopic/topic IDs for a given date
+  // Mock: get scheduled subtopico/topico IDs for a given date
   const scheduledIds = useMemo(() => {
     if (!cronogramaDate || !ctx) return new Set<string>();
     const ids = new Set<string>();
@@ -74,10 +74,10 @@ export function DocumentsOrganizationSidebar() {
     if (count === 0) return ids;
 
     let itemIndex = 0;
-    for (const unit of ctx.units) {
-      for (const topic of unit.topics) {
-        if (topic.subtopics && topic.subtopics.length > 0) {
-          for (const sub of topic.subtopics) {
+    for (const disciplina of ctx.disciplinas) {
+      for (const topico of disciplina.topicos) {
+        if (topico.subtopicos && topico.subtopicos.length > 0) {
+          for (const sub of topico.subtopicos) {
             if ((itemIndex + day) % 4 === 0 && ids.size < count) {
               ids.add(sub.id);
             }
@@ -85,7 +85,7 @@ export function DocumentsOrganizationSidebar() {
           }
         } else {
           if ((itemIndex + day) % 4 === 0 && ids.size < count) {
-            ids.add(topic.id);
+            ids.add(topico.id);
           }
           itemIndex++;
         }
@@ -144,91 +144,91 @@ export function DocumentsOrganizationSidebar() {
   useEffect(() => {
     if (!ctx || scheduledIds.size === 0) {
       // Restore previous expansion state when filter clears
-      if (!cronogramaDate && prevExpandedUnits && prevExpandedTopics) {
-        ctx?.setExpandedUnits(prevExpandedUnits);
-        ctx?.setExpandedTopics(prevExpandedTopics);
-        setPrevExpandedUnits(null);
-        setPrevExpandedTopics(null);
+      if (!cronogramaDate && prevExpandedDisciplinas && prevExpandedTopicos) {
+        ctx?.setExpandedDisciplinas(prevExpandedDisciplinas);
+        ctx?.setExpandedTopicos(prevExpandedTopicos);
+        setPrevExpandedDisciplinas(null);
+        setPrevExpandedTopicos(null);
       }
       return;
     }
 
-    const { units, expandedUnits, expandedTopics, setExpandedUnits, setExpandedTopics } = ctx;
+    const { disciplinas, expandedDisciplinas, expandedTopicos, setExpandedDisciplinas, setExpandedTopicos } = ctx;
 
     // Save current expansion state
-    if (!prevExpandedUnits) {
-      setPrevExpandedUnits(new Set(expandedUnits));
-      setPrevExpandedTopics(new Set(expandedTopics));
+    if (!prevExpandedDisciplinas) {
+      setPrevExpandedDisciplinas(new Set(expandedDisciplinas));
+      setPrevExpandedTopicos(new Set(expandedTopicos));
     }
 
-    const unitsToExpand = new Set<string>();
-    const topicsToExpand = new Set<string>();
-    let firstItem: { unitId: string; topicId: string; subtopic: any } | null = null;
+    const disciplinasToExpand = new Set<string>();
+    const topicosToExpand = new Set<string>();
+    let firstItem: { disciplinaId: string; topicoId: string; subtopico: any } | null = null;
 
-    for (const unit of units) {
-      for (const topic of unit.topics) {
-        if (topic.subtopics) {
-          for (const sub of topic.subtopics) {
+    for (const disciplina of disciplinas) {
+      for (const topico of disciplina.topicos) {
+        if (topico.subtopicos) {
+          for (const sub of topico.subtopicos) {
             if (scheduledIds.has(sub.id)) {
-              unitsToExpand.add(unit.id);
-              topicsToExpand.add(topic.id);
+              disciplinasToExpand.add(disciplina.id);
+              topicosToExpand.add(topico.id);
               if (!firstItem) {
-                firstItem = { unitId: unit.id, topicId: topic.id, subtopic: sub };
+                firstItem = { disciplinaId: disciplina.id, topicoId: topico.id, subtopico: sub };
               }
             }
           }
         }
-        if (scheduledIds.has(topic.id)) {
-          unitsToExpand.add(unit.id);
+        if (scheduledIds.has(topico.id)) {
+          disciplinasToExpand.add(disciplina.id);
         }
       }
     }
 
-    setExpandedUnits(unitsToExpand);
-    setExpandedTopics(topicsToExpand);
+    setExpandedDisciplinas(disciplinasToExpand);
+    setExpandedTopicos(topicosToExpand);
 
     // Auto-select first item
     if (firstItem) {
-      ctx.handleSubtopicSelect(firstItem.unitId, firstItem.topicId, firstItem.subtopic);
+      ctx.handleSubtopicoSelect(firstItem.disciplinaId, firstItem.topicoId, firstItem.subtopico);
     }
   }, [cronogramaDate, scheduledIds]);
 
   if (!ctx) {
     return (
       <div className="flex-1 flex items-center justify-center px-3">
-        <p className="text-xs text-gray-400">Navegue para Conteúdos</p>
+        <p className="text-xs text-gray-400">Navegue para Conteudos</p>
       </div>
     );
   }
 
   const {
-    units, isEditMode, setIsEditMode,
-    expandedUnits, expandedTopics,
+    disciplinas, isEditMode, setIsEditMode,
+    expandedDisciplinas, expandedTopicos,
     selectedSubtopic, selectedTopic,
-    editingUnit, subtopicWithScheduleButton,
-    toggleUnitExpansion, toggleTopicExpansion,
-    handleSubtopicSelect, handleTopicSelect,
+    editingDisciplina, subtopicoWithScheduleButton,
+    toggleDisciplinaExpansion, toggleTopicoExpansion,
+    handleSubtopicoSelect, handleTopicoSelect,
     handleSearchSelect,
-    setEditingUnit, setSubtopicWithScheduleButton,
-    updateUnit, deleteUnit, deleteTopic, deleteSubtopic,
+    setEditingDisciplina, setSubtopicoWithScheduleButton,
+    updateDisciplina, deleteDisciplina, deleteTopico, deleteSubtopico,
     setQuickCreateModal, setEditModal, setGoalDialogOpen,
-    handleToggleSubtopicComplete,
+    handleToggleSubtopicoComplete,
   } = ctx;
 
   // Filter tree when cronograma is active
   const isFiltered = cronogramaDate !== null && scheduledIds.size > 0;
-  const displayUnits = isFiltered
-    ? units.map(unit => ({
-        ...unit,
-        topics: unit.topics.filter(topic => {
-          if (scheduledIds.has(topic.id)) return true;
-          return topic.subtopics?.some(sub => scheduledIds.has(sub.id));
-        }).map(topic => ({
-          ...topic,
-          subtopics: topic.subtopics?.filter(sub => scheduledIds.has(sub.id)),
+  const displayDisciplinas = isFiltered
+    ? disciplinas.map(disciplina => ({
+        ...disciplina,
+        topicos: disciplina.topicos.filter(topico => {
+          if (scheduledIds.has(topico.id)) return true;
+          return topico.subtopicos?.some(sub => scheduledIds.has(sub.id));
+        }).map(topico => ({
+          ...topico,
+          subtopicos: topico.subtopicos?.filter(sub => scheduledIds.has(sub.id)),
         })),
-      })).filter(unit => unit.topics.length > 0)
-    : units;
+      })).filter(disciplina => disciplina.topicos.length > 0)
+    : disciplinas;
 
   // Format selected date for label
   const filterLabel = cronogramaDate
@@ -271,7 +271,7 @@ export function DocumentsOrganizationSidebar() {
                     <button onClick={handleNextWeek} className="p-1 rounded hover:bg-muted transition-colors">
                       <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
-                    <button onClick={handleToggleMode} className="p-1 rounded hover:bg-muted transition-colors" title="Ver mês">
+                    <button onClick={handleToggleMode} className="p-1 rounded hover:bg-muted transition-colors" title="Ver mes">
                       <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                   </div>
@@ -404,7 +404,7 @@ export function DocumentsOrganizationSidebar() {
 
         {!isFiltered && (
           <HierarchySearch
-            units={units}
+            disciplinas={disciplinas}
             onSelect={handleSearchSelect}
           />
         )}
@@ -412,150 +412,55 @@ export function DocumentsOrganizationSidebar() {
 
       <div className="border-b border-zinc-200/40" />
 
-      {/* Hierarquia (filtered or full) */}
+      {/* Disciplinas - lista simples */}
       <div className="flex-1 overflow-y-auto py-2">
-        {isFiltered && displayUnits.length === 0 ? (
+        {isFiltered && displayDisciplinas.length === 0 ? (
           <div className="flex-1 flex items-center justify-center px-3 py-8">
             <p className="text-xs text-muted-foreground text-center">Nenhum topico agendado para este dia</p>
           </div>
         ) : (
-          <div className="px-3 space-y-1">
-            {displayUnits.map((unit) => (
-              <UnitItem
-                key={unit.id}
-                unit={unit}
-                isExpanded={expandedUnits.has(unit.id)}
-                isEditMode={!isFiltered && isEditMode}
-                isEditing={editingUnit === unit.id}
-                onToggleExpand={() => toggleUnitExpansion(unit.id)}
-                onEdit={() => setEditingUnit(unit.id)}
-                onCancelEdit={() => setEditingUnit(null)}
-                onSave={async (newTitle) => {
-                  await updateUnit(unit.id, { title: newTitle });
-                  setEditingUnit(null);
-                }}
-                onDelete={async () => {
-                  if (confirm(`Deletar unidade "${unit.title}"?`)) {
-                    await deleteUnit(unit.id);
-                  }
-                }}
-              >
-                <div className="space-y-1">
-                  {unit.topics.map((topic) => (
-                    <TopicItem
-                      key={topic.id}
-                      unitId={unit.id}
-                      topic={topic}
-                      isExpanded={expandedTopics.has(topic.id)}
-                      isSelected={selectedTopic?.topic.id === topic.id}
-                      isEditMode={!isFiltered && isEditMode}
-                      isEditing={false}
-                      hasSubtopics={!!(topic.subtopics && topic.subtopics.length > 0)}
-                      onToggleExpand={() => toggleTopicExpansion(topic.id)}
-                      onSelect={() => handleTopicSelect(unit.id, topic)}
-                      onEdit={() => {
-                        setEditModal({
-                          isOpen: true,
-                          type: 'topic',
-                          unitId: unit.id,
-                          topicId: null,
-                          itemId: topic.id,
-                          itemTitle: topic.title,
-                          itemDuration: topic.estimated_duration_minutes || 120,
-                          hasSubtopics: !!(topic.subtopics && topic.subtopics.length > 0),
-                        });
-                      }}
-                      onCancelEdit={() => {}}
-                      onSave={async () => {}}
-                      onDelete={async () => {
-                        if (confirm(`Deletar tópico "${topic.title}"?`)) {
-                          await deleteTopic(unit.id, topic.id);
-                        }
-                      }}
-                    >
-                      {((topic.subtopics && topic.subtopics.length > 0) || (!isFiltered && isEditMode)) && (
-                        <div className="space-y-1">
-                          {topic.subtopics && topic.subtopics.map((subtopic) => (
-                            <SubtopicItem
-                              key={subtopic.id}
-                              subtopic={subtopic}
-                              unitId={unit.id}
-                              topicId={topic.id}
-                              isSelected={selectedSubtopic?.subtopic.id === subtopic.id}
-                              isEditMode={!isFiltered && isEditMode}
-                              isEditing={false}
-                              showScheduleButton={subtopicWithScheduleButton === subtopic.id}
-                              onToggleScheduleButton={() => {
-                                setSubtopicWithScheduleButton(
-                                  subtopicWithScheduleButton === subtopic.id ? null : subtopic.id
-                                );
-                              }}
-                              onSelect={() => handleSubtopicSelect(unit.id, topic.id, subtopic)}
-                              onEdit={() => {
-                                setEditModal({
-                                  isOpen: true,
-                                  type: 'subtopic',
-                                  unitId: unit.id,
-                                  topicId: topic.id,
-                                  itemId: subtopic.id,
-                                  itemTitle: subtopic.title,
-                                  itemDuration: subtopic.estimated_duration_minutes || 90,
-                                  hasSubtopics: false,
-                                });
-                              }}
-                              onCancelEdit={() => {}}
-                              onSave={async () => {}}
-                              onDelete={async () => {
-                                if (confirm(`Deletar subtópico "${subtopic.title}"?`)) {
-                                  await deleteSubtopic(unit.id, topic.id, subtopic.id);
-                                }
-                              }}
-                              onToggleComplete={(completed) =>
-                                handleToggleSubtopicComplete(unit.id, topic.id, subtopic.id, completed)
-                              }
-                            />
-                          ))}
+          <div className="px-3 space-y-0.5">
+            {displayDisciplinas.map((disciplina) => {
+              const topicoCount = disciplina.topicos.length;
+              const allSubs = disciplina.topicos.flatMap(t => t.subtopicos || []);
+              const completedSubs = allSubs.filter(s => s.status === 'completed').length;
+              const progress = allSubs.length > 0 ? Math.round((completedSubs / allSubs.length) * 100) : 0;
 
-                          {!isFiltered && isEditMode && (
-                            <button
-                              onClick={() => {
-                                setQuickCreateModal({
-                                  isOpen: true,
-                                  type: 'subtopic',
-                                  unitId: unit.id,
-                                  topicId: topic.id,
-                                });
-                              }}
-                              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-blue-600 transition-all"
-                            >
-                              <span className="text-base font-semibold">+</span>
-                              <span className="font-medium text-xs">Adicionar Subtópico</span>
-                            </button>
-                          )}
+              return (
+                <button
+                  key={disciplina.id}
+                  onClick={() => {
+                    const el = document.getElementById(`discipline-${disciplina.id}`);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors group hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <Package className="w-3 h-3 text-zinc-400 shrink-0" />
+                      <span className="text-[13px] font-medium text-foreground truncate">
+                        {disciplina.nome}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1 ml-[18px]">
+                      <span className={`text-[9px] font-medium shrink-0 ${
+                        progress === 100 ? 'text-emerald-600' : progress > 0 ? 'text-blue-500' : 'text-zinc-400'
+                      }`}>
+                        {progress === 100 ? 'Concluido' : progress > 0 ? 'Iniciado' : 'Nao iniciado'}
+                      </span>
+                      {allSubs.length > 0 && (
+                        <div className="flex-1 h-[2px] rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                          <div className={`h-full rounded-full transition-all duration-500 ${
+                            progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'
+                          }`} style={{ width: `${progress}%` }} />
                         </div>
                       )}
-                    </TopicItem>
-                  ))}
-
-                  {!isFiltered && isEditMode && (
-                    <button
-                      onClick={() => {
-                        setQuickCreateModal({
-                          isOpen: true,
-                          type: 'topic',
-                          unitId: unit.id,
-                          topicId: null,
-                        });
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-zinc-400 hover:bg-zinc-100/50 hover:text-blue-600 transition-all"
-                    >
-                      <span className="text-lg font-semibold">+</span>
-                      <span className="font-medium text-sm">Adicionar Tópico</span>
-                    </button>
-                  )}
-                </div>
-              </UnitItem>
-            ))}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground shrink-0 transition-colors" />
+                </button>
+              );
+            })}
 
             {!isFiltered && isEditMode && (
               <div className="mt-3 pt-3 border-t border-gray-200/50">
@@ -563,15 +468,15 @@ export function DocumentsOrganizationSidebar() {
                   onClick={() => {
                     setQuickCreateModal({
                       isOpen: true,
-                      type: 'unit',
-                      unitId: null,
-                      topicId: null,
+                      type: 'disciplina',
+                      disciplinaId: null,
+                      topicoId: null,
                     });
                   }}
                   className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-gray-400 hover:bg-gray-100/50 hover:text-gray-600 transition-all"
                 >
                   <span className="text-sm">+</span>
-                  <span className="font-normal text-xs">Nova Unidade</span>
+                  <span className="font-normal text-xs">Nova Disciplina</span>
                 </button>
               </div>
             )}

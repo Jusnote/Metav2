@@ -49,7 +49,7 @@ export function TopicConflictAccordion({
       {/* Lista de conflitos (com select) */}
       {conflicts.map((conflict, index) => (
         <div
-          key={`${conflict.topicId}-${conflict.subtopicId}-${index}`}
+          key={`${conflict.topicoId}-${conflict.subtopicoId}-${index}`}
           className="border-l-2 border-amber-400 bg-amber-50/30 pl-3 py-2 space-y-2"
         >
           <p className="text-xs text-gray-700">

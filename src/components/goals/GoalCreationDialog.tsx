@@ -54,24 +54,24 @@ const goalSchema = z.object({
 
 type GoalFormData = z.infer<typeof goalSchema>;
 
-interface Subtopic {
+interface Subtopico {
   id: string;
-  title: string;
+  nome: string;
   estimated_duration_minutes?: number;
-  topic_id: string;
+  topico_id: string;
 }
 
-interface Topic {
+interface Topico {
   id: string;
-  title: string;
+  nome: string;
   estimated_duration_minutes?: number;
-  subtopics: Subtopic[];
+  subtopicos: Subtopico[];
 }
 
-interface Unit {
+interface Disciplina {
   id: string;
-  title: string;
-  topics: Topic[];
+  nome: string;
+  topicos: Topico[];
 }
 
 interface DayException {
@@ -87,7 +87,7 @@ interface GoalCreationDialogProps {
 }
 
 export function GoalCreationDialog({ open, onOpenChange }: GoalCreationDialogProps) {
-  const [units, setUnits] = useState<Unit[]>([]);
+  const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [selectedSubtopics, setSelectedSubtopics] = useState<Set<string>>(new Set());
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set()); // Tópicos sem subtópicos
   const [isLoadingData, setIsLoadingData] = useState(false);
@@ -249,51 +249,51 @@ export function GoalCreationDialog({ open, onOpenChange }: GoalCreationDialogPro
       setIsLoadingData(true);
 
       // Buscar hierarquia completa com join
-      const { data: unitsData, error: unitsError } = await supabase
-        .from('units')
+      const { data: disciplinasData, error: disciplinasError } = await supabase
+        .from('disciplinas')
         .select(`
           id,
-          title,
-          topics (
+          nome,
+          topicos (
             id,
-            title,
+            nome,
             estimated_duration_minutes,
-            subtopics (
+            subtopicos (
               id,
-              title,
+              nome,
               estimated_duration_minutes,
-              topic_id
+              topico_id
             )
           )
         `)
-        .order('title')
-        .order('title', { foreignTable: 'topics' })
-        .order('title', { foreignTable: 'topics.subtopics' });
+        .order('nome')
+        .order('nome', { foreignTable: 'topicos' })
+        .order('nome', { foreignTable: 'topicos.subtopicos' });
 
-      if (unitsError) throw unitsError;
+      if (disciplinasError) throw disciplinasError;
 
-      const formattedUnits: Unit[] = (unitsData || []).map((unit: any) => ({
-        id: unit.id,
-        title: unit.title,
-        topics: (unit.topics || []).map((topic: any) => ({
-          id: topic.id,
-          title: topic.title,
-          estimated_duration_minutes: topic.estimated_duration_minutes,
-          subtopics: (topic.subtopics || []).map((subtopic: any) => ({
-            id: subtopic.id,
-            title: subtopic.title,
-            estimated_duration_minutes: subtopic.estimated_duration_minutes,
-            topic_id: subtopic.topic_id,
+      const formattedDisciplinas: Disciplina[] = (disciplinasData || []).map((disciplina: any) => ({
+        id: disciplina.id,
+        nome: disciplina.nome,
+        topicos: (disciplina.topicos || []).map((topico: any) => ({
+          id: topico.id,
+          nome: topico.nome,
+          estimated_duration_minutes: topico.estimated_duration_minutes,
+          subtopicos: (topico.subtopicos || []).map((subtopico: any) => ({
+            id: subtopico.id,
+            nome: subtopico.nome,
+            estimated_duration_minutes: subtopico.estimated_duration_minutes,
+            topico_id: subtopico.topico_id,
           })),
         })),
       }));
 
-      setUnits(formattedUnits);
+      setDisciplinas(formattedDisciplinas);
     } catch (error: any) {
       console.error('Error loading hierarchy:', error);
       toast({
         title: 'Erro ao carregar dados',
-        description: error?.message || 'Erro desconhecido ao buscar unidades, tópicos e subtópicos',
+        description: error?.message || 'Erro desconhecido ao buscar disciplinas, topicos e subtopicos',
         variant: 'destructive',
       });
     } finally {
@@ -377,42 +377,42 @@ export function GoalCreationDialog({ open, onOpenChange }: GoalCreationDialogPro
 
       // Preparar items para validação
       const studyItems: StudyItem[] = [];
-      const previewItems: Array<{ id: string; title: string; estimatedMinutes: number; type: 'topic' | 'subtopic' }> = [];
+      const previewItems: Array<{ id: string; title: string; estimatedMinutes: number; type: 'topico' | 'subtopico' }> = [];
 
-      units.forEach(unit => {
-        unit.topics.forEach(topic => {
-          // Tópico sem subtópicos selecionado
-          if (selectedTopics.has(topic.id) && topic.subtopics.length === 0) {
-            const estimatedMinutes = topic.estimated_duration_minutes || 120;
+      disciplinas.forEach(disciplina => {
+        disciplina.topicos.forEach(topico => {
+          // Topico sem subtopicos selecionado
+          if (selectedTopics.has(topico.id) && topico.subtopicos.length === 0) {
+            const estimatedMinutes = topico.estimated_duration_minutes || 120;
             studyItems.push({
-              id: topic.id,
-              title: topic.title,
+              id: topico.id,
+              title: topico.nome,
               estimatedMinutes,
-              topicId: topic.id,
+              topicoId: topico.id,
             });
             previewItems.push({
-              id: topic.id,
-              title: topic.title,
+              id: topico.id,
+              title: topico.nome,
               estimatedMinutes,
-              type: 'topic',
+              type: 'topico',
             });
           }
-          // Subtópicos selecionados
-          topic.subtopics.forEach(subtopic => {
-            if (selectedSubtopics.has(subtopic.id)) {
-              const estimatedMinutes = subtopic.estimated_duration_minutes || 90;
+          // Subtopicos selecionados
+          topico.subtopicos.forEach(subtopico => {
+            if (selectedSubtopics.has(subtopico.id)) {
+              const estimatedMinutes = subtopico.estimated_duration_minutes || 90;
               studyItems.push({
-                id: subtopic.id,
-                title: subtopic.title,
+                id: subtopico.id,
+                title: subtopico.nome,
                 estimatedMinutes,
-                subtopicId: subtopic.id,
-                topicId: topic.id,
+                subtopicoId: subtopico.id,
+                topicoId: topico.id,
               });
               previewItems.push({
-                id: subtopic.id,
-                title: subtopic.title,
+                id: subtopico.id,
+                title: subtopico.nome,
                 estimatedMinutes,
-                type: 'subtopic',
+                type: 'subtopico',
               });
             }
           });
@@ -518,7 +518,7 @@ export function GoalCreationDialog({ open, onOpenChange }: GoalCreationDialogPro
     };
 
     calculatePreview().then(setPreview);
-  }, [selectedSubtopics, selectedTopics, dateRange, studyWeekends, units, getDailyHours]);
+  }, [selectedSubtopics, selectedTopics, dateRange, studyWeekends, disciplinas, getDailyHours]);
 
   // Submit handler
   const onSubmit = async (data: GoalFormData) => {
@@ -546,38 +546,38 @@ export function GoalCreationDialog({ open, onOpenChange }: GoalCreationDialogPro
       // Preparar também para validação
       const studyItems: StudyItem[] = [];
 
-      units.forEach(unit => {
-        unit.topics.forEach(topic => {
-          // Tópicos sem subtópicos selecionados
-          if (selectedTopics.has(topic.id) && topic.subtopics.length === 0) {
-            const estimatedMinutes = topic.estimated_duration_minutes || 120;
+      disciplinas.forEach(disciplina => {
+        disciplina.topicos.forEach(topico => {
+          // Topicos sem subtopicos selecionados
+          if (selectedTopics.has(topico.id) && topico.subtopicos.length === 0) {
+            const estimatedMinutes = topico.estimated_duration_minutes || 120;
             items.push({
-              topicId: topic.id,
-              title: topic.title,
+              topicoId: topico.id,
+              title: topico.nome,
               estimatedMinutes,
             });
             studyItems.push({
-              id: topic.id,
-              title: topic.title,
+              id: topico.id,
+              title: topico.nome,
               estimatedMinutes,
-              topicId: topic.id,
+              topicoId: topico.id,
             });
           }
-          // Subtópicos selecionados
-          topic.subtopics.forEach(subtopic => {
-            if (selectedSubtopics.has(subtopic.id)) {
-              const estimatedMinutes = subtopic.estimated_duration_minutes || 90;
+          // Subtopicos selecionados
+          topico.subtopicos.forEach(subtopico => {
+            if (selectedSubtopics.has(subtopico.id)) {
+              const estimatedMinutes = subtopico.estimated_duration_minutes || 90;
               items.push({
-                subtopicId: subtopic.id,
-                title: subtopic.title,
+                subtopicoId: subtopico.id,
+                title: subtopico.nome,
                 estimatedMinutes,
               });
               studyItems.push({
-                id: subtopic.id,
-                title: subtopic.title,
+                id: subtopico.id,
+                title: subtopico.nome,
                 estimatedMinutes,
-                subtopicId: subtopic.id,
-                topicId: topic.id,
+                subtopicoId: subtopico.id,
+                topicoId: topico.id,
               });
             }
           });
@@ -835,7 +835,7 @@ export function GoalCreationDialog({ open, onOpenChange }: GoalCreationDialogPro
             {/* SubtopicSelector */}
             <div className="border rounded-lg p-4 max-h-96 overflow-y-auto">
               <SubtopicSelector
-                units={units}
+                units={disciplinas}
                 selectedSubtopics={selectedSubtopics}
                 selectedTopics={selectedTopics}
                 onToggleSubtopic={toggleSubtopic}

@@ -16,8 +16,8 @@ interface TopicSubtopicCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: { title: string; estimated_duration_minutes: number }) => void;
-  type: 'topic' | 'subtopic';
-  hasSubtopics?: boolean; // Para tópicos: se já tem subtópicos, mostra tempo calculado
+  type: 'topico' | 'subtopico';
+  hasSubtopicos?: boolean; // Para tópicos: se já tem subtópicos, mostra tempo calculado
   calculatedDuration?: number; // Tempo calculado dos subtópicos existentes
   mode?: 'create' | 'edit'; // Novo: modo de criação ou edição
   initialTitle?: string; // Novo: título inicial para edição
@@ -29,14 +29,14 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
   onClose,
   onSave,
   type,
-  hasSubtopics = false,
+  hasSubtopicos = false,
   calculatedDuration = 0,
   mode = 'create',
   initialTitle = '',
   initialDuration,
 }) => {
   const [title, setTitle] = useState('');
-  const [estimatedDuration, setEstimatedDuration] = useState(type === 'topic' ? 120 : 90);
+  const [estimatedDuration, setEstimatedDuration] = useState(type === 'topico' ? 120 : 90);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -44,11 +44,11 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
       // Se for modo de edição, usa os valores iniciais
       if (mode === 'edit') {
         setTitle(initialTitle);
-        setEstimatedDuration(initialDuration || (type === 'topic' ? 120 : 90));
+        setEstimatedDuration(initialDuration || (type === 'topico' ? 120 : 90));
       } else {
         // Modo de criação, reseta os valores
         setTitle('');
-        setEstimatedDuration(type === 'topic' ? 120 : 90);
+        setEstimatedDuration(type === 'topico' ? 120 : 90);
       }
       setError('');
     }
@@ -82,7 +82,7 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
 
   const handleClose = () => {
     setTitle('');
-    setEstimatedDuration(type === 'topic' ? 120 : 90);
+    setEstimatedDuration(type === 'topico' ? 120 : 90);
     setError('');
     onClose();
   };
@@ -101,8 +101,8 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
         <DialogHeader>
           <DialogTitle>
             {mode === 'edit'
-              ? (type === 'topic' ? 'Editar Tópico' : 'Editar Subtópico')
-              : (type === 'topic' ? 'Novo Tópico' : 'Novo Subtópico')
+              ? (type === 'topico' ? 'Editar Tópico' : 'Editar Subtópico')
+              : (type === 'topico' ? 'Novo Tópico' : 'Novo Subtópico')
             }
           </DialogTitle>
         </DialogHeader>
@@ -119,7 +119,7 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
                 setError('');
               }}
               placeholder={
-                type === 'topic'
+                type === 'topico'
                   ? 'Ex: Direito Constitucional'
                   : 'Ex: Princípios Fundamentais'
               }
@@ -130,7 +130,7 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
           </div>
 
           {/* Tempo Estimado */}
-          {type === 'topic' && hasSubtopics ? (
+          {type === 'topico' && hasSubtopicos ? (
             // Tópico COM subtópicos → somente leitura (calculado)
             <div className="space-y-2">
               <Label>Tempo Estimado Total (Calculado)</Label>
@@ -154,7 +154,7 @@ export const TopicSubtopicCreateModal: React.FC<TopicSubtopicCreateModalProps> =
               value={estimatedDuration}
               onChange={setEstimatedDuration}
               label={
-                type === 'topic'
+                type === 'topico'
                   ? 'Tempo estimado de conclusão do tópico'
                   : 'Tempo estimado de conclusão do subtópico'
               }
