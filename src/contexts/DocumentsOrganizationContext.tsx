@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUnitsManager, type Unit, type Topic, type Subtopic } from "@/hooks/useUnitsManager";
+import { useDisciplinasManager, type Disciplina, type Topico, type Subtopico } from "@/hooks/useDisciplinasManager";
 import { usePlateDocuments } from "@/hooks/usePlateDocuments";
 import { useMaterialCounts } from "@/hooks/useMaterialCounts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -11,71 +11,71 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface NotesModalState {
   isOpen: boolean;
-  subtopicId?: string | null;
-  topicId?: string | null;
+  subtopicoId?: string | null;
+  topicoId?: string | null;
   title: string | null;
 }
 
 interface DocumentsModalState {
   isOpen: boolean;
-  subtopicId: string | null;
-  subtopicTitle: string | null;
+  subtopicoId: string | null;
+  subtopicoTitle: string | null;
 }
 
 interface QuickCreateModalState {
   isOpen: boolean;
-  type: 'unit' | 'topic' | 'subtopic' | null;
-  unitId?: string | null;
-  topicId?: string | null;
+  type: 'disciplina' | 'topico' | 'subtopico' | null;
+  disciplinaId?: string | null;
+  topicoId?: string | null;
 }
 
 interface EditModalState {
   isOpen: boolean;
-  type: 'topic' | 'subtopic' | null;
-  unitId?: string | null;
-  topicId?: string | null;
+  type: 'topico' | 'subtopico' | null;
+  disciplinaId?: string | null;
+  topicoId?: string | null;
   itemId?: string | null;
   itemTitle?: string;
   itemDuration?: number;
-  hasSubtopics?: boolean;
+  hasSubtopicos?: boolean;
 }
 
 interface DocumentsOrganizationContextType {
-  // Units data & CRUD
-  units: Unit[];
-  addUnit: ReturnType<typeof useUnitsManager>['addUnit'];
-  updateUnit: ReturnType<typeof useUnitsManager>['updateUnit'];
-  deleteUnit: ReturnType<typeof useUnitsManager>['deleteUnit'];
-  addTopic: ReturnType<typeof useUnitsManager>['addTopic'];
-  updateTopic: ReturnType<typeof useUnitsManager>['updateTopic'];
-  deleteTopic: ReturnType<typeof useUnitsManager>['deleteTopic'];
-  addSubtopic: ReturnType<typeof useUnitsManager>['addSubtopic'];
-  updateSubtopic: ReturnType<typeof useUnitsManager>['updateSubtopic'];
-  deleteSubtopic: ReturnType<typeof useUnitsManager>['deleteSubtopic'];
-  calculateTopicDuration: ReturnType<typeof useUnitsManager>['calculateTopicDuration'];
+  // Disciplinas data & CRUD
+  disciplinas: Disciplina[];
+  addDisciplina: ReturnType<typeof useDisciplinasManager>['addDisciplina'];
+  updateDisciplina: ReturnType<typeof useDisciplinasManager>['updateDisciplina'];
+  deleteDisciplina: ReturnType<typeof useDisciplinasManager>['deleteDisciplina'];
+  addTopico: ReturnType<typeof useDisciplinasManager>['addTopico'];
+  updateTopico: ReturnType<typeof useDisciplinasManager>['updateTopico'];
+  deleteTopico: ReturnType<typeof useDisciplinasManager>['deleteTopico'];
+  addSubtopico: ReturnType<typeof useDisciplinasManager>['addSubtopico'];
+  updateSubtopico: ReturnType<typeof useDisciplinasManager>['updateSubtopico'];
+  deleteSubtopico: ReturnType<typeof useDisciplinasManager>['deleteSubtopico'];
+  calculateTopicDuration: ReturnType<typeof useDisciplinasManager>['calculateTopicDuration'];
 
   // UI state
   isEditMode: boolean;
   setIsEditMode: (v: boolean) => void;
-  expandedUnits: Set<string>;
-  expandedTopics: Set<string>;
-  selectedSubtopic: { unitId: string; topicId: string; subtopic: any } | null;
-  setSelectedSubtopic: React.Dispatch<React.SetStateAction<{ unitId: string; topicId: string; subtopic: any } | null>>;
-  selectedTopic: { unitId: string; topic: any } | null;
-  setSelectedTopic: React.Dispatch<React.SetStateAction<{ unitId: string; topic: any } | null>>;
-  editingUnit: string | null;
-  subtopicWithScheduleButton: string | null;
+  expandedDisciplinas: Set<string>;
+  expandedTopicos: Set<string>;
+  selectedSubtopic: { disciplinaId: string; topicoId: string; subtopico: any } | null;
+  setSelectedSubtopic: React.Dispatch<React.SetStateAction<{ disciplinaId: string; topicoId: string; subtopico: any } | null>>;
+  selectedTopic: { disciplinaId: string; topico: any } | null;
+  setSelectedTopic: React.Dispatch<React.SetStateAction<{ disciplinaId: string; topico: any } | null>>;
+  editingDisciplina: string | null;
+  subtopicoWithScheduleButton: string | null;
 
   // Actions
-  toggleUnitExpansion: (unitId: string) => void;
-  toggleTopicExpansion: (topicId: string) => void;
-  handleSubtopicSelect: (unitId: string, topicId: string, subtopic: any) => void;
-  handleTopicSelect: (unitId: string, topic: any) => void;
-  handleSearchSelect: (result: { type: 'unit' | 'topic' | 'subtopic'; id: string; unitId?: string; topicId?: string; item: Unit | Topic | Subtopic }) => void;
-  setEditingUnit: (unitId: string | null) => void;
-  setSubtopicWithScheduleButton: (id: string | null) => void;
-  setExpandedUnits: React.Dispatch<React.SetStateAction<Set<string>>>;
-  setExpandedTopics: React.Dispatch<React.SetStateAction<Set<string>>>;
+  toggleDisciplinaExpansion: (disciplinaId: string) => void;
+  toggleTopicoExpansion: (topicoId: string) => void;
+  handleSubtopicoSelect: (disciplinaId: string, topicoId: string, subtopico: any) => void;
+  handleTopicoSelect: (disciplinaId: string, topico: any) => void;
+  handleSearchSelect: (result: { type: 'disciplina' | 'topico' | 'subtopico'; id: string; disciplinaId?: string; topicoId?: string; item: Disciplina | Topico | Subtopico }) => void;
+  setEditingDisciplina: (disciplinaId: string | null) => void;
+  setSubtopicoWithScheduleButton: (id: string | null) => void;
+  setExpandedDisciplinas: React.Dispatch<React.SetStateAction<Set<string>>>;
+  setExpandedTopicos: React.Dispatch<React.SetStateAction<Set<string>>>;
 
   // Modals
   notesModal: NotesModalState;
@@ -90,11 +90,11 @@ interface DocumentsOrganizationContextType {
   setGoalDialogOpen: (open: boolean) => void;
 
   // Handlers
-  handlePlaySubtopic: (subtopicId: string, subtopicTitle: string) => void;
+  handlePlaySubtopico: (subtopicoId: string, subtopicoTitle: string) => void;
   handleQuickCreate: (name: string) => Promise<void>;
   handleTopicSubtopicCreate: (data: { title: string; estimated_duration_minutes: number }) => Promise<void>;
   handleTopicSubtopicEdit: (data: { title: string; estimated_duration_minutes: number }) => Promise<void>;
-  handleToggleSubtopicComplete: (unitId: string, topicId: string, subtopicId: string, completed: boolean) => Promise<void>;
+  handleToggleSubtopicoComplete: (disciplinaId: string, topicoId: string, subtopicoId: string, completed: boolean) => Promise<void>;
 
   // Documents
   createDocument: ReturnType<typeof usePlateDocuments>['createDocument'];
@@ -119,140 +119,140 @@ function DocumentsOrganizationProviderInner({ children }: { children: React.Reac
 
   // UI state
   const [isEditMode, setIsEditMode] = useState(false);
-  const [expandedUnits, setExpandedUnits] = useState<Set<string>>(new Set());
-  const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
-  const [selectedSubtopic, setSelectedSubtopic] = useState<{ unitId: string; topicId: string; subtopic: any } | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<{ unitId: string; topic: any } | null>(null);
-  const [editingUnit, setEditingUnit] = useState<string | null>(null);
-  const [subtopicWithScheduleButton, setSubtopicWithScheduleButton] = useState<string | null>(null);
+  const [expandedDisciplinas, setExpandedDisciplinas] = useState<Set<string>>(new Set());
+  const [expandedTopicos, setExpandedTopicos] = useState<Set<string>>(new Set());
+  const [selectedSubtopic, setSelectedSubtopic] = useState<{ disciplinaId: string; topicoId: string; subtopico: any } | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<{ disciplinaId: string; topico: any } | null>(null);
+  const [editingDisciplina, setEditingDisciplina] = useState<string | null>(null);
+  const [subtopicoWithScheduleButton, setSubtopicoWithScheduleButton] = useState<string | null>(null);
 
   // Modals
-  const [notesModal, setNotesModal] = useState<NotesModalState>({ isOpen: false, subtopicId: null, topicId: null, title: null });
-  const [documentsModal, setDocumentsModal] = useState<DocumentsModalState>({ isOpen: false, subtopicId: null, subtopicTitle: null });
-  const [quickCreateModal, setQuickCreateModal] = useState<QuickCreateModalState>({ isOpen: false, type: null, unitId: null, topicId: null });
-  const [editModal, setEditModal] = useState<EditModalState>({ isOpen: false, type: null, unitId: null, topicId: null, itemId: null, itemTitle: '', itemDuration: 0, hasSubtopics: false });
+  const [notesModal, setNotesModal] = useState<NotesModalState>({ isOpen: false, subtopicoId: null, topicoId: null, title: null });
+  const [documentsModal, setDocumentsModal] = useState<DocumentsModalState>({ isOpen: false, subtopicoId: null, subtopicoTitle: null });
+  const [quickCreateModal, setQuickCreateModal] = useState<QuickCreateModalState>({ isOpen: false, type: null, disciplinaId: null, topicoId: null });
+  const [editModal, setEditModal] = useState<EditModalState>({ isOpen: false, type: null, disciplinaId: null, topicoId: null, itemId: null, itemTitle: '', itemDuration: 0, hasSubtopicos: false });
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
 
   const { createDocument } = usePlateDocuments();
 
   const { counts: materialCounts } = useMaterialCounts(
-    selectedSubtopic?.subtopic.id,
-    selectedSubtopic ? undefined : selectedTopic?.topic.id
+    selectedSubtopic?.subtopico.id,
+    selectedSubtopic ? undefined : selectedTopic?.topico.id
   );
 
   const {
-    units, addUnit, updateUnit, deleteUnit,
-    addTopic, updateTopic, deleteTopic,
-    addSubtopic, updateSubtopic, deleteSubtopic,
+    disciplinas, addDisciplina, updateDisciplina, deleteDisciplina,
+    addTopico, updateTopico, deleteTopico,
+    addSubtopico, updateSubtopico, deleteSubtopico,
     calculateTopicDuration,
-  } = useUnitsManager();
+  } = useDisciplinasManager();
 
-  // Auto-expand first unit
+  // Auto-expand first disciplina
   useEffect(() => {
-    if (units.length > 0 && expandedUnits.size === 0) {
-      setExpandedUnits(new Set([units[0].id]));
+    if (disciplinas.length > 0 && expandedDisciplinas.size === 0) {
+      setExpandedDisciplinas(new Set([disciplinas[0].id]));
     }
-  }, [units, expandedUnits]);
+  }, [disciplinas, expandedDisciplinas]);
 
-  const toggleUnitExpansion = useCallback((unitId: string) => {
-    setExpandedUnits(prev => {
+  const toggleDisciplinaExpansion = useCallback((disciplinaId: string) => {
+    setExpandedDisciplinas(prev => {
       const next = new Set(prev);
-      if (next.has(unitId)) next.delete(unitId);
-      else next.add(unitId);
+      if (next.has(disciplinaId)) next.delete(disciplinaId);
+      else next.add(disciplinaId);
       return next;
     });
   }, []);
 
-  const toggleTopicExpansion = useCallback((topicId: string) => {
-    setExpandedTopics(prev => {
+  const toggleTopicoExpansion = useCallback((topicoId: string) => {
+    setExpandedTopicos(prev => {
       const next = new Set(prev);
-      if (next.has(topicId)) next.delete(topicId);
-      else next.add(topicId);
+      if (next.has(topicoId)) next.delete(topicoId);
+      else next.add(topicoId);
       return next;
     });
   }, []);
 
-  const handleSubtopicSelect = useCallback((unitId: string, topicId: string, subtopic: any) => {
-    setSelectedSubtopic({ unitId, topicId, subtopic });
+  const handleSubtopicoSelect = useCallback((disciplinaId: string, topicoId: string, subtopico: any) => {
+    setSelectedSubtopic({ disciplinaId, topicoId, subtopico });
     setSelectedTopic(null);
   }, []);
 
-  const handleTopicSelect = useCallback((unitId: string, topic: any) => {
-    setSelectedTopic({ unitId, topic });
+  const handleTopicoSelect = useCallback((disciplinaId: string, topico: any) => {
+    setSelectedTopic({ disciplinaId, topico });
     setSelectedSubtopic(null);
   }, []);
 
-  const handleSearchSelect = useCallback((result: { type: 'unit' | 'topic' | 'subtopic'; id: string; unitId?: string; topicId?: string; item: Unit | Topic | Subtopic }) => {
-    if (result.unitId) {
-      setExpandedUnits(prev => new Set(prev).add(result.unitId!));
+  const handleSearchSelect = useCallback((result: { type: 'disciplina' | 'topico' | 'subtopico'; id: string; disciplinaId?: string; topicoId?: string; item: Disciplina | Topico | Subtopico }) => {
+    if (result.disciplinaId) {
+      setExpandedDisciplinas(prev => new Set(prev).add(result.disciplinaId!));
     }
-    if (result.type === 'subtopic' && result.topicId) {
-      setExpandedTopics(prev => new Set(prev).add(result.topicId!));
+    if (result.type === 'subtopico' && result.topicoId) {
+      setExpandedTopicos(prev => new Set(prev).add(result.topicoId!));
     }
-    if (result.type === 'subtopic' && result.unitId && result.topicId) {
-      handleSubtopicSelect(result.unitId, result.topicId, result.item);
-    } else if (result.type === 'topic' && result.unitId) {
-      handleTopicSelect(result.unitId, result.item);
-    } else if (result.type === 'unit') {
-      setExpandedUnits(prev => new Set(prev).add(result.id));
+    if (result.type === 'subtopico' && result.disciplinaId && result.topicoId) {
+      handleSubtopicoSelect(result.disciplinaId, result.topicoId, result.item);
+    } else if (result.type === 'topico' && result.disciplinaId) {
+      handleTopicoSelect(result.disciplinaId, result.item);
+    } else if (result.type === 'disciplina') {
+      setExpandedDisciplinas(prev => new Set(prev).add(result.id));
     }
-  }, [handleSubtopicSelect, handleTopicSelect]);
+  }, [handleSubtopicoSelect, handleTopicoSelect]);
 
-  const handlePlaySubtopic = useCallback((subtopicId: string, subtopicTitle: string) => {
-    setDocumentsModal({ isOpen: true, subtopicId, subtopicTitle });
+  const handlePlaySubtopico = useCallback((subtopicoId: string, subtopicoTitle: string) => {
+    setDocumentsModal({ isOpen: true, subtopicoId, subtopicoTitle });
   }, []);
 
   const handleQuickCreate = useCallback(async (name: string) => {
     const { type } = quickCreateModal;
-    if (type === 'unit') {
-      const newUnit = await addUnit(name, 'Novo Assunto');
-      if (newUnit) {
-        setExpandedUnits(prev => new Set(prev).add(newUnit));
+    if (type === 'disciplina') {
+      const newDisciplina = await addDisciplina(name, 'Novo Assunto');
+      if (newDisciplina) {
+        setExpandedDisciplinas(prev => new Set(prev).add(newDisciplina));
       }
     }
-    setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null });
-  }, [quickCreateModal, addUnit]);
+    setQuickCreateModal({ isOpen: false, type: null, disciplinaId: null, topicoId: null });
+  }, [quickCreateModal, addDisciplina]);
 
   const handleTopicSubtopicCreate = useCallback(async (data: { title: string; estimated_duration_minutes: number }) => {
-    const { type, unitId, topicId } = quickCreateModal;
-    if (type === 'topic' && unitId) {
-      const newTopic = await addTopic(unitId, data.title, data.estimated_duration_minutes);
-      setExpandedUnits(prev => new Set(prev).add(unitId));
-      if (newTopic) {
-        setExpandedTopics(prev => new Set(prev).add(newTopic));
+    const { type, disciplinaId, topicoId } = quickCreateModal;
+    if (type === 'topico' && disciplinaId) {
+      const newTopico = await addTopico(disciplinaId, data.title, data.estimated_duration_minutes);
+      setExpandedDisciplinas(prev => new Set(prev).add(disciplinaId));
+      if (newTopico) {
+        setExpandedTopicos(prev => new Set(prev).add(newTopico));
       }
-    } else if (type === 'subtopic' && unitId && topicId) {
-      await addSubtopic(unitId, topicId, data.title, data.estimated_duration_minutes);
-      setExpandedUnits(prev => new Set(prev).add(unitId));
-      setExpandedTopics(prev => new Set(prev).add(topicId));
+    } else if (type === 'subtopico' && disciplinaId && topicoId) {
+      await addSubtopico(disciplinaId, topicoId, data.title, data.estimated_duration_minutes);
+      setExpandedDisciplinas(prev => new Set(prev).add(disciplinaId));
+      setExpandedTopicos(prev => new Set(prev).add(topicoId));
     }
-    setQuickCreateModal({ isOpen: false, type: null, unitId: null, topicId: null });
-  }, [quickCreateModal, addTopic, addSubtopic]);
+    setQuickCreateModal({ isOpen: false, type: null, disciplinaId: null, topicoId: null });
+  }, [quickCreateModal, addTopico, addSubtopico]);
 
   const handleTopicSubtopicEdit = useCallback(async (data: { title: string; estimated_duration_minutes: number }) => {
-    const { type, unitId, topicId, itemId } = editModal;
-    if (type === 'topic' && unitId && itemId) {
+    const { type, disciplinaId, topicoId, itemId } = editModal;
+    if (type === 'topico' && disciplinaId && itemId) {
       const updates: any = { title: data.title };
       if (data.estimated_duration_minutes !== undefined) updates.estimated_duration_minutes = data.estimated_duration_minutes;
-      await updateTopic(unitId, itemId, updates);
-    } else if (type === 'subtopic' && unitId && topicId && itemId) {
+      await updateTopico(disciplinaId, itemId, updates);
+    } else if (type === 'subtopico' && disciplinaId && topicoId && itemId) {
       const updates: any = { title: data.title };
       if (data.estimated_duration_minutes !== undefined) updates.estimated_duration_minutes = data.estimated_duration_minutes;
-      await updateSubtopic(unitId, topicId, itemId, updates);
+      await updateSubtopico(disciplinaId, topicoId, itemId, updates);
     }
-    setEditModal({ isOpen: false, type: null, unitId: null, topicId: null, itemId: null, itemTitle: '', itemDuration: 0, hasSubtopics: false });
-  }, [editModal, updateTopic, updateSubtopic]);
+    setEditModal({ isOpen: false, type: null, disciplinaId: null, topicoId: null, itemId: null, itemTitle: '', itemDuration: 0, hasSubtopicos: false });
+  }, [editModal, updateTopico, updateSubtopico]);
 
-  const handleToggleSubtopicComplete = useCallback(async (unitId: string, topicId: string, subtopicId: string, completed: boolean) => {
-    await updateSubtopic(unitId, topicId, subtopicId, { status: completed ? 'completed' : 'not-started' });
-  }, [updateSubtopic]);
+  const handleToggleSubtopicoComplete = useCallback(async (disciplinaId: string, topicoId: string, subtopicoId: string, completed: boolean) => {
+    await updateSubtopico(disciplinaId, topicoId, subtopicoId, { status: completed ? 'completed' : 'not-started' });
+  }, [updateSubtopico]);
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
     shortcuts: [
-      { key: 'n', ctrl: true, handler: () => { if (isEditMode) setQuickCreateModal({ isOpen: true, type: 'unit', unitId: null, topicId: null }); } },
-      { key: 't', ctrl: true, handler: () => { if (isEditMode && expandedUnits.size > 0) { const firstUnit = Array.from(expandedUnits)[0]; setQuickCreateModal({ isOpen: true, type: 'topic', unitId: firstUnit, topicId: null }); } } },
-      { key: 's', ctrl: true, shift: true, handler: () => { if (isEditMode && expandedTopics.size > 0 && expandedUnits.size > 0) { setQuickCreateModal({ isOpen: true, type: 'subtopic', unitId: Array.from(expandedUnits)[0], topicId: Array.from(expandedTopics)[0] }); } } },
+      { key: 'n', ctrl: true, handler: () => { if (isEditMode) setQuickCreateModal({ isOpen: true, type: 'disciplina', disciplinaId: null, topicoId: null }); } },
+      { key: 't', ctrl: true, handler: () => { if (isEditMode && expandedDisciplinas.size > 0) { const firstDisciplina = Array.from(expandedDisciplinas)[0]; setQuickCreateModal({ isOpen: true, type: 'topico', disciplinaId: firstDisciplina, topicoId: null }); } } },
+      { key: 's', ctrl: true, shift: true, handler: () => { if (isEditMode && expandedTopicos.size > 0 && expandedDisciplinas.size > 0) { setQuickCreateModal({ isOpen: true, type: 'subtopico', disciplinaId: Array.from(expandedDisciplinas)[0], topicoId: Array.from(expandedTopicos)[0] }); } } },
       { key: 'e', ctrl: true, handler: () => { setIsEditMode(prev => !prev); } },
     ],
     enabled: true,
@@ -260,27 +260,27 @@ function DocumentsOrganizationProviderInner({ children }: { children: React.Reac
 
   return (
     <DocumentsOrganizationContext.Provider value={{
-      units, addUnit, updateUnit, deleteUnit,
-      addTopic, updateTopic, deleteTopic,
-      addSubtopic, updateSubtopic, deleteSubtopic,
+      disciplinas, addDisciplina, updateDisciplina, deleteDisciplina,
+      addTopico, updateTopico, deleteTopico,
+      addSubtopico, updateSubtopico, deleteSubtopico,
       calculateTopicDuration,
       isEditMode, setIsEditMode,
-      expandedUnits, expandedTopics,
+      expandedDisciplinas, expandedTopicos,
       selectedSubtopic, setSelectedSubtopic, selectedTopic, setSelectedTopic,
-      editingUnit, subtopicWithScheduleButton,
-      toggleUnitExpansion, toggleTopicExpansion,
-      handleSubtopicSelect, handleTopicSelect,
+      editingDisciplina, subtopicoWithScheduleButton,
+      toggleDisciplinaExpansion, toggleTopicoExpansion,
+      handleSubtopicoSelect, handleTopicoSelect,
       handleSearchSelect,
-      setEditingUnit, setSubtopicWithScheduleButton,
-      setExpandedUnits, setExpandedTopics,
+      setEditingDisciplina, setSubtopicoWithScheduleButton,
+      setExpandedDisciplinas, setExpandedTopicos,
       notesModal, setNotesModal,
       documentsModal, setDocumentsModal,
       quickCreateModal, setQuickCreateModal,
       editModal, setEditModal,
       goalDialogOpen, setGoalDialogOpen,
-      handlePlaySubtopic, handleQuickCreate,
+      handlePlaySubtopico, handleQuickCreate,
       handleTopicSubtopicCreate, handleTopicSubtopicEdit,
-      handleToggleSubtopicComplete,
+      handleToggleSubtopicoComplete,
       createDocument, materialCounts,
     }}>
       {children}
