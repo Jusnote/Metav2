@@ -11,8 +11,8 @@ interface CreateGoalWithScheduleParams {
     'id' | 'user_id' | 'progress_percentage' | 'completed' | 'created_at' | 'updated_at'
   >;
   items: Array<{
-    topicId?: string;
-    subtopicId?: string;
+    topicoId?: string;
+    subtopicoId?: string;
     title: string;
     estimatedMinutes: number;
     documentId?: string;
@@ -327,8 +327,8 @@ async function generateSimpleSchedule(params: {
   startDate: Date;
   targetDate: Date;
   items: Array<{
-    topicId?: string;
-    subtopicId?: string;
+    topicoId?: string;
+    subtopicoId?: string;
     title: string;
     estimatedMinutes: number;
     documentId?: string;
@@ -340,11 +340,11 @@ async function generateSimpleSchedule(params: {
 
   // Preparar items para o algoritmo de distribuição
   const studyItems: StudyItem[] = items.map((item, index) => ({
-    id: item.subtopicId || item.topicId || `item-${index}`,
+    id: item.subtopicoId || item.topicoId || `item-${index}`,
     title: item.title,
     estimatedMinutes: item.estimatedMinutes,
-    topicId: item.topicId,
-    subtopicId: item.subtopicId,
+    topicoId: item.topicoId,
+    subtopicoId: item.subtopicoId,
   }));
 
   // Usar algoritmo inteligente de distribuição
@@ -380,14 +380,14 @@ async function generateSimpleSchedule(params: {
     // Encontrar documentId do item original
     const originalItem = items.find(
       (item) =>
-        item.subtopicId === scheduleItem.subtopicId ||
-        item.topicId === scheduleItem.topicId
+        item.subtopicoId === scheduleItem.subtopicoId ||
+        item.topicoId === scheduleItem.topicoId
     );
 
     return {
       study_goal_id: goalId,
-      topic_id: scheduleItem.topicId,
-      subtopic_id: scheduleItem.subtopicId,
+      topico_id: scheduleItem.topicoId,
+      subtopico_id: scheduleItem.subtopicoId,
       title: scheduleItem.title,
       scheduled_date: scheduleItem.date,
       item_type: 'goal' as const,

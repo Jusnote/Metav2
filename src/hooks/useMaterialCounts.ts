@@ -15,13 +15,13 @@ interface UseMaterialCountsReturn {
 
 /**
  * Hook para contar materiais (documentos, flashcards, questões) associados a um subtópico ou tópico
- * @param subtopicId - ID do subtópico (opcional)
- * @param topicId - ID do tópico (opcional, usado quando não há subtópico)
+ * @param subtopicoId - ID do subtópico (opcional)
+ * @param topicoId - ID do tópico (opcional, usado quando não há subtópico)
  * @returns Contagens de materiais, estado de carregamento e função de refetch
  */
 export const useMaterialCounts = (
-  subtopicId?: string | null,
-  topicId?: string | null
+  subtopicoId?: string | null,
+  topicoId?: string | null
 ): UseMaterialCountsReturn => {
   const [counts, setCounts] = useState<MaterialCounts>({
     documents: 0,
@@ -31,7 +31,7 @@ export const useMaterialCounts = (
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchCounts = async () => {
-    if (!subtopicId && !topicId) {
+    if (!subtopicoId && !topicoId) {
       setCounts({ documents: 0, flashcards: 0, questions: 0 });
       return;
     }
@@ -43,7 +43,7 @@ export const useMaterialCounts = (
       const { count: documentsCount, error: docsError } = await supabase
         .from('documents')
         .select('*', { count: 'exact', head: true })
-        .eq(subtopicId ? 'subtopic_id' : 'topic_id', (subtopicId || topicId) as string);
+        .eq(subtopicoId ? 'subtopico_id' : 'topico_id', (subtopicoId || topicoId) as string);
 
       if (docsError) {
         console.error('Error counting documents:', docsError);
@@ -53,13 +53,13 @@ export const useMaterialCounts = (
       // const { count: flashcardsCount, error: flashcardsError } = await supabase
       //   .from('flashcards')
       //   .select('*', { count: 'exact', head: true })
-      //   .eq(subtopicId ? 'subtopic_id' : 'topic_id', subtopicId || topicId);
+      //   .eq(subtopicoId ? 'subtopico_id' : 'topico_id', subtopicoId || topicoId);
 
       // TODO: Adicionar contagem de questões quando tabela existir
       // const { count: questionsCount, error: questionsError } = await supabase
       //   .from('questions')
       //   .select('*', { count: 'exact', head: true })
-      //   .eq(subtopicId ? 'subtopic_id' : 'topic_id', subtopicId || topicId);
+      //   .eq(subtopicoId ? 'subtopico_id' : 'topico_id', subtopicoId || topicoId);
 
       setCounts({
         documents: documentsCount || 0,
@@ -76,23 +76,23 @@ export const useMaterialCounts = (
 
   useEffect(() => {
     fetchCounts();
-  }, [subtopicId, topicId]);
+  }, [subtopicoId, topicoId]);
 
   // Realtime subscription para documents
   useEffect(() => {
-    if (!subtopicId && !topicId) return;
+    if (!subtopicoId && !topicoId) return;
 
     const channel = supabase
-      .channel(`material_counts_${subtopicId || topicId}`)
+      .channel(`material_counts_${subtopicoId || topicoId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'documents',
-          filter: subtopicId
-            ? `subtopic_id=eq.${subtopicId}`
-            : `topic_id=eq.${topicId}`
+          filter: subtopicoId
+            ? `subtopico_id=eq.${subtopicoId}`
+            : `topico_id=eq.${topicoId}`
         },
         () => {
           fetchCounts();
@@ -103,7 +103,7 @@ export const useMaterialCounts = (
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [subtopicId, topicId]);
+  }, [subtopicoId, topicoId]);
 
   return {
     counts,

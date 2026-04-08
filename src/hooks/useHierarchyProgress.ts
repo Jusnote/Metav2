@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Unit, Topic } from './useUnitsManager';
+import type { Disciplina, Topico } from './useDisciplinasManager';
 
 interface HierarchyProgress {
   percentage: number;
@@ -8,26 +8,26 @@ interface HierarchyProgress {
 }
 
 /**
- * Calcula o progresso de uma unidade baseado nos tópicos e subtópicos
+ * Calcula o progresso de uma disciplina baseado nos topicos e subtopicos
  */
-export const useUnitProgress = (unit: Unit): HierarchyProgress => {
+export const useDisciplinaProgress = (disciplina: Disciplina): HierarchyProgress => {
   return useMemo(() => {
     let totalItems = 0;
     let completedItems = 0;
 
-    unit.topics.forEach((topic) => {
-      if (topic.subtopics && topic.subtopics.length > 0) {
-        // Tópico com subtópicos: conta os subtópicos
-        topic.subtopics.forEach((subtopic) => {
+    disciplina.topicos.forEach((topico) => {
+      if (topico.subtopicos && topico.subtopicos.length > 0) {
+        // Topico com subtopicos: conta os subtopicos
+        topico.subtopicos.forEach((subtopico) => {
           totalItems++;
-          if (subtopic.status === 'completed') {
+          if (subtopico.status === 'completed') {
             completedItems++;
           }
         });
       } else {
-        // Tópico sem subtópicos: conta o próprio tópico
+        // Topico sem subtopicos: conta o proprio topico
         totalItems++;
-        if ((topic as any).status === 'completed') {
+        if ((topico as any).status === 'completed') {
           completedItems++;
         }
       }
@@ -40,20 +40,20 @@ export const useUnitProgress = (unit: Unit): HierarchyProgress => {
       completed: completedItems,
       total: totalItems
     };
-  }, [unit]);
+  }, [disciplina]);
 };
 
 /**
- * Calcula o progresso de um tópico baseado nos subtópicos
+ * Calcula o progresso de um topico baseado nos subtopicos
  */
-export const useTopicProgress = (topic: Topic): HierarchyProgress => {
+export const useTopicoProgress = (topico: Topico): HierarchyProgress => {
   return useMemo(() => {
-    const subtopics = topic.subtopics || [];
-    const total = subtopics.length;
+    const subtopicos = topico.subtopicos || [];
+    const total = subtopicos.length;
 
     if (total === 0) {
-      // Tópico sem subtópicos: verificar o próprio status
-      const isCompleted = (topic as any).status === 'completed';
+      // Topico sem subtopicos: verificar o proprio status
+      const isCompleted = (topico as any).status === 'completed';
       return {
         percentage: isCompleted ? 100 : 0,
         completed: isCompleted ? 1 : 0,
@@ -61,7 +61,7 @@ export const useTopicProgress = (topic: Topic): HierarchyProgress => {
       };
     }
 
-    const completed = subtopics.filter((s) => s.status === 'completed').length;
+    const completed = subtopicos.filter((s) => s.status === 'completed').length;
     const percentage = Math.round((completed / total) * 100);
 
     return {
@@ -69,5 +69,5 @@ export const useTopicProgress = (topic: Topic): HierarchyProgress => {
       completed,
       total
     };
-  }, [topic, topic.subtopics]);
+  }, [topico, topico.subtopicos]);
 };

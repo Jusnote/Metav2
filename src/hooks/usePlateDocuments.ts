@@ -37,7 +37,7 @@ export function usePlateDocuments() {
         content_text: data.content_text,
         is_favorite: data.is_favorite || false,
         tags: data.tags || [],
-        subtopic_id: data.subtopic_id
+        subtopico_id: data.subtopico_id
       } as Partial<PlateDocument>);
 
       if (newDoc) {
@@ -102,8 +102,8 @@ export function usePlateDocuments() {
   }, [documents]);
 
   // Buscar documentos por subtópico
-  const getDocumentsBySubtopic = useCallback((subtopicId: string): PlateDocument[] => {
-    return documents.filter(doc => doc.subtopic_id === subtopicId);
+  const getDocumentsBySubtopicoo = useCallback((subtopicoId: string): PlateDocument[] => {
+    return documents.filter(doc => doc.subtopico_id === subtopicoId);
   }, [documents]);
 
   // Buscar documentos favoritos
@@ -166,7 +166,7 @@ export function usePlateDocuments() {
     getDocument,
 
     // Operações específicas
-    getDocumentsBySubtopic,
+    getDocumentsBySubtopico,
     getFavoriteDocuments,
     toggleFavorite,
 

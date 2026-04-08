@@ -9,7 +9,7 @@ export const useNotes = (): UseNotesReturn => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchNotes = useCallback(async (subtopicId?: string | null, topicId?: string | null) => {
+  const fetchNotes = useCallback(async (subtopicoId?: string | null, topicoId?: string | null) => {
     setIsLoading(true);
     setError(null);
     
@@ -19,12 +19,12 @@ export const useNotes = (): UseNotesReturn => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (subtopicId) {
-        query = query.eq('subtopic_id', subtopicId);
-      } else if (topicId) {
-        query = query.eq('topic_id', topicId);
+      if (subtopicoId) {
+        query = query.eq('subtopico_id', subtopicoId);
+      } else if (topicoId) {
+        query = query.eq('topico_id', topicoId);
       } else {
-        throw new Error('É necessário fornecer subtopicId ou topicId');
+        throw new Error('É necessário fornecer subtopicoId ou topicoId');
       }
 
       const { data, error } = await query;
@@ -45,12 +45,12 @@ export const useNotes = (): UseNotesReturn => {
     }
   }, [toast]);
 
-  const fetchNotesByTopic = useCallback(async (topicId: string) => {
-    await fetchNotes(null, topicId);
+  const fetchNotesByTopic = useCallback(async (topicoId: string) => {
+    await fetchNotes(null, topicoId);
   }, [fetchNotes]);
 
-  const fetchNotesBySubtopic = useCallback(async (subtopicId: string) => {
-    await fetchNotes(subtopicId, null);
+  const fetchNotesBySubtopic = useCallback(async (subtopicoId: string) => {
+    await fetchNotes(subtopicoId, null);
   }, [fetchNotes]);
 
   const createNote = useCallback(async (data: CreateNoteRequest): Promise<Note | null> => {
@@ -60,15 +60,15 @@ export const useNotes = (): UseNotesReturn => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Usuário não autenticado');
 
-      if (!data.subtopic_id && !data.topic_id) {
-        throw new Error('É necessário fornecer subtopic_id ou topic_id');
+      if (!data.subtopico_id && !data.topico_id) {
+        throw new Error('É necessário fornecer subtopico_id ou topico_id');
       }
 
       const { data: newNote, error } = await supabase
         .from('notes')
         .insert({
-          subtopic_id: data.subtopic_id || null,
-          topic_id: data.topic_id || null,
+          subtopico_id: data.subtopico_id || null,
+          topico_id: data.topico_id || null,
           title: data.title || 'Nova Anotação',
           content: data.content,
           user_id: user.user.id,

@@ -7,9 +7,9 @@ import { useFSRSScheduler } from './useFSRSScheduler';
 interface UseScheduleItemsOptions {
   startDate?: Date;
   endDate?: Date;
-  unitId?: string;
-  topicId?: string;
-  subtopicId?: string;
+  disciplinaId?: string;
+  topicoId?: string;
+  subtopicoId?: string;
   studyGoalId?: string;
   completed?: boolean;
 }
@@ -75,9 +75,9 @@ export function useScheduleItems(options: UseScheduleItemsOptions = {}) {
       }
 
       // Filtros de hierarquia
-      if (options.unitId && item.unit_id !== options.unitId) return false;
-      if (options.topicId && item.topic_id !== options.topicId) return false;
-      if (options.subtopicId && item.subtopic_id !== options.subtopicId) return false;
+      if (options.disciplinaId && item.disciplina_id !== options.disciplinaId) return false;
+      if (options.topicoId && item.topico_id !== options.topicoId) return false;
+      if (options.subtopicoId && item.subtopico_id !== options.subtopicoId) return false;
 
       // Filtro de meta
       if (options.studyGoalId && item.study_goal_id !== options.studyGoalId)
@@ -159,9 +159,9 @@ export function useScheduleItems(options: UseScheduleItemsOptions = {}) {
         const part2 = await create({
           title: item.title.replace('Parte 1', 'Parte 2'),
           scheduled_date: part2Date.toISOString().split('T')[0],
-          subtopic_id: item.subtopic_id,
-          topic_id: item.topic_id,
-          unit_id: item.unit_id,
+          subtopico_id: item.subtopico_id,
+          topico_id: item.topico_id,
+          disciplina_id: item.disciplina_id,
           item_type: item.item_type,
           study_goal_id: item.study_goal_id,
           revision_type: 'initial_study_part1', // será identificado como part2 pelo parent_item_id
@@ -210,9 +210,9 @@ export function useScheduleItems(options: UseScheduleItemsOptions = {}) {
         const nextItem = await create({
           title: `${item.title.split(' - ')[0]} - Revisão 1`,
           scheduled_date: nextRevision.nextDate.toISOString().split('T')[0],
-          subtopic_id: item.subtopic_id,
-          topic_id: item.topic_id,
-          unit_id: item.unit_id,
+          subtopico_id: item.subtopico_id,
+          topico_id: item.topico_id,
+          disciplina_id: item.disciplina_id,
           item_type: item.item_type,
           study_goal_id: item.study_goal_id,
           revision_type: nextRevisionType,
@@ -261,9 +261,9 @@ export function useScheduleItems(options: UseScheduleItemsOptions = {}) {
         const nextItem = await create({
           title: `${item.title.split(' - Revisão ')[0]} - Revisão ${(item.revision_number || 0) + 1}`,
           scheduled_date: nextRevision.nextDate.toISOString().split('T')[0],
-          subtopic_id: item.subtopic_id,
-          topic_id: item.topic_id,
-          unit_id: item.unit_id,
+          subtopico_id: item.subtopico_id,
+          topico_id: item.topico_id,
+          disciplina_id: item.disciplina_id,
           item_type: item.item_type,
           study_goal_id: item.study_goal_id,
           revision_type: nextRevisionType,

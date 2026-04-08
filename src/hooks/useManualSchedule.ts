@@ -6,8 +6,8 @@ import { useConflictDetection } from '@/hooks/useConflictDetection';
 interface CreateManualScheduleParams {
   date: Date;
   durationMinutes: number;
-  topicId?: string;
-  subtopicId?: string;
+  topicoId?: string;
+  subtopicoId?: string;
   title: string;
   skipConflictCheck?: boolean; // Permite forçar agendamento ignorando conflitos
 }
@@ -17,7 +17,7 @@ export function useManualSchedule() {
   const { checkConflict } = useConflictDetection();
 
   const createManualSchedule = useCallback(
-    async ({ date, durationMinutes, topicId, subtopicId, title, skipConflictCheck = false }: CreateManualScheduleParams) => {
+    async ({ date, durationMinutes, topicoId, subtopicoId, title, skipConflictCheck = false }: CreateManualScheduleParams) => {
       try {
         // 1. VERIFICAR CONFLITOS (se não for forçado)
         if (!skipConflictCheck) {
@@ -58,8 +58,8 @@ export function useManualSchedule() {
           .from('schedule_items')
           .insert({
             user_id: user.id,
-            topic_id: topicId,
-            subtopic_id: subtopicId,
+            topico_id: topicoId,
+            subtopico_id: subtopicoId,
             scheduled_date: scheduledDate,
             estimated_duration: durationMinutes,
             title: `${title} (Manual)`,

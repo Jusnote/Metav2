@@ -11,8 +11,8 @@ export interface StudyItem {
   id: string;
   title: string;
   estimatedMinutes: number;
-  topicId?: string;
-  subtopicId?: string;
+  topicoId?: string;
+  subtopicoId?: string;
 }
 
 export interface DistributionParams {
@@ -36,8 +36,8 @@ export interface ScheduleItem {
   durationMinutes: number;
   sessionType: 'part1' | 'part2' | 'revision';
   revisionNumber: number;
-  topicId?: string;
-  subtopicId?: string;
+  topicoId?: string;
+  subtopicoId?: string;
 }
 
 export interface DistributionResult {
@@ -69,8 +69,8 @@ export interface DayConflict {
 }
 
 export interface TopicConflict {
-  topicId?: string;
-  subtopicId?: string;
+  topicoId?: string;
+  subtopicoId?: string;
   title: string;
   existingItems: Array<{
     id: string;
@@ -385,8 +385,8 @@ export async function distributeItems(params: DistributionParams): Promise<Distr
       durationMinutes: part1Minutes,
       sessionType: 'part1',
       revisionNumber: 0,
-      topicId: item.topicId,
-      subtopicId: item.subtopicId,
+      topicoId: item.topicoId,
+      subtopicoId: item.subtopicoId,
     });
 
     // Marcar slot como usado
@@ -410,8 +410,8 @@ export async function distributeItems(params: DistributionParams): Promise<Distr
       durationMinutes: part2Minutes,
       sessionType: 'part2',
       revisionNumber: 0,
-      topicId: item.topicId,
-      subtopicId: item.subtopicId,
+      topicoId: item.topicoId,
+      subtopicoId: item.subtopicoId,
     });
 
     // Marcar slot como usado
@@ -493,7 +493,7 @@ export async function detectTopicConflicts(
 
   const { data: manualItemsDetailed, error } = await supabase
     .from('schedule_items')
-    .select('id, scheduled_date, estimated_duration, title, topic_id, subtopic_id')
+    .select('id, scheduled_date, estimated_duration, title, topico_id, subtopico_id')
     .eq('user_id', userId)
     .eq('item_type', 'manual')
     .eq('completed', false)
@@ -511,24 +511,24 @@ export async function detectTopicConflicts(
   const conflicts: TopicConflict[] = [];
   const conflictingManualItemIds = new Set<string>();
 
-  // Para cada item selecionado, verificar se há manual item com mesmo topic_id ou subtopic_id
+  // Para cada item selecionado, verificar se há manual item com mesmo topico_id ou subtopico_id
   selectedItems.forEach((selectedItem) => {
     const matchingManualItems = manualItemsDetailed.filter((manualItem) => {
-      // Se item selecionado é subtópico, verificar subtopic_id
-      if (selectedItem.subtopicId) {
-        return manualItem.subtopic_id === selectedItem.subtopicId;
+      // Se item selecionado é subtópico, verificar subtopico_id
+      if (selectedItem.subtopicoId) {
+        return manualItem.subtopico_id === selectedItem.subtopicoId;
       }
-      // Se item selecionado é tópico, verificar topic_id
-      if (selectedItem.topicId) {
-        return manualItem.topic_id === selectedItem.topicId && !manualItem.subtopic_id;
+      // Se item selecionado é tópico, verificar topico_id
+      if (selectedItem.topicoId) {
+        return manualItem.topico_id === selectedItem.topicoId && !manualItem.subtopico_id;
       }
       return false;
     });
 
     if (matchingManualItems.length > 0) {
       conflicts.push({
-        topicId: selectedItem.topicId,
-        subtopicId: selectedItem.subtopicId,
+        topicoId: selectedItem.topicoId,
+        subtopicoId: selectedItem.subtopicoId,
         title: selectedItem.title,
         existingItems: matchingManualItems.map((item) => ({
           id: item.id,
