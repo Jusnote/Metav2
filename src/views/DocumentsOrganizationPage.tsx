@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDocumentsOrganization } from '@/contexts/DocumentsOrganizationContext';
 import { NotesModal } from '../components/NotesModal';
 import { SubtopicDocumentsModal } from '../components/SubtopicDocumentsModal';
@@ -8,11 +8,83 @@ import { TopicSubtopicCreateModal } from '../components/TopicSubtopicCreateModal
 import { GoalCreationDialog } from '../components/goals/GoalCreationDialog';
 import { TopicAIAssistant } from '../components/TopicAIAssistant';
 import { TopicDetailDrawer } from '../components/documents-organization/TopicDetailDrawer';
-import type { Topico, Subtopico } from '@/hooks/useDisciplinasManager';
+import type { Topico, Subtopico, Disciplina } from '@/hooks/useDisciplinasManager';
+import { useDisciplinasApi, useCargoData, type ApiTopico } from '@/hooks/useEditaisData';
+import { editaisQuery } from '@/lib/editais-client';
+
+const TOPICOS_QUERY = `
+  query Topicos($disciplinaId: Int!) {
+    topicos(disciplinaId: $disciplinaId) { id nome ordem }
+  }
+`;
 
 const DocumentsOrganizationPage = () => {
   const navigate = typeof window !== 'undefined' ? useNavigate() : null;
   const [aiDrawerOpen, setAiDrawerOpen] = React.useState(false);
+
+  // ---- Edital mode detection ----
+  const [searchParams] = useSearchParams();
+  const editalIdParam = searchParams.get('editalId');
+  const cargoIdParam = searchParams.get('cargoId');
+
+  const editalId = editalIdParam ? Number(editalIdParam) : null;
+  const cargoId = cargoIdParam ? Number(cargoIdParam) : null;
+  const isEditalMode = !!editalId && !!cargoId;
+
+  // ---- API data (only fetched when in edital mode) ----
+  const { data: apiDisciplinas, isLoading: apiLoading } = useDisciplinasApi(isEditalMode ? cargoId : null);
+  const { data: cargoData } = useCargoData(editalId, cargoId);
+
+  const [apiConvertedDisciplinas, setApiConvertedDisciplinas] = useState<Disciplina[]>([]);
+  const [loadingApiTopicos, setLoadingApiTopicos] = useState(false);
+
+  useEffect(() => {
+    if (!isEditalMode || !apiDisciplinas || apiDisciplinas.length === 0) {
+      setApiConvertedDisciplinas([]);
+      return;
+    }
+
+    let cancelled = false;
+    setLoadingApiTopicos(true);
+
+    (async () => {
+      const converted: Disciplina[] = [];
+      for (const disc of apiDisciplinas) {
+        const { data } = await editaisQuery<{ topicos: ApiTopico[] }>(
+          TOPICOS_QUERY,
+          { disciplinaId: disc.id },
+        );
+
+        if (cancelled) return;
+
+        const topicos: Topico[] = (data?.topicos || []).map(t => ({
+          id: `api-${t.id}`,
+          nome: t.nome,
+          date: '',
+          totalAulas: 0,
+          estimated_duration_minutes: 120,
+          _apiId: t.id,
+          _apiDisciplinaId: disc.id,
+        } as any));
+
+        converted.push({
+          id: `api-${disc.id}`,
+          nome: disc.nome,
+          totalChapters: disc.totalTopicos,
+          subject: '',
+          topicos,
+          _apiId: disc.id,
+        } as any);
+      }
+
+      if (!cancelled) {
+        setApiConvertedDisciplinas(converted);
+        setLoadingApiTopicos(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [isEditalMode, apiDisciplinas]);
 
   // Detail drawer state
   const [drawerDetail, setDrawerDetail] = useState<{
@@ -38,6 +110,10 @@ const DocumentsOrganizationPage = () => {
     calculateTopicDuration,
     setSelectedSubtopic, setSelectedTopic,
   } = useDocumentsOrganization();
+
+  // ---- Choose data source ----
+  const displayDisciplinas = isEditalMode ? apiConvertedDisciplinas : disciplinas;
+  const isLoadingContent = isEditalMode ? (apiLoading || loadingApiTopicos) : false;
 
   // Handle topico click -> open drawer
   const handleTopicoClick = useCallback((disciplinaId: string, topico: Topico) => {
@@ -99,7 +175,7 @@ const DocumentsOrganizationPage = () => {
             <span className="text-[13px] font-medium text-foreground">Navegacao rapida</span>
           </div>
           <div className="space-y-0.5 border-l border-border/50 ml-[7px]">
-            {disciplinas.map((disciplina) => (
+            {displayDisciplinas.map((disciplina) => (
               <button
                 key={disciplina.id}
                 onClick={() => {
@@ -117,14 +193,37 @@ const DocumentsOrganizationPage = () => {
         {/* ===== MAIN CONTENT ===== */}
         <div className="flex-1 min-w-0">
 
-        {disciplinas.length === 0 && (
+        {isLoadingContent && (
+          <div className="flex items-center justify-center h-64 text-muted-foreground">
+            <div className="text-center">
+              <div className="animate-spin w-6 h-6 border-2 border-foreground/20 border-t-foreground rounded-full mx-auto mb-3" />
+              <p className="text-sm">Carregando edital...</p>
+            </div>
+          </div>
+        )}
+
+        {!isLoadingContent && displayDisciplinas.length === 0 && (
           <div className="flex items-center justify-center h-64 text-muted-foreground">
             <p className="text-sm">Nenhuma disciplina encontrada</p>
           </div>
         )}
 
+        {isEditalMode && cargoData && (
+          <div className="mb-8 pb-6 border-b">
+            <div className="text-[11px] font-semibold tracking-[0.15em] text-muted-foreground uppercase">
+              {cargoData.edital.sigla || cargoData.edital.nome} · {cargoData.edital.esfera}
+            </div>
+            <h1 className="text-[24px] font-bold text-foreground tracking-tight mt-1">
+              {cargoData.nome}
+            </h1>
+            <div className="text-[13px] text-muted-foreground mt-1">
+              {cargoData.qtdDisciplinas} disciplinas · {cargoData.qtdTopicos} topicos
+            </div>
+          </div>
+        )}
+
         <div className="space-y-10">
-          {disciplinas.map((disciplina) => {
+          {displayDisciplinas.map((disciplina) => {
             // Stats
             const topicoCount = disciplina.topicos.length;
             const allSubs = disciplina.topicos.flatMap(t => t.subtopicos || []);
