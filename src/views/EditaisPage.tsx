@@ -6,6 +6,7 @@ import { IconSearch, IconChevronRight, IconLoader2 } from "@tabler/icons-react"
 import { motion, AnimatePresence } from "motion/react"
 import { cn } from "@/lib/utils"
 import { useEditais } from "@/hooks/useEditais"
+import { usePlanosEstudo } from "@/hooks/usePlanosEstudo"
 import type { EditalResumo, EsferaFilter } from "@/types/editais"
 
 // --- Esfera badge colors ---
@@ -43,10 +44,16 @@ export default function EditaisPage() {
     editais, paginacao, isLoading, error, expandedEdital,
     setBusca, setEsfera, setPagina, toggleEdital,
   } = useEditais()
+  const { findPlanoByEdital } = usePlanosEstudo()
 
   const handleGoToCargo = useCallback((editalId: number, cargoId: number) => {
-    navigate(`/documents-organization?editalId=${editalId}&cargoId=${cargoId}`)
-  }, [navigate])
+    const existingPlano = findPlanoByEdital(editalId, cargoId)
+    if (existingPlano) {
+      navigate(`/documents-organization?planoId=${existingPlano.id}`)
+    } else {
+      navigate(`/documents-organization?editalId=${editalId}&cargoId=${cargoId}`)
+    }
+  }, [navigate, findPlanoByEdital])
 
   return (
     <div className="flex flex-col h-full overflow-auto">
@@ -141,6 +148,7 @@ export default function EditaisPage() {
                 loadingCargos={openEditalId === ed.id && loadingDetailId === ed.id}
                 detailError={openEditalId === ed.id ? detailError : null}
                 onGoToCargo={(cargoId) => handleGoToCargo(ed.id, cargoId)}
+                findPlanoByEdital={findPlanoByEdital}
               />
             ))}
           </div>
@@ -194,9 +202,10 @@ interface EditalCardProps {
   loadingCargos: boolean
   detailError: string | null
   onGoToCargo: (cargoId: number) => void
+  findPlanoByEdital?: (editalId: number, cargoId: number) => any
 }
 
-function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, detailError, onGoToCargo }: EditalCardProps) {
+function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, detailError, onGoToCargo, findPlanoByEdital }: EditalCardProps) {
   const esferaStyle = getEsferaStyle(edital.esfera)
 
   return (
@@ -276,24 +285,27 @@ function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, d
                 </div>
               )}
 
-              {expandedCargos?.map(cargo => (
-                <div
-                  key={cargo.id}
-                  onClick={() => onGoToCargo(cargo.id)}
-                  className="flex items-center py-[9px] px-3.5 rounded-[9px] cursor-pointer transition-colors gap-3 group hover:bg-[#f8f7fd]"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#d4d0de] shrink-0 group-hover:bg-[#6c63ff]" />
-                  <div className="text-[13px] font-[550] text-[#1a1a1a] flex-1">
-                    {cargo.nome}
+              {expandedCargos?.map(cargo => {
+                const hasPlano = findPlanoByEdital ? findPlanoByEdital(edital.id, cargo.id) : null
+                return (
+                  <div
+                    key={cargo.id}
+                    onClick={() => onGoToCargo(cargo.id)}
+                    className="flex items-center py-[9px] px-3.5 rounded-[9px] cursor-pointer transition-colors gap-3 group hover:bg-[#f8f7fd]"
+                  >
+                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${hasPlano ? 'bg-green-400 group-hover:bg-green-500' : 'bg-[#d4d0de] group-hover:bg-[#6c63ff]'}`} />
+                    <div className="text-[13px] font-[550] text-[#1a1a1a] flex-1">
+                      {cargo.nome}
+                    </div>
+                    <div className="text-[11px] text-[#b0adb8] shrink-0">
+                      {cargo.qtdDisciplinas ?? 0} disc · {cargo.qtdTopicos ?? 0} tóp
+                    </div>
+                    <div className={`text-[11px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${hasPlano ? 'text-green-600' : 'text-[#6c63ff]'}`}>
+                      {hasPlano ? 'Continuar →' : 'Ver edital →'}
+                    </div>
                   </div>
-                  <div className="text-[11px] text-[#b0adb8] shrink-0">
-                    {cargo.qtdDisciplinas ?? 0} disc · {cargo.qtdTopicos ?? 0} tóp
-                  </div>
-                  <div className="text-[11px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                    Estudar →
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </motion.div>
         )}
