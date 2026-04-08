@@ -12,7 +12,7 @@ export interface Document {
   updated_at: string;
   is_favorite: boolean;
   tags: string[];
-  subtopic_id?: string;
+  subtopico_id?: string;
 }
 
 export interface CreateDocumentData {
@@ -21,7 +21,7 @@ export interface CreateDocumentData {
   content_text?: string;
   is_favorite?: boolean;
   tags?: string[];
-  subtopic_id?: string;
+  subtopico_id?: string;
 }
 
 export interface UpdateDocumentData {
@@ -29,7 +29,7 @@ export interface UpdateDocumentData {
   content?: any;
   is_favorite?: boolean;
   tags?: string[];
-  subtopic_id?: string;
+  subtopico_id?: string;
 }
 
 export function useDocuments(user: User | null) {
@@ -78,7 +78,7 @@ export function useDocuments(user: User | null) {
           content: documentData.content,
           is_favorite: documentData.is_favorite || false,
           tags: documentData.tags || [],
-          subtopic_id: documentData.subtopic_id
+          subtopico_id: documentData.subtopico_id
         })
         .select()
         .single();
@@ -297,7 +297,7 @@ export function useAutoSave(user: User | null = null) {
     title?: string;
     content: any;
     content_text?: string;
-    subtopic_id?: string;
+    subtopico_id?: string;
   }) => {
     try {
       setIsSaving(true);
@@ -311,7 +311,7 @@ export function useAutoSave(user: User | null = null) {
       console.log('💾 saveDocument started:', {
         currentDocumentId,
         title: documentData.title,
-        subtopic_id: documentData.subtopic_id,
+        subtopico_id: documentData.subtopico_id,
         user_id: user.id
       });
 
@@ -372,11 +372,11 @@ export function useAutoSave(user: User | null = null) {
     title?: string;
     content: any;
     content_text?: string;
-    subtopic_id?: string;
+    subtopico_id?: string;
   }) => {
     console.log('🔄 debouncedSave called with:', {
       title: documentData.title,
-      subtopic_id: documentData.subtopic_id,
+      subtopico_id: documentData.subtopico_id,
       currentDocumentId,
       hasContent: !!documentData.content,
       contentText: documentData.content_text?.substring(0, 50) + '...'

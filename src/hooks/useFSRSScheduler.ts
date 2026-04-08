@@ -29,8 +29,8 @@ interface FSRSScheduleParams {
 
 interface ScheduleItemData {
   study_goal_id: string;
-  topic_id?: string;
-  subtopic_id?: string;
+  topico_id?: string;
+  subtopico_id?: string;
   title: string;
   scheduled_date: string;
   item_type: 'goal';
@@ -109,8 +109,8 @@ export function useFSRSScheduler() {
 
         return {
           study_goal_id: goalId,
-          topic_id: scheduleItem.topicId,
-          subtopic_id: scheduleItem.subtopicId,
+          topico_id: scheduleItem.topicId,
+          subtopico_id: scheduleItem.subtopicId,
           title: scheduleItem.title,
           scheduled_date: scheduleItem.date,
           item_type: 'goal' as const,

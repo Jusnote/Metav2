@@ -325,7 +325,7 @@ const DocumentsOrganizationPage = () => {
               title: `Resumo: ${documentsModal.subtopicTitle}`,
               content: [{ type: 'p', children: [{ text: '' }] }],
               content_text: '',
-              subtopic_id: documentsModal.subtopicId!,
+              subtopico_id: documentsModal.subtopicId!,
             });
             if (newDoc) {
               navigate?.(`/plate-editor?doc=${newDoc.id}&subtopic=${documentsModal.subtopicId}&title=${encodeURIComponent(documentsModal.subtopicTitle || '')}`);

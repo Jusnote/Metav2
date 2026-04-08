@@ -52,8 +52,8 @@ export const NotesModal: React.FC<NotesModalProps> = ({
     if (!newNoteContent.trim()) return;
 
     const result = await createNote({
-      subtopic_id: subtopicId,
-      topic_id: topicId,
+      subtopico_id: subtopicId,
+      topico_id: topicId,
       content: newNoteContent.trim()
     });
 
