@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { TooltipLayer } from "./components/ui/TooltipLayer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { AppSidebar } from "./components/AppSidebar";
 import { AppHeaderCompact } from "./components/AppHeaderCompact";
@@ -55,6 +57,18 @@ import { LeiReportsPage } from './components/moderation/lei-seca/LeiReportsPage'
 import { EditaisModerationPage } from './components/moderation/editais/EditaisModerationPage';
 
 const queryClient = new QueryClient();
+
+if (typeof window !== 'undefined') {
+  const persister = createSyncStoragePersister({
+    storage: window.localStorage,
+  });
+
+  persistQueryClient({
+    queryClient,
+    persister,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+}
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated, loading } = useAuth();
