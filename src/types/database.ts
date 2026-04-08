@@ -1,7 +1,3 @@
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
 export type Json =
   | string
   | number
@@ -559,6 +555,62 @@ export type Database = {
         }
         Relationships: []
       }
+      flash_questoes: {
+        Row: {
+          alternativas: Json
+          created_at: string | null
+          dificuldade: number
+          fsrs_difficulty: number
+          fsrs_stability: number
+          id: string
+          next_review: string | null
+          questao_texto: string
+          resposta_correta: string
+          source: string
+          topico_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alternativas: Json
+          created_at?: string | null
+          dificuldade?: number
+          fsrs_difficulty?: number
+          fsrs_stability?: number
+          id?: string
+          next_review?: string | null
+          questao_texto: string
+          resposta_correta: string
+          source?: string
+          topico_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alternativas?: Json
+          created_at?: string | null
+          dificuldade?: number
+          fsrs_difficulty?: number
+          fsrs_stability?: number
+          id?: string
+          next_review?: string | null
+          questao_texto?: string
+          resposta_correta?: string
+          source?: string
+          topico_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_questoes_topico_id_fkey"
+            columns: ["topico_id"]
+            isOneToOne: false
+            referencedRelation: "topicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grifos: {
         Row: {
           color: string
@@ -807,6 +859,83 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      planos_editais: {
+        Row: {
+          cargo_id: number
+          created_at: string | null
+          edital_id: number
+          id: string
+          plano_id: string
+        }
+        Insert: {
+          cargo_id: number
+          created_at?: string | null
+          edital_id: number
+          id?: string
+          plano_id: string
+        }
+        Update: {
+          cargo_id?: number
+          created_at?: string | null
+          edital_id?: number
+          id?: string
+          plano_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planos_editais_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planos_estudo: {
+        Row: {
+          ativo: boolean
+          created_at: string | null
+          current_cycle: number
+          data_prova: string | null
+          id: string
+          nome: string
+          source_type: string
+          study_mode: string
+          target_score: number | null
+          triage_enabled: boolean
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string | null
+          current_cycle?: number
+          data_prova?: string | null
+          id?: string
+          nome: string
+          source_type?: string
+          study_mode?: string
+          target_score?: number | null
+          triage_enabled?: boolean
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string | null
+          current_cycle?: number
+          data_prova?: string | null
+          id?: string
+          nome?: string
+          source_type?: string
+          study_mode?: string
+          target_score?: number | null
+          triage_enabled?: boolean
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1146,6 +1275,56 @@ export type Database = {
         }
         Relationships: []
       }
+      questoes_log: {
+        Row: {
+          conceito_confundido: string | null
+          correto: boolean
+          created_at: string | null
+          dificuldade: number | null
+          id: string
+          questao_id: number | null
+          session_id: string | null
+          tempo_resposta: number | null
+          tipo_erro: string | null
+          topico_id: string | null
+          user_id: string
+        }
+        Insert: {
+          conceito_confundido?: string | null
+          correto: boolean
+          created_at?: string | null
+          dificuldade?: number | null
+          id?: string
+          questao_id?: number | null
+          session_id?: string | null
+          tempo_resposta?: number | null
+          tipo_erro?: string | null
+          topico_id?: string | null
+          user_id: string
+        }
+        Update: {
+          conceito_confundido?: string | null
+          correto?: boolean
+          created_at?: string | null
+          dificuldade?: number | null
+          id?: string
+          questao_id?: number | null
+          session_id?: string | null
+          tempo_resposta?: number | null
+          tipo_erro?: string | null
+          topico_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questoes_log_topico_id_fkey"
+            columns: ["topico_id"]
+            isOneToOne: false
+            referencedRelation: "topicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quick_notes: {
         Row: {
           back_content: Json | null
@@ -1419,6 +1598,47 @@ export type Database = {
           },
         ]
       }
+      score_snapshots: {
+        Row: {
+          breakdown: Json | null
+          created_at: string | null
+          id: string
+          pass_probability: number | null
+          plano_id: string | null
+          score_current: number | null
+          score_projected: number | null
+          user_id: string
+        }
+        Insert: {
+          breakdown?: Json | null
+          created_at?: string | null
+          id?: string
+          pass_probability?: number | null
+          plano_id?: string | null
+          score_current?: number | null
+          score_projected?: number | null
+          user_id: string
+        }
+        Update: {
+          breakdown?: Json | null
+          created_at?: string | null
+          id?: string
+          pass_probability?: number | null
+          plano_id?: string | null
+          score_current?: number | null
+          score_projected?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "score_snapshots_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       study_goals: {
         Row: {
           aggressiveness: string | null
@@ -1477,6 +1697,59 @@ export type Database = {
             columns: ["disciplina_id"]
             isOneToOne: false
             referencedRelation: "disciplinas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_sessions: {
+        Row: {
+          active_minutes: number | null
+          activities: Json | null
+          created_at: string | null
+          cycle: number
+          ended_at: string | null
+          id: string
+          planned_minutes: number | null
+          plano_id: string | null
+          score_after: number | null
+          score_before: number | null
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          active_minutes?: number | null
+          activities?: Json | null
+          created_at?: string | null
+          cycle?: number
+          ended_at?: string | null
+          id?: string
+          planned_minutes?: number | null
+          plano_id?: string | null
+          score_after?: number | null
+          score_before?: number | null
+          started_at: string
+          user_id: string
+        }
+        Update: {
+          active_minutes?: number | null
+          activities?: Json | null
+          created_at?: string | null
+          cycle?: number
+          ended_at?: string | null
+          id?: string
+          planned_minutes?: number | null
+          plano_id?: string | null
+          score_after?: number | null
+          score_before?: number | null
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_sessions_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
             referencedColumns: ["id"]
           },
         ]
@@ -1641,38 +1914,101 @@ export type Database = {
       }
       topicos: {
         Row: {
+          api_topico_id: number | null
+          completed_at: string | null
           created_at: string | null
+          depends_on: string[] | null
+          diagnostic_score: number | null
+          disciplina_id: string
+          discrimination_score: number
           estimated_duration_minutes: number
+          fsrs_difficulty: number
+          fsrs_stability: number
           id: string
           last_access: string | null
-          tempo_investido: number | null
+          learning_rate: number
+          learning_stage: string
+          leis_lidas: string | null
+          marginal_gain: number | null
+          mastery_score: number
           nome: string
+          peso_edital: number | null
+          question_accuracy: number
+          questoes_acertos: number
+          questoes_erros: number
+          questions_total: number
+          retention_score: number
+          source_type: string
+          speed_avg_seconds: number | null
+          tempo_investido: number | null
+          teoria_finalizada: boolean
           total_aulas: number | null
-          disciplina_id: string
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          api_topico_id?: number | null
+          completed_at?: string | null
           created_at?: string | null
+          depends_on?: string[] | null
+          diagnostic_score?: number | null
+          disciplina_id: string
+          discrimination_score?: number
           estimated_duration_minutes?: number
+          fsrs_difficulty?: number
+          fsrs_stability?: number
           id?: string
           last_access?: string | null
-          tempo_investido?: number | null
+          learning_rate?: number
+          learning_stage?: string
+          leis_lidas?: string | null
+          marginal_gain?: number | null
+          mastery_score?: number
           nome: string
+          peso_edital?: number | null
+          question_accuracy?: number
+          questoes_acertos?: number
+          questoes_erros?: number
+          questions_total?: number
+          retention_score?: number
+          source_type?: string
+          speed_avg_seconds?: number | null
+          tempo_investido?: number | null
+          teoria_finalizada?: boolean
           total_aulas?: number | null
-          disciplina_id: string
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          api_topico_id?: number | null
+          completed_at?: string | null
           created_at?: string | null
+          depends_on?: string[] | null
+          diagnostic_score?: number | null
+          disciplina_id?: string
+          discrimination_score?: number
           estimated_duration_minutes?: number
+          fsrs_difficulty?: number
+          fsrs_stability?: number
           id?: string
           last_access?: string | null
-          tempo_investido?: number | null
+          learning_rate?: number
+          learning_stage?: string
+          leis_lidas?: string | null
+          marginal_gain?: number | null
+          mastery_score?: number
           nome?: string
+          peso_edital?: number | null
+          question_accuracy?: number
+          questoes_acertos?: number
+          questoes_erros?: number
+          questions_total?: number
+          retention_score?: number
+          source_type?: string
+          speed_avg_seconds?: number | null
+          tempo_investido?: number | null
+          teoria_finalizada?: boolean
           total_aulas?: number | null
-          disciplina_id?: string
           updated_at?: string | null
           user_id?: string | null
         }
@@ -1688,28 +2024,40 @@ export type Database = {
       }
       disciplinas: {
         Row: {
+          api_disciplina_id: number | null
           created_at: string | null
           id: string
-          subject: string | null
           nome: string
+          peso_edital: number | null
+          plano_id: string | null
+          source_type: string
+          subject: string | null
           total_chapters: number | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          api_disciplina_id?: number | null
           created_at?: string | null
           id?: string
-          subject?: string | null
           nome: string
+          peso_edital?: number | null
+          plano_id?: string | null
+          source_type?: string
+          subject?: string | null
           total_chapters?: number | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          api_disciplina_id?: number | null
           created_at?: string | null
           id?: string
-          subject?: string | null
           nome?: string
+          peso_edital?: number | null
+          plano_id?: string | null
+          source_type?: string
+          subject?: string | null
           total_chapters?: number | null
           updated_at?: string | null
           user_id?: string | null
@@ -2287,5 +2635,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-A new version of Supabase CLI is available: v2.84.2 (currently installed v2.51.0)
-We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
