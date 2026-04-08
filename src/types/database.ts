@@ -458,10 +458,10 @@ export type Database = {
           created_at: string
           id: string
           is_favorite: boolean
-          subtopic_id: string | null
+          subtopico_id: string | null
           tags: string[] | null
           title: string
-          topic_id: string | null
+          topico_id: string | null
           updated_at: string
           user_id: string
         }
@@ -471,10 +471,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_favorite?: boolean
-          subtopic_id?: string | null
+          subtopico_id?: string | null
           tags?: string[] | null
           title?: string
-          topic_id?: string | null
+          topico_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -484,26 +484,26 @@ export type Database = {
           created_at?: string
           id?: string
           is_favorite?: boolean
-          subtopic_id?: string | null
+          subtopico_id?: string | null
           tags?: string[] | null
           title?: string
-          topic_id?: string | null
+          topico_id?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "documents_subtopic_id_fkey"
-            columns: ["subtopic_id"]
+            foreignKeyName: "documents_subtopico_id_fkey"
+            columns: ["subtopico_id"]
             isOneToOne: false
-            referencedRelation: "subtopics"
+            referencedRelation: "subtopicos"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "documents_topic_id_fkey"
-            columns: ["topic_id"]
+            foreignKeyName: "documents_topico_id_fkey"
+            columns: ["topico_id"]
             isOneToOne: false
-            referencedRelation: "topics"
+            referencedRelation: "topicos"
             referencedColumns: ["id"]
           },
         ]
@@ -735,9 +735,9 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
-          subtopic_id: string | null
+          subtopico_id: string | null
           title: string
-          topic_id: string | null
+          topico_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -745,9 +745,9 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
-          subtopic_id?: string | null
+          subtopico_id?: string | null
           title: string
-          topic_id?: string | null
+          topico_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -755,25 +755,25 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
-          subtopic_id?: string | null
+          subtopico_id?: string | null
           title?: string
-          topic_id?: string | null
+          topico_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notes_subtopic_id_fkey"
-            columns: ["subtopic_id"]
+            foreignKeyName: "notes_subtopico_id_fkey"
+            columns: ["subtopico_id"]
             isOneToOne: false
-            referencedRelation: "subtopics"
+            referencedRelation: "subtopicos"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "notes_topic_id_fkey"
-            columns: ["topic_id"]
+            foreignKeyName: "notes_topico_id_fkey"
+            columns: ["topico_id"]
             isOneToOne: false
-            referencedRelation: "topics"
+            referencedRelation: "topicos"
             referencedColumns: ["id"]
           },
         ]
@@ -1279,11 +1279,11 @@ export type Database = {
           revision_type: string | null
           scheduled_date: string
           study_goal_id: string | null
-          subtopic_id: string | null
+          subtopico_id: string | null
           sync_enabled: boolean | null
           title: string
-          topic_id: string | null
-          unit_id: string | null
+          topico_id: string | null
+          disciplina_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -1312,11 +1312,11 @@ export type Database = {
           revision_type?: string | null
           scheduled_date: string
           study_goal_id?: string | null
-          subtopic_id?: string | null
+          subtopico_id?: string | null
           sync_enabled?: boolean | null
           title: string
-          topic_id?: string | null
-          unit_id?: string | null
+          topico_id?: string | null
+          disciplina_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -1345,11 +1345,11 @@ export type Database = {
           revision_type?: string | null
           scheduled_date?: string
           study_goal_id?: string | null
-          subtopic_id?: string | null
+          subtopico_id?: string | null
           sync_enabled?: boolean | null
           title?: string
-          topic_id?: string | null
-          unit_id?: string | null
+          topico_id?: string | null
+          disciplina_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -1397,24 +1397,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "schedule_items_subtopic_id_fkey"
-            columns: ["subtopic_id"]
+            foreignKeyName: "schedule_items_subtopico_id_fkey"
+            columns: ["subtopico_id"]
             isOneToOne: false
-            referencedRelation: "subtopics"
+            referencedRelation: "subtopicos"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "schedule_items_topic_id_fkey"
-            columns: ["topic_id"]
+            foreignKeyName: "schedule_items_topico_id_fkey"
+            columns: ["topico_id"]
             isOneToOne: false
-            referencedRelation: "topics"
+            referencedRelation: "topicos"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "schedule_items_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: "schedule_items_disciplina_id_fkey"
+            columns: ["disciplina_id"]
             isOneToOne: false
-            referencedRelation: "units"
+            referencedRelation: "disciplinas"
             referencedColumns: ["id"]
           },
         ]
@@ -1433,7 +1433,7 @@ export type Database = {
           study_weekends: boolean | null
           target_date: string
           title: string
-          unit_id: string | null
+          disciplina_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -1450,7 +1450,7 @@ export type Database = {
           study_weekends?: boolean | null
           target_date: string
           title: string
-          unit_id?: string | null
+          disciplina_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -1467,16 +1467,16 @@ export type Database = {
           study_weekends?: boolean | null
           target_date?: string
           title?: string
-          unit_id?: string | null
+          disciplina_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "study_goals_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: "study_goals_disciplina_id_fkey"
+            columns: ["disciplina_id"]
             isOneToOne: false
-            referencedRelation: "units"
+            referencedRelation: "disciplinas"
             referencedColumns: ["id"]
           },
         ]
@@ -1526,7 +1526,7 @@ export type Database = {
         }
         Relationships: []
       }
-      subtopics: {
+      subtopicos: {
         Row: {
           average_time: number | null
           created_at: string | null
@@ -1539,8 +1539,8 @@ export type Database = {
           status: string | null
           tempo: string | null
           tempo_investido: number | null
-          title: string
-          topic_id: string
+          nome: string
+          topico_id: string
           total_aulas: number | null
           updated_at: string | null
           user_id: string | null
@@ -1557,8 +1557,8 @@ export type Database = {
           status?: string | null
           tempo?: string | null
           tempo_investido?: number | null
-          title: string
-          topic_id: string
+          nome: string
+          topico_id: string
           total_aulas?: number | null
           updated_at?: string | null
           user_id?: string | null
@@ -1575,18 +1575,18 @@ export type Database = {
           status?: string | null
           tempo?: string | null
           tempo_investido?: number | null
-          title?: string
-          topic_id?: string
+          nome?: string
+          topico_id?: string
           total_aulas?: number | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "subtopics_topic_id_fkey"
-            columns: ["topic_id"]
+            foreignKeyName: "subtopicos_topico_id_fkey"
+            columns: ["topico_id"]
             isOneToOne: false
-            referencedRelation: "topics"
+            referencedRelation: "topicos"
             referencedColumns: ["id"]
           },
         ]
@@ -1639,16 +1639,16 @@ export type Database = {
           },
         ]
       }
-      topics: {
+      topicos: {
         Row: {
           created_at: string | null
           estimated_duration_minutes: number
           id: string
           last_access: string | null
           tempo_investido: number | null
-          title: string
+          nome: string
           total_aulas: number | null
-          unit_id: string
+          disciplina_id: string
           updated_at: string | null
           user_id: string | null
         }
@@ -1658,9 +1658,9 @@ export type Database = {
           id?: string
           last_access?: string | null
           tempo_investido?: number | null
-          title: string
+          nome: string
           total_aulas?: number | null
-          unit_id: string
+          disciplina_id: string
           updated_at?: string | null
           user_id?: string | null
         }
@@ -1670,28 +1670,28 @@ export type Database = {
           id?: string
           last_access?: string | null
           tempo_investido?: number | null
-          title?: string
+          nome?: string
           total_aulas?: number | null
-          unit_id?: string
+          disciplina_id?: string
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "topics_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: "topicos_disciplina_id_fkey"
+            columns: ["disciplina_id"]
             isOneToOne: false
-            referencedRelation: "units"
+            referencedRelation: "disciplinas"
             referencedColumns: ["id"]
           },
         ]
       }
-      units: {
+      disciplinas: {
         Row: {
           created_at: string | null
           id: string
           subject: string | null
-          title: string
+          nome: string
           total_chapters: number | null
           updated_at: string | null
           user_id: string | null
@@ -1700,7 +1700,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           subject?: string | null
-          title: string
+          nome: string
           total_chapters?: number | null
           updated_at?: string | null
           user_id?: string | null
@@ -1709,7 +1709,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           subject?: string | null
-          title?: string
+          nome?: string
           total_chapters?: number | null
           updated_at?: string | null
           user_id?: string | null
