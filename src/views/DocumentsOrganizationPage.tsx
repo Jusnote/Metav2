@@ -8,6 +8,7 @@ import { TopicSubtopicCreateModal } from '../components/TopicSubtopicCreateModal
 import { GoalCreationDialog } from '../components/goals/GoalCreationDialog';
 import { TopicAIAssistant } from '../components/TopicAIAssistant';
 import { TopicDetailDrawer } from '../components/documents-organization/TopicDetailDrawer';
+import { CronogramaWeekView } from '@/components/documents-organization/CronogramaWeekView';
 import type { Topico, Subtopico, Disciplina } from '@/hooks/useDisciplinasManager';
 import { useDisciplinasApi, useCargoData, type ApiTopico } from '@/hooks/useEditaisData';
 import { editaisQuery } from '@/lib/editais-client';
@@ -109,6 +110,7 @@ const DocumentsOrganizationPage = () => {
     createDocument, materialCounts,
     calculateTopicDuration,
     setSelectedSubtopic, setSelectedTopic,
+    cronogramaMode, setCronogramaMode,
   } = useDocumentsOrganization();
 
   // ---- Choose data source ----
@@ -164,6 +166,37 @@ const DocumentsOrganizationPage = () => {
 
   return (
     <div className="h-full overflow-y-auto">
+      {/* ===== EDITAL / CRONOGRAMA TOGGLE ===== */}
+      <div className="max-w-5xl mx-auto px-8 pt-5 pb-0">
+        <div className="flex items-center justify-between">
+          <div className="flex bg-[#f5f3ff] rounded-[9px] p-[2.5px]">
+            <button
+              onClick={() => setCronogramaMode(false)}
+              className={`px-4 py-[5px] rounded-[7px] text-xs font-medium transition-all ${
+                !cronogramaMode
+                  ? 'bg-[#6c63ff] text-white font-semibold shadow-[0_1px_4px_rgba(108,99,255,0.25)]'
+                  : 'text-[#9e99ae]'
+              }`}
+            >
+              Edital
+            </button>
+            <button
+              onClick={() => setCronogramaMode(true)}
+              className={`px-4 py-[5px] rounded-[7px] text-xs font-medium transition-all ${
+                cronogramaMode
+                  ? 'bg-[#6c63ff] text-white font-semibold shadow-[0_1px_4px_rgba(108,99,255,0.25)]'
+                  : 'text-[#9e99ae]'
+              }`}
+            >
+              Cronograma
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {cronogramaMode ? (
+        <CronogramaWeekView />
+      ) : (
       <div className="max-w-5xl mx-auto flex gap-0 py-6 px-8">
 
         {/* ===== TOC LEFT ===== */}
@@ -370,6 +403,7 @@ const DocumentsOrganizationPage = () => {
         </div>
       </div>
       </div>
+      )}
 
       {/* ===== RIGHT DRAWER / BOTTOM SHEET ===== */}
       <TopicDetailDrawer
