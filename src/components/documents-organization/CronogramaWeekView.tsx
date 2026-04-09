@@ -91,8 +91,8 @@ function ActivityRow({ activity }: { activity: WeekActivity }) {
   return (
     <div
       className={`
-        group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors
-        ${isSuggested ? "bg-[#f5f3ff] border-l-[2.5px] border-l-[#6c63ff]" : "bg-white"}
+        group flex items-center gap-3 px-6 py-[10px] transition-colors border-t border-[#faf9fd] first:border-t-0 cursor-pointer
+        ${isSuggested ? "bg-[#f5f3ff] border-l-[2.5px] border-l-[#6c63ff] pl-[22px]" : "hover:bg-[#f8f7fd]"}
         ${isDone ? "opacity-[0.28]" : ""}
       `}
     >
@@ -162,9 +162,9 @@ function TabTarefas({ activities }: { activities: WeekActivity[] }) {
   const sorted = useMemo(() => sortActivities(activities), [activities]);
 
   return (
-    <div className="flex flex-col gap-0.5">
-      <p className="text-[9px] text-[#9e99ae] mb-1.5 px-1">
-        Itens em destaque sao sugeridos para hoje
+    <div>
+      <p className="text-[9px] text-[#9e99ae] mb-0 px-6 py-2">
+        Itens em destaque são sugeridos para hoje
       </p>
       {sorted.map((a) => (
         <ActivityRow key={a.id} activity={a} />
