@@ -3,6 +3,8 @@ import {
   X, Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
 } from 'lucide-react';
 import { DesempenhoChart } from '@/components/DesempenhoChart';
+import { StudyCompletionForm, type CompletionData } from './StudyCompletionForm';
+import { useStudyCompletion } from '@/hooks/useStudyCompletion';
 import type { Topico, Subtopico } from '@/hooks/useDisciplinasManager';
 
 // ============ Types ============
@@ -413,6 +415,9 @@ function DrawerContent({
   onOpenAI,
   onPlaySubtopico,
 }: DrawerContentProps) {
+  const [showCompletionForm, setShowCompletionForm] = useState(false);
+  const { completeStudy } = useStudyCompletion();
+
   return (
     <div className="px-6 pb-8">
       {/* Module label */}
@@ -580,6 +585,39 @@ function DrawerContent({
           </button>
         </div>
       </div>
+
+      {/* Divider */}
+      <div className="h-px bg-border my-5" />
+
+      {/* Registrar Estudo */}
+      <button
+        onClick={() => setShowCompletionForm(true)}
+        className="w-full py-2.5 rounded-xl bg-[#6c63ff] hover:bg-[#4f46e5] text-white text-xs font-bold transition-all shadow-sm"
+      >
+        Registrar Estudo
+      </button>
+
+      {/* Completion Form Modal */}
+      {showCompletionForm && (
+        <StudyCompletionForm
+          topicoNome={itemTitle}
+          disciplinaNome={moduleLabel}
+          estimatedMinutes={estimatedMinutes || 120}
+          onCancel={() => setShowCompletionForm(false)}
+          onSave={async (data: CompletionData) => {
+            await completeStudy({
+              localTopicoId: detail.item.id.startsWith('api-') ? undefined : detail.item.id,
+              apiTopicoId: (detail.item as any)._apiId,
+              apiDisciplinaId: (detail.item as any)._apiDisciplinaId,
+              topicoNome: itemTitle,
+              disciplinaNome: moduleLabel,
+              estimatedMinutes: estimatedMinutes || 120,
+              data,
+            });
+            setShowCompletionForm(false);
+          }}
+        />
+      )}
     </div>
   );
 }
