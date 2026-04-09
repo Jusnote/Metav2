@@ -102,7 +102,7 @@ export function usePlateDocuments() {
   }, [documents]);
 
   // Buscar documentos por subtópico
-  const getDocumentsBySubtopicoo = useCallback((subtopicoId: string): PlateDocument[] => {
+  const getDocumentsBySubtopico = useCallback((subtopicoId: string): PlateDocument[] => {
     return documents.filter(doc => doc.subtopico_id === subtopicoId);
   }, [documents]);
 
