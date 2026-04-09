@@ -6,8 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
-import { AppSidebar } from "./components/AppSidebar";
-import { AppHeaderCompact } from "./components/AppHeaderCompact";
+import { AppTopNav } from "./components/AppTopNav";
 import { TimerProvider } from "./contexts/TimerContext";
 import { StudyConfigProvider } from "./contexts/StudyConfigContext";
 
@@ -127,9 +126,8 @@ const AppContent = () => {
     <UrqlProvider value={leiClient}>
     <LeiSecaProvider>
     <DocumentsOrganizationProvider>
-    <AppSidebar>
-      <AppHeaderCompact />
-      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'p-6'}`} style={{
+    <AppTopNav>
+      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'px-4 py-5'}`} style={{
         paddingBottom: isTimerVisible ? '80px' : isFullWidth ? '0' : '24px'
       }}>
         <Outlet />
@@ -140,7 +138,7 @@ const AppContent = () => {
           (window as any).timerContext?.completeCurrentActivity?.();
         }}
       />
-    </AppSidebar>
+    </AppTopNav>
     </DocumentsOrganizationProvider>
     </LeiSecaProvider>
     </UrqlProvider>

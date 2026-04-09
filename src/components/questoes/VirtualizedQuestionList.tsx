@@ -268,49 +268,51 @@ export function VirtualizedQuestionList() {
         </div>
       </div>
 
-      {viewMode === 'individual' ? (
-        /* ── Individual mode: one question at a time ── */
-        <div className={`flex-1 overflow-y-auto ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
-          {questoes[safeIndex] && renderQuestionCard(questoes[safeIndex], safeIndex)}
+      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex-1 min-h-0 overflow-hidden pt-4">
+        {viewMode === 'individual' ? (
+          /* ── Individual mode: one question at a time ── */
+          <div className={`h-full overflow-y-auto ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
+            {questoes[safeIndex] && renderQuestionCard(questoes[safeIndex], safeIndex)}
 
-          {/* Navigation */}
-          <nav className="flex items-center justify-between py-4 px-1" aria-label="Navegacao entre questoes">
-            <button
-              onClick={goPrev}
-              disabled={isFirstOverall}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-muted-foreground rounded-md hover:bg-accent disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              Anterior
-            </button>
+            {/* Navigation */}
+            <nav className="flex items-center justify-between py-4 px-1" aria-label="Navegacao entre questoes">
+              <button
+                onClick={goPrev}
+                disabled={isFirstOverall}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-muted-foreground rounded-md hover:bg-accent disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                Anterior
+              </button>
 
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {globalIndex + 1} / {total.toLocaleString('pt-BR')}
-            </span>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {globalIndex + 1} / {total.toLocaleString('pt-BR')}
+              </span>
 
-            <button
-              onClick={goNext}
-              disabled={isLastOverall}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-muted-foreground rounded-md hover:bg-accent disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            >
-              Proxima
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </nav>
-        </div>
-      ) : (
-        /* ── List mode (default) ── */
-        <div className={`flex-1 overflow-y-auto space-y-12 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
-          {questoes.map((questao, index) => renderQuestionCard(questao, index))}
+              <button
+                onClick={goNext}
+                disabled={isLastOverall}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-muted-foreground rounded-md hover:bg-accent disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              >
+                Proxima
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </nav>
+          </div>
+        ) : (
+          /* ── List mode (default) ── */
+          <div className={`h-full overflow-y-auto space-y-12 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
+            {questoes.map((questao, index) => renderQuestionCard(questao, index))}
 
-          {/* Pagination */}
-          <PaginationBar
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
+            {/* Pagination */}
+            <PaginationBar
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
