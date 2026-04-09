@@ -5,6 +5,10 @@ import {
 import { DesempenhoChart } from '@/components/DesempenhoChart';
 import { StudyCompletionForm, type CompletionData } from './StudyCompletionForm';
 import { useStudyCompletion } from '@/hooks/useStudyCompletion';
+import { TopicoIntelligence } from './TopicoIntelligence';
+import { ProgressDots, calculateProgressDots } from './ProgressDots';
+import { MasteryBadge } from './MasteryBadge';
+import { useTopicoIntelligence } from '@/hooks/useTopicoIntelligence';
 import type { Topico, Subtopico } from '@/hooks/useDisciplinasManager';
 
 // ============ Types ============
@@ -417,6 +421,23 @@ function DrawerContent({
 }: DrawerContentProps) {
   const [showCompletionForm, setShowCompletionForm] = useState(false);
   const { completeStudy } = useStudyCompletion();
+  const { data: intelligence, isLoading: intelligenceLoading } = useTopicoIntelligence(
+    moduleLabel,
+    itemTitle,
+    null,
+  );
+
+  const item = detail.item;
+  const hasProgress = !item.id.startsWith('api-') && ((item as any).tempo_investido > 0 || (item as any).questoes_acertos > 0 || (item as any).completed_at);
+
+  const dots = calculateProgressDots({
+    completed_at: (item as any).completed_at,
+    teoria_finalizada: (item as any).teoria_finalizada,
+    tempo_investido: (item as any).tempo_investido,
+    questoes_acertos: (item as any).questoes_acertos,
+    questoes_erros: (item as any).questoes_erros,
+    leis_lidas: (item as any).leis_lidas,
+  });
 
   return (
     <div className="px-6 pb-8">
@@ -431,6 +452,15 @@ function DrawerContent({
       <h2 className="text-xl font-bold text-foreground leading-tight pr-8">
         {title}
       </h2>
+
+      {/* Mastery + Progress */}
+      <div className="flex items-center gap-2 mt-1">
+        <MasteryBadge
+          stage={(item as any).learning_stage || 'new'}
+          score={(item as any).mastery_score || 0}
+        />
+        <ProgressDots {...dots} size="md" />
+      </div>
 
       {/* Meta row: time + level */}
       <div className="flex items-center gap-4 mt-3">
@@ -496,6 +526,22 @@ function DrawerContent({
 
       {/* Divider */}
       <div className="h-px bg-border my-5" />
+
+      {/* Intelligence from API */}
+      <TopicoIntelligence data={intelligence} isLoading={intelligenceLoading} />
+
+      {/* Divider */}
+      <div className="h-px bg-border my-5" />
+
+      {/* Blur overlay for stats when no progress */}
+      <div className="relative">
+        {!hasProgress && (
+          <div className="absolute inset-0 z-10 backdrop-blur-[2.5px] bg-white/40 rounded-xl flex items-center justify-center pointer-events-none">
+            <span className="text-xs font-semibold text-[#9e99ae]">
+              Estude para desbloquear suas estatísticas
+            </span>
+          </div>
+        )}
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-2 mb-5">
@@ -585,6 +631,8 @@ function DrawerContent({
           </button>
         </div>
       </div>
+
+      </div>{/* End blur overlay wrapper */}
 
       {/* Divider */}
       <div className="h-px bg-border my-5" />
