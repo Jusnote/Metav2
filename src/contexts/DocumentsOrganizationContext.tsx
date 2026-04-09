@@ -99,6 +99,12 @@ interface DocumentsOrganizationContextType {
   // Documents
   createDocument: ReturnType<typeof usePlateDocuments>['createDocument'];
   materialCounts: ReturnType<typeof useMaterialCounts>['counts'];
+
+  // Cronograma
+  cronogramaMode: boolean;
+  setCronogramaMode: (mode: boolean) => void;
+  cronogramaWeek: Date;
+  setCronogramaWeek: (date: Date) => void;
 }
 
 const DocumentsOrganizationContext = createContext<DocumentsOrganizationContextType | null>(null);
@@ -132,6 +138,16 @@ function DocumentsOrganizationProviderInner({ children }: { children: React.Reac
   const [quickCreateModal, setQuickCreateModal] = useState<QuickCreateModalState>({ isOpen: false, type: null, disciplinaId: null, topicoId: null });
   const [editModal, setEditModal] = useState<EditModalState>({ isOpen: false, type: null, disciplinaId: null, topicoId: null, itemId: null, itemTitle: '', itemDuration: 0, hasSubtopicos: false });
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+
+  // Cronograma state
+  const [cronogramaMode, setCronogramaMode] = useState(false);
+  const [cronogramaWeek, setCronogramaWeek] = useState<Date>(() => {
+    // Get Monday of current week
+    const now = new Date();
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(now.setDate(diff));
+  });
 
   const { createDocument } = usePlateDocuments();
 
@@ -282,6 +298,8 @@ function DocumentsOrganizationProviderInner({ children }: { children: React.Reac
       handleTopicSubtopicCreate, handleTopicSubtopicEdit,
       handleToggleSubtopicoComplete,
       createDocument, materialCounts,
+      cronogramaMode, setCronogramaMode,
+      cronogramaWeek, setCronogramaWeek,
     }}>
       {children}
     </DocumentsOrganizationContext.Provider>
