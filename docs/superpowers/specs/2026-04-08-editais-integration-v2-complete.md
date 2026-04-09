@@ -299,30 +299,94 @@ Mostra: "Dir. Administrativo: +12.4 pontos possíveis com ROI de 2.1/hora ← PR
 
 ---
 
-## Otimizador do Cronograma
+## Cronograma Semanal — Cockpit de Estudo
 
-### Algoritmo diário
+### Filosofia: Sprint Semanal, Não Agenda Diária
+
+O cronograma NÃO dita o dia do aluno. Ele dá um **sprint semanal** — um pacote de tarefas para completar até domingo. O aluno tem autonomia para decidir QUANDO e em que ORDEM fazer cada tarefa.
+
+- Sem culpa por faltar um dia (compensa no dia seguinte)
+- Sem rigidez de horário (o aluno escolhe)
+- A semana é a unidade de planejamento, não o dia
+- Tarefas não completadas rolam para a semana seguinte (com badge "atrasado")
+
+### Interface: Cockpit com Lista Unificada + Abas
+
+**Toggle** Edital/Cronograma no topo (mesmo toggle do layout 3-níveis)
+
+**Acima do fold:**
+- Header: toggle + seletor de semana (← 7-13 Abril →) + streak 🔥 + edital ref
+- 4 anéis de progresso semanal (Estudo, Revisão, Questões, Lei Seca) — inspirado Apple Watch
+- Nota estimada com gradient + trend + badge dias até prova
+- Barra de progresso semanal linear (13/18)
+- Quick session buttons: "Sessão automática · 50min" + "Rápida · 25min"
+- Abas: **Tarefas** | **Insights** | **Sessões** | **E se?**
+
+**Aba Tarefas (principal):**
+Lista unificada de TODAS as tarefas da semana — sem divisões "sugerido" / "restante" / "concluídas".
+- Nota sutil no topo: "Itens em destaque são sugeridos para hoje"
+- Sugeridos: background lilás (#f5f3ff) + border-left roxo (#6c63ff)
+- Regulares: fundo branco, sem destaque
+- Concluídos: inline, check roxo preenchido + texto riscado + opacidade ~30%
+- Cada tarefa mostra: checkbox, nome, disciplina, tipo (label texto), duração, pontos (+0.4 pts), deadline se revisão urgente
+- Botão "Iniciar" roxo aparece no hover (ou visível nos sugeridos)
+
+**Aba Insights:**
+- Ponto fraco: disciplina com maior retorno
+- Evolução: melhorias da semana (velocidade, accuracy)
+- Projeção: se mantiver ritmo, nota no dia da prova
+
+**Aba Sessões:**
+- Lista de sessões recentes com horário, duração, descrição, pontos ganhos
+
+**Aba E se? (simulador):**
+- Slider interativo: "Se eu estudar [X h/dia] → nota Y"
+- Projeções de cenários (mais horas, foco em disciplina específica)
+
+**Footer:**
+- "Fechar anéis: +4.7 pts · Projeção: 80.7" + ref edital
+
+### 4 Anéis (progresso semanal por tipo)
+
+| Anel | Cor | Conta |
+|------|-----|-------|
+| Estudo | #6c63ff (roxo principal) | sessões de estudo novo completadas / total |
+| Revisão | #9b8afb (roxo claro) | revisões completadas / total |
+| Questões | #b4acf9 (roxo mais claro) | sessões de questões completadas / total |
+| Lei Seca | #4f46e5 (roxo escuro) | leituras completadas / total |
+
+Fechar todos os 4 anéis = semana perfeita.
+
+### Sugestão Automática de "Para Hoje"
+
+O sistema seleciona 3-4 tarefas como "sugeridas para hoje" baseado em:
+1. Urgência de revisão (CSSL: deadline dentro da semana)
+2. Prioridade (peso × gap de performance)
+3. Variedade (mix de pelo menos 2 tipos diferentes)
+4. Tempo disponível (estimado do user_study_config)
+
+São SUGESTÕES — o aluno pode ignorar e fazer qualquer tarefa do pool semanal.
+
+### Otimizador Semanal
 
 ```
-Para cada dia até a prova:
-  horas = horas_disponíveis(dia)
+Para cada semana:
+  horas_semanais = Σ horas_disponíveis(dia) para seg-dom
   
-  1. OBRIGATÓRIO: Revisões vencendo (CSSL diz "revise hoje")
-     Ordenar por: urgência × peso_edital
-     Alocar até 40% do tempo
-     Se não cabe → adia menos urgentes
-  
-  2. OBRIGATÓRIO: Questões mistas diárias (interleaving)
-     20% do tempo ou quota configurada
-     Mix: 40% tópico em estudo + 30% revisão + 30% aleatório
-  
-  3. OTIMIZADO: Estudo/aprofundamento
+  1. OBRIGATÓRIO: Revisões com deadline nesta semana (CSSL)
+     Cada revisão tem soft deadline ("até quarta")
+     
+  2. OTIMIZADO: Estudo novo + questões
      Para cada tópico não-dominado:
        ganho_marginal = peso × taxa_melhoria × retenção × (1 - accuracy)
-     Escolher tópico com MAIOR ganho
-     Alocar tempo proporcional
-     Atualizar ganho (rendimento decrescente)
-     Respeitar: max 2 tópicos novos/dia, dependências entre tópicos
+     Selecionar tópicos que MAXIMIZAM nota dentro das horas disponíveis
+     Respeitar: max ~10 tópicos novos/semana, dependências
+     
+  3. INTERLEAVING: Questões mistas
+     ~20-30% da carga semanal = sessões de questões de múltiplas disciplinas
+     
+  4. TRIAGEM: Se horas insuficientes
+     Mostrar ROI e recomendar foco
 ```
 
 ### Ciclos de estudo (macro-cronograma)
@@ -354,24 +418,25 @@ Se horas_necessárias > horas_disponíveis × 1.2:
   Calcular ROI por tópico
   Cortar do fundo até caber
   
-  Mostrar:
+  Mostrar transparentemente:
   "Com X horas restantes, foque nestas 14 disciplinas.
    Cobertura mínima nestas 4 (baixo retorno).
    Nota projetada: 77 (vs 71 se estudar tudo superficialmente)."
 ```
 
-### Carga horária insuficiente
+### Rollover semanal
 
+Domingo à noite: tarefas não completadas viram "Atrasado" na semana seguinte (badge). O otimizador rebalanceia se a carga ultrapassou a capacidade.
+
+### Efeito "Mais Um" (autoplay)
+
+Após completar uma sessão:
 ```
-Mostrar transparentemente:
-"Seu plano precisa de ~280h. Com 3h/dia e 45 dias = ~135h.
-
- A) Aumentar para 5h/dia → cobertura total
- B) Manter 3h/dia → cobertura otimizada 75%
- C) Ativar triagem → foco nos tópicos de maior retorno
-
- Nota projetada: A=84, B=74, C=77"
+"Sessão concluída! +0.8 pontos"
+Próxima sessão em 5... 4... 3...
+[Iniciar] [Parar por hoje]
 ```
+Se o aluno não clica nada, a próxima sessão inicia. Cria hábito de "binge de estudo".
 
 ---
 
@@ -424,15 +489,17 @@ Antes do cronograma, para cada disciplina:
 
 ## Sessão de Estudo Composta
 
-Cada sessão agendada no cronograma é COMPOSTA, não uma tarefa única:
+Quando o aluno clica "Sessão automática" ou "Iniciar" numa tarefa, o sistema compõe uma sessão:
 
 ```
-SESSÃO (50min) sobre "Homicídio — Parte 1":
+SESSÃO (50min):
 
   Aquecimento (5min):
-    3 FlashQuestões de tópicos de ontem (interleaving)
+    3 questões rápidas de tópicos de ontem (interleaving automático)
+    Ativa memória, recupera contexto
 
   Bloco Principal (30min):
+    O tópico selecionado (ou escolhido pelo otimizador)
     Composição varia por ciclo:
       Ciclo 1: 60% teoria + 20% questões fáceis + 20% lei seca
       Ciclo 2: 20% review + 50% questões médias + 30% lei seca
@@ -440,14 +507,50 @@ SESSÃO (50min) sobre "Homicídio — Parte 1":
       Ciclo 4: 100% simulado cronometrado
 
   Prática Mista (10min):
-    5 questões de disciplinas DIFERENTES
-    Selecionadas: revisão pendente + fraquezas detectadas
+    5-10 questões de disciplinas DIFERENTES (interleaving)
+    Selecionadas por: revisão pendente + fraquezas detectadas
 
   Encerramento (5min):
-    Form de conclusão (modo rápido: 1 clique)
-    Sistema calcula nota atualizada
-    "Você ganhou +1.3 pontos hoje. Projeção: 79/100"
+    Form de conclusão (modo rápido: 1 clique, detalhado: expandível)
+    Score snapshot + CSSL update
+    "Você ganhou +0.8 pontos. Projeção: 76.8/100"
+    
+  Autoplay "Mais Um" (5s countdown):
+    "Próxima sessão em 5... 4... 3..."
+    [Iniciar] [Parar por hoje]
 ```
+
+### Dificuldade Adaptativa Dentro da Sessão
+
+O sistema ajusta em tempo real:
+- Errou 3 seguidas → próxima mais fácil (recuperar confiança)
+- Acertou 5 seguidas → próxima mais difícil (desafiar)
+- Respondendo lento → menos questões, mais tempo cada
+- Respondendo rápido → questões extras bonus
+
+### Companheiro IA Contextual (durante a sessão)
+
+Micro-insights inline (não chat, não modal):
+- Após errar: "Você confundiu qualificado com privilegiado. Dica: qualificadora = motivação torpe."
+- Após acertar: "Exato! A Lei 13.104/15 incluiu feminicídio como qualificadora."
+- Na teoria: "Compare com Art. 129 que você estudou ontem — mesma lógica."
+- Fim de sessão: "Discriminação entre lesão grave/gravíssima melhorou 20%."
+
+### Relatório Semanal Automático (domingo)
+
+```
+Relatório — Semana 7-13 Abril
+
+Sessões: 12 completadas · 8h40 total
+Anéis: Estudo 100% · Revisão 80% · Questões 60% · Lei Seca 100%
+Nota: 72 → 76 (+4 pontos)
+
+Destaque: Dir. Penal — retenção 89%
+Atenção: Dir. Administrativo — não estudado
+Meta próxima semana: foco em Administrativo (+3 pts)
+```
+
+Gerado de questoes_log + study_sessions + score_snapshots. Zero trabalho do aluno.
 
 ---
 
@@ -574,12 +677,23 @@ CREATE POLICY "Users manage own flash" ON flash_questoes
 
 ---
 
-## Layout (mantido da v1)
+## Layout
 
-3 níveis (já implementado):
-- **Nível 1:** DisciplinesSidebar (slim, toggle Edital/Cronograma)
-- **Nível 2:** Central (tópicos ou planner do dia)
+Dois modos visuais na mesma página, alternados pelo toggle Edital/Cronograma:
+
+### Modo Edital (3 níveis — já implementado)
+- **Nível 1:** DisciplinesSidebar (coluna fixa com lista de disciplinas)
+- **Nível 2:** Central (tópicos da disciplina selecionada, layout centralizado max-w-5xl)
 - **Nível 3:** Drawer 45% (detalhes + ações + inteligência)
+
+### Modo Cronograma (cockpit semanal)
+- **Substitui os 3 níveis por uma view única centralizada** (mesmas margens do edital)
+- Toggle + seletor de semana + streak no header
+- 4 anéis + nota estimada
+- Barra de progresso semanal
+- Quick session buttons + abas (Tarefas | Insights | Sessões | E se?)
+- Lista unificada de tarefas da semana (sugeridos destacados, concluídos inline)
+- Paleta: roxo #6c63ff como accent em todo o cronograma (toggle, botões, border-left, checkmarks)
 
 ### Drawer v2 — conteúdo expandido
 
@@ -613,8 +727,8 @@ CREATE POLICY "Users manage own flash" ON flash_questoes
 1. ALUNO SEM EDITAL (Modo Contínuo)
    └─ Cria plano manual → escolhe disciplinas
    └─ Diagnóstico opcional → baseline
-   └─ Cronograma otimizado para aprendizado/hora
-   └─ Estuda → FlashQuestões + Questões + Lei Seca
+   └─ Cronograma semanal otimizado para aprendizado/hora
+   └─ Estuda via pool semanal ou sessão automática
    └─ Quando edital abre → vincula → migra para Modo Edital
 
 2. ALUNO COM EDITAL (Modo Edital)
@@ -623,19 +737,22 @@ CREATE POLICY "Users manage own flash" ON flash_questoes
    └─ "Criar Plano" → planos_estudo + planos_editais
    └─ Diagnóstico → baseline por disciplina
    └─ Score Engine calcula nota estimada e ROI
-   └─ Cronograma otimizado por nota (ganho marginal)
+   └─ Cronograma semanal otimizado por nota (ganho marginal)
    └─ Sessões compostas (aquecimento + estudo + questões mistas + encerramento)
    └─ Conclusão via form rápido → nota atualizada
-   └─ CSSL agenda revisões (exam-anchored)
+   └─ CSSL agenda revisões (exam-anchored, com soft deadlines semanais)
    └─ Triagem se tempo insuficiente
-   └─ Compressão automática pré-prova
+   └─ Compressão automática pré-prova (últimos 10%)
 
-3. CICLO DIÁRIO
-   └─ Abre cronograma → vê atividades do dia
-   └─ Cada atividade é uma sessão composta
+3. CICLO SEMANAL
+   └─ Abre cronograma → cockpit com anéis + lista unificada
+   └─ Escolhe tarefa sugerida ou qualquer do pool
+   └─ Clica "Iniciar" → sessão composta automática
    └─ Conclusão → questoes_log + score_snapshot + CSSL update
-   └─ Nota estimada atualiza em tempo real
-   └─ "Você ganhou +1.3 pontos hoje"
+   └─ Anéis avançam, nota atualiza em tempo real
+   └─ "Mais Um" autoplay → próxima sessão em 5s
+   └─ Domingo: relatório semanal automático
+   └─ Segunda: nova semana, pool renovado, atrasados rolam
 ```
 
 ---
@@ -644,20 +761,24 @@ CREATE POLICY "Users manage own flash" ON flash_questoes
 
 | Fase | O que | Impacto |
 |------|-------|---------|
-| **v1.0** | Plans 2-5 (integração básica, cronograma, forms, drawer) | Base funcional, superior à concorrência |
-| **v1.1** | Rename flashcards → FlashQuestões, revisão por questões | Revisão eficaz baseada em ciência |
-| **v2.0** | Score Engine (nota estimada + projeção + ROI) | Killer feature — aluno sabe onde investir |
+| **v1.0** | Plans 2-5 (integração API, cronograma semanal, forms, drawer) | Base funcional, superior à concorrência |
+| **v1.1** | Anéis semanais + lista unificada + abas (Insights/Sessões/E se?) | Cockpit completo |
+| **v1.2** | Sessão automática composta + autoplay "Mais Um" | UX premium, hábito |
+| **v2.0** | Score Engine (nota estimada + projeção + ROI por disciplina) | Killer feature — aluno sabe onde investir |
 | **v2.1** | CSSL (fases + exam-anchored + constraint-aware) | Retenção ótima no dia da prova |
-| **v2.2** | Mastery score + learning stages | Progressão clara e objetiva |
-| **v2.3** | Mapa de Domínio visual (barras por disciplina + ROI) | Priorização intuitiva |
+| **v2.2** | Mastery score + learning stages + dificuldade adaptativa | Progressão clara e objetiva |
+| **v2.3** | Simulador "E se?" interativo com slider | Decisão estratégica visual |
 | **v3.0** | Pipeline de enriquecimento (subtópicos, dificuldade, frequência) | Dados reais alimentam o motor |
-| **v3.1** | Otimizador por ganho marginal (substitui distribuição linear) | Hora de estudo vale mais |
+| **v3.1** | Otimizador semanal por ganho marginal | Hora de estudo vale mais |
 | **v3.2** | Diagnóstico Adaptativo (CAT) | Cronograma nasce inteligente |
-| **v3.3** | Detecção de confusão + discriminação | Intervenção direcionada |
-| **v3.4** | Triagem inteligente | Honesto quando tempo é curto |
-| **v4.0** | Sessão composta guiada | UX premium, zero decisão |
-| **v4.1** | Ciclos automáticos + compressão pré-prova | Longo prazo otimizado |
-| **v4.2** | Modo Contínuo (sem edital) completo | Público ampliado |
+| **v3.3** | Detecção de confusão + discriminação automática | Intervenção direcionada |
+| **v3.4** | Triagem inteligente + transparência de carga | Honesto quando tempo é curto |
+| **v3.5** | Companheiro IA contextual (micro-insights durante sessão) | Coaching passivo |
+| **v4.0** | Relatório semanal automático (domingo) | Feedback zero trabalho |
+| **v4.1** | Streak semanal + gamificação sutil | Motivação sem pressão |
+| **v4.2** | Ciclos automáticos + compressão pré-prova | Longo prazo otimizado |
+| **v4.3** | Modo Contínuo (sem edital) completo | Público ampliado |
+| **v4.4** | FlashQuestões (substitui flashcards tradicionais) | Revisão no formato do exame |
 
 ---
 
