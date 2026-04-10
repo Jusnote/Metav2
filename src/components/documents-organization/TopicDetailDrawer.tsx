@@ -534,14 +534,15 @@ function DrawerContent({
       <div className="h-px bg-border my-5" />
 
       {/* Blur overlay for stats when no progress */}
-      <div className="relative">
+      <div className={`relative ${!hasProgress ? 'select-none' : ''}`}>
         {!hasProgress && (
-          <div className="absolute inset-0 z-10 backdrop-blur-[2.5px] bg-white/40 rounded-xl flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 z-10 backdrop-blur-[3px] bg-white/50 rounded-xl flex items-center justify-center cursor-default">
             <span className="text-xs font-semibold text-[#9e99ae]">
               Estude para desbloquear suas estatísticas
             </span>
           </div>
         )}
+        <div className={!hasProgress ? 'pointer-events-none' : ''}>
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-2 mb-5">
@@ -632,6 +633,7 @@ function DrawerContent({
         </div>
       </div>
 
+      </div>{/* End pointer-events wrapper */}
       </div>{/* End blur overlay wrapper */}
 
       {/* Divider */}
