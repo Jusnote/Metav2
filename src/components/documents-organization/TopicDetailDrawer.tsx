@@ -2,6 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   X, Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
 } from 'lucide-react';
+import { Bar as BarLocal, BarChart as BarChartLocal } from 'recharts';
+import {
+  ChartContainer as ChartContainerLocal,
+  ChartTooltip as ChartTooltipLocal,
+  ChartTooltipContent as ChartTooltipContentLocal,
+} from '@/components/ui/chart';
 import { DesempenhoChart } from '@/components/DesempenhoChart';
 import { StudyCompletionForm, type CompletionData } from './StudyCompletionForm';
 import { useStudyCompletion } from '@/hooks/useStudyCompletion';
@@ -138,12 +144,24 @@ function getScoreLabel(score: number): { text: string; color: string } {
 
 function CompactRevisionsChart() {
   // Mock data — will be connected to real questoes_log + schedule_items
-  const scores = [72, 68, 78, 85, 90];
+  const chartData = [
+    { revisao: 'Rev 1', score: 72 },
+    { revisao: 'Rev 2', score: 68 },
+    { revisao: 'Rev 3', score: 78 },
+    { revisao: 'Rev 4', score: 85 },
+    { revisao: 'Rev 5', score: 90 },
+  ];
+  const scores = chartData.map(d => d.score);
   const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
   const label = getScoreLabel(avg);
-  const maxScore = 100;
-  const barHeight = 40;
   const nextReview = '18/01';
+
+  const chartConfig = {
+    score: {
+      label: 'Score',
+      color: '#6c63ff',
+    },
+  } satisfies import('@/components/ui/chart').ChartConfig;
 
   return (
     <div>
@@ -163,27 +181,20 @@ function CompactRevisionsChart() {
           </span>
         </div>
 
-        {/* Right: bars */}
-        <div className="flex-1 flex items-end gap-[6px]">
-          {scores.map((score, i) => {
-            const h = (score / maxScore) * barHeight;
-            const scoreLabel = getScoreLabel(score);
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-[2px]" title={`${score}% — ${scoreLabel.text}`}>
-                <div className="w-full relative" style={{ height: `${barHeight}px` }}>
-                  <div
-                    className="absolute bottom-0 w-full rounded-t-[3px] transition-all duration-500"
-                    style={{
-                      height: `${h}px`,
-                      background: `linear-gradient(180deg, #6c63ff ${100 - (i / scores.length) * 30}%, #9b8afb)`,
-                      opacity: 0.4 + (i / scores.length) * 0.6,
-                    }}
-                  />
-                </div>
-                <span className="text-[8px] font-semibold text-[#9e99ae]">{score}</span>
-              </div>
-            );
-          })}
+        {/* Right: Recharts bar chart */}
+        <div className="flex-1 min-w-0">
+          <ChartContainerLocal config={chartConfig}>
+            <BarChartLocal data={chartData}>
+              <ChartTooltipLocal
+                content={<ChartTooltipContentLocal hideLabel formatter={(value) => `${value}%`} />}
+              />
+              <BarLocal
+                dataKey="score"
+                fill="#6c63ff"
+                radius={[3, 3, 0, 0]}
+              />
+            </BarChartLocal>
+          </ChartContainerLocal>
         </div>
       </div>
 
