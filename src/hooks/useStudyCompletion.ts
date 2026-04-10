@@ -20,9 +20,9 @@ export function useStudyCompletion() {
     estimatedMinutes?: number;
     // The completion data from the form
     data: CompletionData;
-  }): Promise<boolean> => {
+  }): Promise<{ success: boolean; masteryScore?: number }> => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
+    if (!user) return { success: false };
 
     // 1. Ensure local topico exists (lazy creation)
     let topicoId = params.localTopicoId;
@@ -35,7 +35,7 @@ export function useStudyCompletion() {
         planoId: params.planoId,
       }) ?? undefined;
     }
-    if (!topicoId) return false;
+    if (!topicoId) return { success: false };
 
     // 2. Get current topico data
     const { data: topico } = await supabase
@@ -44,7 +44,7 @@ export function useStudyCompletion() {
       .eq('id', topicoId)
       .single();
 
-    if (!topico) return false;
+    if (!topico) return { success: false };
 
     // 3. Calculate updates
     const updates: Record<string, unknown> = {
@@ -52,11 +52,9 @@ export function useStudyCompletion() {
       updated_at: new Date().toISOString(),
     };
 
-    // Tempo
-    const tempoReal = params.data.tempoReal || params.estimatedMinutes || 0;
-    if (tempoReal > 0) {
-      updates.tempo_investido = (topico.tempo_investido || 0) + tempoReal;
-    }
+    // Tempo — default to estimatedMinutes in quick mode (when tempoReal is not provided)
+    const tempoReal = params.data.tempoReal || params.estimatedMinutes || 30;
+    updates.tempo_investido = (topico.tempo_investido || 0) + tempoReal;
 
     // Questoes
     if (params.data.questoesAcertos !== undefined || params.data.questoesErros !== undefined) {
@@ -76,8 +74,10 @@ export function useStudyCompletion() {
       updates.leis_lidas = params.data.leisLidas;
     }
 
-    // Teoria
+    // Teoria — first study: mark teoria as done if not already
     if (params.data.teoriaFinalizada) {
+      updates.teoria_finalizada = true;
+    } else if (!topico.teoria_finalizada && params.data.teoriaFinalizada !== false) {
       updates.teoria_finalizada = true;
     }
 
@@ -142,7 +142,7 @@ export function useStudyCompletion() {
       created_at: new Date().toISOString(),
     });
 
-    return true;
+    return { success: true, masteryScore: mastery_score };
   }, [ensureTopicoLocal]);
 
   return { completeStudy };

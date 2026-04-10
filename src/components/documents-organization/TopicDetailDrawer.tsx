@@ -22,6 +22,7 @@ import { ProgressDots, calculateProgressDots } from './ProgressDots';
 import { MasteryBadge } from './MasteryBadge';
 import { useTopicoIntelligence } from '@/hooks/useTopicoIntelligence';
 import { useLocalProgress } from '@/hooks/useLocalProgress';
+import { toast } from 'sonner';
 import type { Topico, Subtopico } from '@/hooks/useDisciplinasManager';
 
 // ============ Types ============
@@ -614,7 +615,7 @@ function DrawerInnerContent({
           estimatedMinutes={estimatedMinutes || 120}
           onCancel={() => setShowCompletionForm(false)}
           onSave={async (data: CompletionData) => {
-            await completeStudy({
+            const result = await completeStudy({
               localTopicoId: detail.item.id.startsWith('api-') ? undefined : detail.item.id,
               originTopicoRef: (detail.item as any)._originRef,
               originDisciplinaRef: (detail.item as any)._originDisciplinaRef,
@@ -623,8 +624,14 @@ function DrawerInnerContent({
               estimatedMinutes: estimatedMinutes || 120,
               data,
             });
+
+            if (result.success) {
+              toast.success(`Estudo registrado! Mastery: ${result.masteryScore || 0}%`);
+              refetchProgress();
+            } else {
+              toast.error('Erro ao registrar estudo. Tente novamente.');
+            }
             setShowCompletionForm(false);
-            refetchProgress();
           }}
         />
       )}
