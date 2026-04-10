@@ -351,28 +351,25 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     if (isOpen) setMobileSheet('half');
   }, [isOpen, detail?.item]);
 
-  if (!detail) {
-    return null;
-  }
-
-  const item = detail.item;
-  const isTopico = detail.type === 'topico';
-  const title = item.nome;
-  const lastAccess = (item as any).lastAccess;
-  const tempoInvestido = (item as any).tempoInvestido;
-  const estimatedMinutes = (item as any).estimated_duration_minutes || 0;
-  const level = getLevel(item);
-  const moduleLabel = isTopico ? detail.disciplinaNome : detail.topicoNome || detail.disciplinaNome;
+  const item = detail?.item;
+  const isTopico = detail?.type === 'topico';
+  const title = item?.nome || '';
+  const lastAccess = (item as any)?.lastAccess;
+  const tempoInvestido = (item as any)?.tempoInvestido;
+  const estimatedMinutes = (item as any)?.estimated_duration_minutes || 0;
+  const level = item ? getLevel(item) : 'Estudante';
+  const moduleLabel = isTopico ? (detail?.disciplinaNome || '') : (detail?.topicoNome || detail?.disciplinaNome || '');
 
   // Priority heuristic
   const priority = (() => {
+    if (!item) return 50;
     if ((item as Subtopico).status === 'completed') return 25;
     if ((item as Subtopico).status === 'in-progress') return 65;
     return 80;
   })();
 
-  const itemId = item.id;
-  const itemTitle = item.nome;
+  const itemId = item?.id || '';
+  const itemTitle = item?.nome || '';
 
   return (
     <>
@@ -403,7 +400,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto">
-            <DrawerContent
+            {detail && <DrawerContent
               detail={detail}
               title={title}
               moduleLabel={moduleLabel}
@@ -419,7 +416,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               onOpenNotes={onOpenNotes}
               onOpenAI={onOpenAI}
               onPlaySubtopico={onPlaySubtopico}
-            />
+            />}
           </div>
         </div>
       </div>
@@ -457,7 +454,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto h-[calc(85vh-28px)]">
-            <DrawerContent
+            {detail && <DrawerContent
               detail={detail}
               title={title}
               moduleLabel={moduleLabel}
@@ -473,7 +470,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               onOpenNotes={onOpenNotes}
               onOpenAI={onOpenAI}
               onPlaySubtopico={onPlaySubtopico}
-            />
+            />}
           </div>
         </div>
       </div>
