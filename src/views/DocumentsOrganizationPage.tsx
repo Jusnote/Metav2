@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDocumentsOrganization } from '@/contexts/DocumentsOrganizationContext';
 import { NotesModal } from '../components/NotesModal';
@@ -11,6 +11,7 @@ import { TopicDetailDrawer } from '../components/documents-organization/TopicDet
 import { CronogramaWeekView } from '@/components/documents-organization/CronogramaWeekView';
 import type { Topico, Subtopico, Disciplina } from '@/hooks/useDisciplinasManager';
 import { useDisciplinasApi, useCargoData, type ApiTopico } from '@/hooks/useEditaisData';
+import { useLocalProgressBatch } from '@/hooks/useLocalProgress';
 import { editaisQuery } from '@/lib/editais-client';
 
 const TOPICOS_QUERY = `
@@ -116,6 +117,15 @@ const DocumentsOrganizationPage = () => {
   // ---- Choose data source ----
   const displayDisciplinas = isEditalMode ? apiConvertedDisciplinas : disciplinas;
   const isLoadingContent = isEditalMode ? (apiLoading || loadingApiTopicos) : false;
+
+  // ---- Batch progress for all topics ----
+  const allOriginRefs = useMemo(() => {
+    return displayDisciplinas.flatMap(d =>
+      d.topicos.map(t => (t as any)._originRef).filter((ref: any): ref is number => typeof ref === 'number')
+    );
+  }, [displayDisciplinas]);
+
+  const { progressMap, refetch: refetchListProgress } = useLocalProgressBatch(allOriginRefs);
 
   // Handle topico click -> open drawer
   const handleTopicoClick = useCallback((disciplinaId: string, topico: Topico) => {
@@ -325,6 +335,18 @@ const DocumentsOrganizationPage = () => {
                           {/* Subtopicos as cargo-style rows */}
                           {topico.subtopicos!.map((subtopico) => {
                             const isSelected = drawerDetail?.type === 'subtopico' && drawerDetail.item.id === subtopico.id;
+                            const subOriginRef = (subtopico as any)._originRef as number | undefined;
+                            const subProgress = subOriginRef ? progressMap.get(subOriginRef) : null;
+                            const subDotColor = subProgress
+                              ? subProgress.learning_stage === 'mastered' ? 'bg-emerald-500'
+                                : subProgress.learning_stage === 'maintaining' ? 'bg-emerald-400'
+                                : subProgress.mastery_score > 0 ? 'bg-[#6c63ff]'
+                                : 'bg-[#d4d0de] group-hover:bg-[#6c63ff]'
+                              : subtopico.status === 'completed'
+                                ? 'bg-emerald-500'
+                                : subtopico.status === 'in-progress'
+                                  ? 'bg-[#6c63ff]'
+                                  : 'bg-[#d4d0de] group-hover:bg-[#6c63ff]';
                             return (
                               <div
                                 key={subtopico.id}
@@ -333,18 +355,19 @@ const DocumentsOrganizationPage = () => {
                                   ${isSelected ? 'bg-[#f0edff]' : 'hover:bg-[#f8f7fd]'}`}
                               >
                                 {/* Status dot */}
-                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
-                                  subtopico.status === 'completed'
-                                    ? 'bg-emerald-500'
-                                    : subtopico.status === 'in-progress'
-                                      ? 'bg-[#6c63ff]'
-                                      : 'bg-[#d4d0de] group-hover:bg-[#6c63ff]'
-                                }`} />
+                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${subDotColor}`} />
 
                                 {/* Name */}
                                 <div className="text-[13px] font-[550] text-[#1a1a1a] dark:text-foreground flex-1 truncate">
                                   {subtopico.nome}
                                 </div>
+
+                                {/* Mastery % */}
+                                {subProgress && subProgress.mastery_score > 0 && (
+                                  <span className="text-[10px] font-semibold text-[#6c63ff] shrink-0">
+                                    {Math.round(subProgress.mastery_score)}%
+                                  </span>
+                                )}
 
                                 {/* Meta */}
                                 <div className="text-[11px] text-[#b0adb8] shrink-0">
@@ -366,6 +389,14 @@ const DocumentsOrganizationPage = () => {
 
                     // Topico without subtopicos - render as single row
                     const isSelected = drawerDetail?.type === 'topico' && drawerDetail.item.id === topico.id;
+                    const originRef = (topico as any)._originRef as number | undefined;
+                    const topicProgress = originRef ? progressMap.get(originRef) : null;
+                    const dotColor = topicProgress
+                      ? topicProgress.learning_stage === 'mastered' ? 'bg-emerald-500'
+                        : topicProgress.learning_stage === 'maintaining' ? 'bg-emerald-400'
+                        : topicProgress.mastery_score > 0 ? 'bg-[#6c63ff]'
+                        : 'bg-[#d4d0de] group-hover:bg-[#6c63ff]'
+                      : 'bg-[#d4d0de] group-hover:bg-[#6c63ff]';
                     return (
                       <div
                         key={topico.id}
@@ -373,10 +404,15 @@ const DocumentsOrganizationPage = () => {
                         className={`flex items-center py-[9px] px-3.5 cursor-pointer transition-colors gap-3 group
                           ${isSelected ? 'bg-[#f0edff]' : 'hover:bg-[#f8f7fd]'}`}
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#d4d0de] shrink-0 group-hover:bg-[#6c63ff]" />
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${dotColor}`} />
                         <div className="text-[13px] font-[550] text-[#1a1a1a] dark:text-foreground flex-1 truncate">
                           {topico.nome}
                         </div>
+                        {topicProgress && topicProgress.mastery_score > 0 && (
+                          <span className="text-[10px] font-semibold text-[#6c63ff] shrink-0">
+                            {Math.round(topicProgress.mastery_score)}%
+                          </span>
+                        )}
                         {topico.estimated_duration_minutes ? (
                           <div className="text-[11px] text-[#b0adb8] shrink-0">
                             {topico.estimated_duration_minutes >= 60
