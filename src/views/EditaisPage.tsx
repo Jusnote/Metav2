@@ -44,7 +44,7 @@ export default function EditaisPage() {
     editais, paginacao, isLoading, error, expandedEdital,
     setBusca, setEsfera, setPagina, toggleEdital,
   } = useEditais()
-  const { findPlanoByEdital } = usePlanosEstudo()
+  const { planos, findPlanoByEdital } = usePlanosEstudo()
 
   const handleGoToCargo = useCallback((editalId: number, cargoId: number) => {
     navigate(`/documents-organization?editalId=${editalId}&cargoId=${cargoId}`)
@@ -73,6 +73,57 @@ export default function EditaisPage() {
             </div>
           )}
         </div>
+
+        {/* ---- Meus Planos ---- */}
+        {planos.length > 0 && (
+          <div className="mb-8">
+            <div className="text-xs font-bold text-[#b0adb8] uppercase tracking-wider mb-3">
+              Meus planos de estudo
+            </div>
+            <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(planos.length, 3)}, 1fr)` }}>
+              {planos.slice(0, 3).map((plano) => {
+                const editalLink = plano.editais[0];
+                return (
+                  <div
+                    key={plano.id}
+                    onClick={() => {
+                      if (editalLink) {
+                        navigate(`/documents-organization?editalId=${editalLink.edital_id}&cargoId=${editalLink.cargo_id}`);
+                      }
+                    }}
+                    className="group bg-[#f5f3ff] border border-[#eeecfb] rounded-xl p-4 cursor-pointer transition-all hover:border-[#6c63ff] hover:shadow-[0_2px_12px_rgba(108,99,255,0.08)]"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-[#6c63ff] rounded-lg flex items-center justify-center text-white text-[9px] font-bold">
+                          {plano.nome.split(' ')[0]?.substring(0, 3).toUpperCase() || 'PLN'}
+                        </div>
+                        <div>
+                          <div className="text-[13px] font-semibold text-[#1a1625] leading-tight">
+                            {plano.nome}
+                          </div>
+                          {plano.data_prova && (
+                            <div className="text-[10px] text-[#9e99ae] mt-0.5">
+                              Prova: {new Date(plano.data_prova).toLocaleDateString('pt-BR')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-[10px] text-[#9e99ae]">
+                        {plano.source_type === 'edital' ? 'Edital vinculado' : 'Manual'}
+                      </div>
+                      <div className="text-[10px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity">
+                        Continuar →
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ---- Search + Filter ---- */}
         <div className="flex gap-3 mb-5">
