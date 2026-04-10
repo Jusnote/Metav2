@@ -128,84 +128,96 @@ function MaterialPill({ icon: Icon, label, count, color }: {
 
 // ============ Compact Revisions + Chart ============
 
+function getScoreLabel(score: number): { text: string; color: string } {
+  if (score >= 90) return { text: 'Excelente', color: 'text-emerald-600' };
+  if (score >= 80) return { text: 'Muito bom', color: 'text-[#6c63ff]' };
+  if (score >= 70) return { text: 'Bom', color: 'text-blue-500' };
+  if (score >= 60) return { text: 'Regular', color: 'text-amber-600' };
+  return { text: 'Ruim', color: 'text-red-500' };
+}
+
 function CompactRevisionsChart() {
   const revisions = [
-    { date: '15/01', score: 85, status: 'done' as const },
-    { date: '12/01', score: 78, status: 'done' as const },
-    { date: '18/01', score: null, status: 'pending' as const },
-    { date: '22/01', score: null, status: 'future' as const },
-    { date: '29/01', score: null, status: 'future' as const },
+    { date: '15/01', score: 85, questoes: '12/15', tempo: '23min', status: 'done' as const },
+    { date: '12/01', score: 78, questoes: '8/12', tempo: '18min', status: 'done' as const },
+    { date: '18/01', score: null, questoes: null, tempo: null, status: 'pending' as const },
+    { date: '22/01', score: null, questoes: null, tempo: null, status: 'future' as const },
+    { date: '29/01', score: null, questoes: null, tempo: null, status: 'future' as const },
   ];
 
   const maxVisible = 5;
   const visible = revisions.slice(0, maxVisible);
   const hasMore = revisions.length > maxVisible;
-  const maxScore = 100;
 
   return (
-    <div className="flex gap-4" style={{ minHeight: '80px' }}>
-      {/* Left: revision list */}
-      <div className="w-1/2 min-w-0">
-        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Desempenho prático</div>
-        <div className="space-y-[3px]">
-          {visible.map((rev, i) => (
-            <div key={i} className="flex items-center gap-2 text-[11px]">
-              <div className={`w-[5px] h-[5px] rounded-full flex-shrink-0 ${
-                rev.status === 'done' ? 'bg-[#6c63ff]' :
-                rev.status === 'pending' ? 'bg-[#d97706]' : 'bg-[#d4d0e0]'
-              }`} />
-              <span className={`${rev.status === 'done' ? 'text-[#1a1625]' : 'text-[#9e99ae]'} font-medium`}>
-                {rev.date}
-              </span>
-              {rev.score !== null && (
-                <span className="text-[#6c63ff] font-semibold ml-auto">{rev.score}%</span>
-              )}
-              {rev.status === 'pending' && (
-                <span className="text-[10px] text-[#d97706] font-medium ml-auto">pendente</span>
-              )}
-              {rev.status === 'future' && (
-                <span className="text-[10px] text-[#c8c5d0] ml-auto">—</span>
-              )}
-            </div>
-          ))}
-        </div>
-        {hasMore && (
-          <button className="text-[9px] text-[#9b8afb] hover:text-[#6c63ff] mt-1 font-medium">
-            Ver todas ({revisions.length})
-          </button>
-        )}
-      </div>
+    <div>
+      <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Desempenho prático</div>
+      <div className="space-y-[5px]">
+        {visible.map((rev, i) => {
+          const label = rev.score ? getScoreLabel(rev.score) : null;
+          return (
+            <div key={i} className="group cursor-pointer">
+              {/* Row: dot + date + bar + score + details */}
+              <div className="flex items-center gap-2">
+                <div className={`w-[5px] h-[5px] rounded-full flex-shrink-0 ${
+                  rev.status === 'done' ? 'bg-[#6c63ff]' :
+                  rev.status === 'pending' ? 'bg-[#d97706]' : 'bg-[#d4d0e0]'
+                }`} />
+                <span className={`text-[11px] font-medium w-[38px] flex-shrink-0 ${
+                  rev.status === 'done' ? 'text-[#1a1625]' : 'text-[#c8c5d0]'
+                }`}>
+                  {rev.date}
+                </span>
 
-      {/* Right: mini bar chart */}
-      <div className="w-1/2 flex flex-col">
-        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Desempenho</div>
-        <div className="flex-1 flex items-end gap-[3px]">
-          {visible.map((rev, i) => {
-            const height = rev.score ? (rev.score / maxScore) * 100 : 0;
-            const isDone = rev.status === 'done' && rev.score;
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-[2px]">
-                <div className="w-full relative" style={{ height: '48px' }}>
-                  <div
-                    className={`absolute bottom-0 w-full rounded-t-[2px] transition-all duration-500 ${
-                      isDone ? 'bg-[#6c63ff]' :
-                      rev.status === 'pending' ? 'bg-[#eeecfb] border border-dashed border-[#d97706]' :
-                      'bg-[#eeecfb]'
-                    }`}
-                    style={{ height: isDone ? `${height}%` : '20%' }}
-                  />
-                </div>
-                {isDone && (
-                  <span className="text-[7px] font-bold text-[#6c63ff]">{rev.score}</span>
-                )}
-                {!isDone && (
-                  <span className="text-[7px] text-[#c8c5d0]">—</span>
+                {rev.score !== null ? (
+                  <>
+                    {/* Inline bar */}
+                    <div className="flex-1 h-[4px] bg-[#eeecfb] rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#6c63ff] transition-all duration-500"
+                        style={{ width: `${rev.score}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] font-bold text-[#6c63ff] w-[32px] text-right flex-shrink-0">{rev.score}%</span>
+                  </>
+                ) : rev.status === 'pending' ? (
+                  <>
+                    <div className="flex-1 h-[4px] bg-[#eeecfb] rounded-full overflow-hidden">
+                      <div className="h-full w-0 rounded-full" />
+                    </div>
+                    <span className="text-[10px] text-[#d97706] font-medium flex-shrink-0">agendada</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-1 h-[4px] bg-[#eeecfb] rounded-full" />
+                    <span className="text-[10px] text-[#c8c5d0] flex-shrink-0">—</span>
+                  </>
                 )}
               </div>
-            );
-          })}
-        </div>
+
+              {/* Details line (only for done) */}
+              {rev.status === 'done' && rev.questoes && (
+                <div className="flex items-center gap-1 ml-[13px] mt-[1px]">
+                  <span className="text-[9px] text-[#9e99ae]">{rev.questoes} questões</span>
+                  <span className="text-[9px] text-[#d4d0e0]">·</span>
+                  <span className="text-[9px] text-[#9e99ae]">{rev.tempo}</span>
+                  {label && (
+                    <>
+                      <span className="text-[9px] text-[#d4d0e0]">·</span>
+                      <span className={`text-[9px] font-semibold ${label.color}`}>{label.text}</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
+      {hasMore && (
+        <button className="text-[9px] text-[#9b8afb] hover:text-[#6c63ff] mt-2 font-medium ml-[13px]">
+          Ver todas ({revisions.length})
+        </button>
+      )}
     </div>
   );
 }
