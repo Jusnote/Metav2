@@ -145,22 +145,27 @@ function getScoreLabel(score: number): { text: string; color: string } {
 function CompactRevisionsChart() {
   // Mock data — will be connected to real questoes_log + schedule_items
   const chartData = [
-    { revisao: 'Rev 1', score: 72 },
-    { revisao: 'Rev 2', score: 68 },
-    { revisao: 'Rev 3', score: 78 },
-    { revisao: 'Rev 4', score: 85 },
-    { revisao: 'Rev 5', score: 90 },
-    { revisao: 'Rev 6', score: 88 },
+    { revisao: 'Rev 1', acertos: 9, erros: 3 },
+    { revisao: 'Rev 2', acertos: 7, erros: 5 },
+    { revisao: 'Rev 3', acertos: 10, erros: 2 },
+    { revisao: 'Rev 4', acertos: 12, erros: 3 },
+    { revisao: 'Rev 5', acertos: 13, erros: 2 },
+    { revisao: 'Rev 6', acertos: 11, erros: 2 },
   ];
-  const scores = chartData.map(d => d.score);
-  const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  const totalAcertos = chartData.reduce((a, d) => a + d.acertos, 0);
+  const totalErros = chartData.reduce((a, d) => a + d.erros, 0);
+  const avg = Math.round((totalAcertos / (totalAcertos + totalErros)) * 100);
   const label = getScoreLabel(avg);
   const nextReview = '18/01';
 
   const chartConfig = {
-    score: {
-      label: 'Score',
+    acertos: {
+      label: 'Acertos',
       color: '#6c63ff',
+    },
+    erros: {
+      label: 'Erros',
+      color: '#eeecfb',
     },
   } satisfies import('@/components/ui/chart').ChartConfig;
 
@@ -177,7 +182,7 @@ function CompactRevisionsChart() {
           {label.text}
         </span>
         <span className="text-[9px] text-[#9e99ae]">
-          · {scores.length} revisões
+          · {totalAcertos} acertos · {totalErros} erros · {chartData.length} revisões
         </span>
       </div>
 
@@ -194,12 +199,18 @@ function CompactRevisionsChart() {
               tickFormatter={(value) => value.replace('Rev ', 'R')}
             />
             <ChartTooltipLocal
-              content={<ChartTooltipContentLocal hideLabel formatter={(value) => `${value}%`} />}
+              cursor={false}
+              content={<ChartTooltipContentLocal indicator="dashed" />}
             />
             <BarLocal
-              dataKey="score"
-              fill="var(--color-score)"
-              radius={[4, 4, 0, 0]}
+              dataKey="acertos"
+              fill="var(--color-acertos)"
+              radius={4}
+            />
+            <BarLocal
+              dataKey="erros"
+              fill="var(--color-erros)"
+              radius={4}
             />
           </BarChartLocal>
         </ChartContainerLocal>
