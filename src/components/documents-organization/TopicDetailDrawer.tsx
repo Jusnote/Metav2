@@ -126,7 +126,91 @@ function MaterialPill({ icon: Icon, label, count, color }: {
   );
 }
 
-// ============ Revisions Section ============
+// ============ Compact Revisions + Chart ============
+
+function CompactRevisionsChart() {
+  const revisions = [
+    { date: '15/01', score: 85, status: 'done' as const },
+    { date: '12/01', score: 78, status: 'done' as const },
+    { date: '18/01', score: null, status: 'pending' as const },
+    { date: '22/01', score: null, status: 'future' as const },
+    { date: '29/01', score: null, status: 'future' as const },
+  ];
+
+  const maxVisible = 5;
+  const visible = revisions.slice(0, maxVisible);
+  const hasMore = revisions.length > maxVisible;
+  const maxScore = 100;
+
+  return (
+    <div className="flex gap-4" style={{ minHeight: '80px' }}>
+      {/* Left: revision list */}
+      <div className="flex-1 min-w-0">
+        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Revisões</div>
+        <div className="space-y-[3px]">
+          {visible.map((rev, i) => (
+            <div key={i} className="flex items-center gap-2 text-[11px]">
+              <div className={`w-[5px] h-[5px] rounded-full flex-shrink-0 ${
+                rev.status === 'done' ? 'bg-[#6c63ff]' :
+                rev.status === 'pending' ? 'bg-[#d97706]' : 'bg-[#d4d0e0]'
+              }`} />
+              <span className={`${rev.status === 'done' ? 'text-[#1a1625]' : 'text-[#9e99ae]'} font-medium`}>
+                {rev.date}
+              </span>
+              {rev.score !== null && (
+                <span className="text-[#6c63ff] font-semibold ml-auto">{rev.score}%</span>
+              )}
+              {rev.status === 'pending' && (
+                <span className="text-[10px] text-[#d97706] font-medium ml-auto">pendente</span>
+              )}
+              {rev.status === 'future' && (
+                <span className="text-[10px] text-[#c8c5d0] ml-auto">—</span>
+              )}
+            </div>
+          ))}
+        </div>
+        {hasMore && (
+          <button className="text-[9px] text-[#9b8afb] hover:text-[#6c63ff] mt-1 font-medium">
+            Ver todas ({revisions.length})
+          </button>
+        )}
+      </div>
+
+      {/* Right: mini bar chart */}
+      <div className="w-[90px] flex-shrink-0 flex flex-col">
+        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Desempenho</div>
+        <div className="flex-1 flex items-end gap-[3px]">
+          {visible.map((rev, i) => {
+            const height = rev.score ? (rev.score / maxScore) * 100 : 0;
+            const isDone = rev.status === 'done' && rev.score;
+            return (
+              <div key={i} className="flex-1 flex flex-col items-center gap-[2px]">
+                <div className="w-full relative" style={{ height: '48px' }}>
+                  <div
+                    className={`absolute bottom-0 w-full rounded-t-[2px] transition-all duration-500 ${
+                      isDone ? 'bg-[#6c63ff]' :
+                      rev.status === 'pending' ? 'bg-[#eeecfb] border border-dashed border-[#d97706]' :
+                      'bg-[#eeecfb]'
+                    }`}
+                    style={{ height: isDone ? `${height}%` : '20%' }}
+                  />
+                </div>
+                {isDone && (
+                  <span className="text-[7px] font-bold text-[#6c63ff]">{rev.score}</span>
+                )}
+                {!isDone && (
+                  <span className="text-[7px] text-[#c8c5d0]">—</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ Revisions Section (legacy, kept for reference) ============
 
 function RevisionsSection() {
   // Placeholder revision data - will be connected to real data later
@@ -487,8 +571,8 @@ function DrawerContent({
       {/* Divider */}
       <div className="h-px bg-border my-5" />
 
-      {/* Importance ring */}
-      <ImportanceRing priority={priority} />
+      {/* Revisões + Desempenho compacto */}
+      <CompactRevisionsChart />
 
       {/* Divider */}
       <div className="h-px bg-border my-5" />
@@ -578,29 +662,7 @@ function DrawerContent({
         </button>
       </div>
 
-      {/* Revisions */}
-      <RevisionsSection />
-
-      {/* Divider */}
-      <div className="h-px bg-border my-5" />
-
-      {/* Performance chart */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-            Desempenho
-            <svg className="w-3 h-3 text-emerald-500" viewBox="0 0 12 12" fill="none">
-              <path d="M6 9V3M6 3L3 6M6 3L9 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </h4>
-        </div>
-        <DesempenhoChart
-          key={itemId}
-          altura={180}
-        />
-      </div>
-
-      {/* Divider */}
+      {/* Divider before AI */}
       <div className="h-px bg-border my-5" />
 
       {/* AI Section */}
