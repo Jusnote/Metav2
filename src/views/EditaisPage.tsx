@@ -47,13 +47,8 @@ export default function EditaisPage() {
   const { findPlanoByEdital } = usePlanosEstudo()
 
   const handleGoToCargo = useCallback((editalId: number, cargoId: number) => {
-    const existingPlano = findPlanoByEdital(editalId, cargoId)
-    if (existingPlano) {
-      navigate(`/documents-organization?planoId=${existingPlano.id}`)
-    } else {
-      navigate(`/documents-organization?editalId=${editalId}&cargoId=${cargoId}`)
-    }
-  }, [navigate, findPlanoByEdital])
+    navigate(`/documents-organization?editalId=${editalId}&cargoId=${cargoId}`)
+  }, [navigate])
 
   return (
     <div className="flex flex-col h-full overflow-auto">
