@@ -145,7 +145,7 @@ function CompactRevisionsChart() {
   return (
     <div className="flex gap-4" style={{ minHeight: '80px' }}>
       {/* Left: revision list */}
-      <div className="flex-1 min-w-0">
+      <div className="w-1/2 min-w-0">
         <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Revisões</div>
         <div className="space-y-[3px]">
           {visible.map((rev, i) => (
@@ -177,7 +177,7 @@ function CompactRevisionsChart() {
       </div>
 
       {/* Right: mini bar chart */}
-      <div className="w-[90px] flex-shrink-0 flex flex-col">
+      <div className="w-1/2 flex flex-col">
         <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Desempenho</div>
         <div className="flex-1 flex items-end gap-[3px]">
           {visible.map((rev, i) => {
