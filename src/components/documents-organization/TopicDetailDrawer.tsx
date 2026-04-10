@@ -167,35 +167,33 @@ function CompactRevisionsChart() {
     <div>
       <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho prático</div>
 
-      <div className="flex gap-5">
-        {/* Left: big average score */}
-        <div className="flex flex-col items-start flex-shrink-0">
-          <span className="text-[28px] font-extrabold leading-none bg-gradient-to-r from-[#4f46e5] to-[#9b8afb] bg-clip-text text-transparent">
-            {avg}%
-          </span>
-          <span className={`text-[10px] font-semibold mt-0.5 ${label.color}`}>
-            {label.text}
-          </span>
-          <span className="text-[9px] text-[#9e99ae] mt-1">
-            média de {scores.length} revisões
-          </span>
-        </div>
+      {/* Score + label */}
+      <div className="flex items-baseline gap-2 mb-2">
+        <span className="text-[28px] font-extrabold leading-none bg-gradient-to-r from-[#4f46e5] to-[#9b8afb] bg-clip-text text-transparent">
+          {avg}%
+        </span>
+        <span className={`text-[10px] font-semibold ${label.color}`}>
+          {label.text}
+        </span>
+        <span className="text-[9px] text-[#9e99ae]">
+          · {scores.length} revisões
+        </span>
+      </div>
 
-        {/* Right: Recharts bar chart */}
-        <div className="flex-1 min-w-0">
-          <ChartContainerLocal config={chartConfig}>
-            <BarChartLocal data={chartData}>
-              <ChartTooltipLocal
-                content={<ChartTooltipContentLocal hideLabel formatter={(value) => `${value}%`} />}
-              />
-              <BarLocal
-                dataKey="score"
-                fill="#6c63ff"
-                radius={[3, 3, 0, 0]}
-              />
-            </BarChartLocal>
-          </ChartContainerLocal>
-        </div>
+      {/* Bar chart — compact */}
+      <div className="h-[60px]">
+        <ChartContainerLocal config={chartConfig} className="!aspect-auto h-full w-full">
+          <BarChartLocal data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+            <ChartTooltipLocal
+              content={<ChartTooltipContentLocal hideLabel formatter={(value) => `${value}%`} />}
+            />
+            <BarLocal
+              dataKey="score"
+              fill="#6c63ff"
+              radius={[3, 3, 0, 0]}
+            />
+          </BarChartLocal>
+        </ChartContainerLocal>
       </div>
 
       {/* Detail + next review */}
