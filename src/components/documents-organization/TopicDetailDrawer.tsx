@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   X, Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
 } from 'lucide-react';
-import { Bar as BarLocal, BarChart as BarChartLocal } from 'recharts';
+import { Bar as BarLocal, BarChart as BarChartLocal, CartesianGrid as CartesianGridLocal, XAxis as XAxisLocal } from 'recharts';
 import {
   ChartContainer as ChartContainerLocal,
   ChartTooltip as ChartTooltipLocal,
@@ -182,16 +182,24 @@ function CompactRevisionsChart() {
       </div>
 
       {/* Bar chart — compact */}
-      <div className="h-[60px]">
+      <div className="h-[100px]">
         <ChartContainerLocal config={chartConfig} className="!aspect-auto h-full w-full">
-          <BarChartLocal data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barSize={12} barGap={4}>
+          <BarChartLocal accessibilityLayer data={chartData}>
+            <CartesianGridLocal vertical={false} />
+            <XAxisLocal
+              dataKey="revisao"
+              tickLine={false}
+              tickMargin={8}
+              axisLine={false}
+              tickFormatter={(value) => value.replace('Rev ', 'R')}
+            />
             <ChartTooltipLocal
               content={<ChartTooltipContentLocal hideLabel formatter={(value) => `${value}%`} />}
             />
             <BarLocal
               dataKey="score"
-              fill="#6c63ff"
-              radius={[2, 2, 0, 0]}
+              fill="var(--color-score)"
+              radius={[4, 4, 0, 0]}
             />
           </BarChartLocal>
         </ChartContainerLocal>
