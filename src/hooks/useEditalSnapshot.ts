@@ -18,10 +18,10 @@ async function getUserId(): Promise<string | null> {
 
 export function useEditalSnapshot() {
   // ------------------------------------------------------------------
-  // getLocalTopicoId – look up existing local UUID by api_topico_id
+  // getLocalTopicoId – look up existing local UUID by origin_topico_ref
   // ------------------------------------------------------------------
   const getLocalTopicoId = useCallback(
-    async (apiTopicoId: number): Promise<string | null> => {
+    async (originTopicoRef: number): Promise<string | null> => {
       const userId = await getUserId();
       if (!userId) return null;
 
@@ -29,7 +29,7 @@ export function useEditalSnapshot() {
         .from('topicos') as any)
         .select('id')
         .eq('user_id', userId)
-        .eq('api_topico_id', apiTopicoId)
+        .eq('origin_topico_ref', originTopicoRef)
         .maybeSingle();
 
       return data?.id ?? null;
@@ -43,18 +43,18 @@ export function useEditalSnapshot() {
   const ensureDisciplinaLocal = useCallback(
     async (opts: {
       userId: string;
-      apiDisciplinaId: number;
+      originDisciplinaRef: number;
       disciplinaNome: string;
       planoId?: string;
     }): Promise<string | null> => {
-      const { userId, apiDisciplinaId, disciplinaNome, planoId } = opts;
+      const { userId, originDisciplinaRef, disciplinaNome, planoId } = opts;
 
       // Check if it already exists
       const { data: existing } = await (supabase
         .from('disciplinas') as any)
         .select('id')
         .eq('user_id', userId)
-        .eq('api_disciplina_id', apiDisciplinaId)
+        .eq('origin_disciplina_ref', originDisciplinaRef)
         .maybeSingle();
 
       if (existing?.id) return existing.id;
@@ -63,7 +63,7 @@ export function useEditalSnapshot() {
       const row: Record<string, unknown> = {
         user_id: userId,
         nome: disciplinaNome,
-        api_disciplina_id: apiDisciplinaId,
+        origin_disciplina_ref: originDisciplinaRef,
         source_type: 'edital',
       };
       if (planoId) row.plano_id = planoId;
@@ -88,8 +88,8 @@ export function useEditalSnapshot() {
   // ------------------------------------------------------------------
   const ensureTopicoLocal = useCallback(
     async (opts: {
-      apiTopicoId: number;
-      apiDisciplinaId: number;
+      originTopicoRef: number;
+      originDisciplinaRef: number;
       topicoNome: string;
       disciplinaNome: string;
       planoId?: string;
@@ -97,16 +97,16 @@ export function useEditalSnapshot() {
       const userId = await getUserId();
       if (!userId) return null;
 
-      const { apiTopicoId, apiDisciplinaId, topicoNome, disciplinaNome, planoId } = opts;
+      const { originTopicoRef, originDisciplinaRef, topicoNome, disciplinaNome, planoId } = opts;
 
       // Already exists?
-      const existingId = await getLocalTopicoId(apiTopicoId);
+      const existingId = await getLocalTopicoId(originTopicoRef);
       if (existingId) return existingId;
 
       // Ensure parent disciplina
       const disciplinaId = await ensureDisciplinaLocal({
         userId,
-        apiDisciplinaId,
+        originDisciplinaRef,
         disciplinaNome,
         planoId,
       });
@@ -119,7 +119,7 @@ export function useEditalSnapshot() {
           user_id: userId,
           disciplina_id: disciplinaId,
           nome: topicoNome,
-          api_topico_id: apiTopicoId,
+          origin_topico_ref: originTopicoRef,
           source_type: 'edital',
         })
         .select('id')
@@ -153,7 +153,7 @@ export function useEditalSnapshot() {
         const discRows = disciplinas.map((d) => ({
           user_id: userId,
           nome: d.nome,
-          api_disciplina_id: d.id,
+          origin_disciplina_ref: d.fonteId || d.id,
           plano_id: planoId,
           source_type: 'edital' as const,
           peso_edital: d.totalTopicos,
@@ -161,18 +161,18 @@ export function useEditalSnapshot() {
 
         const { data: upsertedDiscs, error: discError } = await (supabase
           .from('disciplinas') as any)
-          .upsert(discRows, { onConflict: 'user_id,api_disciplina_id' })
-          .select('id, api_disciplina_id');
+          .upsert(discRows, { onConflict: 'user_id,origin_disciplina_ref' })
+          .select('id, origin_disciplina_ref');
 
         if (discError) {
           console.error('[useEditalSnapshot] bulkCreateFromCargo disc error:', discError);
           return false;
         }
 
-        // Build api_disciplina_id -> local uuid map
+        // Build origin_disciplina_ref -> local uuid map
         const discMap = new Map<number, string>();
         for (const d of (upsertedDiscs ?? [])) {
-          discMap.set(d.api_disciplina_id, d.id);
+          discMap.set(d.origin_disciplina_ref, d.id);
         }
 
         // 2. Upsert topicos
@@ -186,7 +186,7 @@ export function useEditalSnapshot() {
               user_id: userId,
               disciplina_id: localDiscId,
               nome: t.nome,
-              api_topico_id: t.id,
+              origin_topico_ref: t.fonteId || t.id,
               source_type: 'edital',
               estimated_duration_minutes: 120,
             });
@@ -196,7 +196,7 @@ export function useEditalSnapshot() {
         if (topicoRows.length > 0) {
           const { error: topicoError } = await (supabase
             .from('topicos') as any)
-            .upsert(topicoRows, { onConflict: 'user_id,api_topico_id' });
+            .upsert(topicoRows, { onConflict: 'user_id,origin_topico_ref' });
 
           if (topicoError) {
             console.error('[useEditalSnapshot] bulkCreateFromCargo topico error:', topicoError);

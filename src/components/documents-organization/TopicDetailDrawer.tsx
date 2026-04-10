@@ -606,8 +606,8 @@ function DrawerInnerContent({
           onSave={async (data: CompletionData) => {
             await completeStudy({
               localTopicoId: detail.item.id.startsWith('api-') ? undefined : detail.item.id,
-              apiTopicoId: (detail.item as any)._apiId,
-              apiDisciplinaId: (detail.item as any)._apiDisciplinaId,
+              originTopicoRef: (detail.item as any)._originRef,
+              originDisciplinaRef: (detail.item as any)._originDisciplinaRef,
               topicoNome: itemTitle,
               disciplinaNome: moduleLabel,
               estimatedMinutes: estimatedMinutes || 120,

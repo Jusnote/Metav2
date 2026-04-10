@@ -5,6 +5,7 @@ import { editaisQuery } from '@/lib/editais-client';
 
 export interface ApiDisciplina {
   id: number;
+  fonteId: number | null;
   nome: string;
   nomeEdital: string | null;
   totalTopicos: number;
@@ -12,6 +13,7 @@ export interface ApiDisciplina {
 
 export interface ApiTopico {
   id: number;
+  fonteId: number | null;
   nome: string;
   ordem: number;
 }
@@ -45,13 +47,13 @@ const CARGOS_QUERY = `
 
 const DISCIPLINAS_QUERY = `
   query Disciplinas($cargoId: Int!) {
-    disciplinas(cargoId: $cargoId) { id nome nomeEdital totalTopicos }
+    disciplinas(cargoId: $cargoId) { id fonteId nome nomeEdital totalTopicos }
   }
 `;
 
 const TOPICOS_QUERY = `
   query Topicos($disciplinaId: Int!) {
-    topicos(disciplinaId: $disciplinaId) { id nome ordem }
+    topicos(disciplinaId: $disciplinaId) { id fonteId nome ordem }
   }
 `;
 

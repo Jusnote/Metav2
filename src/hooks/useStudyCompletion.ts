@@ -8,10 +8,10 @@ export function useStudyCompletion() {
   const { ensureTopicoLocal } = useEditalSnapshot();
 
   const completeStudy = useCallback(async (params: {
-    // Topic identification (either local ID or API IDs for lazy creation)
+    // Topic identification (either local ID or origin refs for lazy creation)
     localTopicoId?: string;
-    apiTopicoId?: number;
-    apiDisciplinaId?: number;
+    originTopicoRef?: number;
+    originDisciplinaRef?: number;
     topicoNome: string;
     disciplinaNome: string;
     planoId?: string;
@@ -26,10 +26,10 @@ export function useStudyCompletion() {
 
     // 1. Ensure local topico exists (lazy creation)
     let topicoId = params.localTopicoId;
-    if (!topicoId && params.apiTopicoId && params.apiDisciplinaId) {
+    if (!topicoId && params.originTopicoRef && params.originDisciplinaRef) {
       topicoId = await ensureTopicoLocal({
-        apiTopicoId: params.apiTopicoId,
-        apiDisciplinaId: params.apiDisciplinaId,
+        originTopicoRef: params.originTopicoRef,
+        originDisciplinaRef: params.originDisciplinaRef,
         topicoNome: params.topicoNome,
         disciplinaNome: params.disciplinaNome,
         planoId: params.planoId,

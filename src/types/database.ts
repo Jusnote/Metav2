@@ -1914,7 +1914,7 @@ export type Database = {
       }
       topicos: {
         Row: {
-          api_topico_id: number | null
+          origin_topico_ref: number | null
           completed_at: string | null
           created_at: string | null
           depends_on: string[] | null
@@ -1947,7 +1947,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          api_topico_id?: number | null
+          origin_topico_ref?: number | null
           completed_at?: string | null
           created_at?: string | null
           depends_on?: string[] | null
@@ -1980,7 +1980,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          api_topico_id?: number | null
+          origin_topico_ref?: number | null
           completed_at?: string | null
           created_at?: string | null
           depends_on?: string[] | null
@@ -2024,7 +2024,7 @@ export type Database = {
       }
       disciplinas: {
         Row: {
-          api_disciplina_id: number | null
+          origin_disciplina_ref: number | null
           created_at: string | null
           id: string
           nome: string
@@ -2037,7 +2037,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          api_disciplina_id?: number | null
+          origin_disciplina_ref?: number | null
           created_at?: string | null
           id?: string
           nome: string
@@ -2050,7 +2050,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          api_disciplina_id?: number | null
+          origin_disciplina_ref?: number | null
           created_at?: string | null
           id?: string
           nome?: string

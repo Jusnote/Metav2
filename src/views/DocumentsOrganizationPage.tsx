@@ -15,7 +15,7 @@ import { editaisQuery } from '@/lib/editais-client';
 
 const TOPICOS_QUERY = `
   query Topicos($disciplinaId: Int!) {
-    topicos(disciplinaId: $disciplinaId) { id nome ordem }
+    topicos(disciplinaId: $disciplinaId) { id fonteId nome ordem }
   }
 `;
 
@@ -64,8 +64,8 @@ const DocumentsOrganizationPage = () => {
           date: '',
           totalAulas: 0,
           estimated_duration_minutes: 120,
-          _apiId: t.id,
-          _apiDisciplinaId: disc.id,
+          _originRef: t.fonteId || t.id,
+          _originDisciplinaRef: disc.fonteId || disc.id,
         } as any));
 
         converted.push({
@@ -74,7 +74,7 @@ const DocumentsOrganizationPage = () => {
           totalChapters: disc.totalTopicos,
           subject: '',
           topicos,
-          _apiId: disc.id,
+          _originRef: disc.fonteId || disc.id,
         } as any);
       }
 
