@@ -1,0 +1,179 @@
+<h2>Report em qualquer nível — Flag discreto</h2>
+<p class="subtitle">Flag aparece inline no hover, sem alterar o visual do dispositivo. Funciona em artigo, parágrafo, inciso e alínea.</p>
+
+<div class="split">
+  <!-- Left: Articles with inline flags -->
+  <div class="mockup">
+    <div class="mockup-header">Lei Seca — hover mostra Flag</div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden;">
+      <div style="font-family: 'Literata', Georgia, serif; font-size: 15px; line-height: 1.75; color: #1a1a1a; padding: 28px 32px; background: white; max-width: 100%;">
+
+        <!-- Art 155 — NOT hovered -->
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: 600;">Art. 155</span> - Subtrair, para si ou para outrem, coisa alheia móvel:
+        </div>
+
+        <!-- Pena — NOT hovered -->
+        <div style="margin-bottom: 12px; color: #555; font-size: 14px;">
+          Pena - reclusão, de um a quatro anos, e multa.
+        </div>
+
+        <!-- §1 — HOVERED (Flag visible) -->
+        <div style="margin-bottom: 12px; position: relative; display: flex; align-items: flex-start; gap: 0;" onmouseenter="this.querySelector('.flag-btn').style.opacity='1'" onmouseleave="this.querySelector('.flag-btn').style.opacity='0'">
+          <span style="flex: 1;"><span style="font-weight: 600;">§ 1º</span> - A pena aumenta-se de um terço, se o crime é praticado durante o repouso noturno.
+            <span class="flag-btn" style="opacity: 1; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 4px; border: none; background: transparent; cursor: pointer; color: #c4c4c8; transition: all 0.15s; vertical-align: middle; margin-left: 4px;" onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#c4c4c8'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            </span>
+          </span>
+        </div>
+
+        <!-- §2 — NOT hovered -->
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: 600;">§ 2º</span> - Se o criminoso é primário, e é de pequeno valor a coisa furtada, o juiz pode substituir a pena de reclusão pela de detenção, diminuí-la de um a dois terços, ou aplicar somente a pena de multa.
+        </div>
+
+        <!-- §3 with incisos -->
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: 600;">§ 3º</span> - Equipara-se à coisa móvel a energia elétrica ou qualquer outra que tenha valor econômico.
+        </div>
+
+        <!-- §4 -->
+        <div style="margin-bottom: 8px;">
+          <span style="font-weight: 600;">§ 4º</span> - A pena é de reclusão de dois a oito anos, e multa, se o crime é cometido:
+        </div>
+
+        <!-- Inciso I — NOT hovered -->
+        <div style="margin-bottom: 6px; padding-left: 28px; font-size: 14.5px;">
+          I - com destruição ou rompimento de obstáculo à subtração da coisa;
+        </div>
+
+        <!-- Inciso II — HOVERED -->
+        <div style="margin-bottom: 6px; padding-left: 28px; font-size: 14.5px; display: flex; align-items: flex-start;" onmouseenter="this.querySelector('.flag-btn2').style.opacity='1'" onmouseleave="this.querySelector('.flag-btn2').style.opacity='0'">
+          <span style="flex: 1;">II - com abuso de confiança, ou mediante fraude, escalada ou destreza;
+            <span class="flag-btn2" style="opacity: 1; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 4px; border: none; background: transparent; cursor: pointer; color: #c4c4c8; transition: all 0.15s; vertical-align: middle; margin-left: 4px;" onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#c4c4c8'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            </span>
+          </span>
+        </div>
+
+        <!-- Inciso III — NOT hovered -->
+        <div style="margin-bottom: 6px; padding-left: 28px; font-size: 14.5px;">
+          III - com emprego de chave falsa;
+        </div>
+
+        <!-- Inciso IV — NOT hovered -->
+        <div style="margin-bottom: 6px; padding-left: 28px; font-size: 14.5px;">
+          IV - mediante concurso de duas ou mais pessoas.
+        </div>
+
+        <!-- Alinea example -->
+        <div style="margin-bottom: 12px; margin-top: 16px;">
+          <span style="font-weight: 600;">§ 4º-A</span> - A pena é de reclusão de 4 a 10 anos e multa, se houver emprego de explosivo ou de artefato análogo que cause perigo comum.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Modal -->
+  <div class="mockup">
+    <div class="mockup-header">Modal — Report do Inciso II</div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden;">
+      <div style="font-family: 'Inter', -apple-system, sans-serif; background: rgba(0,0,0,0.3); padding: 20px; min-height: 520px; display: flex; align-items: center; justify-content: center;">
+
+        <div style="background: white; border-radius: 12px; width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden;">
+          <!-- Header -->
+          <div style="padding: 16px 20px; border-bottom: 1px solid #f4f4f5;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #18181b; letter-spacing: -0.3px;">Reportar dispositivo</h3>
+              <button style="border: none; background: none; color: #a1a1aa; cursor: pointer; padding: 4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div style="padding: 16px 20px;">
+            <!-- Preview -->
+            <div style="background: #fafafa; border: 1px solid #f0f0f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #a1a1aa; font-weight: 600;">Inciso</span>
+                <span style="font-size: 9px; background: #f4f4f5; color: #71717a; padding: 1px 5px; border-radius: 3px;">Art. 155 §4º</span>
+              </div>
+              <div style="font-size: 12.5px; color: #52525b; line-height: 1.5; font-family: 'Literata', Georgia, serif;">II - com abuso de confiança, ou mediante fraude, escalada ou destreza;</div>
+            </div>
+
+            <!-- Motivo -->
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; margin-bottom: 6px;">Motivo</label>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 5px 8px; border-radius: 6px; border: 1px solid #7c3aed; background: #faf8ff;">
+                  <input type="radio" name="reason2" style="accent-color: #7c3aed;" checked /> Redação desatualizada
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 5px 8px; border-radius: 6px; border: 1px solid #e4e4e7;">
+                  <input type="radio" name="reason2" style="accent-color: #7c3aed;" /> Dispositivo revogado
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 5px 8px; border-radius: 6px; border: 1px solid #e4e4e7;">
+                  <input type="radio" name="reason2" style="accent-color: #7c3aed;" /> Erro de digitação
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 5px 8px; border-radius: 6px; border: 1px solid #e4e4e7;">
+                  <input type="radio" name="reason2" style="accent-color: #7c3aed;" /> Outro
+                </label>
+              </div>
+            </div>
+
+            <!-- Descrição -->
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; margin-bottom: 4px;">Descrição</label>
+              <textarea style="width: 100%; box-sizing: border-box; border: 1px solid #e4e4e7; border-radius: 6px; padding: 8px 10px; font-size: 13px; color: #3f3f46; resize: vertical; min-height: 50px; font-family: inherit; outline: none;" placeholder="Descreva o problema..."></textarea>
+            </div>
+
+            <!-- Teacher+ -->
+            <div style="border-top: 1px dashed #e4e4e7; padding-top: 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7c3aed;">Campos de professor</span>
+                <span style="font-size: 9px; background: #f5f3ff; color: #7c3aed; padding: 1px 6px; border-radius: 4px; font-weight: 600;">Teacher+</span>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <label style="display: block; font-size: 11px; color: #71717a; margin-bottom: 3px;">Lei/norma que alterou</label>
+                <input type="text" style="width: 100%; box-sizing: border-box; border: 1px solid #e4e4e7; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #3f3f46; outline: none;" placeholder="Ex: Lei 14.321/2022, art. 2º" />
+              </div>
+              <div>
+                <label style="display: block; font-size: 11px; color: #71717a; margin-bottom: 3px;">Nova redação sugerida</label>
+                <textarea style="width: 100%; box-sizing: border-box; border: 1px solid #e4e4e7; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #3f3f46; resize: vertical; min-height: 40px; font-family: inherit; outline: none;" placeholder="Cole a redação atualizada..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="padding: 12px 20px; border-top: 1px solid #f4f4f5; display: flex; justify-content: flex-end; gap: 8px;">
+            <button style="padding: 7px 14px; border-radius: 6px; border: none; background: #f4f4f5; color: #52525b; font-size: 13px; font-weight: 600; cursor: pointer;">Cancelar</button>
+            <button style="padding: 7px 14px; border-radius: 6px; border: none; background: #7c3aed; color: white; font-size: 13px; font-weight: 600; cursor: pointer;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">Enviar report</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <h3>Detalhes do comportamento</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
+    <div style="border: 1px solid #f0f0f0; border-radius: 8px; padding: 12px;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">Qualquer nível</div>
+      <div style="font-size: 11px; color: #52525b; line-height: 1.5;">Flag aparece em artigos, parágrafos, incisos, alíneas — tudo que passa pelo DispositivoRenderer.</div>
+    </div>
+    <div style="border: 1px solid #f0f0f0; border-radius: 8px; padding: 12px;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">Zero visual impact</div>
+      <div style="font-size: 11px; color: #52525b; line-height: 1.5;">Sem background, sem borda, sem hover no artigo. Só o ícone Flag inline no final do texto, cinza claro.</div>
+    </div>
+    <div style="border: 1px solid #f0f0f0; border-radius: 8px; padding: 12px;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">Preview contextual</div>
+      <div style="font-size: 11px; color: #52525b; line-height: 1.5;">Modal mostra tipo (Inciso, §, Art.) + path (Art. 155 §4º) + texto. Identifica exatamente o dispositivo.</div>
+    </div>
+    <div style="border: 1px solid #f0f0f0; border-radius: 8px; padding: 12px;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">Mesma tabela no painel</div>
+      <div style="font-size: 11px; color: #52525b; line-height: 1.5;">Reports salvos em law_article_reports e aparecem no painel de moderação como novo módulo.</div>
+    </div>
+  </div>
+</div>

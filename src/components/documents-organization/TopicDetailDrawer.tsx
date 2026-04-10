@@ -42,7 +42,6 @@ interface TopicDetailDrawerProps {
   onOpenNotes: (id: string, title: string, type: 'topico' | 'subtopico') => void;
   onOpenAI: () => void;
   onPlaySubtopico: (id: string, title: string) => void;
-  container?: HTMLElement | null;
 }
 
 // ============ Helpers ============
@@ -307,7 +306,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   onOpenNotes,
   onOpenAI,
   onPlaySubtopico,
-  container,
 }) => {
   const isOpen = detail !== null;
 
@@ -331,8 +329,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const itemTitle = item?.nome || '';
 
   return (
-    <Drawer direction="right" open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }} container={container || undefined} modal={false}>
-      <ShadcnDrawerContent direction="right" contained={!!container} className="h-full w-[35%] max-w-[480px] min-w-[360px] rounded-none">
+    <Drawer direction="right" open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <ShadcnDrawerContent direction="right" className="h-full w-[35%] max-w-[480px] min-w-[360px] rounded-none">
         <DrawerHeader className="px-6 pb-0">
           <div className="flex items-center justify-between">
             <div>

@@ -1,0 +1,273 @@
+<h2>Dois modos do Documents-Organization</h2>
+<p class="subtitle">Como o aluno percebe visualmente que está no edital verticalizado vs. cronograma ativo</p>
+
+<div class="split">
+  <!-- MODO PLANEJAMENTO -->
+  <div class="mockup" data-choice="planejamento" onclick="toggleSelect(this)">
+    <div class="mockup-header" style="background: linear-gradient(135deg, #4f46e5, #6366f1); color: white;">
+      Modo Planejamento (sem cronograma)
+    </div>
+    <div class="mockup-body" style="padding: 0; font-size: 12px;">
+      <!-- Header do edital -->
+      <div style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); padding: 12px 16px; border-bottom: 2px solid #818cf8;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; color: #3730a3; font-size: 13px;">🏛️ TRF 3ª Região — Analista Judiciário</div>
+            <div style="color: #6366f1; font-size: 11px; margin-top: 2px;">Prova em 45 dias · 18 disciplinas · 127 tópicos · ~190h estimadas</div>
+          </div>
+          <div style="background: #4f46e5; color: white; padding: 6px 14px; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer;">
+            📅 Criar Cronograma
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; height: 320px;">
+        <!-- Sidebar -->
+        <div style="width: 200px; border-right: 1px solid #e5e7eb; background: #fafbff; padding: 8px; overflow-y: auto;">
+          <div style="font-size: 10px; color: #6366f1; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; padding: 4px;">📋 Conteúdo do Edital</div>
+
+          <div style="margin-bottom: 4px;">
+            <div style="padding: 6px 8px; background: #eef2ff; border-radius: 6px; font-weight: 600; color: #3730a3; font-size: 11px; border-left: 3px solid #6366f1;">
+              Direito Constitucional
+            </div>
+            <div style="padding: 4px 8px 4px 20px; color: #4b5563; font-size: 10px;">Direitos Fundamentais</div>
+            <div style="padding: 4px 8px 4px 20px; color: #4b5563; font-size: 10px;">Organização do Estado</div>
+            <div style="padding: 4px 8px 4px 20px; color: #4b5563; font-size: 10px;">Poder Judiciário</div>
+          </div>
+
+          <div style="margin-bottom: 4px;">
+            <div style="padding: 6px 8px; border-radius: 6px; font-weight: 600; color: #374151; font-size: 11px;">
+              Direito Administrativo
+            </div>
+          </div>
+          <div style="margin-bottom: 4px;">
+            <div style="padding: 6px 8px; border-radius: 6px; font-weight: 600; color: #374151; font-size: 11px;">
+              Direito Penal
+            </div>
+          </div>
+          <div style="margin-bottom: 4px;">
+            <div style="padding: 6px 8px; border-radius: 6px; font-weight: 600; color: #374151; font-size: 11px; opacity: 0.6;">
+              Português
+            </div>
+          </div>
+          <div style="margin-bottom: 4px;">
+            <div style="padding: 6px 8px; border-radius: 6px; font-weight: 600; color: #374151; font-size: 11px; opacity: 0.6;">
+              Raciocínio Lógico
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel direito -->
+        <div style="flex: 1; padding: 12px; overflow-y: auto;">
+          <div style="color: #6b7280; font-size: 10px; margin-bottom: 8px;">Início › Dir. Constitucional › Direitos Fundamentais</div>
+
+          <div style="font-size: 14px; font-weight: 700; color: #1f2937; margin-bottom: 12px;">Direitos Fundamentais</div>
+
+          <!-- Info cards em indigo -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div style="background: #eef2ff; border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 700; color: #4f46e5;">~8h</div>
+              <div style="font-size: 9px; color: #6366f1;">Estimativa</div>
+            </div>
+            <div style="background: #eef2ff; border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 700; color: #4f46e5;">12</div>
+              <div style="font-size: 9px; color: #6366f1;">Tópicos</div>
+            </div>
+            <div style="background: #eef2ff; border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 700; color: #4f46e5;">Alta</div>
+              <div style="font-size: 9px; color: #6366f1;">Incidência</div>
+            </div>
+          </div>
+
+          <!-- Cross-reference -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px;">
+            <div style="font-size: 10px; font-weight: 600; color: #4f46e5; margin-bottom: 6px;">📊 Presente em outros editais</div>
+            <div style="font-size: 10px; color: #64748b;">TRF 1ª Região · TRF 5ª Região · STJ · MPF</div>
+          </div>
+
+          <!-- Material cards (desabilitados/preview) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <div style="background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 8px; padding: 10px; text-align: center; opacity: 0.5;">
+              <div style="font-size: 14px;">📄</div>
+              <div style="font-size: 10px; color: #9ca3af;">Documentos</div>
+            </div>
+            <div style="background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 8px; padding: 10px; text-align: center; opacity: 0.5;">
+              <div style="font-size: 14px;">🃏</div>
+              <div style="font-size: 10px; color: #9ca3af;">Flashcards</div>
+            </div>
+            <div style="background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 8px; padding: 10px; text-align: center; opacity: 0.5;">
+              <div style="font-size: 14px;">❓</div>
+              <div style="font-size: 10px; color: #9ca3af;">Questões</div>
+            </div>
+            <div style="background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 8px; padding: 10px; text-align: center; opacity: 0.5;">
+              <div style="font-size: 14px;">⚖️</div>
+              <div style="font-size: 10px; color: #9ca3af;">Lei Seca</div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 8px; color: #6366f1; font-size: 10px; font-style: italic;">
+            Crie o cronograma para desbloquear os materiais
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO ESTUDO -->
+  <div class="mockup" data-choice="estudo" onclick="toggleSelect(this)">
+    <div class="mockup-header" style="background: linear-gradient(135deg, #059669, #10b981); color: white;">
+      Modo Estudo (cronograma ativo)
+    </div>
+    <div class="mockup-body" style="padding: 0; font-size: 12px;">
+      <!-- Header do dia -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 12px 16px; border-bottom: 2px solid #34d399;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; color: #065f46; font-size: 13px;">📖 Hoje · 3 tópicos · 2h30 estimado</div>
+            <div style="color: #059669; font-size: 11px; margin-top: 2px;">TRF 3ª Região — Analista · Faltam 38 dias</div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <div style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">67% concluído</div>
+          </div>
+        </div>
+        <!-- Mini progress bar -->
+        <div style="margin-top: 8px; height: 4px; background: #bbf7d0; border-radius: 4px;">
+          <div style="height: 100%; width: 67%; background: linear-gradient(90deg, #059669, #34d399); border-radius: 4px;"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; height: 320px;">
+        <!-- Sidebar -->
+        <div style="width: 200px; border-right: 1px solid #e5e7eb; background: #f0fdf4; padding: 8px; overflow-y: auto;">
+          <!-- Hoje section -->
+          <div style="font-size: 10px; color: #059669; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; padding: 4px;">⚡ Hoje</div>
+
+          <div style="padding: 6px 8px; background: #dcfce7; border-radius: 6px; margin-bottom: 3px; border-left: 3px solid #10b981;">
+            <div style="font-weight: 600; color: #065f46; font-size: 10px;">Direitos Fundamentais</div>
+            <div style="font-size: 9px; color: #059669;">Parte 1 · 40min</div>
+          </div>
+          <div style="padding: 6px 8px; background: #fef3c7; border-radius: 6px; margin-bottom: 3px; border-left: 3px solid #f59e0b;">
+            <div style="font-weight: 600; color: #92400e; font-size: 10px;">Atos Administrativos</div>
+            <div style="font-size: 9px; color: #d97706;">Revisão 2 · 15min 🔄</div>
+          </div>
+          <div style="padding: 6px 8px; background: white; border-radius: 6px; margin-bottom: 3px; border-left: 3px solid #d1d5db;">
+            <div style="font-weight: 600; color: #374151; font-size: 10px;">Crimes contra a AP</div>
+            <div style="font-size: 9px; color: #6b7280;">Parte 2 · 50min</div>
+          </div>
+
+          <div style="height: 1px; background: #d1d5db; margin: 8px 0;"></div>
+
+          <!-- Calendar strip -->
+          <div style="display: flex; gap: 3px; margin-bottom: 8px; justify-content: center;">
+            <div style="width: 26px; height: 32px; border-radius: 6px; background: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px;">
+              <div style="color: #9ca3af;">Seg</div>
+              <div style="font-weight: 600; color: #374151;">7</div>
+            </div>
+            <div style="width: 26px; height: 32px; border-radius: 6px; background: #dcfce7; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; border: 2px solid #10b981;">
+              <div style="color: #059669;">Ter</div>
+              <div style="font-weight: 700; color: #065f46;">8</div>
+            </div>
+            <div style="width: 26px; height: 32px; border-radius: 6px; background: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px;">
+              <div style="color: #9ca3af;">Qua</div>
+              <div style="font-weight: 600; color: #374151;">9</div>
+            </div>
+            <div style="width: 26px; height: 32px; border-radius: 6px; background: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px;">
+              <div style="color: #9ca3af;">Qui</div>
+              <div style="font-weight: 600; color: #374151;">10</div>
+            </div>
+            <div style="width: 26px; height: 32px; border-radius: 6px; background: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px;">
+              <div style="color: #9ca3af;">Sex</div>
+              <div style="font-weight: 600; color: #374151;">11</div>
+            </div>
+          </div>
+
+          <div style="font-size: 10px; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; padding: 4px;">📚 Todas disciplinas</div>
+          <div style="padding: 5px 8px; font-size: 10px; color: #374151;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+              <span style="font-weight: 600;">Dir. Constitucional</span>
+              <span style="background: #dcfce7; color: #166534; padding: 1px 6px; border-radius: 8px; font-size: 8px;">40%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+              <span style="font-weight: 600;">Dir. Administrativo</span>
+              <span style="background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 8px; font-size: 8px;">25%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+              <span style="font-weight: 600;">Dir. Penal</span>
+              <span style="background: #fee2e2; color: #991b1b; padding: 1px 6px; border-radius: 8px; font-size: 8px;">10%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel direito -->
+        <div style="flex: 1; padding: 12px; overflow-y: auto;">
+          <div style="color: #6b7280; font-size: 10px; margin-bottom: 4px;">Início › Dir. Constitucional › Direitos Fundamentais</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <div style="font-size: 14px; font-weight: 700; color: #1f2937;">Direitos Fundamentais</div>
+            <div style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: 600;">Parte 1 · Hoje</div>
+          </div>
+
+          <!-- Stats ativos -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div style="background: #ecfdf5; border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 700; color: #059669;">1h20</div>
+              <div style="font-size: 9px; color: #10b981;">Investido</div>
+            </div>
+            <div style="background: #ecfdf5; border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 700; color: #059669;">85%</div>
+              <div style="font-size: 9px; color: #10b981;">Desempenho</div>
+            </div>
+            <div style="background: #ecfdf5; border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 700; color: #059669;">3</div>
+              <div style="font-size: 9px; color: #10b981;">Revisões feitas</div>
+            </div>
+          </div>
+
+          <!-- Material cards (ativos) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <div style="background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 1px solid #86efac; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer;">
+              <div style="font-size: 14px;">📄</div>
+              <div style="font-size: 10px; font-weight: 600; color: #166534;">3 Resumos</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border: 1px solid #c4b5fd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer;">
+              <div style="font-size: 14px;">🃏</div>
+              <div style="font-size: 10px; font-weight: 600; color: #5b21b6;">12 Flashcards</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #fff7ed, #fed7aa); border: 1px solid #fdba74; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer;">
+              <div style="font-size: 14px;">❓</div>
+              <div style="font-size: 10px; font-weight: 600; color: #9a3412;">8 Questões</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #ecfeff, #cffafe); border: 1px solid #67e8f9; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer;">
+              <div style="font-size: 14px;">⚖️</div>
+              <div style="font-size: 10px; font-weight: 600; color: #155e75;">Lei Seca</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; background: #1a1a2e; border-radius: 12px; color: #e2e8f0;">
+  <h3 style="color: white; margin-bottom: 12px;">Diferenças-chave entre os dois modos</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13px;">
+    <div>
+      <div style="color: #818cf8; font-weight: 600; margin-bottom: 6px;">🔵 Modo Planejamento</div>
+      <ul style="color: #94a3b8; padding-left: 16px; line-height: 1.8;">
+        <li>Paleta <strong>indigo/azul</strong></li>
+        <li>Header: info do edital + CTA "Criar Cronograma"</li>
+        <li>Sidebar: árvore limpa, só hierarquia</li>
+        <li>Painel: estimativas, incidência, cross-reference</li>
+        <li>Materiais: desabilitados (dashed, opaco)</li>
+      </ul>
+    </div>
+    <div>
+      <div style="color: #34d399; font-weight: 600; margin-bottom: 6px;">🟢 Modo Estudo</div>
+      <ul style="color: #94a3b8; padding-left: 16px; line-height: 1.8;">
+        <li>Paleta <strong>green/emerald</strong></li>
+        <li>Header: resumo do dia + countdown + progress bar</li>
+        <li>Sidebar: "Hoje" no topo + calendar strip + árvore com %</li>
+        <li>Painel: tempo investido, desempenho, revisões reais</li>
+        <li>Materiais: ativos, com contadores, clicáveis</li>
+      </ul>
+    </div>
+  </div>
+</div>

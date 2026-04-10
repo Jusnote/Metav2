@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report de Questões — Fluxo Completo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #111827; padding: 24px; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
+  .step { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #e5e7eb; }
+  .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .step-title { font-size: 15px; font-weight: 600; }
+  .step-desc { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+  .mock { background: #fafbfc; border-radius: 10px; border: 1px solid #f0f0f0; overflow: hidden; }
+
+  /* Question card mock */
+  .qcard { padding: 20px; font-family: -apple-system, system-ui, sans-serif; }
+  .qcard-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .qcard-materia { font-size: 10px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+  .qcard-pipe { color: #d1d5db; font-size: 10px; }
+  .qcard-assunto { font-size: 10px; color: #9ca3af; }
+  .qcard-meta { font-size: 11px; color: #9ca3af; margin-bottom: 12px; }
+  .qcard-text { font-size: 14px; color: #374151; line-height: 1.65; margin-bottom: 16px; }
+
+  /* Footer */
+  .qcard-footer { display: flex; align-items: center; gap: 4px; padding-top: 10px; border-top: 1px solid #f3f4f6; }
+  .footer-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; color: #71717a; cursor: pointer; border: none; background: transparent; transition: all 0.15s; }
+  .footer-btn:hover { background: #f5f5f5; color: #374151; }
+  .footer-btn.active-blue { color: #2563EB; }
+  .footer-btn.active-amber { color: #D97706; }
+  .footer-btn .dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; top: -1px; right: -1px; }
+  .footer-btn svg { width: 15px; height: 15px; }
+  .footer-spacer { flex: 1; }
+
+  /* Flag button states */
+  .footer-btn.flag:hover { color: #D97706; background: #fffbeb; }
+  .footer-btn.flag.reported { color: #D97706; }
+
+  /* Report modal */
+  .modal-overlay { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 40px; display: flex; align-items: center; justify-content: center; }
+  .modal { background: white; border-radius: 12px; width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; }
+  .modal-header { padding: 20px 24px 0; }
+  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .modal-subtitle { font-size: 13px; color: #9ca3af; }
+  .modal-body { padding: 16px 24px; }
+
+  /* Report options */
+  .report-option { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; margin-bottom: 4px; }
+  .report-option:hover { background: #f9fafb; }
+  .report-option.selected { background: #f5f3ff; }
+  .report-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #d1d5db; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .report-radio.checked { border-color: #7c3aed; }
+  .report-radio.checked::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #7c3aed; }
+  .report-label { font-size: 13px; font-weight: 500; }
+  .report-desc { font-size: 11px; color: #9ca3af; }
+
+  /* Textarea */
+  .report-textarea { width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; resize: vertical; min-height: 60px; margin-top: 8px; outline: none; font-family: inherit; }
+  .report-textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
+  .report-textarea::placeholder { color: #c0c0c0; }
+
+  /* Modal footer */
+  .modal-footer { padding: 12px 24px 20px; display: flex; justify-content: flex-end; gap: 8px; }
+  .btn { padding: 7px 16px; border-radius: 7px; font-size: 13px; font-weight: 500; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-ghost { background: transparent; color: #6b7280; }
+  .btn-ghost:hover { background: #f5f5f5; }
+  .btn-primary { background: #7c3aed; color: white; }
+  .btn-primary:hover { background: #6d28d9; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Toast */
+  .toast { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: #111827; color: white; border-radius: 8px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+  .toast-icon { color: #10B981; }
+
+  /* Question ref in moderation panel */
+  .mod-report { display: flex; gap: 12px; padding: 16px 20px; background: white; border-radius: 10px; border: 1px solid #f0f0f0; }
+  .mod-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+  .mod-body { flex: 1; }
+  .mod-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .mod-name { font-size: 13px; font-weight: 600; }
+  .mod-time { font-size: 11px; color: #c0c0c0; }
+  .mod-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+  .mod-tag.desatualizada { background: #fffbeb; color: #D97706; }
+  .mod-tag.errada { background: #fef2f2; color: #EF4444; }
+  .mod-tag.incompleta { background: #eff6ff; color: #2563EB; }
+  .mod-text { font-size: 13px; color: #4b5563; line-height: 1.5; margin-bottom: 8px; }
+  .mod-ref { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #7c3aed; padding: 3px 10px; background: #f5f3ff; border-radius: 6px; cursor: pointer; margin-bottom: 10px; }
+  .mod-actions { display: flex; gap: 6px; }
+  .mod-btn { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; border: 1px solid #e5e7eb; background: white; color: #374151; cursor: pointer; }
+  .mod-btn:hover { border-color: #d1d5db; }
+  .mod-btn.resolve { border-color: #10B981; color: #10B981; background: #f0fdf4; }
+  .mod-btn.delete { border-color: #EF4444; color: #EF4444; background: #fef2f2; }
+
+  .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin: 32px 0 12px; }
+</style>
+</head>
+<body>
+
+<h2>Report de Questões — Fluxo Completo</h2>
+<p class="subtitle">Ícone de flag no footer → modal de report → painel de moderação</p>
+
+<!-- Step 1: Footer com ícone flag -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    <div class="step-title">Ícone de flag no footer da questão</div>
+  </div>
+  <div class="step-desc">O ícone de bandeira fica discreto no footer. Hover muda para amber. Se já reportou, fica amber permanente.</div>
+  <div class="mock">
+    <div class="qcard">
+      <div class="qcard-header">
+        <span class="qcard-materia">Dir. Constitucional</span>
+        <span class="qcard-pipe">|</span>
+        <span class="qcard-assunto">Leis Orgânicas</span>
+      </div>
+      <div class="qcard-meta">Fênix Instituto · 2026 · Prefeitura de Novo Horizonte (SC)</div>
+      <div class="qcard-text">A Lei Orgânica Municipal estabelece a composição da Câmara Municipal e define as características das entidades que integram a Administração Indireta...</div>
+
+      <!-- Footer -->
+      <div class="qcard-footer">
+        <button class="footer-btn active-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          3
+        </button>
+        <button class="footer-btn" style="position: relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.855z"/></svg>
+          <span style="position: absolute; top: -1px; right: -1px; width: 6px; height: 6px; border-radius: 50%; background: #F59E0B;"></span>
+        </button>
+
+        <div class="footer-spacer"></div>
+
+        <button class="footer-btn" style="position: relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        </button>
+
+        <!-- Flag button — normal state -->
+        <button class="footer-btn flag" title="Reportar questão">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        </button>
+      </div>
+
+      <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #e5e7eb;">
+        <div style="display: flex; gap: 24px; font-size: 11px; color: #9ca3af;">
+          <span>Normal: <span style="color: #71717a;">cinza</span></span>
+          <span>Hover: <span style="color: #D97706;">amber</span></span>
+          <span>Já reportou: <span style="color: #D97706; font-weight: 600;">amber fixo</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: Modal de report -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    <div class="step-title">Modal de report ao clicar na flag</div>
+  </div>
+  <div class="step-desc">Dialog limpo com opções de report específicas para questões. Roxo como cor de acento (mesma linguagem do painel de moderação).</div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Reportar questão</div>
+        <div class="modal-subtitle">Q 281089 · Dir. Constitucional · Leis Orgânicas</div>
+      </div>
+
+      <div class="modal-body">
+        <div class="report-option selected">
+          <div class="report-radio checked"></div>
+          <div>
+            <div class="report-label">Questão desatualizada</div>
+            <div class="report-desc">Lei ou jurisprudência mudou e a resposta não é mais válida</div>
+          </div>
+        </div>
+
+        <div class="report-option">
+          <div class="report-radio"></div>
+          <div>
+            <div class="report-label">Gabarito errado</div>
+            <div class="report-desc">A alternativa marcada como correta está incorreta</div>
+          </div>
+        </div>
+
+        <div class="report-option">
+          <div class="report-radio"></div>
+          <div>
+            <div class="report-label">Enunciado incompleto</div>
+            <div class="report-desc">Falta texto, imagem ou informação no enunciado</div>
+          </div>
+        </div>
+
+        <div class="report-option">
+          <div class="report-radio"></div>
+          <div>
+            <div class="report-label">Classificação errada</div>
+            <div class="report-desc">Matéria, assunto, banca ou ano incorretos</div>
+          </div>
+        </div>
+
+        <div class="report-option">
+          <div class="report-radio"></div>
+          <div>
+            <div class="report-label">Outro</div>
+            <div class="report-desc">Problema diferente dos listados acima</div>
+          </div>
+        </div>
+
+        <textarea class="report-textarea" placeholder="Descreva o problema (opcional)... Ex: A EC 115/2022 alterou o art. 5º da CF e a alternativa C não é mais válida."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost">Cancelar</button>
+        <button class="btn btn-primary">Enviar report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: Toast de confirmação -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    <div class="step-title">Confirmação</div>
+  </div>
+  <div class="step-desc">Toast discreto + ícone flag muda para amber permanente indicando que o aluno já reportou esta questão.</div>
+  <div class="mock" style="padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+    <div class="toast">
+      <span class="toast-icon">✓</span>
+      Report enviado — obrigado pela contribuição!
+    </div>
+    <div style="font-size: 12px; color: #9ca3af;">O ícone de flag fica amber permanente nesta questão</div>
+  </div>
+</div>
+
+<!-- Step 4: Como aparece no painel de moderação -->
+<div class="section-label">Como aparece no painel de moderação</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    <div class="step-title">Report na fila de moderação</div>
+  </div>
+  <div class="step-desc">Os reports de questões aparecem junto com reports de comentários e lei seca no mesmo painel, filtráveis por origem.</div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <!-- Report 1: Desatualizada -->
+    <div class="mod-report">
+      <div class="mod-avatar" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);"></div>
+      <div class="mod-body">
+        <div class="mod-row">
+          <span class="mod-name">Carlos Lima</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #d1d5db;"></span>
+          <span class="mod-time">2h atrás</span>
+          <span class="mod-tag desatualizada">Desatualizada</span>
+          <span style="font-size: 10px; color: #EF4444; font-weight: 500; margin-left: auto;">× 4 reports</span>
+        </div>
+        <div class="mod-text">"A EC 115/2022 alterou o art. 5º e incluiu o inciso LXXIX sobre proteção de dados. A alternativa C não é mais válida."</div>
+        <div class="mod-ref">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Q 281089 · Dir. Constitucional · Leis Orgânicas
+        </div>
+        <div class="mod-actions">
+          <button class="mod-btn resolve">✓ Marcar desatualizada</button>
+          <button class="mod-btn">Ignorar</button>
+          <button class="mod-btn">Ver questão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report 2: Gabarito errado -->
+    <div class="mod-report">
+      <div class="mod-avatar" style="background: linear-gradient(135deg, #EF4444, #F97316);"></div>
+      <div class="mod-body">
+        <div class="mod-row">
+          <span class="mod-name">Ana Costa</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #d1d5db;"></span>
+          <span class="mod-time">5h atrás</span>
+          <span class="mod-tag errada">Gabarito errado</span>
+          <span style="font-size: 10px; color: #EF4444; font-weight: 500; margin-left: auto;">× 2 reports</span>
+        </div>
+        <div class="mod-text">"O gabarito diz que é letra B, mas a jurisprudência do STF (RE 123.456) consolidou que a resposta correta é letra D."</div>
+        <div class="mod-ref">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Q 569696 · Dir. Administrativo · Atos Administrativos
+        </div>
+        <div class="mod-actions">
+          <button class="mod-btn resolve">✓ Corrigir gabarito</button>
+          <button class="mod-btn">Ignorar</button>
+          <button class="mod-btn">Ver questão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report 3: Incompleta -->
+    <div class="mod-report">
+      <div class="mod-avatar" style="background: linear-gradient(135deg, #10B981, #06B6D4);"></div>
+      <div class="mod-body">
+        <div class="mod-row">
+          <span class="mod-name">Pedro Alves</span>
+          <span style="width: 3px; height: 3px; border-radius: 50%; background: #d1d5db;"></span>
+          <span class="mod-time">1d atrás</span>
+          <span class="mod-tag incompleta">Enunciado incompleto</span>
+          <span style="font-size: 10px; color: #EF4444; font-weight: 500; margin-left: auto;">× 1 report</span>
+        </div>
+        <div class="mod-text">"Falta a tabela/figura que o enunciado menciona: 'Com base na tabela abaixo, analise...'. Sem a tabela é impossível responder."</div>
+        <div class="mod-ref">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Q 112233 · Raciocínio Lógico · Tabelas Verdade
+        </div>
+        <div class="mod-actions">
+          <button class="mod-btn delete">✕ Anular questão</button>
+          <button class="mod-btn">Ignorar</button>
+          <button class="mod-btn">Ver questão</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

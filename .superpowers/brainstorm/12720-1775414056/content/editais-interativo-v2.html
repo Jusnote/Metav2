@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Editais</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@350;400;450;500;550;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fafafb; color:#1a1a1a; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  .layout { display:flex; height:100vh; }
+
+  .rail { width:56px; background:#fff; border-right:1px solid #f0eff2; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:4px; }
+  .rail-logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(140deg,#6c63ff,#9b8afb); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:white; margin-bottom:20px; box-shadow:0 2px 8px rgba(108,99,255,0.25); }
+  .rail-btn { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#c4c0ce; transition:all 0.15s; }
+  .rail-btn:hover { color:#6c63ff; background:#f5f3ff; }
+  .rail-btn.on { color:#6c63ff; background:#eeecfb; }
+
+  .content { flex:1; overflow-y:auto; }
+  .topbar { height:50px; background:#fff; border-bottom:1px solid #f0eff2; display:flex; align-items:center; padding:0 40px; }
+  .topbar b { font-size:13px; font-weight:600; }
+
+  .page { max-width:900px; margin:0 auto; padding:36px 24px 80px; }
+
+  .hero { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; }
+  .hero h1 { font-size:26px; font-weight:800; letter-spacing:-0.6px; margin-bottom:6px; }
+  .hero h1 em { font-style:normal; background:linear-gradient(135deg,#6c63ff,#9b8afb); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero-sub { font-size:14px; color:#9994a8; max-width:400px; line-height:1.5; }
+  .hero-right { display:flex; gap:20px; }
+  .hero-stat { text-align:right; }
+  .hero-stat-val { font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
+  .hero-stat-lbl { font-size:11px; color:#b0adb8; }
+
+  .search-row { display:flex; gap:12px; margin-bottom:20px; }
+  .search-box { flex:1; position:relative; }
+  .search-box input { width:100%; background:#fff; border:1.5px solid #eae8ee; border-radius:12px; padding:11px 18px 11px 40px; font-size:14px; color:#1a1a1a; outline:none; transition:all 0.2s; font-family:inherit; }
+  .search-box input::placeholder { color:#c4c0ce; }
+  .search-box input:focus { border-color:#6c63ff; box-shadow:0 0 0 4px rgba(108,99,255,0.06); }
+  .search-box svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:#c4c0ce; }
+
+  .seg { display:inline-flex; background:#f0eff2; border-radius:10px; padding:3px; }
+  .seg-btn { padding:7px 15px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; color:#9994a8; transition:all 0.15s; user-select:none; }
+  .seg-btn:hover { color:#6c63ff; }
+  .seg-btn.on { background:#fff; color:#1a1a1a; box-shadow:0 1px 3px rgba(0,0,0,0.06); font-weight:600; }
+
+  .section-title { font-size:12px; font-weight:700; color:#b0adb8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; }
+
+  /* Cards horizontais */
+  .list { display:flex; flex-direction:column; gap:8px; }
+
+  .ecard { background:#fff; border:1.5px solid #eae8ee; border-radius:13px; cursor:pointer; transition:all 0.2s; overflow:hidden; }
+  .ecard:hover { border-color:#d4d0f0; box-shadow:0 2px 10px rgba(108,99,255,0.05); }
+  .ecard.open { border-color:#6c63ff; box-shadow:0 4px 20px rgba(108,99,255,0.08); cursor:default; }
+
+  .ecard-main { display:flex; align-items:center; padding:14px 20px; gap:16px; }
+
+  .ecard-avatar { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+  .ecard-avatar.fed { background:linear-gradient(135deg,#eeecfb,#e0dcf8); color:#6c63ff; }
+  .ecard-avatar.est { background:linear-gradient(135deg,#e8f1fd,#dce8fa); color:#4a8fe7; }
+  .ecard-avatar.mun { background:linear-gradient(135deg,#e4f8f0,#d4f1e5); color:#2da87a; }
+
+  .ecard-info { flex:1; min-width:0; }
+  .ecard-nome { font-size:13.5px; font-weight:600; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ecard-sub { font-size:11.5px; color:#b0adb8; }
+
+  .ecard-stats { display:flex; gap:20px; flex-shrink:0; }
+  .ecard-stat { text-align:center; min-width:50px; }
+  .ecard-stat-val { font-size:14px; font-weight:700; color:#1a1a1a; font-variant-numeric:tabular-nums; }
+  .ecard-stat-lbl { font-size:9px; color:#c4c0ce; text-transform:uppercase; letter-spacing:0.3px; }
+
+  .ecard-arrow { color:#d4d0de; font-size:16px; transition:all 0.2s; flex-shrink:0; width:20px; text-align:center; }
+  .ecard:hover .ecard-arrow { color:#6c63ff; }
+  .ecard.open .ecard-arrow { transform:rotate(90deg); color:#6c63ff; }
+
+  /* Cargos dropdown */
+  .ecard-cargos { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+  .ecard.open .ecard-cargos { max-height:600px; }
+
+  .cargos-inner { padding:0 20px 16px 74px; }
+  .cargos-divider { height:1px; background:#f0eff2; margin-bottom:12px; }
+
+  .cargo-row { display:flex; align-items:center; padding:9px 14px; border-radius:9px; cursor:pointer; transition:all 0.12s; gap:12px; }
+  .cargo-row:hover { background:#f8f7fd; }
+
+  .cargo-dot { width:6px; height:6px; border-radius:50%; background:#d4d0de; flex-shrink:0; }
+  .cargo-row:hover .cargo-dot { background:#6c63ff; }
+
+  .cargo-name { font-size:13px; font-weight:550; color:#1a1a1a; flex:1; }
+  .cargo-meta { font-size:11px; color:#b0adb8; flex-shrink:0; }
+  .cargo-go { font-size:11px; font-weight:600; color:#6c63ff; opacity:0; transition:opacity 0.12s; flex-shrink:0; }
+  .cargo-row:hover .cargo-go { opacity:1; }
+
+  /* Toast */
+  .toast { display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1a1a1a; color:#fff; padding:12px 24px; border-radius:10px; font-size:13px; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,0.2); z-index:100; }
+  .toast.show { display:block; animation:slideUp 0.3s ease; }
+  @keyframes slideUp { from { opacity:0; transform:translate(-50%,12px); } to { opacity:1; transform:translate(-50%,0); } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="rail">
+    <div class="rail-logo">P</div>
+    <div class="rail-btn">📄</div>
+    <div class="rail-btn on">📋</div>
+    <div class="rail-btn">🗂</div>
+    <div class="rail-btn">❓</div>
+    <div class="rail-btn">⚖️</div>
+    <div class="rail-btn" style="margin-top:auto">⚙️</div>
+  </div>
+
+  <div class="content">
+    <div class="topbar"><b>Editais</b></div>
+    <div class="page">
+      <div class="hero">
+        <div>
+          <h1>Editais <em>verticalizados</em></h1>
+          <div class="hero-sub">Selecione um concurso, escolha seu cargo e estude o conteúdo programático completo.</div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-stat"><div class="hero-stat-val">690</div><div class="hero-stat-lbl">Editais</div></div>
+          <div class="hero-stat"><div class="hero-stat-val">3.420</div><div class="hero-stat-lbl">Cargos</div></div>
+          <div class="hero-stat"><div class="hero-stat-val">1,16M</div><div class="hero-stat-lbl">Tópicos</div></div>
+        </div>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+          <input placeholder="Buscar por nome, sigla ou órgão..." />
+        </div>
+        <div class="seg">
+          <div class="seg-btn on">Todos</div>
+          <div class="seg-btn">Federal</div>
+          <div class="seg-btn">Estadual</div>
+          <div class="seg-btn">Municipal</div>
+        </div>
+      </div>
+
+      <div class="section-title">Todos os editais</div>
+
+      <div class="list" id="list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const editais = [
+  { sigla:'PF', nome:'Polícia Federal', esf:'Federal', t:'fed', c:41, d:356, tp:'19.609',
+    cargos:['Delegado de Polícia|24|455','Agente de Polícia|18|380','Escrivão de Polícia|16|320','Perito Criminal - Área 1|12|280','Papiloscopista|14|310','Agente Administrativo|8|150'] },
+  { sigla:'PRF', nome:'Polícia Rodoviária Federal', esf:'Federal', t:'fed', c:2, d:24, tp:'455',
+    cargos:['Policial Rodoviário Federal|16|380','Agente Administrativo|8|75'] },
+  { sigla:'TJ-SP', nome:'Tribunal de Justiça de São Paulo', esf:'São Paulo', t:'est', c:18, d:152, tp:'8.430',
+    cargos:['Escrevente Técnico Judiciário|12|420','Oficial de Justiça|14|380','Assistente Social|10|290','Contador|11|310'] },
+  { sigla:'MPU', nome:'Ministério Público da União', esf:'Federal', t:'fed', c:37, d:316, tp:'19.307',
+    cargos:['Analista - Direito|18|620','Analista - Administração|16|540','Técnico Administrativo|12|380','Técnico de Informática|10|290'] },
+  { sigla:'INSS', nome:'Instituto Nacional do Seguro Social', esf:'Federal', t:'fed', c:2, d:28, tp:'1.240',
+    cargos:['Técnico do Seguro Social|14|620','Analista do Seguro Social|14|620'] },
+  { sigla:'TRF-1', nome:'Tribunal Regional Federal da 1ª Região', esf:'Federal', t:'fed', c:33, d:319, tp:'10.898',
+    cargos:['Analista Judiciário - Judiciária|16|520','Técnico Judiciário - Administrativa|12|380','Oficial de Justiça|15|490'] },
+  { sigla:'CM-GOI', nome:'Câmara Municipal de Goiânia', esf:'Goiás', t:'mun', c:32, d:186, tp:'7.820',
+    cargos:['Analista Legislativo|14|420','Técnico Legislativo|10|290','Assistente Administrativo|8|220','Procurador|16|540'] },
+  { sigla:'SEFAZ-BA', nome:'Secretaria da Fazenda da Bahia', esf:'Bahia', t:'est', c:3, d:42, tp:'2.180',
+    cargos:['Auditor Fiscal|18|820','Agente de Tributos|14|680','Técnico da Fazenda|10|680'] },
+  { sigla:'PC-DF', nome:'Polícia Civil do Distrito Federal', esf:'Distrito Federal', t:'est', c:8, d:96, tp:'4.520',
+    cargos:['Delegado de Polícia|18|620','Agente de Polícia|14|480','Escrivão de Polícia|14|460','Perito Criminal|16|540'] },
+  { sigla:'TCU', nome:'Tribunal de Contas da União', esf:'Federal', t:'fed', c:4, d:68, tp:'3.450',
+    cargos:['Auditor Federal de Controle Externo|20|1.240','Técnico Federal de Controle Externo|14|720'] },
+  { sigla:'PC-PR', nome:'Polícia Civil do Paraná', esf:'Paraná', t:'est', c:6, d:72, tp:'3.890',
+    cargos:['Delegado|18|680','Investigador|14|520','Papiloscopista|12|440','Escrivão|14|490'] },
+  { sigla:'BNDES', nome:'Banco Nacional de Desenvolvimento', esf:'Federal', t:'fed', c:12, d:148, tp:'6.230',
+    cargos:['Analista - Economia|16|580','Analista - Engenharia|14|520','Técnico Administrativo|10|320'] },
+];
+
+let openId = null;
+const list = document.getElementById('list');
+
+function render() {
+  list.innerHTML = '';
+  editais.forEach((ed, i) => {
+    const isOpen = openId === i;
+    const card = document.createElement('div');
+    card.className = 'ecard' + (isOpen ? ' open' : '');
+
+    let cargosHtml = '';
+    ed.cargos.forEach(c => {
+      const [nome, disc, tops] = c.split('|');
+      cargosHtml += '<div class="cargo-row" onclick="goCargo(event,\'' + nome.replace(/'/g,"\\'") + '\')"><div class="cargo-dot"></div><div class="cargo-name">' + nome + '</div><div class="cargo-meta">' + disc + ' disc · ' + tops + ' tóp</div><div class="cargo-go">Estudar →</div></div>';
+    });
+
+    if (ed.cargos.length < ed.c) {
+      cargosHtml += '<div style="padding:6px 14px;font-size:11px;color:#b0adb8;">+ ' + (ed.c - ed.cargos.length) + ' cargos</div>';
+    }
+
+    card.innerHTML =
+      '<div class="ecard-main" onclick="toggle(' + i + ')">' +
+        '<div class="ecard-avatar ' + ed.t + '">' + ed.sigla + '</div>' +
+        '<div class="ecard-info"><div class="ecard-nome">' + ed.nome + '</div><div class="ecard-sub">' + ed.esf + '</div></div>' +
+        '<div class="ecard-stats">' +
+          '<div class="ecard-stat"><div class="ecard-stat-val">' + ed.c + '</div><div class="ecard-stat-lbl">Cargos</div></div>' +
+          '<div class="ecard-stat"><div class="ecard-stat-val">' + ed.d + '</div><div class="ecard-stat-lbl">Disc</div></div>' +
+          '<div class="ecard-stat"><div class="ecard-stat-val">' + ed.tp + '</div><div class="ecard-stat-lbl">Tópicos</div></div>' +
+        '</div>' +
+        '<div class="ecard-arrow">›</div>' +
+      '</div>' +
+      '<div class="ecard-cargos"><div class="cargos-inner"><div class="cargos-divider"></div>' + cargosHtml + '</div></div>';
+
+    list.appendChild(card);
+  });
+}
+
+function toggle(i) {
+  openId = openId === i ? null : i;
+  render();
+}
+
+function goCargo(e, nome) {
+  e.stopPropagation();
+  const toast = document.getElementById('toast');
+  toast.textContent = nome + ' → abrindo conteúdo programático...';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+render();
+</script>
+</body>
+</html>

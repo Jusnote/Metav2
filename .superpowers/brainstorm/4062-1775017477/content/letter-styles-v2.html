@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Letra da alternativa — sem bordas</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; font-family: 'Nunito', sans-serif; padding: 40px 20px; display: flex; flex-direction: column; gap: 48px; align-items: center; }
+
+  .section-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px; font-weight: 700; color: #7c3aed;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: -28px; text-align: center;
+  }
+
+  .card-wrap {
+    width: 100%; max-width: 780px;
+    background: white; border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
+    overflow: hidden;
+  }
+
+  /* Header — exact current */
+  .qc-banner { padding: 8px 16px; }
+  .qc-prova-box {
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 10px; background: #fafafa; border-radius: 6px;
+    border-left: 2px solid rgba(251, 191, 36, 0.4);
+  }
+  .qc-prova-icon {
+    width: 24px; height: 24px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #f4f4f5; border-radius: 50%;
+  }
+  .qc-label { font-size: 8px; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1; margin-bottom: 2px; }
+  .qc-value { font-size: 12px; font-weight: 600; color: #27272a; line-height: 1; }
+  .qc-value-light { font-size: 12px; font-weight: 500; color: #27272a; line-height: 1; }
+  .qc-sep { width: 1px; align-self: stretch; margin: 4px 0; background: #e4e4e7; }
+  .qc-meta-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; padding: 0 2px; }
+  .qc-meta-row span { font-size: 11px; color: #71717a; }
+  .qc-meta-row .banca { font-weight: 600; color: #52525b; }
+  .qc-meta-row .dot { color: #d4d4d8; }
+
+  .qc-divider { margin: 0 16px; height: 1px; background: #f4f4f5; }
+
+  /* Enunciado — current */
+  .qc-enunciado {
+    padding: 12px 20px 20px;
+    font-size: 15.5px; line-height: 1.8; color: #374151; text-align: left;
+  }
+
+  /* Alternatives — NO borders, just rows */
+  .qc-alternatives {
+    padding: 0 40px 16px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  .qc-alt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .qc-alt:hover { background: #faf8ff; }
+  .qc-alt.selected { background: #f5f3ff; }
+
+  .qc-alt-text {
+    font-size: 14px; line-height: 1.7; color: #374151; padding-top: 1px;
+  }
+  .qc-alt.selected .qc-alt-text { color: #1a1a1a; font-weight: 500; }
+
+  /* Footer — current */
+  .qc-footer {
+    border-top: 1px solid #f4f4f5; padding: 6px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .qc-footer-left { display: flex; align-items: center; gap: 2px; }
+  .qc-fbtn {
+    padding: 6px 8px; border-radius: 6px; font-size: 11px; color: #71717a;
+    cursor: pointer; border: none; background: transparent;
+    font-family: 'Nunito', sans-serif; font-weight: 500;
+    display: flex; align-items: center; gap: 4px; transition: all 0.12s;
+  }
+  .qc-fbtn:hover { background: #f4f4f5; color: #27272a; }
+  .qc-fbtn.active { background: #eff6ff; color: #2563eb; }
+  .qc-fbtn .count { font-weight: 600; }
+  .f-sep { width: 2px; height: 12px; background: #e4e4e7; border-radius: 1px; margin: 0 4px; }
+  .qc-submit {
+    background: #E8930C; color: white; font-size: 13px; padding: 8px 20px;
+    border-radius: 8px; font-weight: 700; border: none; cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 1px 4px rgba(232,147,12,0.25); transition: all 0.15s;
+  }
+  .qc-submit:hover { background: #D4860B; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- A — Cinza claro sutil                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-label">A — Cinza claro sutil (#c0c0c0 · 600)</div>
+<div class="card-wrap">
+  <div class="qc-banner">
+    <div class="qc-prova-box">
+      <div class="qc-prova-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><div class="qc-label">Matéria</div><div class="qc-value">Direito Penal</div></div>
+      <div class="qc-sep"></div>
+      <div><div class="qc-label">Assunto</div><div class="qc-value-light">Crimes contra a Administração Pública</div></div>
+    </div>
+    <div class="qc-meta-row">
+      <span class="banca">CESPE</span><span class="dot">·</span><span>2024</span><span class="dot">·</span><span>TRF-1ª Região</span>
+    </div>
+  </div>
+  <div class="qc-divider"></div>
+  <div class="qc-enunciado">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.</div>
+  <div class="qc-alternatives">
+    <style>
+      .let-a { font-size: 14px; font-weight: 600; color: #c0c0c0; flex-shrink: 0; width: 18px; margin-top: 2px; transition: color 0.15s; }
+      .qc-alt:hover .let-a, .qc-alt.selected .let-a { color: #7c3aed; }
+    </style>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-a">A</span><span class="qc-alt-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-a">B</span><span class="qc-alt-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-a">C</span><span class="qc-alt-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-a">D</span><span class="qc-alt-text">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-a">E</span><span class="qc-alt-text">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+  <div class="qc-footer">
+    <div class="qc-footer-left">
+      <button class="qc-fbtn">📋 Gabarito</button>
+      <button class="qc-fbtn">📊 Estatísticas</button>
+      <span class="f-sep"></span>
+      <button class="qc-fbtn active">💬 <span class="count">3</span></button>
+      <button class="qc-fbtn">✏️</button>
+      <button class="qc-fbtn">🚩</button>
+    </div>
+    <button class="qc-submit">Responder</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- B — Cinza médio bold                        -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-label">B — Cinza médio bold (#9a9a9a · 800)</div>
+<div class="card-wrap">
+  <div class="qc-banner">
+    <div class="qc-prova-box">
+      <div class="qc-prova-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><div class="qc-label">Matéria</div><div class="qc-value">Direito Penal</div></div>
+      <div class="qc-sep"></div>
+      <div><div class="qc-label">Assunto</div><div class="qc-value-light">Crimes contra a Administração Pública</div></div>
+    </div>
+    <div class="qc-meta-row">
+      <span class="banca">CESPE</span><span class="dot">·</span><span>2024</span><span class="dot">·</span><span>TRF-1ª Região</span>
+    </div>
+  </div>
+  <div class="qc-divider"></div>
+  <div class="qc-enunciado">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.</div>
+  <div class="qc-alternatives">
+    <style>
+      .let-b { font-size: 14px; font-weight: 800; color: #9a9a9a; flex-shrink: 0; width: 18px; margin-top: 2px; transition: color 0.15s; }
+      .qc-alt:hover .let-b, .qc-alt.selected .let-b { color: #7c3aed; }
+    </style>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-b">A</span><span class="qc-alt-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-b">B</span><span class="qc-alt-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-b">C</span><span class="qc-alt-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-b">D</span><span class="qc-alt-text">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-b">E</span><span class="qc-alt-text">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+  <div class="qc-footer">
+    <div class="qc-footer-left">
+      <button class="qc-fbtn">📋 Gabarito</button>
+      <button class="qc-fbtn">📊 Estatísticas</button>
+      <span class="f-sep"></span>
+      <button class="qc-fbtn active">💬 <span class="count">3</span></button>
+      <button class="qc-fbtn">✏️</button>
+      <button class="qc-fbtn">🚩</button>
+    </div>
+    <button class="qc-submit">Responder</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- C — Integrada                               -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-label">C — Integrada com o texto (#71717a · 600)</div>
+<div class="card-wrap">
+  <div class="qc-banner">
+    <div class="qc-prova-box">
+      <div class="qc-prova-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><div class="qc-label">Matéria</div><div class="qc-value">Direito Penal</div></div>
+      <div class="qc-sep"></div>
+      <div><div class="qc-label">Assunto</div><div class="qc-value-light">Crimes contra a Administração Pública</div></div>
+    </div>
+    <div class="qc-meta-row">
+      <span class="banca">CESPE</span><span class="dot">·</span><span>2024</span><span class="dot">·</span><span>TRF-1ª Região</span>
+    </div>
+  </div>
+  <div class="qc-divider"></div>
+  <div class="qc-enunciado">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.</div>
+  <div class="qc-alternatives">
+    <style>
+      .let-c { font-size: 14px; font-weight: 600; color: #71717a; flex-shrink: 0; width: 18px; margin-top: 2px; transition: color 0.15s; }
+      .qc-alt:hover .let-c, .qc-alt.selected .let-c { color: #7c3aed; }
+    </style>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-c">A</span><span class="qc-alt-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-c">B</span><span class="qc-alt-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-c">C</span><span class="qc-alt-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-c">D</span><span class="qc-alt-text">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="let-c">E</span><span class="qc-alt-text">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+  <div class="qc-footer">
+    <div class="qc-footer-left">
+      <button class="qc-fbtn">📋 Gabarito</button>
+      <button class="qc-fbtn">📊 Estatísticas</button>
+      <span class="f-sep"></span>
+      <button class="qc-fbtn active">💬 <span class="count">3</span></button>
+      <button class="qc-fbtn">✏️</button>
+      <button class="qc-fbtn">🚩</button>
+    </div>
+    <button class="qc-submit">Responder</button>
+  </div>
+</div>
+
+</body>
+</html>

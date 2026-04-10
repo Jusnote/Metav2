@@ -1,0 +1,298 @@
+<h2>Enunciado + Alternativas + Footer — Redesign</h2>
+<p class="subtitle">Atual vs 3 direções minimalistas. Foco em respiração, tipografia e clareza.</p>
+
+<div class="cards">
+  <!-- Current -->
+  <div class="card" data-choice="current" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;">
+        <div style="text-align:center;font-size:10px;color:#a1a1aa;font-weight:600;margin-bottom:8px;">ATUAL</div>
+        <div style="background:white;border-radius:12px;border:1px solid #e4e4e7;overflow:hidden;max-width:440px;margin:0 auto;">
+          <!-- Header (stays) -->
+          <div style="padding:8px 12px;border-bottom:1px solid #f4f4f5;">
+            <div style="font-size:8px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+            <div style="font-size:7px;color:#a1a1aa;">CESPE · 2024 · TRF-1</div>
+          </div>
+          <!-- Enunciado — current: tight, prose-sm -->
+          <div style="padding:12px 16px 16px;font-family:Nunito,sans-serif;">
+            <div style="font-size:12px;line-height:1.8;color:#374151;text-align:left;">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue o item que se segue. O peculato, em sua modalidade culposa, está previsto no art. 312, §2º, do CP.</div>
+          </div>
+          <!-- Alternativas — current: px-10, tight spacing -->
+          <div style="padding:0 28px 12px;">
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid #e4e4e7;margin-bottom:1px;cursor:pointer;">
+              <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #d4d4d8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#71717a;flex-shrink:0;">A</span>
+              <span style="font-size:11px;color:#374151;font-family:Nunito,sans-serif;line-height:1.7;">Peculato admite forma culposa, prevista no §2º do art. 312.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid #e4e4e7;margin-bottom:1px;">
+              <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #d4d4d8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#71717a;flex-shrink:0;">B</span>
+              <span style="font-size:11px;color:#374151;font-family:Nunito,sans-serif;line-height:1.7;">Prevaricação exige dolo específico de satisfazer interesse pessoal.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid #e4e4e7;margin-bottom:1px;">
+              <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #d4d4d8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#71717a;flex-shrink:0;">C</span>
+              <span style="font-size:11px;color:#374151;font-family:Nunito,sans-serif;line-height:1.7;">Concussão é crime formal que se consuma com a exigência.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid #e4e4e7;margin-bottom:1px;">
+              <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #d4d4d8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#71717a;flex-shrink:0;">D</span>
+              <span style="font-size:11px;color:#374151;font-family:Nunito,sans-serif;line-height:1.7;">Corrupção passiva exige efetiva obtenção da vantagem.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid #e4e4e7;">
+              <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #d4d4d8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#71717a;flex-shrink:0;">E</span>
+              <span style="font-size:11px;color:#374151;font-family:Nunito,sans-serif;line-height:1.7;">Excesso de exação é forma qualificada de concussão.</span>
+            </div>
+          </div>
+          <!-- Footer — current: cramped -->
+          <div style="border-top:1px solid #f4f4f5;padding:6px 12px;display:flex;align-items:center;gap:3px;">
+            <div style="padding:4px 6px;background:#f4f4f5;border-radius:4px;font-size:9px;color:#52525b;">📋</div>
+            <div style="padding:4px 6px;background:#f4f4f5;border-radius:4px;font-size:9px;color:#52525b;">📊</div>
+            <div style="padding:4px 6px;background:#ede9fe;border-radius:4px;font-size:9px;color:#7c3aed;">💬 3</div>
+            <div style="padding:4px 6px;border-radius:4px;font-size:9px;color:#a1a1aa;">✏️</div>
+            <div style="padding:4px 6px;border-radius:4px;font-size:9px;color:#a1a1aa;">🚩</div>
+            <div style="flex:1;"></div>
+            <div style="background:#E8930C;color:white;font-size:10px;padding:6px 16px;border-radius:8px;font-weight:600;">Responder</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;text-align:center;">
+          <span style="font-size:9px;color:#ef4444;background:#fef2f2;padding:2px 8px;border-radius:4px;">Apertado, pouca respiração, bordas em tudo</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Atual</h3>
+      <p>Bordas em cada alternativa, padding apertado (px-10), espaço entre alternativas quase zero (space-y-px), letra pequena nos botões do footer.</p>
+    </div>
+  </div>
+
+  <!-- Option A: Breathing -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="border-color:#7c3aed;box-shadow:0 0 0 2px rgba(124,58,237,0.12);">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;">
+        <div style="text-align:center;font-size:10px;color:#7c3aed;font-weight:600;margin-bottom:8px;">A — RESPIRA ⭐</div>
+        <div style="background:white;border-radius:16px;border:1px solid #f0f0f0;overflow:hidden;max-width:440px;margin:0 auto;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <!-- Header (stays) -->
+          <div style="padding:10px 16px;border-bottom:1px solid #f4f4f5;">
+            <div style="font-size:8px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+            <div style="font-size:7px;color:#a1a1aa;">CESPE · 2024 · TRF-1</div>
+          </div>
+
+          <!-- Enunciado — generous padding, larger line-height -->
+          <div style="padding:20px 24px 24px;font-family:Nunito,sans-serif;">
+            <div style="font-size:15px;line-height:2;color:#27272a;text-align:left;letter-spacing:-0.01em;">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue o item que se segue. O peculato, em sua modalidade culposa, está previsto no art. 312, §2º, do CP.</div>
+          </div>
+
+          <!-- Alternativas — no borders, hover highlight, generous gap -->
+          <div style="padding:0 20px 20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:4px;cursor:pointer;transition:background 0.15s;background:#fafafa;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='#fafafa'">
+              <span style="width:28px;height:28px;border-radius:8px;background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">A</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:2px;">Peculato admite forma culposa, prevista no §2º do art. 312.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:4px;cursor:pointer;background:transparent;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='transparent'">
+              <span style="width:28px;height:28px;border-radius:8px;background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">B</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:2px;">Prevaricação exige dolo específico de satisfazer interesse pessoal.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:4px;cursor:pointer;background:transparent;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='transparent'">
+              <span style="width:28px;height:28px;border-radius:8px;background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">C</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:2px;">Concussão é crime formal que se consuma com a exigência.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:4px;cursor:pointer;background:transparent;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='transparent'">
+              <span style="width:28px;height:28px;border-radius:8px;background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">D</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:2px;">Corrupção passiva exige efetiva obtenção da vantagem.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;background:transparent;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='transparent'">
+              <span style="width:28px;height:28px;border-radius:8px;background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">E</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:2px;">Excesso de exação é forma qualificada de concussão.</span>
+            </div>
+          </div>
+
+          <!-- Footer — clean, spaced -->
+          <div style="border-top:1px solid #f4f4f5;padding:10px 20px;display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;display:flex;align-items:center;gap:2px;">
+              <div style="padding:8px 10px;border-radius:8px;font-size:11px;color:#71717a;transition:background 0.15s;cursor:pointer;" onmouseover="this.style.background='#f4f4f5'" onmouseout="this.style.background='transparent'">📋</div>
+              <div style="padding:8px 10px;border-radius:8px;font-size:11px;color:#71717a;cursor:pointer;" onmouseover="this.style.background='#f4f4f5'" onmouseout="this.style.background='transparent'">📊</div>
+              <div style="padding:8px 10px;border-radius:8px;font-size:11px;color:#7c3aed;background:#f5f3ff;cursor:pointer;">💬 <span style="font-size:10px;font-weight:600;">3</span></div>
+            </div>
+            <div style="background:#18181b;color:white;font-size:12px;padding:9px 24px;border-radius:10px;font-weight:600;letter-spacing:-0.01em;">Responder</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;text-align:center;">
+          <span style="font-size:9px;color:#22c55e;background:#f0fdf4;padding:2px 8px;border-radius:4px;">Sem bordas, mais espaço, letra maior, hover suave</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Respira ⭐</h3>
+      <p>Sem bordas nas alternativas (só hover lilás). Letra do enunciado 15px line-height 2. Alternativas 14px. Letra em rounded square. Padding generoso. Botão preto elegante.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Ultra-minimal -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;">
+        <div style="text-align:center;font-size:10px;color:#52525b;font-weight:600;margin-bottom:8px;">B — ULTRA-MINIMAL</div>
+        <div style="background:white;border-radius:16px;border:1px solid #f0f0f0;overflow:hidden;max-width:440px;margin:0 auto;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <!-- Header -->
+          <div style="padding:10px 16px;border-bottom:1px solid #f4f4f5;">
+            <div style="font-size:8px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+            <div style="font-size:7px;color:#a1a1aa;">CESPE · 2024 · TRF-1</div>
+          </div>
+
+          <!-- Enunciado — same generous space -->
+          <div style="padding:20px 24px 28px;font-family:Nunito,sans-serif;">
+            <div style="font-size:15px;line-height:2;color:#27272a;text-align:left;">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue o item que se segue. O peculato, em sua modalidade culposa, está previsto no art. 312, §2º, do CP.</div>
+          </div>
+
+          <!-- Alternativas — just text, letter as prefix, no boxes -->
+          <div style="padding:0 24px 24px;font-family:Nunito,sans-serif;">
+            <div style="padding:10px 0;border-bottom:1px solid #fafafa;cursor:pointer;display:flex;gap:10px;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
+              <span style="font-size:13px;font-weight:700;color:#a1a1aa;flex-shrink:0;width:18px;">A</span>
+              <span style="font-size:14px;color:#3f3f46;line-height:1.7;">Peculato admite forma culposa, prevista no §2º do art. 312.</span>
+            </div>
+            <div style="padding:10px 0;border-bottom:1px solid #fafafa;cursor:pointer;display:flex;gap:10px;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
+              <span style="font-size:13px;font-weight:700;color:#a1a1aa;flex-shrink:0;width:18px;">B</span>
+              <span style="font-size:14px;color:#3f3f46;line-height:1.7;">Prevaricação exige dolo específico de satisfazer interesse pessoal.</span>
+            </div>
+            <div style="padding:10px 0;border-bottom:1px solid #fafafa;cursor:pointer;display:flex;gap:10px;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
+              <span style="font-size:13px;font-weight:700;color:#a1a1aa;flex-shrink:0;width:18px;">C</span>
+              <span style="font-size:14px;color:#3f3f46;line-height:1.7;">Concussão é crime formal que se consuma com a exigência.</span>
+            </div>
+            <div style="padding:10px 0;border-bottom:1px solid #fafafa;cursor:pointer;display:flex;gap:10px;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
+              <span style="font-size:13px;font-weight:700;color:#a1a1aa;flex-shrink:0;width:18px;">D</span>
+              <span style="font-size:14px;color:#3f3f46;line-height:1.7;">Corrupção passiva exige efetiva obtenção da vantagem.</span>
+            </div>
+            <div style="padding:10px 0;cursor:pointer;display:flex;gap:10px;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
+              <span style="font-size:13px;font-weight:700;color:#a1a1aa;flex-shrink:0;width:18px;">E</span>
+              <span style="font-size:14px;color:#3f3f46;line-height:1.7;">Excesso de exação é forma qualificada de concussão.</span>
+            </div>
+          </div>
+
+          <!-- Footer — minimal -->
+          <div style="border-top:1px solid #f4f4f5;padding:10px 20px;display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;display:flex;align-items:center;gap:2px;">
+              <div style="padding:8px 10px;font-size:11px;color:#a1a1aa;cursor:pointer;">📋</div>
+              <div style="padding:8px 10px;font-size:11px;color:#a1a1aa;cursor:pointer;">📊</div>
+              <div style="padding:8px 10px;font-size:11px;color:#7c3aed;">💬 <span style="font-size:10px;font-weight:600;">3</span></div>
+            </div>
+            <div style="background:#18181b;color:white;font-size:12px;padding:9px 24px;border-radius:10px;font-weight:600;">Responder</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;text-align:center;">
+          <span style="font-size:9px;color:#f59e0b;background:#fffbeb;padding:2px 8px;border-radius:4px;">Radical — sem círculos, sem boxes, só texto</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Ultra-minimal</h3>
+      <p>Letra como prefixo cinza, sem círculo, sem box, separador ultrafino entre alternativas. Quase só tipografia. Risco: pode parecer "vazio" ou difícil de clicar.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Soft cards -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;">
+        <div style="text-align:center;font-size:10px;color:#52525b;font-weight:600;margin-bottom:8px;">C — SOFT CARDS</div>
+        <div style="background:white;border-radius:16px;border:1px solid #f0f0f0;overflow:hidden;max-width:440px;margin:0 auto;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <!-- Header -->
+          <div style="padding:10px 16px;border-bottom:1px solid #f4f4f5;">
+            <div style="font-size:8px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+            <div style="font-size:7px;color:#a1a1aa;">CESPE · 2024 · TRF-1</div>
+          </div>
+
+          <!-- Enunciado -->
+          <div style="padding:20px 24px 24px;font-family:Nunito,sans-serif;">
+            <div style="font-size:15px;line-height:2;color:#27272a;text-align:left;">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue o item que se segue. O peculato, em sua modalidade culposa, está previsto no art. 312, §2º, do CP.</div>
+          </div>
+
+          <!-- Alternativas — soft filled cards -->
+          <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;background:#fafafa;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#f5f3ff';this.style.boxShadow='0 0 0 1.5px rgba(124,58,237,0.15)'" onmouseout="this.style.background='#fafafa';this.style.boxShadow='none'">
+              <span style="width:26px;height:26px;border-radius:50%;background:white;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">A</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:1px;">Peculato admite forma culposa, prevista no §2º do art. 312.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;background:#fafafa;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#f5f3ff';this.style.boxShadow='0 0 0 1.5px rgba(124,58,237,0.15)'" onmouseout="this.style.background='#fafafa';this.style.boxShadow='none'">
+              <span style="width:26px;height:26px;border-radius:50%;background:white;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">B</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:1px;">Prevaricação exige dolo específico de satisfazer interesse pessoal.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;background:#fafafa;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#f5f3ff';this.style.boxShadow='0 0 0 1.5px rgba(124,58,237,0.15)'" onmouseout="this.style.background='#fafafa';this.style.boxShadow='none'">
+              <span style="width:26px;height:26px;border-radius:50%;background:white;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">C</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:1px;">Concussão é crime formal que se consuma com a exigência.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;background:#fafafa;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#f5f3ff';this.style.boxShadow='0 0 0 1.5px rgba(124,58,237,0.15)'" onmouseout="this.style.background='#fafafa';this.style.boxShadow='none'">
+              <span style="width:26px;height:26px;border-radius:50%;background:white;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">D</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:1px;">Corrupção passiva exige efetiva obtenção da vantagem.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;background:#fafafa;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#f5f3ff';this.style.boxShadow='0 0 0 1.5px rgba(124,58,237,0.15)'" onmouseout="this.style.background='#fafafa';this.style.boxShadow='none'">
+              <span style="width:26px;height:26px;border-radius:50%;background:white;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#71717a;flex-shrink:0;margin-top:1px;">E</span>
+              <span style="font-size:14px;color:#3f3f46;font-family:Nunito,sans-serif;line-height:1.75;padding-top:1px;">Excesso de exação é forma qualificada de concussão.</span>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="border-top:1px solid #f4f4f5;padding:10px 20px;display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;display:flex;align-items:center;gap:2px;">
+              <div style="padding:8px 10px;border-radius:8px;font-size:11px;color:#71717a;cursor:pointer;" onmouseover="this.style.background='#f4f4f5'" onmouseout="this.style.background='transparent'">📋</div>
+              <div style="padding:8px 10px;border-radius:8px;font-size:11px;color:#71717a;cursor:pointer;" onmouseover="this.style.background='#f4f4f5'" onmouseout="this.style.background='transparent'">📊</div>
+              <div style="padding:8px 10px;border-radius:8px;font-size:11px;color:#7c3aed;background:#f5f3ff;cursor:pointer;">💬 <span style="font-size:10px;font-weight:600;">3</span></div>
+            </div>
+            <div style="background:#18181b;color:white;font-size:12px;padding:9px 24px;border-radius:10px;font-weight:600;">Responder</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;text-align:center;">
+          <span style="font-size:9px;color:#3b82f6;background:#eff6ff;padding:2px 8px;border-radius:4px;">Meio-termo — cards suaves com hover ring</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Soft Cards</h3>
+      <p>Cada alternativa num card com fundo #fafafa, sem borda visível. Hover mostra ring violeta suave. Círculo branco com borda sutil. Mais acolhedor que B, menos pesado que o atual.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <h3>O que muda nas 3 opções (vs atual)</h3>
+  <table style="width:100%;font-size:12px;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #e4e4e7;">
+      <td style="padding:8px;font-weight:700;"></td>
+      <td style="padding:8px;font-weight:700;">Atual</td>
+      <td style="padding:8px;font-weight:700;">A — Respira</td>
+      <td style="padding:8px;font-weight:700;">B — Ultra</td>
+      <td style="padding:8px;font-weight:700;">C — Soft</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f4f4f5;">
+      <td style="padding:8px;font-weight:600;">Enunciado</td>
+      <td style="padding:8px;">15.5px / 1.8</td>
+      <td style="padding:8px;">15px / 2.0</td>
+      <td style="padding:8px;">15px / 2.0</td>
+      <td style="padding:8px;">15px / 2.0</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f4f4f5;">
+      <td style="padding:8px;font-weight:600;">Alternativas</td>
+      <td style="padding:8px;">11px / borda</td>
+      <td style="padding:8px;">14px / sem borda</td>
+      <td style="padding:8px;">14px / só texto</td>
+      <td style="padding:8px;">14px / card fafafa</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f4f4f5;">
+      <td style="padding:8px;font-weight:600;">Letra</td>
+      <td style="padding:8px;">Círculo c/ borda</td>
+      <td style="padding:8px;">Rounded square</td>
+      <td style="padding:8px;">Texto cinza</td>
+      <td style="padding:8px;">Círculo branco</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f4f4f5;">
+      <td style="padding:8px;font-weight:600;">Hover</td>
+      <td style="padding:8px;">—</td>
+      <td style="padding:8px;">Lilás suave</td>
+      <td style="padding:8px;">Fundo cinza</td>
+      <td style="padding:8px;">Ring violeta</td>
+    </tr>
+    <tr>
+      <td style="padding:8px;font-weight:600;">Botão</td>
+      <td style="padding:8px;">Amber #E8930C</td>
+      <td style="padding:8px;">Preto #18181b</td>
+      <td style="padding:8px;">Preto #18181b</td>
+      <td style="padding:8px;">Preto #18181b</td>
+    </tr>
+  </table>
+</div>

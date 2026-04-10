@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Editais Verticalizados</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fafafa; color:#18181b; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  .app { display:flex; height:100vh; }
+
+  /* Sidebar mínima */
+  .app-sidebar { width:60px; background:#ffffff; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:8px; border-right:1px solid #e4e4e7; }
+  .app-sidebar .logo { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:white; margin-bottom:12px; }
+  .app-sidebar .icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; color:#a1a1aa; transition:all 0.15s; }
+  .app-sidebar .icon:hover { background:#f4f4f5; color:#18181b; }
+  .app-sidebar .icon.active { background:#eef2ff; color:#6366f1; }
+
+  /* Conteudo */
+  .page { flex:1; overflow-y:auto; background:#fafafa; }
+
+  /* Header */
+  .page-header { background:#ffffff; border-bottom:1px solid #e4e4e7; padding:32px 48px 24px; }
+  .page-header-inner { max-width:1200px; margin:0 auto; }
+  .page-header h1 { font-size:26px; font-weight:800; color:#09090b; margin-bottom:4px; letter-spacing:-0.5px; }
+  .page-header h1 span { background:linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .page-header p { font-size:14px; color:#71717a; }
+
+  /* Stats strip */
+  .stats-strip { max-width:1200px; margin:0 auto; padding:20px 48px; display:flex; gap:12px; }
+  .stat-pill { display:flex; align-items:center; gap:8px; background:#ffffff; border:1px solid #e4e4e7; border-radius:10px; padding:10px 16px; }
+  .stat-pill .dot { width:8px; height:8px; border-radius:50%; }
+  .stat-pill .dot.purple { background:#6366f1; }
+  .stat-pill .dot.blue { background:#3b82f6; }
+  .stat-pill .dot.green { background:#10b981; }
+  .stat-pill .dot.amber { background:#f59e0b; }
+  .stat-pill .num { font-size:15px; font-weight:700; color:#18181b; }
+  .stat-pill .lbl { font-size:12px; color:#71717a; }
+
+  /* Search section */
+  .search-section { max-width:1200px; margin:0 auto; padding:8px 48px 0; }
+  .search-row { display:flex; gap:12px; align-items:center; margin-bottom:14px; }
+  .search-box { flex:1; position:relative; }
+  .search-box input { width:100%; background:#ffffff; border:1.5px solid #e4e4e7; border-radius:12px; padding:13px 20px 13px 44px; color:#18181b; font-size:14px; outline:none; transition:all 0.2s; font-family:inherit; }
+  .search-box input::placeholder { color:#a1a1aa; }
+  .search-box input:focus { border-color:#6366f1; box-shadow:0 0 0 3px #6366f118; }
+  .search-box .s-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#a1a1aa; font-size:15px; }
+
+  .filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:24px; }
+  .chip { padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500; background:#ffffff; border:1px solid #e4e4e7; cursor:pointer; color:#52525b; transition:all 0.15s; }
+  .chip:hover { border-color:#a1a1aa; color:#18181b; }
+  .chip.active { background:#6366f1; border-color:#6366f1; color:white; }
+  .chip-sep { width:1px; height:24px; background:#e4e4e7; margin:0 6px; align-self:center; }
+  .result-count { font-size:12px; color:#a1a1aa; align-self:center; margin-left:8px; }
+
+  /* Grid */
+  .grid-section { max-width:1200px; margin:0 auto; padding:0 48px 48px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+
+  /* Edital card */
+  .ecard { background:#ffffff; border:1px solid #e4e4e7; border-radius:14px; padding:22px; cursor:pointer; transition:all 0.2s; position:relative; }
+  .ecard:hover { border-color:#c7d2fe; box-shadow:0 4px 20px #6366f10a; transform:translateY(-1px); }
+
+  .ecard-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .ecard-sigla { font-size:20px; font-weight:800; color:#18181b; letter-spacing:-0.5px; }
+  .ecard-badge { font-size:10px; font-weight:600; padding:3px 10px; border-radius:6px; letter-spacing:0.3px; }
+  .ecard-badge.federal { background:#eef2ff; color:#6366f1; }
+  .ecard-badge.estadual { background:#eff6ff; color:#3b82f6; }
+  .ecard-badge.municipal { background:#ecfdf5; color:#059669; }
+
+  .ecard-nome { font-size:13px; color:#71717a; margin-bottom:16px; line-height:1.4; }
+
+  .ecard-bottom { display:flex; gap:20px; padding-top:14px; border-top:1px solid #f4f4f5; }
+  .ecard-stat { }
+  .ecard-stat .val { font-size:17px; font-weight:700; color:#18181b; }
+  .ecard-stat .lbl { font-size:10px; color:#a1a1aa; text-transform:uppercase; letter-spacing:0.3px; margin-top:1px; }
+
+  /* Card featured */
+  .ecard.featured { border-color:#c7d2fe; }
+  .ecard.featured::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:14px 14px 0 0; }
+
+  /* Card expandido */
+  .ecard.expanded { grid-column:1/-1; border-color:#6366f1; box-shadow:0 8px 32px #6366f115; }
+
+  .expand-area { margin-top:20px; padding-top:20px; border-top:1px solid #f4f4f5; }
+  .expand-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .expand-title { font-size:15px; font-weight:700; color:#18181b; }
+  .expand-close { width:28px; height:28px; border-radius:8px; border:1px solid #e4e4e7; background:#fafafa; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; color:#71717a; transition:all 0.15s; }
+  .expand-close:hover { background:#f4f4f5; color:#18181b; }
+
+  .cargos-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .cargo { background:#fafafa; border:1px solid #e4e4e7; border-radius:10px; padding:16px; cursor:pointer; transition:all 0.2s; }
+  .cargo:hover { border-color:#6366f1; background:#eef2ff08; }
+  .cargo-name { font-size:13px; font-weight:600; color:#18181b; margin-bottom:4px; }
+  .cargo-meta { font-size:11px; color:#a1a1aa; }
+  .cargo-cta { display:flex; align-items:center; gap:4px; font-size:11px; color:#6366f1; font-weight:600; margin-top:10px; }
+  .cargo-cta::after { content:'→'; }
+
+  /* Seção label */
+  .section-label { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .section-label h3 { font-size:13px; font-weight:600; color:#52525b; text-transform:uppercase; letter-spacing:0.5px; }
+  .section-label a { font-size:12px; color:#6366f1; font-weight:500; text-decoration:none; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <div class="app-sidebar">
+    <div class="logo">P</div>
+    <div class="icon">📄</div>
+    <div class="icon active">📋</div>
+    <div class="icon">🗂</div>
+    <div class="icon">❓</div>
+    <div class="icon">⚖️</div>
+    <div class="icon" style="margin-top:auto;">⚙️</div>
+  </div>
+
+  <div class="page">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-header-inner">
+        <h1>Editais <span>Verticalizados</span></h1>
+        <p>Selecione seu concurso e estude o conteúdo programático completo, verticalizado por cargo.</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-strip">
+      <div class="stat-pill"><div class="dot purple"></div><div class="num">690</div><div class="lbl">editais</div></div>
+      <div class="stat-pill"><div class="dot blue"></div><div class="num">3.420</div><div class="lbl">cargos</div></div>
+      <div class="stat-pill"><div class="dot green"></div><div class="num">28.165</div><div class="lbl">disciplinas</div></div>
+      <div class="stat-pill"><div class="dot amber"></div><div class="num">1.16M</div><div class="lbl">tópicos</div></div>
+    </div>
+
+    <!-- Search + Filtros -->
+    <div class="search-section">
+      <div class="search-row">
+        <div class="search-box">
+          <span class="s-icon">🔍</span>
+          <input placeholder="Buscar por nome, sigla ou órgão..." />
+        </div>
+      </div>
+      <div class="filters">
+        <div class="chip active">Todos</div>
+        <div class="chip">Federal</div>
+        <div class="chip">Estadual</div>
+        <div class="chip">Municipal</div>
+        <div class="chip-sep"></div>
+        <div class="chip">Concurso Público</div>
+        <div class="chip">Militar</div>
+        <div class="chip">OAB</div>
+        <div class="chip">Residência</div>
+        <span class="result-count">690 resultados</span>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid-section">
+      <div class="section-label">
+        <h3>🔥 Em destaque</h3>
+        <a>Ver todos →</a>
+      </div>
+
+      <div class="grid">
+        <!-- PF expandido -->
+        <div class="ecard featured expanded">
+          <div class="ecard-top">
+            <div class="ecard-sigla">PF</div>
+            <div class="ecard-badge federal">Federal</div>
+          </div>
+          <div class="ecard-nome">Polícia Federal</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">41</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">356</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">19.609</div><div class="lbl">Tópicos</div></div>
+          </div>
+          <div class="expand-area">
+            <div class="expand-header">
+              <div class="expand-title">Selecione o cargo</div>
+              <button class="expand-close">✕</button>
+            </div>
+            <div class="cargos-grid">
+              <div class="cargo">
+                <div class="cargo-name">Delegado de Polícia</div>
+                <div class="cargo-meta">24 disciplinas • 455 tópicos</div>
+                <div class="cargo-cta">Estudar</div>
+              </div>
+              <div class="cargo">
+                <div class="cargo-name">Agente de Polícia</div>
+                <div class="cargo-meta">18 disciplinas • 380 tópicos</div>
+                <div class="cargo-cta">Estudar</div>
+              </div>
+              <div class="cargo">
+                <div class="cargo-name">Escrivão de Polícia</div>
+                <div class="cargo-meta">16 disciplinas • 320 tópicos</div>
+                <div class="cargo-cta">Estudar</div>
+              </div>
+              <div class="cargo">
+                <div class="cargo-name">Perito Criminal</div>
+                <div class="cargo-meta">12 disciplinas • 280 tópicos</div>
+                <div class="cargo-cta">Estudar</div>
+              </div>
+              <div class="cargo">
+                <div class="cargo-name">Papiloscopista</div>
+                <div class="cargo-meta">14 disciplinas • 310 tópicos</div>
+                <div class="cargo-cta">Estudar</div>
+              </div>
+              <div class="cargo">
+                <div class="cargo-name">Agente Administrativo</div>
+                <div class="cargo-meta">8 disciplinas • 150 tópicos</div>
+                <div class="cargo-cta">Estudar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards normais -->
+        <div class="ecard featured">
+          <div class="ecard-top">
+            <div class="ecard-sigla">PRF</div>
+            <div class="ecard-badge federal">Federal</div>
+          </div>
+          <div class="ecard-nome">Polícia Rodoviária Federal</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">2</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">24</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">455</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-top">
+            <div class="ecard-sigla">TJ-SP</div>
+            <div class="ecard-badge estadual">Estadual</div>
+          </div>
+          <div class="ecard-nome">Tribunal de Justiça do Estado de São Paulo</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">18</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">152</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">8.430</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard featured">
+          <div class="ecard-top">
+            <div class="ecard-sigla">MPU</div>
+            <div class="ecard-badge federal">Federal</div>
+          </div>
+          <div class="ecard-nome">Ministério Público da União</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">37</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">316</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">19.307</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-top">
+            <div class="ecard-sigla">TRF-1</div>
+            <div class="ecard-badge federal">Federal</div>
+          </div>
+          <div class="ecard-nome">Tribunal Regional Federal da 1ª Região</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">33</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">319</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">10.898</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-top">
+            <div class="ecard-sigla">INSS</div>
+            <div class="ecard-badge federal">Federal</div>
+          </div>
+          <div class="ecard-nome">Instituto Nacional do Seguro Social</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">2</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">28</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">1.240</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-top">
+            <div class="ecard-sigla">CM-GOI</div>
+            <div class="ecard-badge municipal">Municipal</div>
+          </div>
+          <div class="ecard-nome">Câmara Municipal de Goiânia</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">32</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">186</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">7.820</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-top">
+            <div class="ecard-sigla">SEFAZ-BA</div>
+            <div class="ecard-badge estadual">Estadual</div>
+          </div>
+          <div class="ecard-nome">Secretaria da Fazenda da Bahia</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">3</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">42</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">2.180</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-top">
+            <div class="ecard-sigla">PC-DF</div>
+            <div class="ecard-badge estadual">Estadual</div>
+          </div>
+          <div class="ecard-nome">Polícia Civil do Distrito Federal</div>
+          <div class="ecard-bottom">
+            <div class="ecard-stat"><div class="val">8</div><div class="lbl">Cargos</div></div>
+            <div class="ecard-stat"><div class="val">96</div><div class="lbl">Disciplinas</div></div>
+            <div class="ecard-stat"><div class="val">4.520</div><div class="lbl">Tópicos</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

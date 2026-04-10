@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Papiro — Design Final v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+
+  .page-title {
+    text-align: center; padding: 28px 20px 6px;
+    font-size: 20px; font-weight: 700; color: #1e293b;
+  }
+  .page-subtitle {
+    text-align: center; padding: 0 20px 24px;
+    font-size: 13px; color: #64748b;
+  }
+
+  /* ---- Simulated browser window ---- */
+  .browser-window {
+    max-width: 1100px; margin: 0 auto 32px; padding: 0 16px;
+  }
+  .browser-chrome {
+    background: #f1f3f5; border-radius: 10px 10px 0 0;
+    padding: 10px 16px; display: flex; align-items: center; gap: 8px;
+    border: 1px solid #ddd; border-bottom: none;
+  }
+  .browser-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .browser-dot.r { background: #ff5f57; }
+  .browser-dot.y { background: #ffbd2e; }
+  .browser-dot.g { background: #28c840; }
+  .browser-url {
+    flex: 1; background: #fff; border-radius: 6px; padding: 5px 12px;
+    font-size: 11px; color: #94a3b8; margin-left: 8px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .browser-body {
+    border: 1px solid #ddd; border-top: none;
+    border-radius: 0 0 10px 10px; overflow: hidden;
+    background: #fff;
+  }
+
+  /* ---- Accent stripe ---- */
+  .accent-stripe {
+    height: 3px;
+    background: linear-gradient(90deg, #1E40AF, #3B82F6, #1E40AF);
+  }
+
+  /* ---- Centered container ---- */
+  .bar-container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ---- Top Bar (Row 1) ---- */
+  .top-bar-bg {
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .top-bar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 0;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; margin-right: 8px; }
+  .logo-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px 3px 7px 3px;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 6px rgba(30,64,175,0.25);
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: #1e293b; letter-spacing: -0.3px; }
+
+  .search-box {
+    flex: 1; max-width: 380px;
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px;
+    padding: 7px 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .search-text { color: #94a3b8; font-size: 12px; }
+  .search-kbd {
+    margin-left: auto; background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 4px; padding: 1px 6px; font-size: 10px; color: #94a3b8;
+  }
+
+  .top-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .btn-cta {
+    font-size: 11px; font-weight: 600; padding: 6px 16px;
+    background: #1E40AF; color: #fff; border-radius: 6px; border: none;
+    box-shadow: 0 1px 4px rgba(30,64,175,0.2); cursor: pointer;
+  }
+  .btn-outline {
+    font-size: 11px; padding: 6px 14px; color: #475569;
+    border: 1px solid #e2e8f0; border-radius: 6px; background: #fff;
+    cursor: pointer;
+  }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: 7px;
+    border: 1px solid #e2e8f0; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #64748b; font-size: 14px;
+  }
+  .user-area { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .user-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .user-avatar span { color: #fff; font-size: 11px; font-weight: 700; }
+  .user-name { font-size: 12px; color: #475569; }
+
+  /* ---- Nav Bar (Row 2) ---- */
+  .nav-bar-bg {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .nav-bar {
+    display: flex; align-items: center;
+    padding: 0;
+  }
+  .nav-brand {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    color: #1E40AF; padding: 11px 12px 11px 0; text-transform: uppercase;
+  }
+  .nav-dot { color: #d1d5db; font-size: 6px; margin-right: 4px; }
+  .nav-item {
+    font-size: 13px; padding: 11px 13px; color: #64748b;
+    cursor: pointer; position: relative; white-space: nowrap;
+    text-decoration: none; display: inline-block; transition: color 0.15s;
+  }
+  .nav-item:hover { color: #1e293b; }
+  .nav-item.active { color: #1e293b; font-weight: 500; }
+  .nav-item.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 13px; right: 13px;
+    height: 2px; background: #1E40AF; border-radius: 2px 2px 0 0;
+  }
+  .nav-arrow { font-size: 9px; margin-left: 3px; color: #94a3b8; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; }
+
+  /* Dropdown */
+  .dropdown-wrap { position: relative; }
+  .dropdown {
+    position: absolute; top: 100%; right: 0; margin-top: 6px;
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    min-width: 170px; z-index: 10;
+  }
+  .dropdown-item {
+    padding: 8px 12px; font-size: 12px; color: #475569;
+    border-radius: 6px; cursor: pointer;
+  }
+  .dropdown-item:hover { background: #f8fafc; }
+  .dropdown-sep { height: 1px; background: #e2e8f0; margin: 4px 8px; }
+  .dropdown-item.mod { color: #7c3aed; }
+
+  /* ---- Content ---- */
+  .content-bg { background: #f8fafc; }
+  .content-area { padding: 24px 0; min-height: 280px; }
+  .breadcrumb { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .stat {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .stat-label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+  .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-sub { font-size: 10px; color: #22c55e; margin-top: 2px; }
+
+  .table-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .table-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .trow {
+    display: flex; align-items: center; padding: 9px 0;
+    border-bottom: 1px solid #f1f5f9; font-size: 12px; color: #475569;
+  }
+  .trow:last-child { border: none; }
+  .tbadge {
+    font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: auto;
+  }
+  .b-new { background: #dbeafe; color: #1E40AF; }
+  .b-rev { background: #fef3c7; color: #92400e; }
+  .b-ok { background: #dcfce7; color: #166534; }
+
+  /* Side breathing annotation */
+  .breathing-marker {
+    position: absolute; top: 0; bottom: 0; width: 40px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .breathing-marker.left { left: 0; }
+  .breathing-marker.right { right: 0; }
+  .breathing-line {
+    width: 1px; height: 80%; border-left: 1px dashed #3B82F6; opacity: 0.3;
+  }
+  .breathing-label {
+    position: absolute; top: 8px; font-size: 9px; color: #3B82F6;
+    writing-mode: vertical-lr; text-orientation: mixed; opacity: 0.5;
+    letter-spacing: 1px;
+  }
+
+  /* Annotations */
+  .notes {
+    max-width: 1100px; margin: 12px auto 40px; padding: 0 16px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .note {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 12px 14px; font-size: 11px; color: #475569; line-height: 1.5;
+  }
+  .note strong { color: #1e293b; }
+  .note-tag {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .tag-layout { background: #dbeafe; color: #1E40AF; }
+  .tag-color { background: #ede9fe; color: #7c3aed; }
+  .tag-ux { background: #dcfce7; color: #166534; }
+</style>
+</head>
+<body>
+
+<div class="page-title">Design Final — Navegação Papiro</div>
+<div class="page-subtitle">Conteúdo centralizado com respiro lateral · Royal Blue · Desktop</div>
+
+<div class="browser-window">
+  <!-- Browser chrome -->
+  <div class="browser-chrome">
+    <div class="browser-dot r"></div>
+    <div class="browser-dot y"></div>
+    <div class="browser-dot g"></div>
+    <div class="browser-url">papiro.app</div>
+  </div>
+
+  <!-- Browser body -->
+  <div class="browser-body" style="position:relative;">
+    <!-- Accent stripe -->
+    <div class="accent-stripe"></div>
+
+    <!-- Row 1: Top Bar -->
+    <div class="top-bar-bg">
+      <div class="bar-container">
+        <div class="top-bar">
+          <div class="logo">
+            <div class="logo-icon"></div>
+            <span class="logo-text">Papiro</span>
+          </div>
+          <div class="search-box">
+            <span style="color:#94a3b8;">&#128269;</span>
+            <span class="search-text">Buscar disciplinas, concursos e provas</span>
+            <span class="search-kbd">Ctrl K</span>
+          </div>
+          <div class="top-actions">
+            <button class="btn-cta">Upgrade</button>
+            <button class="btn-outline">Mesa de estudos</button>
+            <div class="icon-btn">&#128276;</div>
+            <div class="user-area">
+              <div class="user-avatar"><span>A</span></div>
+              <span class="user-name">Aldemir &#9662;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Nav Bar -->
+    <div class="nav-bar-bg">
+      <div class="bar-container">
+        <div class="nav-bar">
+          <span class="nav-brand">PAPIRO</span>
+          <span class="nav-dot">&#9679;</span>
+          <a class="nav-item active">Início</a>
+          <a class="nav-item">Flashcards<span class="nav-arrow">&#9662;</span></a>
+          <a class="nav-item">Questões</a>
+          <a class="nav-item">Lei Seca</a>
+          <a class="nav-item">Cadernos</a>
+          <a class="nav-item">Editais</a>
+          <div class="nav-right">
+            <a class="nav-item">Cronograma</a>
+            <div class="dropdown-wrap">
+              <a class="nav-item">Mais<span class="nav-arrow">&#9662;</span></a>
+              <div class="dropdown">
+                <div class="dropdown-item">Resumos</div>
+                <div class="dropdown-item">Editor</div>
+                <div class="dropdown-sep"></div>
+                <div class="dropdown-item mod">Moderação</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-bg">
+      <div class="bar-container">
+        <div class="content-area">
+          <div class="breadcrumb">Home / <strong>Dashboard</strong></div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Cards para revisar</div>
+              <div class="stat-val">42</div>
+              <div class="stat-sub">&#8593; 8 novos hoje</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Questões resolvidas</div>
+              <div class="stat-val">1.284</div>
+              <div class="stat-sub">&#8593; 73% acerto</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Artigos lidos</div>
+              <div class="stat-val">356</div>
+              <div class="stat-sub">&#8593; 12 esta semana</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <h3>Próximas revisões</h3>
+            <div class="trow"><span>Direito Constitucional — Art. 5º</span><span class="tbadge b-rev">Revisar</span></div>
+            <div class="trow"><span>Direito Administrativo — Licitações</span><span class="tbadge b-new">Novo</span></div>
+            <div class="trow"><span>Direito Penal — Crimes contra a pessoa</span><span class="tbadge b-ok">Concluído</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notes -->
+<div class="notes">
+  <div class="note">
+    <div class="note-tag tag-layout">Layout</div><br>
+    <strong>Respiro lateral:</strong> Conteúdo dentro de container max-width ~1140px com padding 40px nos lados. Barras brancas vão de ponta a ponta, mas o conteúdo dentro delas fica centralizado.
+  </div>
+  <div class="note">
+    <div class="note-tag tag-layout">Layout</div><br>
+    <strong>2 barras fixas:</strong> Top bar (logo+busca+ações) + Nav bar (links). Ambas com fundo branco e border sutil. Accent stripe de 3px no topo.
+  </div>
+  <div class="note">
+    <div class="note-tag tag-ux">UX</div><br>
+    <strong>Organização:</strong> 6 itens principais visíveis + Cronograma à direita + "Mais" dropdown com Resumos, Editor e Moderação.
+  </div>
+  <div class="note">
+    <div class="note-tag tag-color">Cor</div><br>
+    <strong>Royal Blue #1E40AF:</strong> Accent stripe, underline ativo, botão Upgrade, logo, avatar. Resto em cinzas neutros.
+  </div>
+  <div class="note">
+    <div class="note-tag tag-ux">UX</div><br>
+    <strong>Mobile:</strong> Hamburger overlay fullscreen com slide-in. Logo + ícone na barra compacta.
+  </div>
+  <div class="note">
+    <div class="note-tag tag-ux">UX</div><br>
+    <strong>Study mode:</strong> Barras somem completamente em /flashcards?study, mantendo foco total no estudo.
+  </div>
+</div>
+
+</body>
+</html>

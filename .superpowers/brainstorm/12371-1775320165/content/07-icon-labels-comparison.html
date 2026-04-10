@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sidebar — Icon Only vs Icon + Label</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+    padding: 32px;
+    color: #333;
+  }
+
+  h1 { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #888; margin-bottom: 36px; }
+
+  .state-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #94a3b8; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .state-label .tag {
+    font-size: 9px; padding: 2px 7px; border-radius: 4px;
+    background: #DBEAFE; color: #1E40AF; letter-spacing: 0.5px;
+  }
+
+  .two-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  /* ── Shared ── */
+  .app-shell {
+    display: flex;
+    height: 580px;
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 10px 36px rgba(0,0,0,0.06);
+  }
+
+  .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 8px rgba(30,64,175,0.3);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 13px; font-weight: 700;
+  }
+
+  .separator-h { width: 28px; height: 1px; background: rgba(0,0,0,0.06); margin: 4px auto; }
+
+  .glow-sep {
+    width: 1px; align-self: stretch; position: relative;
+    background: linear-gradient(180deg, transparent 5%, #dbeafe 30%, #93c5fd 50%, #dbeafe 70%, transparent 95%);
+    opacity: 0.6;
+  }
+  .glow-sep::after {
+    content: ''; position: absolute; top: 0; left: -4px;
+    width: 9px; height: 100%;
+    background: linear-gradient(180deg, transparent 5%, rgba(59,130,246,0.04) 30%, rgba(59,130,246,0.06) 50%, rgba(59,130,246,0.04) 70%, transparent 95%);
+    pointer-events: none;
+  }
+
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 6px rgba(30,64,175,0.25);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 11px; font-weight: 600;
+  }
+
+  .content-area {
+    flex: 1; padding: 24px; background: #f8f9fb; overflow: hidden;
+  }
+  .content-header { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .content-sub { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+  .mock-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .mock-card {
+    background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 10px; padding: 14px;
+  }
+  .mock-card-title { font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+  .mock-card-line { height: 5px; border-radius: 3px; background: #f1f5f9; margin-bottom: 4px; }
+  .mock-card-accent {
+    display: inline-block; padding: 2px 7px; border-radius: 4px;
+    background: #DBEAFE; color: #1E40AF;
+    font-size: 9px; font-weight: 600; margin-top: 5px;
+  }
+
+  /* ──── OPTION A: Current (56px icon only) ──── */
+  .rail-narrow {
+    width: 56px; min-width: 56px;
+    background: #fff;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; gap: 3px;
+  }
+
+  .nav-btn-sm {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; cursor: pointer;
+  }
+  .nav-btn-sm svg { width: 18px; height: 18px; stroke-width: 1.75; fill: none; }
+  .nav-btn-sm.active {
+    background: rgba(219,234,254,0.8);
+    box-shadow: 0 1px 4px rgba(30,64,175,0.08);
+  }
+  .nav-btn-sm.active svg { stroke: #1E40AF; }
+  .nav-btn-sm.active::before {
+    content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%);
+    width: 2.5px; height: 18px;
+    background: linear-gradient(180deg, #1E40AF, #3B82F6);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-btn-sm.inactive svg { stroke: #8b8fa3; }
+
+  /* ──── OPTION B: Wide (76px icon + label) ──── */
+  .rail-wide {
+    width: 76px; min-width: 76px;
+    background: #fff;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; gap: 2px;
+  }
+
+  .nav-btn-lg {
+    width: 60px; padding: 6px 4px;
+    border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    position: relative; cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .nav-btn-lg:hover { background: rgba(0,0,0,0.03); }
+  .nav-btn-lg svg { width: 18px; height: 18px; stroke-width: 1.75; fill: none; }
+  .nav-btn-lg .label {
+    font-size: 9px; font-weight: 500; letter-spacing: 0.1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 56px; text-align: center;
+  }
+
+  .nav-btn-lg.active {
+    background: rgba(219,234,254,0.8);
+    box-shadow: 0 1px 4px rgba(30,64,175,0.08);
+  }
+  .nav-btn-lg.active svg { stroke: #1E40AF; }
+  .nav-btn-lg.active .label { color: #1E40AF; font-weight: 600; }
+  .nav-btn-lg.active::before {
+    content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%);
+    width: 2.5px; height: 24px;
+    background: linear-gradient(180deg, #1E40AF, #3B82F6);
+    border-radius: 0 3px 3px 0;
+  }
+
+  .nav-btn-lg.inactive svg { stroke: #8b8fa3; }
+  .nav-btn-lg.inactive .label { color: #9ca3af; }
+
+  /* Mod violet */
+  .nav-btn-lg.mod-active { background: rgba(139,92,246,0.12); }
+  .nav-btn-lg.mod-active svg { stroke: #7C3AED; }
+  .nav-btn-lg.mod-active .label { color: #7C3AED; font-weight: 600; }
+
+  .choice-note {
+    margin-top: 12px;
+    font-size: 12px; color: #6b7280; line-height: 1.5;
+  }
+  .choice-note strong { color: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<h1>Icon Only vs Icon + Label</h1>
+<p class="page-sub">Comparação lado a lado com Royal Sapphire + SoftGlow</p>
+
+<div class="two-up">
+
+<!-- ═══ A: Current (56px) ═══ -->
+<div>
+  <div class="state-label">Atual <span class="tag">56px — icon only</span></div>
+  <div class="app-shell">
+    <div class="rail-narrow">
+      <div class="logo" style="margin-bottom:14px;">M</div>
+      <div class="nav-btn-sm active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+      <div class="separator-h"></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path stroke="currentColor" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+      <div style="flex:1;"></div>
+      <div class="nav-btn-sm inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+      <div class="avatar">A</div>
+    </div>
+    <div class="glow-sep"></div>
+    <div class="content-area">
+      <div class="content-header">Dashboard</div>
+      <div class="content-sub">Bem-vindo, Aldemir</div>
+      <div class="mock-cards">
+        <div class="mock-card"><div class="mock-card-title">Flashcards</div><div class="mock-card-line"></div><div class="mock-card-accent">42 cards</div></div>
+        <div class="mock-card"><div class="mock-card-title">Questões</div><div class="mock-card-line"></div><div class="mock-card-accent">18 pendentes</div></div>
+        <div class="mock-card"><div class="mock-card-title">Lei Seca</div><div class="mock-card-line"></div><div class="mock-card-accent">3 leis</div></div>
+        <div class="mock-card"><div class="mock-card-title">Cronograma</div><div class="mock-card-line"></div><div class="mock-card-accent">Semana 12</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="choice-note">
+    <strong>56px</strong> — máximo de espaço pro conteúdo. Depende de tooltip no hover pra saber o nome. Usuários frequentes já decoram os ícones.
+  </div>
+</div>
+
+<!-- ═══ B: Wide (76px icon + label) ═══ -->
+<div>
+  <div class="state-label">Proposta <span class="tag">76px — icon + label</span></div>
+  <div class="app-shell">
+    <div class="rail-wide">
+      <div class="logo" style="margin-bottom:12px;">M</div>
+      <div class="nav-btn-lg active">
+        <svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span class="label">Home</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg>
+        <span class="label">Flashcards</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg>
+        <span class="label">Questões</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg>
+        <span class="label">Legislação</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        <span class="label">Conteúdos</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        <span class="label">Cadernos</span>
+      </div>
+      <div class="separator-h"></div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg>
+        <span class="label">Crono</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+        <span class="label">Resumos</span>
+      </div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><path stroke="currentColor" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path stroke="currentColor" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span class="label">Editor</span>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="nav-btn-lg inactive">
+        <svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span class="label">Config</span>
+      </div>
+      <div class="avatar">A</div>
+    </div>
+    <div class="glow-sep"></div>
+    <div class="content-area">
+      <div class="content-header">Dashboard</div>
+      <div class="content-sub">Bem-vindo, Aldemir</div>
+      <div class="mock-cards">
+        <div class="mock-card"><div class="mock-card-title">Flashcards</div><div class="mock-card-line"></div><div class="mock-card-accent">42 cards</div></div>
+        <div class="mock-card"><div class="mock-card-title">Questões</div><div class="mock-card-line"></div><div class="mock-card-accent">18 pendentes</div></div>
+        <div class="mock-card"><div class="mock-card-title">Lei Seca</div><div class="mock-card-line"></div><div class="mock-card-accent">3 leis</div></div>
+        <div class="mock-card"><div class="mock-card-title">Cronograma</div><div class="mock-card-line"></div><div class="mock-card-accent">Semana 12</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="choice-note">
+    <strong>76px</strong> — +20px mas cada item é auto-explicativo. Não precisa de hover/tooltip. Labels curtos (9px) não pesam visualmente. Estilo Figma/Slack.
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

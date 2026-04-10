@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Editais — Interativo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@350;400;450;500;550;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fafafb; color:#1a1a1a; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  .layout { display:flex; height:100vh; }
+
+  .rail { width:56px; background:#fff; border-right:1px solid #f0eff2; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:4px; }
+  .rail-logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(140deg,#6c63ff,#9b8afb); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:white; margin-bottom:20px; box-shadow:0 2px 8px rgba(108,99,255,0.25); }
+  .rail-btn { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#c4c0ce; transition:all 0.15s; }
+  .rail-btn:hover { color:#6c63ff; background:#f5f3ff; }
+  .rail-btn.on { color:#6c63ff; background:#eeecfb; }
+
+  .content { flex:1; overflow-y:auto; }
+
+  .topbar { height:50px; background:#fff; border-bottom:1px solid #f0eff2; display:flex; align-items:center; padding:0 40px; }
+  .topbar b { font-size:13px; font-weight:600; color:#1a1a1a; }
+
+  .page { max-width:1100px; margin:0 auto; padding:36px 32px 80px; }
+
+  .hero { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; }
+  .hero h1 { font-size:26px; font-weight:800; color:#1a1a1a; letter-spacing:-0.6px; margin-bottom:6px; }
+  .hero h1 em { font-style:normal; background:linear-gradient(135deg,#6c63ff,#9b8afb); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero-sub { font-size:14px; color:#9994a8; max-width:420px; line-height:1.5; }
+  .hero-right { display:flex; gap:20px; }
+  .hero-stat { text-align:right; }
+  .hero-stat-val { font-size:24px; font-weight:800; color:#1a1a1a; font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
+  .hero-stat-lbl { font-size:11px; color:#b0adb8; font-weight:500; }
+
+  .search-row { display:flex; gap:12px; margin-bottom:20px; }
+  .search-box { flex:1; position:relative; }
+  .search-box input { width:100%; background:#fff; border:1.5px solid #eae8ee; border-radius:12px; padding:12px 18px 12px 42px; font-size:14px; color:#1a1a1a; outline:none; transition:all 0.2s; font-family:inherit; }
+  .search-box input::placeholder { color:#c4c0ce; }
+  .search-box input:focus { border-color:#6c63ff; box-shadow:0 0 0 4px rgba(108,99,255,0.06); }
+  .search-box svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#c4c0ce; }
+
+  .seg { display:inline-flex; background:#f0eff2; border-radius:10px; padding:3px; }
+  .seg-btn { padding:8px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; color:#9994a8; transition:all 0.15s; user-select:none; }
+  .seg-btn:hover { color:#6c63ff; }
+  .seg-btn.on { background:#fff; color:#1a1a1a; box-shadow:0 1px 3px rgba(0,0,0,0.06); font-weight:600; }
+
+  .section { margin-bottom:32px; }
+  .section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .section-title { font-size:13px; font-weight:700; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.4px; }
+
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+
+  .ecard { background:#fff; border:1.5px solid #eae8ee; border-radius:14px; padding:18px 20px; cursor:pointer; transition:all 0.25s; user-select:none; }
+  .ecard:hover { border-color:#d4d0f0; box-shadow:0 4px 14px rgba(108,99,255,0.06); transform:translateY(-1px); }
+  .ecard.expanded { grid-column:1/-1; border-color:#6c63ff; box-shadow:0 8px 28px rgba(108,99,255,0.1); cursor:default; transform:none; }
+
+  .ecard-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .ecard-avatar { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .ecard-avatar.fed { background:linear-gradient(135deg,#eeecfb,#e0dcf8); color:#6c63ff; }
+  .ecard-avatar.est { background:linear-gradient(135deg,#e8f1fd,#dce8fa); color:#4a8fe7; }
+  .ecard-avatar.mun { background:linear-gradient(135deg,#e4f8f0,#d4f1e5); color:#2da87a; }
+  .ecard-esfera { font-size:10px; color:#b0adb8; font-weight:500; }
+
+  .ecard-nome { font-size:13.5px; font-weight:600; color:#1a1a1a; margin-bottom:3px; line-height:1.3; }
+  .ecard-org { font-size:11.5px; color:#b0adb8; margin-bottom:14px; }
+
+  .ecard-row { display:flex; gap:14px; padding-top:12px; border-top:1px solid #f5f4f7; }
+  .ecard-num-val { font-size:14px; font-weight:700; color:#1a1a1a; }
+  .ecard-num-lbl { font-size:9.5px; color:#c4c0ce; text-transform:uppercase; letter-spacing:0.2px; }
+
+  /* Expand area */
+  .ecard-expand { margin-top:18px; padding-top:18px; border-top:1px solid #f0eff2; display:none; }
+  .ecard.expanded .ecard-expand { display:block; animation:fadeIn 0.2s ease; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+  .expand-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .expand-title { font-size:14px; font-weight:700; color:#1a1a1a; }
+  .expand-close { width:28px; height:28px; border-radius:8px; border:1px solid #eae8ee; background:#fafafb; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b0adb8; transition:all 0.12s; }
+  .expand-close:hover { background:#f0eff2; color:#1a1a1a; }
+
+  .cargo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .cargo { background:#fafafb; border:1.5px solid #eae8ee; border-radius:11px; padding:14px 16px; cursor:pointer; transition:all 0.15s; }
+  .cargo:hover { border-color:#c7c3ff; background:#f8f7fd; transform:translateY(-1px); box-shadow:0 3px 10px rgba(108,99,255,0.06); }
+  .cargo-name { font-size:13px; font-weight:600; color:#1a1a1a; margin-bottom:3px; }
+  .cargo-meta { font-size:11px; color:#b0adb8; }
+  .cargo-cta { display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:600; color:#6c63ff; margin-top:10px; }
+
+  /* Toast */
+  .toast { display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1a1a1a; color:#fff; padding:12px 24px; border-radius:10px; font-size:13px; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,0.2); z-index:100; animation:slideUp 0.3s ease; }
+  .toast.show { display:block; }
+  @keyframes slideUp { from { opacity:0; transform:translate(-50%,12px); } to { opacity:1; transform:translate(-50%,0); } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="rail">
+    <div class="rail-logo">P</div>
+    <div class="rail-btn">📄</div>
+    <div class="rail-btn on">📋</div>
+    <div class="rail-btn">🗂</div>
+    <div class="rail-btn">❓</div>
+    <div class="rail-btn">⚖️</div>
+    <div class="rail-btn" style="margin-top:auto">⚙️</div>
+  </div>
+
+  <div class="content">
+    <div class="topbar"><b>Editais</b></div>
+
+    <div class="page">
+      <div class="hero">
+        <div>
+          <h1>Editais <em>verticalizados</em></h1>
+          <div class="hero-sub">Selecione um concurso, escolha seu cargo e estude o conteúdo programático completo.</div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-stat"><div class="hero-stat-val">690</div><div class="hero-stat-lbl">Editais</div></div>
+          <div class="hero-stat"><div class="hero-stat-val">3.420</div><div class="hero-stat-lbl">Cargos</div></div>
+          <div class="hero-stat"><div class="hero-stat-val">1,16M</div><div class="hero-stat-lbl">Tópicos</div></div>
+        </div>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+          <input placeholder="Buscar por nome, sigla ou órgão..." />
+        </div>
+        <div class="seg">
+          <div class="seg-btn on">Todos</div>
+          <div class="seg-btn">Federal</div>
+          <div class="seg-btn">Estadual</div>
+          <div class="seg-btn">Municipal</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Todos os editais</div>
+        </div>
+
+        <div class="grid" id="grid">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Navegando para o conteúdo programático...</div>
+
+<script>
+const editais = [
+  { sigla:'PF', nome:'Polícia Federal', esfera:'Federal', tipo:'fed', cargos:41, disc:356, topicos:'19.609',
+    lista:['Delegado de Polícia|24|455','Agente de Polícia|18|380','Escrivão de Polícia|16|320','Perito Criminal - Área 1|12|280','Papiloscopista|14|310','Agente Administrativo|8|150','Perito Criminal - Área 2|11|260','Perito Criminal - Área 3|10|240'] },
+  { sigla:'PRF', nome:'Polícia Rodoviária Federal', esfera:'Federal', tipo:'fed', cargos:2, disc:24, topicos:'455',
+    lista:['Policial Rodoviário Federal|16|380','Agente Administrativo|8|75'] },
+  { sigla:'TJ-SP', nome:'Tribunal de Justiça de São Paulo', esfera:'São Paulo', tipo:'est', cargos:18, disc:152, topicos:'8.430',
+    lista:['Escrevente Técnico Judiciário|12|420','Oficial de Justiça|14|380','Assistente Social|10|290','Psicólogo|10|285','Contador|11|310','Analista de Sistemas|9|260'] },
+  { sigla:'MPU', nome:'Ministério Público da União', esfera:'Federal', tipo:'fed', cargos:37, disc:316, topicos:'19.307',
+    lista:['Analista - Direito|18|620','Analista - Administração|16|540','Técnico Administrativo|12|380','Técnico de Informática|10|290','Analista - Contabilidade|15|480','Analista - Biblioteconomia|13|410'] },
+  { sigla:'INSS', nome:'Instituto Nacional do Seguro Social', esfera:'Federal', tipo:'fed', cargos:2, disc:28, topicos:'1.240',
+    lista:['Técnico do Seguro Social|14|620','Analista do Seguro Social|14|620'] },
+  { sigla:'TRF-1', nome:'Tribunal Regional Federal da 1ª Região', esfera:'Federal', tipo:'fed', cargos:33, disc:319, topicos:'10.898',
+    lista:['Analista Judiciário - Área Judiciária|16|520','Técnico Judiciário - Área Administrativa|12|380','Analista Judiciário - Oficial de Justiça|15|490','Analista - Contadoria|14|440'] },
+  { sigla:'CM-GOI', nome:'Câmara Municipal de Goiânia', esfera:'Goiás', tipo:'mun', cargos:32, disc:186, topicos:'7.820',
+    lista:['Analista Legislativo|14|420','Técnico Legislativo|10|290','Assistente Administrativo|8|220','Procurador|16|540'] },
+  { sigla:'SEFAZ', nome:'Secretaria da Fazenda da Bahia', esfera:'Bahia', tipo:'est', cargos:3, disc:42, topicos:'2.180',
+    lista:['Auditor Fiscal|18|820','Agente de Tributos|14|680','Técnico da Fazenda|10|680'] },
+  { sigla:'PC-DF', nome:'Polícia Civil do Distrito Federal', esfera:'Distrito Federal', tipo:'est', cargos:8, disc:96, topicos:'4.520',
+    lista:['Delegado de Polícia|18|620','Agente de Polícia|14|480','Escrivão de Polícia|14|460','Perito Criminal|16|540'] },
+  { sigla:'TCU', nome:'Tribunal de Contas da União', esfera:'Federal', tipo:'fed', cargos:4, disc:68, topicos:'3.450',
+    lista:['Auditor Federal de Controle Externo|20|1240','Técnico Federal de Controle Externo|14|720','Auditor - TI|18|980','Técnico - TI|12|510'] },
+  { sigla:'PC-PR', nome:'Polícia Civil do Paraná', esfera:'Paraná', tipo:'est', cargos:6, disc:72, topicos:'3.890',
+    lista:['Delegado|18|680','Investigador|14|520','Papiloscopista|12|440','Escrivão|14|490'] },
+  { sigla:'BNDES', nome:'Banco Nacional de Desenvolvimento', esfera:'Federal', tipo:'fed', cargos:12, disc:148, topicos:'6.230',
+    lista:['Analista - Economia|16|580','Analista - Engenharia|14|520','Analista - Contabilidade|15|540','Técnico Administrativo|10|320'] },
+];
+
+const grid = document.getElementById('grid');
+let expandedId = null;
+
+function render() {
+  grid.innerHTML = '';
+  editais.forEach((ed, i) => {
+    const isExpanded = expandedId === i;
+    const card = document.createElement('div');
+    card.className = 'ecard' + (isExpanded ? ' expanded' : '');
+
+    let cargosHtml = '';
+    if (isExpanded) {
+      const cargos = ed.lista.map(c => {
+        const [nome, disc, tops] = c.split('|');
+        return '<div class="cargo" onclick="selectCargo(event)"><div class="cargo-name">' + nome + '</div><div class="cargo-meta">' + disc + ' disciplinas · ' + tops + ' tópicos</div><div class="cargo-cta">Estudar →</div></div>';
+      }).join('');
+
+      const cols = ed.lista.length <= 2 ? 2 : ed.lista.length <= 4 ? 2 : ed.lista.length <= 6 ? 3 : 4;
+
+      cargosHtml = '<div class="ecard-expand"><div class="expand-head"><div class="expand-title">Selecione o cargo · ' + ed.cargos + ' disponíveis</div><button class="expand-close" onclick="closeExpand(event)">✕</button></div><div class="cargo-grid" style="grid-template-columns:repeat(' + cols + ',1fr)">' + cargos + '</div></div>';
+    }
+
+    card.innerHTML =
+      '<div class="ecard-top">' +
+        '<div class="ecard-avatar ' + ed.tipo + '">' + ed.sigla + '</div>' +
+        '<div class="ecard-esfera">' + ed.esfera + '</div>' +
+      '</div>' +
+      '<div class="ecard-nome">' + ed.nome + '</div>' +
+      '<div class="ecard-org">Concurso Público</div>' +
+      '<div class="ecard-row">' +
+        '<div><div class="ecard-num-val">' + ed.cargos + '</div><div class="ecard-num-lbl">Cargos</div></div>' +
+        '<div><div class="ecard-num-val">' + ed.disc + '</div><div class="ecard-num-lbl">Disciplinas</div></div>' +
+        '<div><div class="ecard-num-val">' + ed.topicos + '</div><div class="ecard-num-lbl">Tópicos</div></div>' +
+      '</div>' +
+      cargosHtml;
+
+    if (!isExpanded) {
+      card.onclick = () => { expandedId = i; render(); };
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+function closeExpand(e) {
+  e.stopPropagation();
+  expandedId = null;
+  render();
+}
+
+function selectCargo(e) {
+  e.stopPropagation();
+  const toast = document.getElementById('toast');
+  const name = e.currentTarget.querySelector('.cargo-name').textContent;
+  toast.textContent = 'Abrindo: ' + name + ' →  documents-organization';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+render();
+</script>
+</body>
+</html>

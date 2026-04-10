@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Matérias + Drawer (layout fiel)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --primary: 220 83% 53%;
+    --bg: hsl(220, 14%, 97%);
+    --border: hsl(220, 14%, 90%);
+    --muted-fg: hsl(220, 10%, 46%);
+    --fg: hsl(220, 20%, 10%);
+    --secondary: hsl(220, 14%, 96%);
+  }
+
+  body { font-family:'Inter',system-ui,sans-serif; background:#eef1f5; min-height:100vh; overflow:hidden; }
+  h1,h2,h3 { font-family:'Space Grotesk',system-ui,sans-serif; }
+
+  .app-shell { display:flex; height:100vh; overflow:hidden; }
+
+  /* Sidebar */
+  .rail { width:76px; min-width:76px; background:#fff; display:flex; flex-direction:column; align-items:center; padding:14px 0; gap:2px; font-family:'DM Sans',sans-serif; }
+  .logo-m { width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,#1E40AF,#3B82F6); box-shadow:0 2px 8px rgba(30,64,175,0.3); display:flex; align-items:center; justify-content:center; margin-bottom:14px; color:white; font-size:13px; font-weight:700; }
+  .nb { width:60px; padding:6px 4px; border-radius:10px; display:flex; flex-direction:column; align-items:center; gap:2px; position:relative; cursor:pointer; transition:all 0.15s; }
+  .nb:hover { background:rgba(0,0,0,0.03); }
+  .nb svg { width:18px; height:18px; stroke-width:1.75; fill:none; }
+  .nb .l { font-size:9px; font-weight:500; color:#9ca3af; white-space:nowrap; }
+  .nb.a { background:rgba(219,234,254,0.8); }
+  .nb.a svg { stroke:#1E40AF; }
+  .nb.a .l { color:#1E40AF; font-weight:600; }
+  .nb.a::before { content:''; position:absolute; left:-1px; top:50%; transform:translateY(-50%); width:2.5px; height:22px; background:linear-gradient(180deg,#1E40AF,#3B82F6); border-radius:0 3px 3px 0; }
+  .nb.i svg { stroke:#8b8fa3; }
+  .sh { width:28px; height:1px; background:rgba(0,0,0,0.06); margin:4px auto; }
+  .av { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#1E40AF,#3B82F6); display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:600; margin-top:4px; }
+  .glow { width:1px; align-self:stretch; position:relative; flex-shrink:0; background:linear-gradient(180deg,transparent 5%,#dbeafe 30%,#93c5fd 50%,#dbeafe 70%,transparent 95%); opacity:0.6; }
+  .glow::after { content:''; position:absolute; top:0; left:-4px; width:9px; height:100%; background:linear-gradient(180deg,transparent 5%,rgba(59,130,246,0.04) 30%,rgba(59,130,246,0.06) 50%,rgba(59,130,246,0.04) 70%,transparent 95%); }
+
+  /* Main */
+  .main { flex:1; position:relative; overflow:hidden; }
+
+  /* Landing — centered like screenshot */
+  .landing { height:100%; background:var(--bg); overflow-y:auto; display:flex; flex-direction:column; }
+  .landing-inner { flex:1; display:flex; flex-direction:column; align-items:center; padding:56px 32px 32px; max-width:820px; margin:0 auto; width:100%; }
+
+  /* Hero — exact match */
+  .hero-title { font-size:42px; font-weight:800; letter-spacing:-1.5px; color:var(--fg); margin-bottom:14px; text-align:center; }
+  .dot { background:linear-gradient(135deg, hsl(var(--primary)), hsl(220,83%,45%)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { font-size:14px; color:var(--muted-fg); text-align:center; line-height:1.7; max-width:420px; margin-bottom:32px; }
+
+  /* Search — wide, rounded, white */
+  .search-wrap { width:100%; max-width:520px; margin-bottom:28px; position:relative; }
+  .search-wrap > svg { position:absolute; left:16px; top:50%; transform:translateY(-50%); width:17px; height:17px; stroke:var(--muted-fg); stroke-width:2; fill:none; }
+  .search-input { width:100%; height:48px; padding:0 18px 0 44px; border-radius:14px; background:#fff; border:1px solid var(--border); font-size:14px; color:var(--fg); font-family:'Inter',sans-serif; outline:none; transition:all 0.2s; }
+  .search-input::placeholder { color:var(--muted-fg); }
+  .search-input:focus { border-color:hsl(var(--primary)); box-shadow:0 0 0 3px hsl(var(--primary)/0.08); }
+
+  /* Filter row */
+  .filter-row { width:100%; display:flex; align-items:center; gap:12px; margin-bottom:20px; position:relative; z-index:10; }
+  .dropdown { position:relative; }
+  .dd-trigger { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:10px; background:#fff; border:1px solid var(--border); font-size:13px; font-weight:500; color:var(--fg); cursor:pointer; transition:all 0.2s; font-family:'Inter',sans-serif; }
+  .dd-trigger:hover { border-color:hsl(220,14%,80%); }
+  .dd-trigger svg { width:14px; height:14px; stroke:currentColor; stroke-width:2; fill:none; }
+  .dd-trigger .chev { width:11px; height:11px; transition:transform 0.2s; }
+  .dropdown.open .dd-trigger { border-color:hsl(var(--primary)); box-shadow:0 0 0 3px hsl(var(--primary)/0.08); }
+  .dropdown.open .chev { transform:rotate(180deg); }
+  .dd-menu { position:absolute; top:calc(100%+6px); left:0; width:240px; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.08); padding:6px; z-index:50; max-height:300px; display:none; flex-direction:column; }
+  .dropdown.open .dd-menu { display:flex; }
+  .dd-item { padding:7px 10px; border-radius:7px; font-size:12px; color:var(--muted-fg); cursor:pointer; transition:all 0.15s; }
+  .dd-item:hover { background:hsl(220,14%,96%); color:var(--fg); }
+  .dd-item.active { background:hsl(var(--primary)/0.08); color:hsl(var(--primary)); font-weight:600; }
+  .count-label { font-size:12px; color:var(--muted-fg); font-weight:500; margin-left:auto; }
+
+  /* Cards — exact same as screenshot */
+  .cards-grid { width:100%; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+
+  .card {
+    background: hsl(0 0% 100% / 0.80);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(220 14% 90% / 0.5);
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card:hover {
+    background: hsl(0 0% 100% / 0.90);
+    border-color: var(--border);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  .card.selected {
+    border-color: hsl(var(--primary)/0.35);
+    box-shadow: 0 0 0 3px hsl(var(--primary)/0.06), 0 4px 20px rgba(30,64,175,0.06);
+  }
+
+  .card-overlay { position:absolute; inset:0; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+  .card:hover .card-overlay { opacity:0.05; }
+
+  .card-inner { position:relative; display:flex; flex-direction:column; gap:14px; }
+
+  /* Icon — colored circle for first card, muted for rest (like screenshot) */
+  .c-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+  .c-icon svg { width:22px; height:22px; stroke-width:1.75; fill:none; }
+  .c-icon.colored { box-shadow:0 2px 8px rgba(30,64,175,0.2); }
+  .c-icon.colored svg { stroke:white; }
+  .c-icon.muted { background:hsl(220,14%,94%); }
+  .c-icon.muted svg { stroke:var(--muted-fg); }
+
+  .c-title { font-size:15px; font-weight:700; color:var(--fg); line-height:1.3; }
+  .c-sub { font-size:11px; color:var(--muted-fg); margin-top:2px; }
+
+  .c-bottom { display:flex; align-items:center; justify-content:space-between; margin-top:auto; }
+  .c-count { font-size:11px; color:var(--muted-fg); font-weight:500; }
+
+  .c-arrow { width:22px; height:22px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .card:hover .c-arrow { transform:translateX(2px); }
+  .c-arrow svg { width:16px; height:16px; stroke:var(--muted-fg); stroke-width:2; fill:none; }
+  .card:hover .c-arrow svg { stroke:var(--fg); }
+
+  .g-blue { background:linear-gradient(135deg,#2563EB,#3B82F6); }
+  .g-emerald { background:linear-gradient(135deg,#10b981,#0d9488); }
+  .g-violet { background:linear-gradient(135deg,#8b5cf6,#7c3aed); }
+  .g-rose { background:linear-gradient(135deg,#f43f5e,#e11d48); }
+  .g-sky { background:linear-gradient(135deg,#0ea5e9,#2563eb); }
+  .g-amber { background:linear-gradient(135deg,#f59e0b,#d97706); }
+
+  .landing-footer { text-align:center; padding:24px 0 32px; font-size:11px; color:rgba(156,163,175,0.35); }
+
+  /* ── Drawer ── */
+  .d-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.06); opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:10; }
+  .d-overlay.vis { opacity:1; pointer-events:auto; }
+
+  .drawer { position:absolute; top:0; right:0; bottom:0; width:340px; background:#fff; border-left:1px solid var(--border); box-shadow:-4px 0 20px rgba(0,0,0,0.05); transform:translateX(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index:20; display:flex; flex-direction:column; }
+  .drawer.open { transform:translateX(0); }
+
+  .d-header { padding:20px 20px 16px; border-bottom:1px solid hsl(220,14%,93%); display:flex; align-items:center; gap:12px; }
+  .d-hicon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .d-hicon svg { width:18px; height:18px; stroke:white; stroke-width:1.75; fill:none; }
+  .d-hinfo { flex:1; }
+  .d-htitle { font-size:15px; font-weight:700; color:var(--fg); }
+  .d-hcount { font-size:11px; color:var(--muted-fg); margin-top:1px; }
+  .d-close { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; background:none; border:none; transition:all 0.15s; }
+  .d-close:hover { background:hsl(220,14%,95%); }
+  .d-close svg { width:16px; height:16px; stroke:var(--muted-fg); stroke-width:2; fill:none; }
+
+  .d-search { padding:12px 16px; border-bottom:1px solid hsl(220,14%,95%); }
+  .d-swrap { position:relative; }
+  .d-swrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:13px; height:13px; stroke:var(--muted-fg); stroke-width:2; fill:none; }
+  .d-sinput { width:100%; height:36px; padding:0 12px 0 32px; border-radius:9px; background:hsl(220,14%,97%); border:1px solid transparent; font-size:12px; color:var(--fg); font-family:'Inter',sans-serif; outline:none; transition:all 0.2s; }
+  .d-sinput::placeholder { color:var(--muted-fg); }
+  .d-sinput:focus { border-color:hsl(var(--primary)/0.3); background:#fff; }
+
+  .d-list { flex:1; overflow-y:auto; padding:6px 8px; }
+
+  .lei { display:flex; align-items:center; gap:10px; padding:10px 10px; border-radius:10px; cursor:pointer; transition:all 0.15s; text-decoration:none; color:inherit; margin-bottom:1px; }
+  .lei:hover { background:hsl(220,14%,97%); }
+  .lei.off { opacity:0.45; cursor:default; }
+  .lei.off:hover { background:transparent; }
+  .lei-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .lei-dot.on { background:hsl(var(--primary)); }
+  .lei-dot.off { background:hsl(220,14%,85%); }
+  .lei-info { flex:1; min-width:0; }
+  .lei-t { font-size:12.5px; font-weight:600; color:var(--fg); }
+  .lei-d { font-size:10px; color:var(--muted-fg); margin-top:1px; }
+  .lei-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; flex-shrink:0; }
+  .lei-a { font-size:10px; color:var(--muted-fg); }
+  .lei-soon { font-size:8px; font-weight:500; color:var(--muted-fg); background:var(--secondary); padding:2px 6px; border-radius:6px; }
+  .lei-arr { width:18px; height:18px; display:flex; align-items:center; justify-content:center; opacity:0; transition:all 0.2s; flex-shrink:0; }
+  .lei:not(.off):hover .lei-arr { opacity:1; transform:translateX(2px); }
+  .lei-arr svg { width:13px; height:13px; stroke:hsl(var(--primary)); stroke-width:2; fill:none; }
+  .lei-prog { width:100%; margin-top:5px; }
+  .lei-pbar { height:3px; border-radius:2px; background:hsl(220,14%,93%); overflow:hidden; }
+  .lei-pfill { height:100%; border-radius:2px; background:linear-gradient(90deg,hsl(var(--primary)),hsl(220,83%,45%)); }
+  .lei-plbl { font-size:9px; color:var(--muted-fg); margin-top:2px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="rail">
+    <div class="logo-m">M</div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="l">Home</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg><span class="l">Flashcards</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg><span class="l">Questões</span></div>
+    <div class="nb a"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg><span class="l">Lei Seca</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span class="l">Conteúdos</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span class="l">Cadernos</span></div>
+    <div class="sh"></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg><span class="l">Crono</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><span class="l">Resumos</span></div>
+    <div style="flex:1;"></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="l">Config</span></div>
+    <div class="av">A</div>
+  </div>
+  <div class="glow"></div>
+
+  <div class="main">
+    <div class="landing">
+      <div class="landing-inner">
+        <!-- Hero -->
+        <h1 class="hero-title">Lei Seca<span class="dot">.</span></h1>
+        <p class="hero-sub">Escolha a legislação que deseja estudar. Leitura ativa, questões, jurisprudência e muito mais.</p>
+
+        <!-- Search -->
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Buscar legislação..." />
+        </div>
+
+        <!-- Filter row -->
+        <div class="filter-row">
+          <div class="dropdown" id="dd" onclick="this.classList.toggle('open')">
+            <button class="dd-trigger">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>
+              Todas as matérias
+              <svg class="chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <span class="count-label">6 matérias</span>
+        </div>
+
+        <!-- Cards grid -->
+        <div class="cards-grid">
+
+          <!-- Direito Penal (colored icon, available) -->
+          <div class="card" onclick="openDrawer('penal',this)">
+            <div class="card-overlay" style="background:linear-gradient(135deg,#f43f5e,#e11d48);"></div>
+            <div class="card-inner">
+              <div class="c-icon colored g-rose"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div>
+                <div class="c-title">Direito Penal</div>
+                <div class="c-sub">12 leis</div>
+              </div>
+              <div class="c-bottom">
+                <span class="c-count">587 artigos</span>
+                <div class="c-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Constitucional (muted) -->
+          <div class="card" onclick="openDrawer('constitucional',this)">
+            <div class="card-inner">
+              <div class="c-icon muted"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 21h18"/><path stroke="currentColor" d="M5 21V7l8-4v18"/><path stroke="currentColor" d="M19 21V11l-6-4"/></svg></div>
+              <div>
+                <div class="c-title">Constitucional</div>
+                <div class="c-sub">3 leis</div>
+              </div>
+              <div class="c-bottom">
+                <span class="c-count">250 artigos</span>
+                <div class="c-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Civil (muted) -->
+          <div class="card" onclick="openDrawer('civil',this)">
+            <div class="card-inner">
+              <div class="c-icon muted"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+              <div>
+                <div class="c-title">Direito Civil</div>
+                <div class="c-sub">8 leis</div>
+              </div>
+              <div class="c-bottom">
+                <span class="c-count">2.651 artigos</span>
+                <div class="c-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Processual (muted) -->
+          <div class="card" onclick="openDrawer('processual',this)">
+            <div class="card-inner">
+              <div class="c-icon muted"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline stroke="currentColor" points="14 2 14 8 20 8"/></svg></div>
+              <div>
+                <div class="c-title">Processual Civil</div>
+                <div class="c-sub">5 leis</div>
+              </div>
+              <div class="c-bottom">
+                <span class="c-count">1.116 artigos</span>
+                <div class="c-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Administrativo (muted) -->
+          <div class="card" onclick="openDrawer('administrativo',this)">
+            <div class="card-inner">
+              <div class="c-icon muted"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="2" y="3" width="20" height="14" rx="2"/><line stroke="currentColor" x1="8" y1="21" x2="16" y2="21"/><line stroke="currentColor" x1="12" y1="17" x2="12" y2="21"/></svg></div>
+              <div>
+                <div class="c-title">Administrativo</div>
+                <div class="c-sub">6 leis</div>
+              </div>
+              <div class="c-bottom">
+                <span class="c-count">288 artigos</span>
+                <div class="c-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trabalho (muted) -->
+          <div class="card" onclick="openDrawer('trabalho',this)">
+            <div class="card-inner">
+              <div class="c-icon muted"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+              <div>
+                <div class="c-title">Direito do Trabalho</div>
+                <div class="c-sub">4 leis</div>
+              </div>
+              <div class="c-bottom">
+                <span class="c-count">922 artigos</span>
+                <div class="c-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="landing-footer">Feito para concurseiros que levam a sério.</div>
+    </div>
+
+    <div class="d-overlay" id="ov" onclick="closeDrawer()"></div>
+
+    <div class="drawer" id="dw">
+      <div class="d-header">
+        <div class="d-hicon" id="dw-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="d-hinfo">
+          <div class="d-htitle" id="dw-title">Direito Penal</div>
+          <div class="d-hcount" id="dw-count">12 leis</div>
+        </div>
+        <button class="d-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="d-search"><div class="d-swrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="d-sinput" placeholder="Buscar nesta matéria..." /></div></div>
+      <div class="d-list" id="dw-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const D={
+  penal:{t:'Direito Penal',c:'12 leis',ic:'g-rose',sv:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',l:[
+    {t:'Código Penal',d:'Decreto-Lei nº 2.848/1940',a:'361 arts.',on:1,p:72},
+    {t:'Lei de Drogas',d:'Lei nº 11.343/2006',a:'75 arts.',on:1,p:41},
+    {t:'Maria da Penha',d:'Lei nº 11.340/2006',a:'46 arts.'},
+    {t:'Execução Penal',d:'Lei nº 7.210/1984',a:'204 arts.'},
+    {t:'Org. Criminosa',d:'Lei nº 12.850/2013',a:'26 arts.'},
+    {t:'Abuso de Autoridade',d:'Lei nº 13.869/2019',a:'44 arts.'},
+  ]},
+  constitucional:{t:'Constitucional',c:'3 leis',ic:'g-emerald',sv:'<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>',l:[
+    {t:'Constituição Federal',d:'1988',a:'250 arts.'},
+  ]},
+  civil:{t:'Direito Civil',c:'8 leis',ic:'g-blue',sv:'<svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg>',l:[
+    {t:'Código Civil',d:'Lei nº 10.406/2002',a:'2046 arts.',on:1,p:34},
+    {t:'CDC',d:'Lei nº 8.078/1990',a:'119 arts.'},
+    {t:'ECA',d:'Lei nº 8.069/1990',a:'267 arts.'},
+  ]},
+  processual:{t:'Processual Civil',c:'5 leis',ic:'g-violet',sv:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',l:[
+    {t:'CPC',d:'Lei nº 13.105/2015',a:'1072 arts.'},
+  ]},
+  administrativo:{t:'Administrativo',c:'6 leis',ic:'g-sky',sv:'<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',l:[
+    {t:'Lei de Licitações',d:'Lei nº 14.133/2021',a:'194 arts.'},
+    {t:'Improbidade',d:'Lei nº 8.429/1992',a:'25 arts.'},
+  ]},
+  trabalho:{t:'Direito do Trabalho',c:'4 leis',ic:'g-amber',sv:'<svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>',l:[
+    {t:'CLT',d:'Decreto-Lei nº 5.452/1943',a:'922 arts.'},
+  ]},
+};
+let cur=null;
+function openDrawer(k,el){
+  const d=D[k]; if(!d)return;
+  if(cur)cur.classList.remove('selected');
+  el.classList.add('selected'); cur=el;
+  document.getElementById('dw-icon').className='d-hicon '+d.ic;
+  document.getElementById('dw-icon').innerHTML=d.sv;
+  document.getElementById('dw-title').textContent=d.t;
+  document.getElementById('dw-count').textContent=d.c;
+  document.getElementById('dw-list').innerHTML=d.l.map(l=>l.on
+    ?`<a class="lei" href="#"><span class="lei-dot on"></span><div class="lei-info"><div class="lei-t">${l.t}</div><div class="lei-d">${l.d}</div>${l.p?`<div class="lei-prog"><div class="lei-pbar"><div class="lei-pfill" style="width:${l.p}%"></div></div><div class="lei-plbl">${l.p}% lido</div></div>`:''}</div><div class="lei-meta"><span class="lei-a">${l.a}</span></div><div class="lei-arr"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></a>`
+    :`<div class="lei off"><span class="lei-dot off"></span><div class="lei-info"><div class="lei-t">${l.t}</div><div class="lei-d">${l.d}</div></div><div class="lei-meta"><span class="lei-a">${l.a}</span><span class="lei-soon">Em breve</span></div></div>`
+  ).join('');
+  document.getElementById('dw').classList.add('open');
+  document.getElementById('ov').classList.add('vis');
+}
+function closeDrawer(){
+  document.getElementById('dw').classList.remove('open');
+  document.getElementById('ov').classList.remove('vis');
+  if(cur){cur.classList.remove('selected');cur=null;}
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.dropdown'))document.getElementById('dd').classList.remove('open');});
+</script>
+</body>
+</html>

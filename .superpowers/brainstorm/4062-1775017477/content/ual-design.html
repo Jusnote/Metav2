@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuestionCard — UAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=DM+Serif+Display&family=Nunito:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #eeecea; padding: 48px 20px; display: flex; flex-direction: column; gap: 64px; align-items: center; }
+
+  .tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600; color: white; background: #18181b;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: -40px; text-align: center;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* ═══════════════════════════════════════ */
+  /* DESIGN 1 — EDITORIAL                   */
+  /* ═══════════════════════════════════════ */
+
+  .ed-card {
+    width: 100%; max-width: 740px;
+    background: #FFFEFA;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+  }
+
+  .ed-header {
+    padding: 20px 36px 16px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid #f0ece6;
+  }
+  .ed-subject {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600; color: #8b7355;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .ed-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; color: #c4b9a8; font-weight: 500;
+  }
+
+  .ed-body {
+    padding: 36px 44px 32px;
+  }
+  .ed-enunciado {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 19px;
+    line-height: 2;
+    color: #2c2418;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .ed-alts {
+    padding: 0 36px 32px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .ed-alt {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ed-alt:hover { background: rgba(139, 115, 85, 0.04); }
+  .ed-alt.selected { background: rgba(139, 115, 85, 0.07); }
+
+  .ed-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #d4c9b8;
+    flex-shrink: 0;
+    width: 22px;
+    margin-top: -2px;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .ed-alt:hover .ed-letter { color: #8b7355; }
+  .ed-alt.selected .ed-letter { color: #6b5535; }
+
+  .ed-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #4a3f32;
+    font-weight: 400;
+    padding-top: 2px;
+  }
+  .ed-alt.selected .ed-text { font-weight: 500; color: #2c2418; }
+
+  .ed-footer {
+    border-top: 1px solid #f0ece6;
+    padding: 12px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ed-fbtn-group { display: flex; align-items: center; gap: 2px; }
+  .ed-fbtn {
+    padding: 7px 10px; border-radius: 8px; font-size: 12px; color: #b8a990;
+    cursor: pointer; border: none; background: transparent;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    display: flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .ed-fbtn:hover { background: rgba(139,115,85,0.06); color: #8b7355; }
+  .ed-fbtn.active { background: rgba(139,115,85,0.08); color: #6b5535; }
+  .ed-fbtn .ct { font-weight: 700; }
+  .ed-sep { width: 1px; height: 14px; background: #ebe5db; margin: 0 6px; }
+
+  .ed-submit {
+    background: #2c2418; color: #FFFEFA; font-size: 13px; padding: 10px 32px;
+    border-radius: 12px; font-weight: 600; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; letter-spacing: 0.02em; transition: all 0.2s;
+  }
+  .ed-submit:hover { background: #1a1610; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(44,36,24,0.15); }
+
+
+  /* ═══════════════════════════════════════ */
+  /* DESIGN 2 — AURORA                      */
+  /* ═══════════════════════════════════════ */
+
+  .au-card {
+    width: 100%; max-width: 740px;
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 24px rgba(124,58,237,0.04), 0 0 0 1px rgba(124,58,237,0.04);
+  }
+
+  .au-header {
+    padding: 20px 36px 16px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid #f5f0ff;
+  }
+  .au-subject {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600; color: #7c3aed;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .au-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; color: #c4b5fd; font-weight: 500;
+  }
+
+  .au-body { padding: 36px 44px 32px; }
+  .au-enunciado {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px; line-height: 2; color: #1e1b2e;
+    font-weight: 400;
+  }
+
+  .au-alts {
+    padding: 0 32px 28px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .au-alt {
+    display: flex; align-items: flex-start; gap: 0;
+    padding: 13px 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .au-alt::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: transparent;
+    border-radius: 0 3px 3px 0;
+    transition: background 0.2s;
+  }
+  .au-alt:hover { background: #faf8ff; }
+  .au-alt:hover::before { background: #e4d4fc; }
+  .au-alt.selected { background: #f5f0ff; }
+  .au-alt.selected::before { background: #7c3aed; }
+
+  .au-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #ddd4f0;
+    flex-shrink: 0;
+    width: 28px;
+    margin-top: 0px;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .au-alt:hover .au-letter { color: #a78bfa; }
+  .au-alt.selected .au-letter { color: #7c3aed; }
+
+  .au-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14.5px; line-height: 1.75; color: #3d3654;
+    font-weight: 400; padding-top: 1px;
+  }
+  .au-alt.selected .au-text { font-weight: 600; color: #1e1b2e; }
+
+  .au-footer {
+    border-top: 1px solid #f5f0ff;
+    padding: 12px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .au-fbtn-group { display: flex; align-items: center; gap: 2px; }
+  .au-fbtn {
+    padding: 7px 10px; border-radius: 8px; font-size: 12px; color: #b8b0cc;
+    cursor: pointer; border: none; background: transparent;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    display: flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .au-fbtn:hover { background: #faf8ff; color: #7c3aed; }
+  .au-fbtn.active { background: #f5f0ff; color: #7c3aed; }
+  .au-fbtn .ct { font-weight: 700; }
+  .au-sep { width: 1px; height: 14px; background: #f0e8ff; margin: 0 6px; }
+
+  .au-submit {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: white; font-size: 13px; padding: 10px 32px;
+    border-radius: 12px; font-weight: 600; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; letter-spacing: 0.01em; transition: all 0.2s;
+  }
+  .au-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.25); }
+
+
+  /* ═══════════════════════════════════════ */
+  /* DESIGN 3 — INK                         */
+  /* ═══════════════════════════════════════ */
+
+  .ink-card {
+    width: 100%; max-width: 740px;
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
+  }
+
+  .ink-header {
+    padding: 20px 36px 16px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid #f2f2f2;
+  }
+  .ink-subject {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600; color: #18181b;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .ink-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; color: #c0c0c0; font-weight: 500;
+  }
+
+  .ink-body { padding: 36px 44px 32px; }
+  .ink-enunciado {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px; line-height: 2; color: #18181b;
+    font-weight: 400;
+  }
+
+  .ink-alts {
+    padding: 0 36px 28px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  .ink-alt {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-bottom: 1px solid #fafafa;
+    position: relative;
+  }
+  .ink-alt:last-child { border-bottom: none; }
+  .ink-alt:hover { background: #fafafa; }
+  .ink-alt.selected { background: #f8f8f8; }
+
+  .ink-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #e0e0e0;
+    flex-shrink: 0;
+    width: 20px;
+    margin-top: -1px;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .ink-alt:hover .ink-letter { color: #18181b; }
+  .ink-alt.selected .ink-letter { color: #18181b; }
+
+  .ink-dot {
+    position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: transparent; transition: background 0.2s;
+  }
+  .ink-alt.selected .ink-dot { background: #18181b; }
+
+  .ink-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px; line-height: 1.75; color: #525252;
+    font-weight: 400; padding-top: 2px;
+  }
+  .ink-alt:hover .ink-text { color: #18181b; }
+  .ink-alt.selected .ink-text { font-weight: 500; color: #18181b; }
+
+  .ink-footer {
+    border-top: 1px solid #f2f2f2;
+    padding: 12px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ink-fbtn-group { display: flex; align-items: center; gap: 2px; }
+  .ink-fbtn {
+    padding: 7px 10px; border-radius: 8px; font-size: 12px; color: #b0b0b0;
+    cursor: pointer; border: none; background: transparent;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    display: flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .ink-fbtn:hover { background: #fafafa; color: #18181b; }
+  .ink-fbtn.active { background: #f5f5f5; color: #18181b; }
+  .ink-fbtn .ct { font-weight: 700; }
+  .ink-sep { width: 1px; height: 14px; background: #f0f0f0; margin: 0 6px; }
+
+  .ink-submit {
+    background: #18181b; color: white; font-size: 13px; padding: 10px 32px;
+    border-radius: 12px; font-weight: 600; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.2s;
+  }
+  .ink-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ EDITORIAL ═══════════════════ -->
+<div class="tag">1 · Editorial</div>
+<div class="ed-card">
+  <div class="ed-header">
+    <span class="ed-subject">Direito Penal · Crimes contra a Adm. Pública</span>
+    <span class="ed-meta">CESPE · 2024 · TRF-1ª Região</span>
+  </div>
+  <div class="ed-body">
+    <p class="ed-enunciado">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.</p>
+  </div>
+  <div class="ed-alts">
+    <div class="ed-alt" onclick="this.parentElement.querySelectorAll('.ed-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ed-letter">A</span>
+      <span class="ed-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="ed-alt" onclick="this.parentElement.querySelectorAll('.ed-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ed-letter">B</span>
+      <span class="ed-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="ed-alt" onclick="this.parentElement.querySelectorAll('.ed-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ed-letter">C</span>
+      <span class="ed-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="ed-alt" onclick="this.parentElement.querySelectorAll('.ed-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ed-letter">D</span>
+      <span class="ed-text">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="ed-alt" onclick="this.parentElement.querySelectorAll('.ed-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ed-letter">E</span>
+      <span class="ed-text">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+  <div class="ed-footer">
+    <div class="ed-fbtn-group">
+      <button class="ed-fbtn">📋 Gabarito</button>
+      <button class="ed-fbtn">📊 Estatísticas</button>
+      <span class="ed-sep"></span>
+      <button class="ed-fbtn active">💬 <span class="ct">3</span></button>
+      <button class="ed-fbtn">✏️</button>
+      <button class="ed-fbtn">🚩</button>
+    </div>
+    <button class="ed-submit">Responder</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ AURORA ═══════════════════ -->
+<div class="tag">2 · Aurora</div>
+<div class="au-card">
+  <div class="au-header">
+    <span class="au-subject">Direito Penal · Crimes contra a Adm. Pública</span>
+    <span class="au-meta">CESPE · 2024 · TRF-1ª Região</span>
+  </div>
+  <div class="au-body">
+    <p class="au-enunciado">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.</p>
+  </div>
+  <div class="au-alts">
+    <div class="au-alt" onclick="this.parentElement.querySelectorAll('.au-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="au-letter">A</span>
+      <span class="au-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="au-alt" onclick="this.parentElement.querySelectorAll('.au-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="au-letter">B</span>
+      <span class="au-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="au-alt" onclick="this.parentElement.querySelectorAll('.au-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="au-letter">C</span>
+      <span class="au-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="au-alt" onclick="this.parentElement.querySelectorAll('.au-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="au-letter">D</span>
+      <span class="au-text">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="au-alt" onclick="this.parentElement.querySelectorAll('.au-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="au-letter">E</span>
+      <span class="au-text">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+  <div class="au-footer">
+    <div class="au-fbtn-group">
+      <button class="au-fbtn">📋 Gabarito</button>
+      <button class="au-fbtn">📊 Estatísticas</button>
+      <span class="au-sep"></span>
+      <button class="au-fbtn active">💬 <span class="ct">3</span></button>
+      <button class="au-fbtn">✏️</button>
+      <button class="au-fbtn">🚩</button>
+    </div>
+    <button class="au-submit">Responder</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ INK ═══════════════════ -->
+<div class="tag">3 · Ink</div>
+<div class="ink-card">
+  <div class="ink-header">
+    <span class="ink-subject">Direito Penal · Crimes contra a Adm. Pública</span>
+    <span class="ink-meta">CESPE · 2024 · TRF-1ª Região</span>
+  </div>
+  <div class="ink-body">
+    <p class="ink-enunciado">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.</p>
+  </div>
+  <div class="ink-alts">
+    <div class="ink-alt" onclick="this.parentElement.querySelectorAll('.ink-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ink-dot"></span>
+      <span class="ink-letter">A</span>
+      <span class="ink-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="ink-alt" onclick="this.parentElement.querySelectorAll('.ink-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ink-dot"></span>
+      <span class="ink-letter">B</span>
+      <span class="ink-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="ink-alt" onclick="this.parentElement.querySelectorAll('.ink-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ink-dot"></span>
+      <span class="ink-letter">C</span>
+      <span class="ink-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="ink-alt" onclick="this.parentElement.querySelectorAll('.ink-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ink-dot"></span>
+      <span class="ink-letter">D</span>
+      <span class="ink-text">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="ink-alt" onclick="this.parentElement.querySelectorAll('.ink-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="ink-dot"></span>
+      <span class="ink-letter">E</span>
+      <span class="ink-text">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+  <div class="ink-footer">
+    <div class="ink-fbtn-group">
+      <button class="ink-fbtn">📋 Gabarito</button>
+      <button class="ink-fbtn">📊 Estatísticas</button>
+      <span class="ink-sep"></span>
+      <button class="ink-fbtn active">💬 <span class="ct">3</span></button>
+      <button class="ink-fbtn">✏️</button>
+      <button class="ink-fbtn">🚩</button>
+    </div>
+    <button class="ink-submit">Responder</button>
+  </div>
+</div>
+
+</body>
+</html>

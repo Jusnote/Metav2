@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fafafa; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; padding: 20px; }
+  .demo { max-width: 900px; margin: 0 auto; }
+  .demo-label { font-size: 10px; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .demo-sublabel { font-size: 11px; color: #71717a; margin-bottom: 16px; }
+  .page-bg { background: #fff; padding: 0; overflow: hidden; }
+
+  /* Shared layout — same in both modes */
+  .page-container { display: flex; gap: 0; padding: 24px 32px; }
+  .left-col { width: 170px; flex-shrink: 0; padding-right: 20px; position: sticky; top: 24px; align-self: flex-start; }
+  .main-col { flex: 1; min-width: 0; }
+
+  /* Toggle */
+  .mode-toggle {
+    display: inline-flex;
+    background: #f4f4f5;
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 16px;
+  }
+  .mode-btn {
+    padding: 5px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #a1a1aa;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: all 0.15s;
+  }
+  .mode-btn.active {
+    background: #18181b;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  /* Left nav — shared style */
+  .left-nav-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .left-nav-items {
+    border-left: 1.5px solid #e5e7eb;
+    padding-left: 0;
+  }
+  .left-nav-item {
+    display: block;
+    padding: 5px 0 5px 12px;
+    margin-left: -1.5px;
+    font-size: 12px;
+    color: #a1a1aa;
+    border-left: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.1s;
+    text-decoration: none;
+  }
+  .left-nav-item:hover { color: #18181b; border-left-color: #18181b; }
+  .left-nav-item.active { color: #18181b; font-weight: 600; border-left-color: #18181b; }
+
+  /* Discipline section header — same in both modes */
+  .disc-header {
+    margin-bottom: 6px;
+  }
+  .disc-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .disc-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #18181b;
+    letter-spacing: -0.3px;
+    margin-top: 2px;
+    line-height: 1.2;
+  }
+  .disc-meta {
+    font-size: 11px;
+    color: #a1a1aa;
+    margin-top: 4px;
+  }
+  .disc-progress {
+    margin-top: 8px;
+    height: 3px;
+    background: #f4f4f5;
+    border-radius: 2px;
+    max-width: 200px;
+  }
+  .disc-progress-fill { height: 100%; border-radius: 2px; background: #18181b; }
+
+  /* Topic/Activity rows — nearly identical in both modes */
+  .rows-container {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    margin-top: 12px;
+    margin-bottom: 32px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    border-bottom: 1px solid #f4f4f5;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: #fafaf9; }
+  .row.selected { background: #f5f3ff; }
+  .row.done { opacity: 0.45; }
+  .row.next { background: #fafaf9; }
+
+  .row-indicator {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .row-indicator.dot-default { background: #d4d4d8; }
+  .row-indicator.dot-progress { background: #6366f1; }
+  .row-indicator.dot-done { background: #22c55e; }
+
+  .row-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .row-check.done { background: #22c55e; }
+  .row-check.play { background: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .row-check.pending { border: 1.5px solid #d4d4d8; background: #fff; }
+
+  .row-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #18181b;
+    flex: 1;
+    min-width: 0;
+  }
+  .row.done .row-name { color: #a1a1aa; text-decoration: line-through; }
+  .row-sub {
+    font-size: 10px;
+    color: #a1a1aa;
+    margin-top: 1px;
+  }
+
+  .row-meta {
+    font-size: 10px;
+    color: #a1a1aa;
+    flex-shrink: 0;
+  }
+  .row-hover-action {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6366f1;
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity 0.15s;
+  }
+  .row:hover .row-hover-action { opacity: 1; }
+
+  /* Type badge — only in cronograma */
+  .type-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .type-pill.estudo { background: #eef2ff; color: #4338ca; }
+  .type-pill.revisao { background: #fef3c7; color: #92400e; }
+  .type-pill.questoes { background: #fff7ed; color: #9a3412; }
+  .type-pill.lei { background: #ecfeff; color: #155e75; }
+
+  /* Next activity expanded */
+  .next-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .btn-primary {
+    padding: 7px 16px;
+    background: #18181b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn-primary:hover { transform: translateY(-0.5px); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .btn-ghost {
+    padding: 7px 12px;
+    background: #f4f4f5;
+    color: #71717a;
+    border: none;
+    border-radius: 8px;
+    font-size: 10px;
+    cursor: pointer;
+  }
+
+  /* Calendar mini strip for left col */
+  .cal-strip { margin-bottom: 12px; }
+  .cal-strip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .cal-strip-header span { font-size: 10px; font-weight: 700; color: #18181b; }
+  .cal-strip-header button { background: none; border: none; color: #a1a1aa; font-size: 10px; cursor: pointer; }
+  .cal-days {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cal-day-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .cal-day-row:hover { background: #f4f4f5; }
+  .cal-day-row.today { background: #18181b; border-radius: 8px; }
+  .cal-day-row .wd { font-size: 9px; font-weight: 600; color: #a1a1aa; width: 22px; }
+  .cal-day-row.today .wd { color: #71717a; }
+  .cal-day-row .dn { font-size: 12px; font-weight: 700; color: #18181b; width: 18px; }
+  .cal-day-row.today .dn { color: #fff; }
+  .cal-day-row .dots { display: flex; gap: 2px; }
+  .cal-day-row .dot { width: 4px; height: 4px; border-radius: 50%; }
+
+  /* Day summary in cronograma */
+  .day-summary {
+    padding: 12px 0;
+    border-bottom: 1px solid #f4f4f5;
+    margin-bottom: 20px;
+  }
+  .day-summary h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #18181b;
+    letter-spacing: -0.5px;
+  }
+  .day-summary .meta { font-size: 11px; color: #a1a1aa; margin-top: 3px; }
+  .day-progress {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .day-progress-bar {
+    flex: 1;
+    max-width: 160px;
+    height: 3px;
+    background: #f4f4f5;
+    border-radius: 2px;
+  }
+  .day-progress-fill { height: 100%; background: #18181b; border-radius: 2px; }
+  .day-progress-label { font-size: 11px; font-weight: 700; color: #18181b; }
+
+  .footer-note {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #fafaf9;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 11px;
+    color: #71717a;
+  }
+  .footer-note strong { color: #18181b; }
+</style>
+</head>
+<body>
+
+<div class="demo">
+
+  <!-- ===== MODO EDITAL (referência) ===== -->
+  <div class="demo-label">Modo Edital — como está hoje</div>
+  <div class="demo-sublabel">Layout real: centralizado, TOC à esquerda, disciplinas com tópicos</div>
+
+  <div class="page-bg" style="border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 32px;">
+    <div class="page-container">
+      <!-- Left -->
+      <div class="left-col">
+        <div class="mode-toggle">
+          <button class="mode-btn active">📋 Edital</button>
+          <button class="mode-btn">📅 Crono</button>
+        </div>
+        <div class="left-nav-title">Navegação</div>
+        <div class="left-nav-items">
+          <a class="left-nav-item active">Dir. Penal</a>
+          <a class="left-nav-item">Dir. Constitucional</a>
+          <a class="left-nav-item">Dir. Administrativo</a>
+          <a class="left-nav-item">Português</a>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="main-col">
+        <div class="disc-header">
+          <div class="disc-label">Disciplina</div>
+          <div class="disc-title">Direito Penal</div>
+          <div class="disc-meta">5 tópicos · 28h estimadas</div>
+          <div class="disc-progress"><div class="disc-progress-fill" style="width: 60%;"></div></div>
+        </div>
+
+        <div class="rows-container">
+          <div class="row done">
+            <div class="row-indicator dot-done"></div>
+            <div style="flex: 1;"><div class="row-name">Homicídio</div><div class="row-sub">Art. 121 CP · Concluído · 5h32</div></div>
+            <div class="row-meta">82%</div>
+            <div class="row-hover-action">Estudar →</div>
+          </div>
+          <div class="row selected">
+            <div class="row-indicator dot-progress"></div>
+            <div style="flex: 1;"><div class="row-name">Lesão Corporal</div><div class="row-sub">Art. 129 CP · Em andamento · 45min</div></div>
+            <div class="row-meta">40%</div>
+            <div class="row-hover-action">Estudar →</div>
+          </div>
+          <div class="row">
+            <div class="row-indicator dot-default"></div>
+            <div style="flex: 1;"><div class="row-name">Furto e Roubo</div><div class="row-sub">Art. 155-157 CP · Agendado 12/04</div></div>
+            <div class="row-meta">~5h</div>
+            <div class="row-hover-action">Estudar →</div>
+          </div>
+          <div class="row done">
+            <div class="row-indicator dot-done"></div>
+            <div style="flex: 1;"><div class="row-name">Crimes contra a Admin. Pública</div><div class="row-sub">Concluído · 4h10</div></div>
+            <div class="row-meta">90%</div>
+          </div>
+          <div class="row">
+            <div class="row-indicator dot-default"></div>
+            <div style="flex: 1;"><div class="row-name">Crimes contra a Fé Pública</div><div class="row-sub">Art. 289-311 CP · ~4h estimado</div></div>
+            <div class="row-meta">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODO CRONOGRAMA ===== -->
+  <div class="demo-label">Modo Cronograma — mesma estrutura, dados diferentes</div>
+  <div class="demo-sublabel">Mesmo layout centralizado. Esquerda vira calendário vertical. Atividades agrupadas por disciplina na mesma ordem visual.</div>
+
+  <div class="page-bg" style="border-radius: 12px; border: 1px solid #e5e7eb;">
+    <div class="page-container">
+      <!-- Left — Calendar vertical -->
+      <div class="left-col">
+        <div class="mode-toggle">
+          <button class="mode-btn">📋 Edital</button>
+          <button class="mode-btn active">📅 Crono</button>
+        </div>
+
+        <div class="cal-strip">
+          <div class="cal-strip-header">
+            <button>‹</button>
+            <span>Abril 2026</span>
+            <button>›</button>
+          </div>
+          <div class="cal-days">
+            <div class="cal-day-row">
+              <span class="wd">Seg</span>
+              <span class="dn" style="color: #22c55e;">7</span>
+              <div class="dots"><div class="dot" style="background: #22c55e;"></div></div>
+            </div>
+            <div class="cal-day-row today">
+              <span class="wd">Ter</span>
+              <span class="dn">8</span>
+              <div class="dots">
+                <div class="dot" style="background: #4f46e5;"></div>
+                <div class="dot" style="background: #d97706;"></div>
+                <div class="dot" style="background: #ea580c;"></div>
+                <div class="dot" style="background: #0891b2;"></div>
+              </div>
+            </div>
+            <div class="cal-day-row">
+              <span class="wd">Qua</span>
+              <span class="dn" style="color: #6366f1;">9</span>
+              <div class="dots"><div class="dot" style="background: #6366f1;"></div><div class="dot" style="background: #6366f1;"></div></div>
+            </div>
+            <div class="cal-day-row">
+              <span class="wd">Qui</span>
+              <span class="dn" style="color: #6366f1;">10</span>
+              <div class="dots"><div class="dot" style="background: #6366f1;"></div></div>
+            </div>
+            <div class="cal-day-row">
+              <span class="wd">Sex</span>
+              <span class="dn" style="color: #6366f1;">11</span>
+              <div class="dots"><div class="dot" style="background: #6366f1;"></div><div class="dot" style="background: #6366f1;"></div></div>
+            </div>
+            <div class="cal-day-row">
+              <span class="wd">Sáb</span>
+              <span class="dn" style="color: #d4d4d8;">12</span>
+              <div class="dots"></div>
+            </div>
+            <div class="cal-day-row">
+              <span class="wd">Dom</span>
+              <span class="dn" style="color: #d4d4d8;">13</span>
+              <div class="dots"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 9px; color: #a1a1aa; padding-top: 8px; border-top: 1px solid #f4f4f5;">
+          <div>Nota: <strong style="color: #18181b; font-size: 12px;">76</strong>/100</div>
+          <div style="margin-top: 2px; color: #22c55e; font-weight: 600;">▲+2 esta semana</div>
+        </div>
+      </div>
+
+      <!-- Main — Day activities grouped by discipline -->
+      <div class="main-col">
+
+        <div class="day-summary">
+          <h1>Terça, 8 de Abril</h1>
+          <div class="meta">4 atividades · 1h50 total · TRF 3ª Região</div>
+          <div class="day-progress">
+            <div class="day-progress-bar"><div class="day-progress-fill" style="width: 25%;"></div></div>
+            <div class="day-progress-label">25%</div>
+          </div>
+        </div>
+
+        <!-- Dir. Penal -->
+        <div class="disc-header" style="margin-bottom: 0;">
+          <div class="disc-label">Dir. Penal</div>
+        </div>
+        <div class="rows-container" style="margin-top: 6px; margin-bottom: 20px;">
+          <div class="row done">
+            <div class="row-check done">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div style="flex: 1;"><div class="row-name">Homicídio — Parte 1</div><div class="row-sub">CP Art. 121 · Estudo inicial</div></div>
+            <div class="type-pill estudo">📖 Estudo</div>
+            <div class="row-meta">40min ✓</div>
+          </div>
+        </div>
+
+        <!-- Dir. Constitucional -->
+        <div class="disc-header" style="margin-bottom: 0;">
+          <div class="disc-label">Dir. Constitucional</div>
+        </div>
+        <div class="rows-container" style="margin-top: 6px; margin-bottom: 20px;">
+          <div class="row next">
+            <div class="row-check play">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+            <div style="flex: 1;">
+              <div class="row-name">Dir. Fundamentais — Revisão 2</div>
+              <div class="row-sub">CF Art. 5° · Última revisão: 82% · Foque em exceções</div>
+              <div class="next-actions">
+                <button class="btn-primary">▶ Iniciar Revisão</button>
+                <button class="btn-ghost">Adiar</button>
+              </div>
+            </div>
+            <div class="type-pill revisao">🔄 Revisão</div>
+            <div class="row-meta">15min</div>
+          </div>
+        </div>
+
+        <!-- Dir. Administrativo -->
+        <div class="disc-header" style="margin-bottom: 0;">
+          <div class="disc-label">Dir. Administrativo</div>
+        </div>
+        <div class="rows-container" style="margin-top: 6px; margin-bottom: 20px;">
+          <div class="row">
+            <div class="row-check pending"></div>
+            <div style="flex: 1;"><div class="row-name">Atos Administrativos — Questões</div><div class="row-sub">15 questões selecionadas · Vícios e anulação</div></div>
+            <div class="type-pill questoes">❓ Questões</div>
+            <div class="row-meta">30min</div>
+          </div>
+        </div>
+
+        <!-- Dir. Constitucional (outra atividade) -->
+        <div class="disc-header" style="margin-bottom: 0;">
+          <div class="disc-label">Dir. Constitucional</div>
+        </div>
+        <div class="rows-container" style="margin-top: 6px; margin-bottom: 20px;">
+          <div class="row">
+            <div class="row-check pending"></div>
+            <div style="flex: 1;"><div class="row-name">Poder Judiciário — Lei Seca</div><div class="row-sub">CF Art. 92-126 · Organização e competências</div></div>
+            <div class="type-pill lei">⚖️ Lei Seca</div>
+            <div class="row-meta">25min</div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          🏁 Ao concluir tudo hoje: <strong>+1.8 pontos</strong> na nota · Projeção: <strong>77.8/100</strong>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

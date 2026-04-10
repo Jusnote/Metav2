@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipografia — Comparação de Leitura</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f0f0; padding: 40px 20px; display: flex; flex-direction: column; gap: 56px; align-items: center; }
+
+  .section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #7c3aed;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: -36px;
+    text-align: center;
+  }
+  .section-note {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #71717a;
+    text-align: center;
+    margin-bottom: -36px;
+    max-width: 600px;
+  }
+
+  .card-wrap {
+    width: 100%;
+    max-width: 720px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02);
+    overflow: hidden;
+  }
+
+  .qc-header {
+    padding: 16px 32px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .qc-materia { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: #7c3aed; }
+  .qc-meta { font-family: 'Inter', sans-serif; font-size: 11px; color: #b0b0b0; }
+  .qc-meta b { color: #6b6b6b; font-weight: 600; }
+
+  /* ── Alternatives shared ── */
+  .qc-alternatives { display: flex; flex-direction: column; }
+
+  .qc-alt {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    border-left: 3px solid transparent;
+  }
+  .qc-alt:hover {
+    background: #faf8ff;
+    border-left-color: #e4d4fc;
+  }
+  .qc-alt.selected {
+    background: #f8f5ff;
+    border-left-color: #7c3aed;
+  }
+
+  .qc-letter {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #c0c0c0;
+    flex-shrink: 0;
+    width: 20px;
+    margin-top: 3px;
+    transition: color 0.12s;
+  }
+  .qc-alt:hover .qc-letter { color: #7c3aed; }
+  .qc-alt.selected .qc-letter { color: #7c3aed; }
+
+  /* ── Footer ── */
+  .qc-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .qc-footer-left { display: flex; align-items: center; gap: 2px; }
+  .qc-fbtn {
+    padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #9ca3af;
+    cursor: pointer; border: none; background: transparent; font-family: 'Inter', sans-serif; font-weight: 500;
+    display: flex; align-items: center; gap: 5px; transition: all 0.12s;
+  }
+  .qc-fbtn:hover { background: #f5f5f5; color: #52525b; }
+  .qc-fbtn.active { background: #f5f3ff; color: #7c3aed; }
+  .qc-fbtn .badge { background: #7c3aed; color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+  .separator { width: 1px; height: 14px; background: #f0f0f0; margin: 0 6px; }
+
+  .qc-submit {
+    background: #18181b; color: white; font-size: 13px; padding: 10px 32px;
+    border-radius: 10px; font-weight: 700; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; letter-spacing: -0.01em; transition: all 0.15s;
+  }
+  .qc-submit:hover { background: #27272a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPTION A: Inter — clean, modern            -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-label">Opção A — Inter</div>
+<p class="section-note">Sans-serif geométrica. Limpa e moderna. Boa para scanning rápido.</p>
+<div class="card-wrap">
+  <div class="qc-header">
+    <span class="qc-materia">Direito Penal · Crimes contra a Administração Pública</span>
+    <span class="qc-meta"><b>CESPE</b> · 2024 · TRF-1ª Região</span>
+  </div>
+
+  <div style="padding: 32px 36px 28px; font-family: 'Inter', sans-serif; font-size: 15.5px; line-height: 1.9; color: #2b2b2b; font-weight: 400; letter-spacing: -0.01em;">
+    A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.
+  </div>
+
+  <div class="qc-alternatives" style="padding: 0 16px 24px;">
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">A</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">B</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">C</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">D</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">E</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+
+  <div class="qc-footer">
+    <div class="qc-footer-left">
+      <button class="qc-fbtn">📋 Gabarito</button>
+      <button class="qc-fbtn">📊 Estatísticas</button>
+      <span class="separator"></span>
+      <button class="qc-fbtn active">💬 <span class="badge">3</span></button>
+      <button class="qc-fbtn">✏️</button>
+      <button class="qc-fbtn">🚩</button>
+    </div>
+    <button class="qc-submit">Responder</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPTION B: Literata — warm serif             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-label">Opção B — Literata</div>
+<p class="section-note">Serif otimizada para telas. Ritmo de leitura ótimo para textos longos. Já usada na Lei Seca.</p>
+<div class="card-wrap">
+  <div class="qc-header">
+    <span class="qc-materia">Direito Penal · Crimes contra a Administração Pública</span>
+    <span class="qc-meta"><b>CESPE</b> · 2024 · TRF-1ª Região</span>
+  </div>
+
+  <div style="padding: 32px 40px 28px; font-family: 'Literata', Georgia, serif; font-size: 16px; line-height: 2; color: #2a2a2a; font-weight: 400; font-optical-sizing: auto;">
+    A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.
+  </div>
+
+  <div class="qc-alternatives" style="padding: 0 20px 24px;">
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">A</span>
+      <span style="font-family:'Literata',Georgia,serif;font-size:15px;line-height:1.85;color:#363636;font-weight:400;">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">B</span>
+      <span style="font-family:'Literata',Georgia,serif;font-size:15px;line-height:1.85;color:#363636;font-weight:400;">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">C</span>
+      <span style="font-family:'Literata',Georgia,serif;font-size:15px;line-height:1.85;color:#363636;font-weight:400;">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">D</span>
+      <span style="font-family:'Literata',Georgia,serif;font-size:15px;line-height:1.85;color:#363636;font-weight:400;">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">E</span>
+      <span style="font-family:'Literata',Georgia,serif;font-size:15px;line-height:1.85;color:#363636;font-weight:400;">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+
+  <div class="qc-footer">
+    <div class="qc-footer-left">
+      <button class="qc-fbtn">📋 Gabarito</button>
+      <button class="qc-fbtn">📊 Estatísticas</button>
+      <span class="separator"></span>
+      <button class="qc-fbtn active">💬 <span class="badge">3</span></button>
+      <button class="qc-fbtn">✏️</button>
+      <button class="qc-fbtn">🚩</button>
+    </div>
+    <button class="qc-submit">Responder</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPTION C: Source Serif + Inter (hybrid)     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-label">Opção C — Source Serif 4 (enunciado) + Inter (alternativas)</div>
+<p class="section-note">Serif para o enunciado longo (leitura profunda), sans para alternativas (scanning rápido). Dois ritmos.</p>
+<div class="card-wrap">
+  <div class="qc-header">
+    <span class="qc-materia">Direito Penal · Crimes contra a Administração Pública</span>
+    <span class="qc-meta"><b>CESPE</b> · 2024 · TRF-1ª Região</span>
+  </div>
+
+  <div style="padding: 32px 40px 28px; font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 2; color: #252525; font-weight: 400; font-optical-sizing: auto;">
+    A respeito dos crimes contra a administração pública previstos no Código Penal, julgue os itens que se seguem. A consumação do crime de peculato exige a efetiva apropriação do bem, não bastando o mero desvio da finalidade pública, sendo punível apenas na modalidade dolosa conforme a literalidade do art. 312.
+  </div>
+
+  <div class="qc-alternatives" style="padding: 0 20px 24px;">
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">A</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">B</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse ou sentimento pessoal.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">C</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">D</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Corrupção passiva exige a efetiva obtenção da vantagem indevida para sua consumação.</span>
+    </div>
+    <div class="qc-alt" onclick="this.parentElement.querySelectorAll('.qc-alt').forEach(a=>a.classList.remove('selected'));this.classList.add('selected')">
+      <span class="qc-letter">E</span>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.75;color:#404040;font-weight:400;">Excesso de exação constitui forma qualificada do crime de concussão previsto no art. 316.</span>
+    </div>
+  </div>
+
+  <div class="qc-footer">
+    <div class="qc-footer-left">
+      <button class="qc-fbtn">📋 Gabarito</button>
+      <button class="qc-fbtn">📊 Estatísticas</button>
+      <span class="separator"></span>
+      <button class="qc-fbtn active">💬 <span class="badge">3</span></button>
+      <button class="qc-fbtn">✏️</button>
+      <button class="qc-fbtn">🚩</button>
+    </div>
+    <button class="qc-submit">Responder</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Comparison table                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div style="max-width:720px;width:100%;font-family:'Inter',sans-serif;">
+  <table style="width:100%;font-size:12px;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <tr style="border-bottom:2px solid #f0f0f0;">
+      <td style="padding:12px 16px;font-weight:700;color:#52525b;"></td>
+      <td style="padding:12px 16px;font-weight:700;color:#52525b;">A — Inter</td>
+      <td style="padding:12px 16px;font-weight:700;color:#52525b;">B — Literata</td>
+      <td style="padding:12px 16px;font-weight:700;color:#52525b;">C — Híbrido</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f8f8f8;">
+      <td style="padding:10px 16px;font-weight:600;color:#71717a;">Enunciado</td>
+      <td style="padding:10px 16px;">Inter 15.5px / 1.9</td>
+      <td style="padding:10px 16px;">Literata 16px / 2.0</td>
+      <td style="padding:10px 16px;">Source Serif 16.5px / 2.0</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f8f8f8;">
+      <td style="padding:10px 16px;font-weight:600;color:#71717a;">Alternativas</td>
+      <td style="padding:10px 16px;">Inter 14.5px / 1.75</td>
+      <td style="padding:10px 16px;">Literata 15px / 1.85</td>
+      <td style="padding:10px 16px;">Inter 14.5px / 1.75</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f8f8f8;">
+      <td style="padding:10px 16px;font-weight:600;color:#71717a;">Cor do texto</td>
+      <td style="padding:10px 16px;">#2b2b2b / #404040</td>
+      <td style="padding:10px 16px;">#2a2a2a / #363636</td>
+      <td style="padding:10px 16px;">#252525 / #404040</td>
+    </tr>
+    <tr style="border-bottom:1px solid #f8f8f8;">
+      <td style="padding:10px 16px;font-weight:600;color:#71717a;">Sensação</td>
+      <td style="padding:10px 16px;">Clean, tech, rápido</td>
+      <td style="padding:10px 16px;">Acadêmico, quente, lento</td>
+      <td style="padding:10px 16px;">Leitura profunda + scan</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 16px;font-weight:600;color:#71717a;">Peso extra (font)</td>
+      <td style="padding:10px 16px;color:#22c55e;">0 (já pode ter)</td>
+      <td style="padding:10px 16px;color:#22c55e;">0 (já no Lei Seca)</td>
+      <td style="padding:10px 16px;color:#f59e0b;">~30kb (Source Serif)</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

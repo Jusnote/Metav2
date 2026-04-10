@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispositivo — layout real + ícones overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600&family=Outfit:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: white; }
+
+  .page-container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 20px 20px 80px;
+    font-family: 'Literata', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: rgb(67, 80, 92);
+    text-align: justify;
+  }
+
+  /* ── Estrutura header — exact match ── */
+  .est-header {
+    text-align: center;
+    margin-top: 40px; margin-bottom: 4px;
+  }
+  .est-header .name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: #444; letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .est-header .epigrafe {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px; color: #999;
+    font-style: italic; margin-top: 2px;
+  }
+
+  /* ── Artigo — mb-2 ── */
+  .artigo {
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  /* ── Paragrafo — pl-[34px] mb-2 relative with › marker ── */
+  .paragrafo {
+    padding-left: 34px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .paragrafo::before {
+    content: '›';
+    position: absolute; left: 20px;
+    font-size: 14px; color: #d0d0d0;
+  }
+
+  /* ── Inciso — pl-[58px] mb-1.5 with › marker ── */
+  .inciso {
+    padding-left: 58px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .inciso::before {
+    content: '›';
+    position: absolute; left: 44px;
+    font-size: 13px; color: #d8d8d8;
+  }
+
+  /* ── Pena — pl-[34px] italic light ── */
+  .pena {
+    padding-left: 34px;
+    font-weight: 300; font-style: italic;
+    color: #aaa; font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  /* Bold prefix for Art/§ */
+  .num { font-weight: 600; }
+
+  /* Highlight (grifo) */
+  .hl { background: rgba(250,204,21,0.15); border-radius: 2px; padding: 0 2px; }
+
+  /* ── Overlay icons — position absolute, no layout shift ── */
+  .disp-wrap {
+    position: relative;
+  }
+  .disp-wrap:hover .icons { opacity: 1; }
+  .disp-wrap:hover { background: rgba(250,250,249,0.6); border-radius: 6px; margin-left: -4px; margin-right: -4px; padding-left: 4px; padding-right: 4px; }
+
+  .icons {
+    position: absolute;
+    right: 0; top: 2px;
+    display: flex; align-items: center; gap: 2px;
+    opacity: 0; transition: opacity 0.15s;
+    background: white;
+    border-radius: 8px; padding: 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    z-index: 5;
+  }
+  .icons.has-content { opacity: 1; }
+
+  .ib {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px; border: none; background: transparent;
+    color: #ccc; cursor: pointer; transition: all 0.12s;
+    font-size: 12px;
+  }
+  .ib:hover { background: #f0f0ef; color: #666; }
+  .ib.reacted { color: inherit; }
+
+  .isep { width: 1px; height: 12px; background: #eee; }
+
+  .dots-btn {
+    height: 24px;
+    display: flex; align-items: center; gap: 2px;
+    padding: 0 5px;
+    border-radius: 6px; border: none; background: transparent;
+    color: #ccc; cursor: pointer; transition: all 0.12s;
+  }
+  .dots-btn:hover { background: #f0f0ef; color: #666; }
+  .dots-btn.active { background: #eee; color: #444; }
+
+  .mini-badges { display: flex; align-items: center; gap: 2px; }
+  .mb { font-size: 9px; display: flex; align-items: center; gap: 1px; font-family: 'Inter'; }
+  .mb.comm { color: #7c3aed; }
+  .mb.note { color: #d97706; }
+  .mb .n { font-size: 8px; font-weight: 700; }
+  .msep { width: 1px; height: 8px; background: #e8e8e6; }
+
+  /* ── Footer — full width below dispositivo ── */
+  .disp-footer {
+    display: flex; align-items: center; gap: 1px;
+    padding: 5px 4px; margin-top: 4px;
+    background: #fafafa; border-radius: 8px;
+    animation: fs 0.2s ease-out;
+  }
+  @keyframes fs { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+  .ft {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 10px; border-radius: 7px;
+    border: none; background: transparent;
+    font-family: 'Inter'; font-size: 11px; font-weight: 500; color: #a0a0a0;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .ft:hover { background: white; color: #555; }
+  .ft.ac { background: white; color: #2563eb; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .ft.an { background: white; color: #d97706; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .ft .badge { font-size: 9px; font-weight: 700; }
+
+  .fsep { width: 1px; height: 12px; background: #e8e8e6; margin: 0 2px; }
+
+  .fa {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 8px; border-radius: 7px;
+    border: none; background: transparent;
+    font-family: 'Inter'; font-size: 10px; font-weight: 500; color: #bbb;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .fa:hover { background: white; color: #555; }
+  .fa svg { opacity: 0.4; }
+  .fa:hover svg { opacity: 0.7; }
+
+  /* ── Comments ── */
+  .cs {
+    margin-top: 4px; padding: 10px 14px;
+    background: #fafafa; border-radius: 8px;
+    animation: fs 0.2s ease-out;
+  }
+  .cm { display: flex; gap: 8px; padding: 7px 0; }
+  .cm + .cm { border-top: 1px solid #f0f0ee; }
+  .cm-av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#a78bfa); display: flex; align-items: center; justify-content: center; font-family: Inter; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+  .cm-bd { flex: 1; }
+  .cm-hd { display: flex; align-items: center; gap: 5px; font-family: Inter; font-size: 10px; }
+  .cm-nm { font-weight: 600; color: #3a3a3a; }
+  .cm-tm { color: #bbb; }
+  .cm-bg { font-size: 8px; font-weight: 600; color: #7c3aed; background: #f3f0ff; padding: 1px 5px; border-radius: 3px; }
+  .cm-tx { font-family: Nunito; font-size: 12.5px; line-height: 1.55; color: #555; margin-top: 2px; }
+  .cm-ac { display: flex; gap: 8px; margin-top: 3px; font-family: Inter; font-size: 9px; color: #ccc; }
+  .cm-ac button { border: none; background: none; color: inherit; cursor: pointer; font-family: inherit; font-size: inherit; }
+  .cm-ac button:hover { color: #666; }
+  .wr { margin-top: 6px; padding: 8px 12px; border: 1px solid #e8e8e6; border-radius: 8px; background: white; font-family: Inter; font-size: 11px; color: #bbb; cursor: pointer; width: 100%; text-align: left; }
+  .wr:hover { border-color: #d4d4d4; }
+
+  /* ── Note ── */
+  .ns { margin-top: 4px; padding: 10px 14px; background: #fffdf5; border-radius: 8px; border: 1px solid #fef3c7; animation: fs 0.2s ease-out; }
+  .ns-tx { font-family: Nunito; font-size: 12.5px; line-height: 1.55; color: #92400e; }
+  .ns-mt { font-family: Inter; font-size: 9px; color: #d4a574; margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- Estrutura header -->
+  <div class="est-header">
+    <div class="name">Capítulo I</div>
+    <div class="epigrafe">Dos crimes praticados por funcionário público contra a administração em geral</div>
+  </div>
+
+  <!-- Art. 312 — sem conteúdo, hover only -->
+  <div class="disp-wrap artigo">
+    <span class="num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio:
+    <div class="icons">
+      <button class="ib">♡</button>
+      <span class="isep"></span>
+      <button class="dots-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Pena -->
+  <div class="disp-wrap pena">
+    Pena — reclusão, de dois a doze anos, e multa.
+    <div class="icons">
+      <button class="ib">♡</button>
+      <span class="isep"></span>
+      <button class="dots-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- §1º — tem 3 comentários -->
+  <div class="disp-wrap paragrafo">
+    <span class="num">§ 1º</span> — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai, ou concorre para que seja subtraído, em proveito próprio ou alheio, valendo-se de facilidade que lhe proporciona a qualidade de funcionário.
+    <div class="icons has-content">
+      <button class="ib">♡</button>
+      <span class="isep"></span>
+      <button class="dots-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        <span class="mini-badges"><span class="mb comm">💬<span class="n">3</span></span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- §2º — tem reação 🔥 + nota + 2 comentários. FOOTER ABERTO tab Comunidade -->
+  <div class="disp-wrap paragrafo">
+    <span class="num"><span class="hl">§ 2º</span></span> — <span class="hl">Se o funcionário concorre culposamente para o crime de outrem:</span>
+    <div class="icons has-content" style="opacity:1;">
+      <button class="ib reacted">🔥</button>
+      <span class="isep"></span>
+      <button class="dots-btn active">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        <span class="mini-badges">
+          <span class="mb comm">💬<span class="n">2</span></span>
+          <span class="msep"></span>
+          <span class="mb note">✏️</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer bar -->
+  <div class="disp-footer" style="margin-left:34px;">
+    <button class="ft ac">💬 Comunidade <span class="badge" style="color:#2563eb;">2</span></button>
+    <button class="ft">✏️ Nota</button>
+    <div style="flex:1;"></div>
+    <button class="fa"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar</button>
+    <button class="fa"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg> Grifar</button>
+    <button class="fa"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg> Reportar</button>
+  </div>
+
+  <!-- Comments section -->
+  <div class="cs" style="margin-left:34px;">
+    <div class="cm">
+      <div class="cm-av">J</div>
+      <div class="cm-bd">
+        <div class="cm-hd">
+          <span class="cm-nm">João Silva</span>
+          <span class="cm-bg">Professor</span>
+          <span class="cm-tm">· 2h</span>
+        </div>
+        <div class="cm-tx">O peculato culposo é o único crime contra a administração pública que admite modalidade culposa. A pena é significativamente menor (detenção de 3 meses a 1 ano).</div>
+        <div class="cm-ac">
+          <button>▲ 12</button>
+          <button>Responder</button>
+          <button>❤️ 3</button>
+        </div>
+      </div>
+    </div>
+    <div class="cm">
+      <div class="cm-av">M</div>
+      <div class="cm-bd">
+        <div class="cm-hd">
+          <span class="cm-nm">Maria Santos</span>
+          <span class="cm-tm">· 1h</span>
+        </div>
+        <div class="cm-tx">O §3º trata da reparação do dano. Se antes da sentença irrecorrível → extingue punibilidade. Se depois → reduz metade da pena.</div>
+        <div class="cm-ac">
+          <button>▲ 5</button>
+          <button>Responder</button>
+        </div>
+      </div>
+    </div>
+    <button class="wr">Escreva um comentário...</button>
+  </div>
+
+  <!-- Pena do §2 — continua normal abaixo -->
+  <div class="disp-wrap pena" style="margin-top:8px;">
+    Pena — detenção, de três meses a um ano.
+    <div class="icons">
+      <button class="ib">♡</button>
+      <span class="isep"></span>
+      <button class="dots-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- §3º — tem nota, footer tab Nota aberto -->
+  <div class="disp-wrap paragrafo">
+    <span class="num">§ 3º</span> — No caso do parágrafo anterior, a reparação do dano, se precede à sentença irrecorrível, extingue a punibilidade; se lhe é posterior, reduz de metade a pena imposta.
+    <div class="icons has-content" style="opacity:1;">
+      <button class="ib reacted">📌</button>
+      <span class="isep"></span>
+      <button class="dots-btn active">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        <span class="mini-badges"><span class="mb note">✏️</span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer — nota active -->
+  <div class="disp-footer" style="margin-left:34px;">
+    <button class="ft">💬 Comunidade</button>
+    <button class="ft an">✏️ Nota</button>
+    <div style="flex:1;"></div>
+    <button class="fa"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar</button>
+    <button class="fa"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg> Grifar</button>
+    <button class="fa"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg> Reportar</button>
+  </div>
+
+  <!-- Note -->
+  <div class="ns" style="margin-left:34px;">
+    <div class="ns-tx">ATENÇÃO: Reparação do dano no peculato culposo ≠ arrependimento posterior (art. 16). Marco temporal: sentença irrecorrível (não denúncia). Antes = extinção. Depois = redução ½.</div>
+    <div class="ns-mt">Editado há 3 dias</div>
+  </div>
+
+  <!-- Art 313 — limpo -->
+  <div style="height:1px;background:#f0efed;margin:16px 0;"></div>
+
+  <div class="disp-wrap artigo">
+    <span class="num">Art. 313</span> — Apropriar-se de dinheiro ou qualquer utilidade que, no exercício do cargo, recebeu por erro de outrem:
+    <div class="icons">
+      <button class="ib">♡</button>
+      <span class="isep"></span>
+      <button class="dots-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp-wrap pena">
+    Pena — reclusão, de um a quatro anos, e multa.
+    <div class="icons">
+      <button class="ib">♡</button>
+      <span class="isep"></span>
+      <button class="dots-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Moderação</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #111827; padding: 24px; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
+  .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin: 28px 0 12px; }
+
+  /* Page layout */
+  .page { background: white; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+  .page-header { padding: 20px 24px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; }
+  .page-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .page-stats { display: flex; gap: 16px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 20px; font-weight: 700; }
+  .stat-num.red { color: #EF4444; }
+  .stat-num.amber { color: #D97706; }
+  .stat-num.zinc { color: #71717a; }
+  .stat-label { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Tabs */
+  .tabs { display: flex; border-bottom: 1px solid #f3f4f6; padding: 0 24px; }
+  .tab { padding: 10px 16px; font-size: 13px; font-weight: 500; color: #9ca3af; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.active { color: #2563EB; border-bottom-color: #2563EB; }
+  .tab .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 9px; font-size: 10px; font-weight: 700; margin-left: 6px; padding: 0 5px; }
+  .tab .badge.red { background: #fef2f2; color: #EF4444; }
+  .tab .badge.amber { background: #fffbeb; color: #D97706; }
+
+  /* Filters */
+  .filters { display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-bottom: 1px solid #f3f4f6; }
+  .filter-pill { padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb; color: #6b7280; cursor: pointer; background: white; }
+  .filter-pill.active { background: #eff6ff; border-color: #bfdbfe; color: #2563EB; }
+  .filter-pill:hover { border-color: #d1d5db; }
+
+  /* Report list */
+  .report-list { padding: 0; }
+  .report-item { display: flex; gap: 12px; padding: 16px 24px; border-bottom: 1px solid #f3f4f6; transition: background 0.15s; }
+  .report-item:hover { background: #fafbfc; }
+  .report-item:last-child { border-bottom: none; }
+
+  .report-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+  .report-content { flex: 1; min-width: 0; }
+  .report-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+  .report-author { font-size: 13px; font-weight: 600; }
+  .report-time { font-size: 11px; color: #c0c0c0; }
+  .report-reason { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  .reason-spam { background: #fef2f2; color: #EF4444; }
+  .reason-ofensivo { background: #fef2f2; color: #EF4444; }
+  .reason-errado { background: #fffbeb; color: #D97706; }
+  .reason-outro { background: #f3f4f6; color: #6b7280; }
+  .report-count { font-size: 10px; color: #EF4444; font-weight: 600; }
+  .report-text { font-size: 13px; color: #4b5563; line-height: 1.5; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .report-meta { font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .report-actions { display: flex; gap: 6px; }
+  .action-btn { padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 500; border: none; cursor: pointer; }
+  .action-keep { background: #f0fdf4; color: #16a34a; }
+  .action-keep:hover { background: #dcfce7; }
+  .action-delete { background: #fef2f2; color: #EF4444; }
+  .action-delete:hover { background: #fee2e2; }
+  .action-timeout { background: #fffbeb; color: #D97706; }
+  .action-timeout:hover { background: #fef3c7; }
+  .action-view { background: #f3f4f6; color: #6b7280; }
+  .action-view:hover { background: #e5e7eb; }
+
+  /* User list */
+  .user-item { display: flex; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #f3f4f6; }
+  .user-item:last-child { border-bottom: none; }
+  .user-info { flex: 1; }
+  .user-name { font-size: 13px; font-weight: 600; }
+  .user-email { font-size: 11px; color: #9ca3af; }
+  .user-status { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .status-timeout { background: #fffbeb; color: #D97706; }
+  .status-shadow { background: #f3f4f6; color: #6b7280; }
+  .status-banned { background: #fef2f2; color: #EF4444; }
+  .user-detail { font-size: 11px; color: #9ca3af; text-align: right; }
+  .user-action { padding: 4px 10px; border-radius: 5px; font-size: 11px; border: 1px solid #e5e7eb; color: #6b7280; cursor: pointer; background: white; }
+  .user-action:hover { background: #f9fafb; }
+
+  /* Question reference */
+  .question-ref { font-size: 11px; color: #2563EB; cursor: pointer; display: flex; align-items: center; gap: 3px; }
+</style>
+</head>
+<body>
+
+<h2>Painel de Moderação</h2>
+<p class="subtitle">Rota: /moderacao — Acesso para professores e admins</p>
+
+<!-- Main page -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Moderação
+    </div>
+    <div class="page-stats">
+      <div class="stat">
+        <div class="stat-num red">12</div>
+        <div class="stat-label">Pendentes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num amber">3</div>
+        <div class="stat-label">Silenciados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num zinc">156</div>
+        <div class="stat-label">Resolvidos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active">Denúncias <span class="badge red">12</span></div>
+    <div class="tab">Usuários <span class="badge amber">3</span></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-pill active">Todos</div>
+    <div class="filter-pill">Spam</div>
+    <div class="filter-pill">Ofensivo</div>
+    <div class="filter-pill">Errado</div>
+    <div class="filter-pill">Outro</div>
+    <div style="flex: 1;"></div>
+    <div class="filter-pill">Mais recentes ▾</div>
+  </div>
+
+  <!-- Report list -->
+  <div class="report-list">
+
+    <!-- Report 1: Ofensivo, 3 reports -->
+    <div class="report-item">
+      <div class="report-avatar" style="background: linear-gradient(135deg, #EF4444, #F97316);"></div>
+      <div class="report-content">
+        <div class="report-header">
+          <span class="report-author">João Mendes</span>
+          <span class="report-time">2h atrás</span>
+          <span class="report-reason reason-ofensivo">Ofensivo</span>
+          <span class="report-count">× 3 denúncias</span>
+        </div>
+        <div class="report-text">
+          Quem errou essa questão é burro demais, não deveria nem estar fazendo concurso. Volta pro ensino médio antes de tentar...
+        </div>
+        <div class="report-meta">
+          <span class="question-ref">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Q 281089 · Dir. Constitucional
+          </span>
+          <span>Reportado por: Maria S., Pedro A., Ana C.</span>
+        </div>
+        <div class="report-actions">
+          <button class="action-btn action-keep">✓ Manter</button>
+          <button class="action-btn action-delete">✕ Deletar</button>
+          <button class="action-btn action-timeout">⏱ Silenciar 24h</button>
+          <button class="action-btn action-view">Ver questão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report 2: Spam -->
+    <div class="report-item">
+      <div class="report-avatar" style="background: linear-gradient(135deg, #10B981, #06B6D4);"></div>
+      <div class="report-content">
+        <div class="report-header">
+          <span class="report-author">Carlos Bot</span>
+          <span class="report-time">5h atrás</span>
+          <span class="report-reason reason-spam">Spam</span>
+          <span class="report-count">× 5 denúncias</span>
+        </div>
+        <div class="report-text">
+          🔥🔥🔥 GRUPO DE ESTUDOS NO TELEGRAM!! Entra lá gente!! t.me/concursosfacil 🔥🔥🔥 Material gratuito!!
+        </div>
+        <div class="report-meta">
+          <span class="question-ref">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Q 569696 · Dir. Administrativo
+          </span>
+          <span>Reportado por: 5 usuários</span>
+        </div>
+        <div class="report-actions">
+          <button class="action-btn action-keep">✓ Manter</button>
+          <button class="action-btn action-delete">✕ Deletar</button>
+          <button class="action-btn action-timeout">⏱ Silenciar 7d</button>
+          <button class="action-btn action-view">Ver questão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report 3: Errado -->
+    <div class="report-item">
+      <div class="report-avatar" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);"></div>
+      <div class="report-content">
+        <div class="report-header">
+          <span class="report-author">Fernanda Dias</span>
+          <span class="report-time">1d atrás</span>
+          <span class="report-reason reason-errado">Info errada</span>
+          <span class="report-count">× 1 denúncia</span>
+        </div>
+        <div class="report-text">
+          O gabarito é letra A porque o art. 37 diz que autarquias podem ser criadas por decreto. Tá na CF, pessoal.
+        </div>
+        <div class="report-meta">
+          <span class="question-ref">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Q 281089 · Dir. Constitucional
+          </span>
+          <span>Reportado por: Prof. Ricardo</span>
+        </div>
+        <div class="report-actions">
+          <button class="action-btn action-keep">✓ Manter</button>
+          <button class="action-btn action-delete">✕ Deletar</button>
+          <button class="action-btn action-view">Ver questão</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Aba Usuários -->
+<div class="section-label">Aba "Usuários" — silenciados / banidos</div>
+
+<div class="page">
+  <div class="tabs">
+    <div class="tab">Denúncias <span class="badge red">12</span></div>
+    <div class="tab active">Usuários <span class="badge amber">3</span></div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-pill active">Todos</div>
+    <div class="filter-pill">Silenciados</div>
+    <div class="filter-pill">Shadowban</div>
+    <div class="filter-pill">Banidos</div>
+  </div>
+
+  <!-- User list -->
+  <div class="user-item">
+    <div class="report-avatar" style="background: linear-gradient(135deg, #EF4444, #F97316);"></div>
+    <div class="user-info">
+      <div class="user-name">João Mendes</div>
+      <div class="user-email">joao.mendes@email.com</div>
+    </div>
+    <div class="user-status status-timeout">Silenciado 24h</div>
+    <div class="user-detail">
+      Expira em 18h<br>
+      <span style="font-size: 10px;">Motivo: Conteúdo ofensivo</span>
+    </div>
+    <button class="user-action">Remover</button>
+  </div>
+
+  <div class="user-item">
+    <div class="report-avatar" style="background: linear-gradient(135deg, #10B981, #06B6D4);"></div>
+    <div class="user-info">
+      <div class="user-name">Carlos Bot</div>
+      <div class="user-email">carlos.bot@email.com</div>
+    </div>
+    <div class="user-status status-shadow">Shadowban</div>
+    <div class="user-detail">
+      Desde 28/03<br>
+      <span style="font-size: 10px;">Motivo: Spam recorrente</span>
+    </div>
+    <button class="user-action">Remover</button>
+  </div>
+
+  <div class="user-item">
+    <div class="report-avatar" style="background: linear-gradient(135deg, #F43F5E, #EC4899);"></div>
+    <div class="user-info">
+      <div class="user-name">Lucas Troll</div>
+      <div class="user-email">lucas.troll@email.com</div>
+    </div>
+    <div class="user-status status-banned">Banido</div>
+    <div class="user-detail">
+      Permanente<br>
+      <span style="font-size: 10px;">Por: Admin em 25/03</span>
+    </div>
+    <button class="user-action">Remover ban</button>
+  </div>
+
+</div>
+
+</body>
+</html>

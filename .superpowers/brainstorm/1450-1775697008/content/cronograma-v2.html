@@ -1,0 +1,251 @@
+<style>
+  * { box-sizing: border-box; }
+  .page { display: flex; gap: 0; height: 580px; background: #fafafa; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .disc-sidebar { width: 200px; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
+  .central { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+</style>
+
+<h2>Cronograma Mode — Layout correto (DisciplinesSidebar + Central)</h2>
+<p class="subtitle">DisciplinesSidebar troca disciplinas por calendário. Central troca tópicos por planner do dia.</p>
+
+<!-- ====== MODO EDITAL (referência) ====== -->
+<div style="margin-bottom: 12px;">
+  <div style="font-size: 11px; font-weight: 600; color: #71717a; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Modo Edital (como está hoje)</div>
+  <div class="page" style="height: 120px; opacity: 0.5;">
+    <div class="disc-sidebar" style="padding: 8px; justify-content: center; text-align: center;">
+      <div style="font-size: 9px; color: #71717a;">[📋 Edital] [📅 Crono]</div>
+      <div style="font-size: 8px; color: #9ca3af; margin-top: 4px;">Disciplinas com ícones,<br/>progresso, botões</div>
+    </div>
+    <div class="central" style="padding: 12px; justify-content: center;">
+      <div style="font-size: 9px; color: #71717a; text-align: center;">Tópicos da disciplina selecionada como cards</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODO CRONOGRAMA ====== -->
+<div style="font-size: 11px; font-weight: 600; color: #18181b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Modo Cronograma (novo)</div>
+
+<div class="page">
+
+  <!-- ====== DISCIPLINES SIDEBAR → CALENDAR ====== -->
+  <div class="disc-sidebar">
+
+    <!-- Toggle -->
+    <div style="padding: 10px 10px 6px;">
+      <div style="display: flex; background: #f4f4f5; border-radius: 10px; padding: 3px;">
+        <div style="flex: 1; text-align: center; padding: 5px; border-radius: 8px; font-size: 9px; font-weight: 500; color: #9ca3af; cursor: pointer;">📋 Edital</div>
+        <div style="flex: 1; text-align: center; padding: 5px; background: #18181b; border-radius: 8px; font-size: 9px; font-weight: 700; color: white; cursor: pointer;">📅 Cronograma</div>
+      </div>
+    </div>
+
+    <!-- Week calendar with progress rings -->
+    <div style="padding: 4px 8px 8px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <span style="font-size: 8px; color: #9ca3af; cursor: pointer;">‹</span>
+        <span style="font-size: 9px; font-weight: 700; color: #18181b;">7 — 13 Abril</span>
+        <span style="font-size: 8px; color: #9ca3af; cursor: pointer;">›</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; justify-items: center;">
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">S</div>
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">T</div>
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">Q</div>
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">Q</div>
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">S</div>
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">S</div>
+        <div style="font-size: 6px; color: #9ca3af; font-weight: 600;">D</div>
+
+        <!-- 7 done -->
+        <div style="width: 24px; height: 24px; border-radius: 50%; background: conic-gradient(#22c55e 100%, #e5e7eb 0%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <div style="width: 17px; height: 17px; border-radius: 50%; background: #f0fdf4; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; color: #16a34a;">7</div>
+        </div>
+        <!-- 8 TODAY 25% -->
+        <div style="width: 26px; height: 26px; border-radius: 50%; background: conic-gradient(#18181b 25%, #e5e7eb 25%); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 0 2px #18181b;">
+          <div style="width: 18px; height: 18px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #18181b;">8</div>
+        </div>
+        <!-- 9 scheduled -->
+        <div style="width: 24px; height: 24px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <div style="width: 17px; height: 17px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca;">9</div>
+        </div>
+        <!-- 10 scheduled -->
+        <div style="width: 24px; height: 24px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <div style="width: 17px; height: 17px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca;">10</div>
+        </div>
+        <!-- 11 scheduled -->
+        <div style="width: 24px; height: 24px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <div style="width: 17px; height: 17px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca;">11</div>
+        </div>
+        <!-- 12 free -->
+        <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 8px; color: #d4d4d8;">12</div>
+        </div>
+        <!-- 13 free -->
+        <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 8px; color: #d4d4d8;">13</div>
+        </div>
+      </div>
+
+      <button style="width: 100%; margin-top: 6px; padding: 3px; background: #f4f4f5; border: none; border-radius: 5px; font-size: 7px; color: #9ca3af; cursor: pointer;">Ver mês completo ▾</button>
+    </div>
+
+    <div style="border-bottom: 1px solid #f4f4f5;"></div>
+
+    <!-- Day summary -->
+    <div style="padding: 10px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 800; color: #18181b;">Hoje · 8 Abr</div>
+      <div style="font-size: 8px; color: #71717a; margin-top: 2px;">4 atividades · 1h50</div>
+      <div style="margin-top: 6px; height: 4px; background: #e5e7eb; border-radius: 3px;">
+        <div style="width: 25%; height: 100%; background: #18181b; border-radius: 3px;"></div>
+      </div>
+      <div style="font-size: 7px; color: #9ca3af; margin-top: 3px;">1 de 4 concluída</div>
+    </div>
+
+    <div style="border-bottom: 1px solid #f4f4f5;"></div>
+
+    <!-- Week breakdown -->
+    <div style="padding: 8px 10px;">
+      <div style="font-size: 8px; font-weight: 600; color: #71717a; margin-bottom: 4px;">Esta semana</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 5px; height: 5px; background: #4f46e5; border-radius: 1px;"></div><span style="font-size: 7px; color: #71717a;">4h estudo</span></div>
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 5px; height: 5px; background: #d97706; border-radius: 1px;"></div><span style="font-size: 7px; color: #71717a;">1h revisão</span></div>
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 5px; height: 5px; background: #ea580c; border-radius: 1px;"></div><span style="font-size: 7px; color: #71717a;">2h quest.</span></div>
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 5px; height: 5px; background: #0891b2; border-radius: 1px;"></div><span style="font-size: 7px; color: #71717a;">1h30 lei</span></div>
+      </div>
+    </div>
+
+    <div style="flex: 1;"></div>
+
+    <!-- Nota + edital ref -->
+    <div style="padding: 8px 10px; border-top: 1px solid #f4f4f5;">
+      <div style="background: #f8f9ff; border: 1px solid #e0e7ff; border-radius: 8px; padding: 8px; text-align: center;">
+        <div style="font-size: 8px; color: #6366f1;">Nota estimada</div>
+        <div style="font-size: 16px; font-weight: 900; color: #18181b;">76<span style="font-size: 10px; color: #71717a;">/100</span></div>
+        <div style="font-size: 7px; color: #16a34a; font-weight: 600;">▲+2 esta semana</div>
+      </div>
+      <div style="font-size: 7px; color: #9ca3af; text-align: center; margin-top: 4px;">🏛️ TRF 3ª · Analista · 38 dias</div>
+    </div>
+  </div>
+
+  <!-- ====== CENTRAL: DAY PLANNER TIMELINE ====== -->
+  <div class="central">
+
+    <!-- Header do dia -->
+    <div style="padding: 16px 24px; border-bottom: 1px solid #e5e7eb; background: #fff;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+        <div>
+          <div style="font-size: 18px; font-weight: 900; color: #18181b; letter-spacing: -0.5px;">Terça-feira, 8 de Abril</div>
+          <div style="font-size: 9px; color: #71717a; margin-top: 2px;">4 atividades · 1h50 total</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 26px; font-weight: 900; color: #18181b; line-height: 1;">25%</div>
+          <div style="font-size: 7px; color: #71717a;">do dia</div>
+        </div>
+      </div>
+
+      <!-- Segmented progress bar -->
+      <div style="margin-top: 8px; height: 6px; background: #f4f4f5; border-radius: 4px; display: flex; overflow: hidden;">
+        <div style="width: 22%; background: #22c55e;"></div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 6px;">
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 7px; height: 7px; background: #4f46e5; border-radius: 2px;"></div><span style="font-size: 7px; color: #71717a;">📖 <b>40min</b></span></div>
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 7px; height: 7px; background: #d97706; border-radius: 2px;"></div><span style="font-size: 7px; color: #71717a;">🔄 <b>15min</b></span></div>
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 7px; height: 7px; background: #ea580c; border-radius: 2px;"></div><span style="font-size: 7px; color: #71717a;">❓ <b>30min</b></span></div>
+        <div style="display: flex; align-items: center; gap: 3px;"><div style="width: 7px; height: 7px; background: #0891b2; border-radius: 2px;"></div><span style="font-size: 7px; color: #71717a;">⚖️ <b>25min</b></span></div>
+      </div>
+    </div>
+
+    <!-- Timeline de atividades -->
+    <div style="flex: 1; overflow-y: auto; padding: 16px 24px;">
+
+      <!-- ATIVIDADE 1: CONCLUÍDA -->
+      <div style="display: flex; gap: 12px; margin-bottom: 2px; opacity: 0.55;">
+        <div style="display: flex; flex-direction: column; align-items: center; width: 20px; flex-shrink: 0;">
+          <div style="width: 20px; height: 20px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style="width: 2px; flex: 1; background: #d1fae5; min-height: 20px;"></div>
+        </div>
+        <div style="flex: 1; padding-bottom: 10px;">
+          <div style="font-size: 7px; font-weight: 600; color: #16a34a; margin-bottom: 3px;">CONCLUÍDA · 40min</div>
+          <div style="background: #fff; border: 1px solid #d1fae5; border-left: 4px solid #4f46e5; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+            <div style="font-size: 15px;">📖</div>
+            <div style="flex: 1;">
+              <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-decoration: line-through;">Homicídio — Parte 1</div>
+              <div style="font-size: 7px; color: #16a34a;">Dir. Penal · CP Art. 121 · Estudo inicial</div>
+            </div>
+            <span style="font-size: 11px; color: #22c55e;">✓</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATIVIDADE 2: PRÓXIMA -->
+      <div style="display: flex; gap: 12px; margin-bottom: 2px;">
+        <div style="display: flex; flex-direction: column; align-items: center; width: 20px; flex-shrink: 0;">
+          <div style="width: 22px; height: 22px; background: #18181b; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1; box-shadow: 0 0 0 3px rgba(24,24,27,0.12);">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div style="width: 2px; flex: 1; background: #e5e7eb; min-height: 20px;"></div>
+        </div>
+        <div style="flex: 1; padding-bottom: 10px;">
+          <div style="font-size: 7px; font-weight: 700; color: #18181b; margin-bottom: 3px;">PRÓXIMA · 15min</div>
+          <div style="background: #fff; border: 2px solid #18181b; border-left: 4px solid #d97706; border-radius: 10px; padding: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+              <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">🔄</div>
+              <div style="flex: 1;">
+                <div style="font-size: 11px; font-weight: 800; color: #18181b;">Dir. Fundamentais — Revisão 2</div>
+                <div style="font-size: 7px; color: #71717a;">Dir. Constitucional · CF Art. 5° · Última: 82%</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button style="flex: 1; background: #18181b; color: white; border: none; padding: 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer;">▶ Iniciar Revisão</button>
+              <button style="background: #f4f4f5; color: #71717a; border: none; padding: 8px 14px; border-radius: 8px; font-size: 8px; cursor: pointer;">Adiar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATIVIDADE 3: PENDENTE -->
+      <div style="display: flex; gap: 12px; margin-bottom: 2px;">
+        <div style="display: flex; flex-direction: column; align-items: center; width: 20px; flex-shrink: 0;">
+          <div style="width: 20px; height: 20px; background: #f4f4f5; border: 2px solid #d4d4d8; border-radius: 50%; z-index: 1;"></div>
+          <div style="width: 2px; flex: 1; background: #e5e7eb; min-height: 20px;"></div>
+        </div>
+        <div style="flex: 1; padding-bottom: 10px;">
+          <div style="font-size: 7px; font-weight: 600; color: #9ca3af; margin-bottom: 3px;">PENDENTE · 30min</div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-left: 4px solid #ea580c; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <div style="font-size: 15px;">❓</div>
+            <div style="flex: 1;">
+              <div style="font-size: 10px; font-weight: 700; color: #374151;">Atos Administrativos — Questões</div>
+              <div style="font-size: 7px; color: #71717a;">Dir. Administrativo · 15 questões selecionadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATIVIDADE 4: PENDENTE -->
+      <div style="display: flex; gap: 12px; margin-bottom: 2px;">
+        <div style="display: flex; flex-direction: column; align-items: center; width: 20px; flex-shrink: 0;">
+          <div style="width: 20px; height: 20px; background: #f4f4f5; border: 2px solid #d4d4d8; border-radius: 50%; z-index: 1;"></div>
+        </div>
+        <div style="flex: 1; padding-bottom: 10px;">
+          <div style="font-size: 7px; font-weight: 600; color: #9ca3af; margin-bottom: 3px;">PENDENTE · 25min</div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-left: 4px solid #0891b2; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <div style="font-size: 15px;">⚖️</div>
+            <div style="flex: 1;">
+              <div style="font-size: 10px; font-weight: 700; color: #374151;">Poder Judiciário — Lei Seca</div>
+              <div style="font-size: 7px; color: #71717a;">Dir. Constitucional · CF Art. 92-126</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RODAPÉ MOTIVACIONAL -->
+      <div style="margin-top: 4px; padding: 12px 14px; background: linear-gradient(135deg, #f8f9ff, #eef2ff); border: 1px solid #e0e7ff; border-radius: 10px; text-align: center;">
+        <div style="font-size: 12px; margin-bottom: 3px;">🏁</div>
+        <div style="font-size: 9px; font-weight: 700; color: #1e1b4b;">Ao concluir tudo hoje: +1.8 pontos</div>
+        <div style="font-size: 7px; color: #6366f1; margin-top: 1px;">Projeção: 77.8/100</div>
+      </div>
+
+    </div>
+  </div>
+</div>

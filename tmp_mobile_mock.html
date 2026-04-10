@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Mobile - Documents Organization</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+
+  .phone-frame {
+    width: 390px; height: 844px; margin: 20px auto;
+    background: #fff; border-radius: 40px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    position: relative; border: 8px solid #1a1a1a;
+  }
+
+  .notch {
+    width: 150px; height: 30px; background: #1a1a1a;
+    border-radius: 0 0 20px 20px; margin: 0 auto;
+    position: relative; z-index: 100;
+  }
+
+  /* Screen 1: Disciplinas */
+  .screen { position: absolute; top: 30px; left: 0; right: 0; bottom: 0; background: #fff; transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); }
+  .screen.hidden-right { transform: translateX(100%); }
+  .screen.hidden-left { transform: translateX(-100%); }
+
+  .screen-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .screen-header h1 { font-size: 22px; font-weight: 700; color: #111; }
+  .screen-header .subtitle { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 15px; color: #2563EB; font-weight: 500;
+    background: none; border: none; cursor: pointer; padding: 0;
+    margin-bottom: 8px;
+  }
+
+  /* Discipline cards */
+  .discipline-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+  .discipline-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px; border-radius: 14px; background: #fafafa;
+    border: 1px solid #eee; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .discipline-card:active { transform: scale(0.98); background: #f0f4ff; }
+
+  .discipline-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+
+  .discipline-info { flex: 1; min-width: 0; }
+  .discipline-name { font-size: 15px; font-weight: 600; color: #111; }
+  .discipline-meta { font-size: 12px; color: #888; margin-top: 2px; }
+  .discipline-progress {
+    width: 100%; height: 4px; background: #eee; border-radius: 2px; margin-top: 8px; overflow: hidden;
+  }
+  .discipline-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+  .discipline-arrow { color: #ccc; font-size: 18px; }
+
+  /* Topics screen */
+  .topics-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+  .topic-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border-radius: 12px; background: #fafafa;
+    border: 1px solid #eee; cursor: pointer; transition: all 0.2s;
+  }
+  .topic-card:active { transform: scale(0.98); background: #f0f4ff; }
+
+  .topic-check {
+    width: 22px; height: 22px; border-radius: 6px; border: 2px solid #ddd;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .topic-check.done { background: #22c55e; border-color: #22c55e; color: #fff; font-size: 12px; }
+  .topic-check.partial { border-color: #2563EB; }
+
+  .topic-info { flex: 1; }
+  .topic-name { font-size: 14px; font-weight: 500; color: #111; }
+  .topic-stats { font-size: 11px; color: #888; margin-top: 2px; }
+
+  .topic-stars { display: flex; gap: 2px; }
+  .star { width: 8px; height: 8px; border-radius: 50%; }
+  .star.filled { background: #2563EB; }
+  .star.empty { background: #ddd; }
+
+  /* Bottom Sheet Overlay */
+  .overlay {
+    position: absolute; top: 30px; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4); z-index: 50;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .overlay.visible { opacity: 1; pointer-events: auto; }
+
+  /* Bottom Sheet */
+  .bottom-sheet {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #fff; border-radius: 20px 20px 0 0;
+    z-index: 60; transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    max-height: 85%;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+  }
+  .bottom-sheet.half { transform: translateY(35%); }
+  .bottom-sheet.full { transform: translateY(0%); }
+
+  .sheet-handle {
+    width: 36px; height: 4px; background: #ddd; border-radius: 2px;
+    margin: 10px auto 0;
+  }
+
+  .sheet-header {
+    padding: 16px 20px 12px;
+  }
+  .sheet-module { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: #888; text-transform: uppercase; }
+  .sheet-title { font-size: 20px; font-weight: 700; color: #111; margin-top: 2px; }
+  .sheet-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; color: #888; }
+  .sheet-level { color: #2563EB; font-weight: 500; }
+
+  /* Importance bar in sheet */
+  .sheet-importance {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 20px; padding: 12px 16px;
+    background: #f8f9fa; border-radius: 12px;
+  }
+
+  .importance-ring {
+    width: 40px; height: 40px; position: relative; flex-shrink: 0;
+  }
+  .importance-ring svg { width: 40px; height: 40px; transform: rotate(-90deg); }
+  .importance-ring .value {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #111;
+  }
+
+  .importance-info .label { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: #888; text-transform: uppercase; }
+  .importance-info .priority { font-size: 13px; font-weight: 700; color: #2563EB; }
+  .importance-info .desc { font-size: 10px; color: #999; }
+
+  /* Materials in sheet */
+  .sheet-materials {
+    display: flex; gap: 8px; padding: 14px 20px; overflow-x: auto;
+  }
+
+  .material-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 10px;
+    background: #f8f9fa; border: 1px solid #eee;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .material-pill .icon { font-size: 14px; }
+  .material-pill .count { font-size: 13px; font-weight: 600; color: #111; }
+  .material-pill .type { font-size: 11px; color: #888; }
+
+  /* Sheet sections */
+  .sheet-section {
+    padding: 14px 20px;
+  }
+  .sheet-section-title { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 10px; }
+
+  .review-row {
+    display: flex; align-items: center; gap: 8px; padding: 6px 0;
+  }
+  .review-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .review-dot.green { background: #22c55e; }
+  .review-dot.orange { background: #f97316; }
+  .review-dot.gray { background: #ddd; }
+  .review-date { font-size: 12px; color: #555; flex: 1; }
+  .review-score { font-size: 12px; font-weight: 600; }
+  .review-score.green { color: #22c55e; }
+
+  /* Tabs navigation at screen bottom */
+  .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 8px 0 20px; background: #fff;
+    border-top: 1px solid #f0f0f0;
+  }
+  .tab-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10px; color: #999; background: none; border: none; cursor: pointer;
+  }
+  .tab-item.active { color: #2563EB; }
+  .tab-item .tab-icon { font-size: 20px; }
+
+  /* Labels */
+  .screen-label {
+    position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+    background: #2563EB; color: #fff; font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 6px; white-space: nowrap;
+  }
+
+  .container { display: flex; gap: 40px; justify-content: center; align-items: flex-start; padding: 40px 20px; flex-wrap: wrap; }
+  .mock-label { text-align: center; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
+  .mock-sublabel { text-align: center; font-size: 12px; color: #999; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<div style="text-align:center; padding: 30px 20px 0;">
+  <h1 style="font-size:24px; font-weight:700; color:#111;">Mock Mobile - Documents Organization</h1>
+  <p style="font-size:14px; color:#888; margin-top:4px;">3 telas: Disciplinas → Tópicos → Bottom Sheet (detalhes)</p>
+</div>
+
+<div class="container">
+
+  <!-- TELA 1: Disciplinas -->
+  <div>
+    <div class="mock-label">Tela 1: Disciplinas</div>
+    <div class="mock-sublabel">Lista principal do edital</div>
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="screen-header">
+          <div class="subtitle">EDITAL • TRF-3 Analista</div>
+          <h1>Disciplinas</h1>
+        </div>
+
+        <div class="discipline-list">
+          <div class="discipline-card" style="border-left: 3px solid #ef4444;">
+            <div class="discipline-icon" style="background:#fef2f2;">⚖️</div>
+            <div class="discipline-info">
+              <div class="discipline-name">Direito Penal</div>
+              <div class="discipline-meta">6 tópicos • 17h 30m</div>
+              <div class="discipline-progress"><div class="discipline-progress-fill" style="width:35%; background:#ef4444;"></div></div>
+            </div>
+            <div class="discipline-arrow">›</div>
+          </div>
+
+          <div class="discipline-card" style="border-left: 3px solid #8b5cf6;">
+            <div class="discipline-icon" style="background:#f5f3ff;">🏛️</div>
+            <div class="discipline-info">
+              <div class="discipline-name">Direito Processual Penal</div>
+              <div class="discipline-meta">4 tópicos • 7h 15m</div>
+              <div class="discipline-progress"><div class="discipline-progress-fill" style="width:15%; background:#8b5cf6;"></div></div>
+            </div>
+            <div class="discipline-arrow">›</div>
+          </div>
+
+          <div class="discipline-card" style="border-left: 3px solid #2563EB;">
+            <div class="discipline-icon" style="background:#eff6ff;">📘</div>
+            <div class="discipline-info">
+              <div class="discipline-name">Direito Civil</div>
+              <div class="discipline-meta">8 tópicos • 0m</div>
+              <div class="discipline-progress"><div class="discipline-progress-fill" style="width:0%; background:#2563EB;"></div></div>
+            </div>
+            <div class="discipline-arrow">›</div>
+          </div>
+
+          <div class="discipline-card" style="border-left: 3px solid #0891b2;">
+            <div class="discipline-icon" style="background:#ecfeff;">📗</div>
+            <div class="discipline-info">
+              <div class="discipline-name">Direito Processual Civil</div>
+              <div class="discipline-meta">5 tópicos • 0m</div>
+              <div class="discipline-progress"><div class="discipline-progress-fill" style="width:0%; background:#0891b2;"></div></div>
+            </div>
+            <div class="discipline-arrow">›</div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-item active"><span class="tab-icon">📋</span>Edital</button>
+          <button class="tab-item"><span class="tab-icon">📅</span>Crono</button>
+          <button class="tab-item"><span class="tab-icon">📊</span>Stats</button>
+          <button class="tab-item"><span class="tab-icon">⚙️</span>Config</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 2: Tópicos -->
+  <div>
+    <div class="mock-label">Tela 2: Tópicos</div>
+    <div class="mock-sublabel">Ao clicar "Direito Penal"</div>
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="screen-header">
+          <button class="back-btn">‹ Disciplinas</button>
+          <h1>Direito Penal</h1>
+          <div class="subtitle">6 tópicos • 17h 30m investido</div>
+        </div>
+
+        <div style="padding: 12px 20px 6px;">
+          <div style="font-size:11px; font-weight:600; color:#888; letter-spacing:1px; text-transform:uppercase;">NOÇÕES INICIAIS</div>
+        </div>
+
+        <div class="topics-list" style="padding-top:6px;">
+          <div class="topic-card">
+            <div class="topic-check done">✓</div>
+            <div class="topic-info">
+              <div class="topic-name">Conceitos</div>
+              <div class="topic-stats">8 resumos • 0 questões</div>
+            </div>
+            <div class="topic-stars">
+              <div class="star filled"></div>
+              <div class="star filled"></div>
+              <div class="star empty"></div>
+            </div>
+          </div>
+
+          <div class="topic-card">
+            <div class="topic-check partial"></div>
+            <div class="topic-info">
+              <div class="topic-name">Princípios limitadores do poder punitivo estatal</div>
+              <div class="topic-stats">2 resumos • 5 questões</div>
+            </div>
+            <div class="topic-stars">
+              <div class="star filled"></div>
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+            </div>
+          </div>
+
+          <div class="topic-card">
+            <div class="topic-check"></div>
+            <div class="topic-info">
+              <div class="topic-name">A norma penal</div>
+              <div class="topic-stats">0 resumos • 0 questões</div>
+            </div>
+            <div class="topic-stars">
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+            </div>
+          </div>
+
+          <div class="topic-card">
+            <div class="topic-check"></div>
+            <div class="topic-info">
+              <div class="topic-name">Conflito aparente de normas</div>
+              <div class="topic-stats">0 resumos • 0 questões</div>
+            </div>
+            <div class="topic-stars">
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+            </div>
+          </div>
+
+          <div class="topic-card">
+            <div class="topic-check"></div>
+            <div class="topic-info">
+              <div class="topic-name">Lei penal no tempo</div>
+              <div class="topic-stats">0 resumos • 0 questões</div>
+            </div>
+            <div class="topic-stars">
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+            </div>
+          </div>
+
+          <div class="topic-card">
+            <div class="topic-check"></div>
+            <div class="topic-info">
+              <div class="topic-name">Lei penal no espaço</div>
+              <div class="topic-stats">0 resumos • 0 questões</div>
+            </div>
+            <div class="topic-stars">
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+              <div class="star empty"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-item active"><span class="tab-icon">📋</span>Edital</button>
+          <button class="tab-item"><span class="tab-icon">📅</span>Crono</button>
+          <button class="tab-item"><span class="tab-icon">📊</span>Stats</button>
+          <button class="tab-item"><span class="tab-icon">⚙️</span>Config</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 3: Bottom Sheet -->
+  <div>
+    <div class="mock-label">Tela 3: Bottom Sheet</div>
+    <div class="mock-sublabel">Ao clicar "Conceitos"</div>
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="screen" style="background:#f5f5f5;">
+        <!-- Tópicos por trás (dimmed) -->
+        <div class="screen-header" style="opacity:0.3;">
+          <button class="back-btn">‹ Disciplinas</button>
+          <h1>Direito Penal</h1>
+          <div class="subtitle">6 tópicos • 17h 30m investido</div>
+        </div>
+        <div class="topics-list" style="opacity:0.3; padding-top:6px;">
+          <div style="padding: 0 0 6px; margin-top:-4px;"><div style="font-size:11px; font-weight:600; color:#888; letter-spacing:1px;">NOÇÕES INICIAIS</div></div>
+          <div class="topic-card"><div class="topic-check done">✓</div><div class="topic-info"><div class="topic-name">Conceitos</div></div></div>
+          <div class="topic-card"><div class="topic-check partial"></div><div class="topic-info"><div class="topic-name">Princípios limitadores...</div></div></div>
+        </div>
+
+        <!-- Overlay -->
+        <div class="overlay visible"></div>
+
+        <!-- Bottom Sheet -->
+        <div class="bottom-sheet full" style="transform: translateY(8%);">
+          <div class="sheet-handle"></div>
+
+          <div class="sheet-header">
+            <div class="sheet-module">DIREITO PENAL • NOÇÕES INICIAIS</div>
+            <div class="sheet-title">Conceitos</div>
+            <div class="sheet-meta">
+              <span>🕐 Total: 2h 15min</span>
+              <span>|</span>
+              <span class="sheet-level">Nível: Intermediário</span>
+            </div>
+          </div>
+
+          <!-- Importance -->
+          <div class="sheet-importance">
+            <div class="importance-ring">
+              <svg viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#eee" stroke-width="3"/>
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round"
+                  stroke-dasharray="85.4 100.5"/>
+              </svg>
+              <div class="value">8.5</div>
+            </div>
+            <div class="importance-info">
+              <div class="label">Importância no Edital</div>
+              <div class="priority">Alta Prioridade</div>
+              <div class="desc">Núcleo duro da disciplina</div>
+            </div>
+          </div>
+
+          <!-- Materials pills -->
+          <div class="sheet-materials">
+            <div class="material-pill">
+              <span class="icon">📄</span>
+              <span class="count">8</span>
+              <span class="type">resumos</span>
+            </div>
+            <div class="material-pill">
+              <span class="icon">🃏</span>
+              <span class="count">12</span>
+              <span class="type">cards</span>
+            </div>
+            <div class="material-pill">
+              <span class="icon">❓</span>
+              <span class="count">5</span>
+              <span class="type">questões</span>
+            </div>
+            <div class="material-pill">
+              <span class="icon">⚖️</span>
+              <span class="count">3</span>
+              <span class="type">leis</span>
+            </div>
+          </div>
+
+          <!-- Revisões -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">Revisões</div>
+            <div class="review-row">
+              <div class="review-dot green"></div>
+              <div class="review-date">15/01</div>
+              <div class="review-score green">85%</div>
+            </div>
+            <div class="review-row">
+              <div class="review-dot green"></div>
+              <div class="review-date">12/01</div>
+              <div class="review-score green">78%</div>
+            </div>
+            <div class="review-row">
+              <div class="review-dot orange"></div>
+              <div class="review-date">18/01</div>
+              <div style="font-size:11px; background:#fff7ed; color:#c2410c; padding:3px 10px; border-radius:8px; font-weight:500;">Fazer</div>
+            </div>
+            <div class="review-row">
+              <div class="review-dot gray"></div>
+              <div class="review-date" style="color:#bbb;">22/01</div>
+              <div style="font-size:11px; color:#bbb;">4d</div>
+            </div>
+          </div>
+
+          <!-- AI -->
+          <div style="margin: 0 20px 20px; padding: 14px 16px; background: #111827; border-radius: 12px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <div style="width:28px;height:28px;border-radius:8px;background:#2563EB;display:flex;align-items:center;justify-content:center;font-size:14px;">✨</div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#f1f5f9;">Assistente IA</div>
+                <div style="font-size:9px;color:#60a5fa;">Beta</div>
+              </div>
+            </div>
+            <p style="font-size:11px;color:#94a3b8;line-height:1.5;">Foque nos princípios limitadores para alcançar 90%.</p>
+            <button style="width:100%;margin-top:10px;padding:10px;background:#fff;color:#111;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;">✨ Conversar sobre este tópico</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center; padding: 20px; color: #999; font-size: 13px;">
+  Arraste: meio (header + materiais) ↔ expandido (tudo). Puxa pra baixo = fecha.
+</div>
+
+</body>
+</html>

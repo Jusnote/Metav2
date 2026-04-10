@@ -79,8 +79,14 @@ export default function QuestoesPage() {
 
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
+      {/* Page title */}
+      <h1 className="px-2 pt-2 pb-1">
+        <span className="text-[24px] font-semibold tracking-tight text-slate-600">Banco de Questões</span>
+        <span className="text-[24px] font-semibold tracking-tight text-[#3B82F6]">.</span>
+      </h1>
+
       {/* Normal search + filter bar — scrolls with page (NOT sticky) */}
-      <div className="px-2 pt-3 pb-2">
+      <div className="px-2 pt-2 pb-2">
         <QuestoesSearchBar />
         <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
       </div>

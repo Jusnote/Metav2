@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Cards + Drawer Lateral</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: 220 83% 53%;
+    --primary-hover: 220 83% 45%;
+    --bg: hsl(220, 14%, 97%);
+    --border: hsl(220, 14%, 90%);
+    --muted-fg: hsl(220, 10%, 46%);
+    --fg: hsl(220, 20%, 10%);
+    --secondary: hsl(220, 14%, 96%);
+  }
+
+  body { font-family: 'Inter', system-ui, sans-serif; background: #eef1f5; min-height: 100vh; overflow: hidden; }
+  h1, h2, h3 { font-family: 'Space Grotesk', system-ui, sans-serif; }
+
+  .app-shell { display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .icon-rail { width: 76px; min-width: 76px; background: #fff; display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 2px; font-family: 'DM Sans', sans-serif; }
+  .logo-m { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, #1E40AF, #3B82F6); box-shadow: 0 2px 8px rgba(30,64,175,0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: white; font-size: 13px; font-weight: 700; }
+  .nb { width: 60px; padding: 6px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; cursor: pointer; transition: all 0.15s; }
+  .nb:hover { background: rgba(0,0,0,0.03); }
+  .nb svg { width: 18px; height: 18px; stroke-width: 1.75; fill: none; }
+  .nb .l { font-size: 9px; font-weight: 500; color: #9ca3af; white-space: nowrap; }
+  .nb.a { background: rgba(219,234,254,0.8); box-shadow: 0 1px 4px rgba(30,64,175,0.08); }
+  .nb.a svg { stroke: #1E40AF; }
+  .nb.a .l { color: #1E40AF; font-weight: 600; }
+  .nb.a::before { content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%); width: 2.5px; height: 22px; background: linear-gradient(180deg, #1E40AF, #3B82F6); border-radius: 0 3px 3px 0; }
+  .nb.i svg { stroke: #8b8fa3; }
+  .sh { width: 28px; height: 1px; background: rgba(0,0,0,0.06); margin: 4px auto; }
+  .av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #3B82F6); box-shadow: 0 2px 6px rgba(30,64,175,0.25); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .glow-sep { width: 1px; align-self: stretch; position: relative; flex-shrink: 0; background: linear-gradient(180deg, transparent 5%, #dbeafe 30%, #93c5fd 50%, #dbeafe 70%, transparent 95%); opacity: 0.6; }
+  .glow-sep::after { content: ''; position: absolute; top: 0; left: -4px; width: 9px; height: 100%; background: linear-gradient(180deg, transparent 5%, rgba(59,130,246,0.04) 30%, rgba(59,130,246,0.06) 50%, rgba(59,130,246,0.04) 70%, transparent 95%); }
+
+  /* Main content area */
+  .main-area { flex: 1; display: flex; overflow: hidden; position: relative; }
+
+  /* Landing */
+  .landing { flex: 1; background: var(--bg); overflow-y: auto; display: flex; flex-direction: column; transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+  .landing.drawer-open { margin-right: 0; }
+
+  .landing-center { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 48px 32px; }
+
+  .hero-title { font-size: 44px; font-weight: 700; letter-spacing: -1.5px; color: var(--fg); margin-bottom: 12px; }
+  .text-gradient { background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover))); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 14px; color: var(--muted-fg); text-align: center; line-height: 1.7; max-width: 400px; margin-bottom: 28px; }
+
+  .search-wrap { width: 100%; max-width: 480px; margin-bottom: 32px; position: relative; }
+  .search-wrap > svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--muted-fg); stroke-width: 2; fill: none; }
+  .search-input { width: 100%; height: 44px; padding: 0 16px 0 40px; border-radius: 14px; background: #fff; border: 1px solid var(--border); font-size: 13px; color: var(--fg); font-family: 'Inter', sans-serif; outline: none; transition: all 0.2s; }
+  .search-input::placeholder { color: var(--muted-fg); }
+  .search-input:focus { border-color: hsl(var(--primary)); box-shadow: 0 0 0 3px hsl(var(--primary) / 0.08); }
+
+  /* Cards grid */
+  .cards-grid { width: 100%; max-width: 720px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  .materia-card {
+    background: hsl(0 0% 100% / 0.80);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(220 14% 90% / 0.5);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .materia-card:hover {
+    border-color: var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    transform: translateY(-2px);
+  }
+  .materia-card.selected {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.08), 0 2px 12px rgba(30,64,175,0.06);
+  }
+
+  .materia-card .overlay {
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity 0.25s;
+    pointer-events: none;
+  }
+  .materia-card:hover .overlay { opacity: 0.04; }
+  .materia-card.selected .overlay { opacity: 0.06; }
+
+  .card-inner { position: relative; }
+
+  .materia-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .materia-icon svg { width: 20px; height: 20px; stroke-width: 1.75; fill: none; stroke: white; }
+
+  .materia-name { font-size: 14px; font-weight: 700; color: var(--fg); line-height: 1.3; margin-bottom: 2px; }
+  .materia-count { font-size: 11px; color: var(--muted-fg); }
+
+  .g-blue { background: linear-gradient(135deg, #2563EB, #3B82F6); }
+  .g-emerald { background: linear-gradient(135deg, #10b981, #0d9488); }
+  .g-violet { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+  .g-rose { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+  .g-sky { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+  .g-amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .g-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+  .g-teal { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+  .g-pink { background: linear-gradient(135deg, #ec4899, #db2777); }
+
+  /* ── Drawer ── */
+  .drawer-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+    z-index: 10;
+  }
+  .drawer-overlay.visible { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 340px;
+    background: #fff;
+    border-left: 1px solid var(--border);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.06);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid hsl(220, 14%, 93%);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .drawer-header-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .drawer-header-icon svg { width: 18px; height: 18px; stroke: white; stroke-width: 1.75; fill: none; }
+  .drawer-header-info { flex: 1; }
+  .drawer-header-title { font-size: 15px; font-weight: 700; color: var(--fg); }
+  .drawer-header-count { font-size: 11px; color: var(--muted-fg); margin-top: 1px; }
+  .drawer-close {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s;
+    background: transparent; border: none;
+  }
+  .drawer-close:hover { background: hsl(220, 14%, 95%); }
+  .drawer-close svg { width: 16px; height: 16px; stroke: var(--muted-fg); stroke-width: 2; fill: none; }
+
+  .drawer-search {
+    padding: 12px 16px;
+    border-bottom: 1px solid hsl(220, 14%, 95%);
+  }
+  .drawer-search-input {
+    width: 100%; height: 36px; padding: 0 12px 0 34px;
+    border-radius: 10px; background: hsl(220, 14%, 97%);
+    border: 1px solid transparent;
+    font-size: 12px; color: var(--fg); font-family: 'Inter', sans-serif;
+    outline: none; transition: all 0.2s;
+    position: relative;
+  }
+  .drawer-search-input::placeholder { color: var(--muted-fg); }
+  .drawer-search-input:focus { border-color: hsl(var(--primary) / 0.3); background: #fff; }
+  .drawer-search-wrap { position: relative; }
+  .drawer-search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; stroke: var(--muted-fg); stroke-width: 2; fill: none; }
+
+  .drawer-list {
+    flex: 1; overflow-y: auto;
+    padding: 8px;
+  }
+
+  .lei-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 2px;
+  }
+  .lei-item:hover { background: hsl(220, 14%, 97%); }
+  .lei-item.unavailable { opacity: 0.45; cursor: default; }
+  .lei-item.unavailable:hover { background: transparent; }
+
+  .lei-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .lei-dot.on { background: hsl(var(--primary)); }
+  .lei-dot.off { background: hsl(220, 14%, 85%); }
+
+  .lei-info { flex: 1; min-width: 0; }
+  .lei-title { font-size: 13px; font-weight: 600; color: var(--fg); line-height: 1.3; }
+  .lei-num { font-size: 10px; color: var(--muted-fg); margin-top: 2px; }
+
+  .lei-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+  .lei-arts { font-size: 10px; color: var(--muted-fg); font-weight: 500; }
+  .lei-badge-soon { font-size: 9px; font-weight: 500; color: var(--muted-fg); background: var(--secondary); padding: 2px 8px; border-radius: 8px; }
+
+  .lei-arrow { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.2s; flex-shrink: 0; }
+  .lei-item:not(.unavailable):hover .lei-arrow { opacity: 1; transform: translateX(2px); }
+  .lei-arrow svg { width: 14px; height: 14px; stroke: hsl(var(--primary)); stroke-width: 2; fill: none; }
+
+  /* Progress bar inside lei-item */
+  .lei-progress { width: 100%; margin-top: 6px; }
+  .lei-progress-bar { height: 3px; border-radius: 2px; background: hsl(220, 14%, 93%); overflow: hidden; }
+  .lei-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary-hover))); }
+  .lei-progress-label { font-size: 9px; color: var(--muted-fg); margin-top: 2px; }
+
+  .landing-footer { text-align: center; padding: 20px 0 28px; font-size: 11px; color: rgba(156,163,175,0.35); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .af { animation: fadeUp 0.6s ease-out both; }
+  .as { animation: fadeUp 0.5s ease-out 0.2s both; }
+  .s1 { animation: fadeUp 0.4s ease-out 0.1s both; }
+  .s2 { animation: fadeUp 0.4s ease-out 0.15s both; }
+  .s3 { animation: fadeUp 0.4s ease-out 0.2s both; }
+  .s4 { animation: fadeUp 0.4s ease-out 0.25s both; }
+  .s5 { animation: fadeUp 0.4s ease-out 0.3s both; }
+  .s6 { animation: fadeUp 0.4s ease-out 0.35s both; }
+  .s7 { animation: fadeUp 0.4s ease-out 0.4s both; }
+  .s8 { animation: fadeUp 0.4s ease-out 0.45s both; }
+  .s9 { animation: fadeUp 0.4s ease-out 0.5s both; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <div class="icon-rail">
+    <div class="logo-m">M</div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="l">Home</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg><span class="l">Flashcards</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg><span class="l">Questões</span></div>
+    <div class="nb a"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg><span class="l">Lei Seca</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span class="l">Conteúdos</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span class="l">Cadernos</span></div>
+    <div class="sh"></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg><span class="l">Crono</span></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><span class="l">Resumos</span></div>
+    <div style="flex:1;"></div>
+    <div class="nb i"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="l">Config</span></div>
+    <div class="av">A</div>
+  </div>
+
+  <div class="glow-sep"></div>
+
+  <!-- Main area (landing + drawer) -->
+  <div class="main-area">
+
+    <!-- Landing -->
+    <div class="landing" id="landing">
+      <div class="landing-center">
+        <div class="af" style="text-align:center; max-width:420px; margin-bottom:32px;">
+          <h1 class="hero-title">Lei Seca<span class="text-gradient">.</span></h1>
+          <p class="hero-sub">Escolha a legislação que deseja estudar. Leitura ativa, questões, jurisprudência e muito mais.</p>
+        </div>
+
+        <div class="search-wrap as">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Buscar legislação..." />
+        </div>
+
+        <div class="cards-grid">
+          <div class="materia-card s1" onclick="openDrawer('penal', this)" id="card-penal">
+            <div class="overlay" style="background:linear-gradient(135deg, #f43f5e, #e11d48);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-rose"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div class="materia-name">Direito Penal</div>
+              <div class="materia-count">12 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s2" onclick="openDrawer('constitucional', this)" id="card-constitucional">
+            <div class="overlay" style="background:linear-gradient(135deg, #10b981, #0d9488);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-emerald"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
+              <div class="materia-name">Constitucional</div>
+              <div class="materia-count">3 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s3" onclick="openDrawer('civil', this)" id="card-civil">
+            <div class="overlay" style="background:linear-gradient(135deg, #2563EB, #3B82F6);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-blue"><svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+              <div class="materia-name">Direito Civil</div>
+              <div class="materia-count">8 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s4" onclick="openDrawer('processual', this)" id="card-processual">
+            <div class="overlay" style="background:linear-gradient(135deg, #8b5cf6, #7c3aed);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-violet"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="materia-name">Processual Civil</div>
+              <div class="materia-count">5 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s5" onclick="openDrawer('administrativo', this)" id="card-administrativo">
+            <div class="overlay" style="background:linear-gradient(135deg, #0ea5e9, #2563eb);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-sky"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+              <div class="materia-name">Administrativo</div>
+              <div class="materia-count">6 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s6" onclick="openDrawer('trabalho', this)" id="card-trabalho">
+            <div class="overlay" style="background:linear-gradient(135deg, #f59e0b, #d97706);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-amber"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+              <div class="materia-name">Direito do Trabalho</div>
+              <div class="materia-count">4 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s7" onclick="openDrawer('tributario', this)" id="card-tributario">
+            <div class="overlay" style="background:linear-gradient(135deg, #6366f1, #4f46e5);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-indigo"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+              <div class="materia-name">Tributário</div>
+              <div class="materia-count">3 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s8" onclick="openDrawer('humanos', this)" id="card-humanos">
+            <div class="overlay" style="background:linear-gradient(135deg, #14b8a6, #0d9488);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-teal"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+              <div class="materia-name">Direitos Humanos</div>
+              <div class="materia-count">2 leis</div>
+            </div>
+          </div>
+
+          <div class="materia-card s9" onclick="openDrawer('eleitoral', this)" id="card-eleitoral">
+            <div class="overlay" style="background:linear-gradient(135deg, #ec4899, #db2777);"></div>
+            <div class="card-inner">
+              <div class="materia-icon g-pink"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+              <div class="materia-name">Eleitoral</div>
+              <div class="materia-count">4 leis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="landing-footer">Feito para concurseiros que levam a sério.</div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+
+    <!-- Drawer -->
+    <div class="drawer" id="drawer">
+      <div class="drawer-header">
+        <div class="drawer-header-icon g-rose" id="drawer-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="drawer-header-info">
+          <div class="drawer-header-title" id="drawer-title">Direito Penal</div>
+          <div class="drawer-header-count" id="drawer-count">12 leis</div>
+        </div>
+        <button class="drawer-close" onclick="closeDrawer()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="drawer-search">
+        <div class="drawer-search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="drawer-search-input" placeholder="Buscar nesta matéria..." />
+        </div>
+      </div>
+
+      <div class="drawer-list" id="drawer-list">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const materiaData = {
+  penal: {
+    title: 'Direito Penal', count: '12 leis', iconClass: 'g-rose',
+    icon: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    leis: [
+      { title: 'Código Penal', num: 'Decreto-Lei nº 2.848/1940', arts: '361 arts.', available: true, progress: 72 },
+      { title: 'Lei de Drogas', num: 'Lei nº 11.343/2006', arts: '75 arts.', available: true, progress: 41 },
+      { title: 'Maria da Penha', num: 'Lei nº 11.340/2006', arts: '46 arts.', available: false },
+      { title: 'Execução Penal', num: 'Lei nº 7.210/1984', arts: '204 arts.', available: false },
+      { title: 'Organização Criminosa', num: 'Lei nº 12.850/2013', arts: '26 arts.', available: false },
+      { title: 'Abuso de Autoridade', num: 'Lei nº 13.869/2019', arts: '44 arts.', available: false },
+      { title: 'Juizados Especiais Criminais', num: 'Lei nº 9.099/1995', arts: '97 arts.', available: false },
+    ]
+  },
+  constitucional: {
+    title: 'Direito Constitucional', count: '3 leis', iconClass: 'g-emerald',
+    icon: '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>',
+    leis: [
+      { title: 'Constituição Federal', num: '1988', arts: '250 arts.', available: false },
+      { title: 'EC 45/2004 — Reforma do Judiciário', num: 'Emenda Constitucional', arts: '—', available: false },
+    ]
+  },
+  civil: {
+    title: 'Direito Civil', count: '8 leis', iconClass: 'g-blue',
+    icon: '<svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg>',
+    leis: [
+      { title: 'Código Civil', num: 'Lei nº 10.406/2002', arts: '2046 arts.', available: true, progress: 34 },
+      { title: 'Código de Defesa do Consumidor', num: 'Lei nº 8.078/1990', arts: '119 arts.', available: false },
+      { title: 'Estatuto da Criança e Adolescente', num: 'Lei nº 8.069/1990', arts: '267 arts.', available: false },
+      { title: 'Estatuto do Idoso', num: 'Lei nº 10.741/2003', arts: '118 arts.', available: false },
+    ]
+  },
+  processual: {
+    title: 'Processual Civil', count: '5 leis', iconClass: 'g-violet',
+    icon: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    leis: [
+      { title: 'Código de Processo Civil', num: 'Lei nº 13.105/2015', arts: '1072 arts.', available: false },
+      { title: 'Lei de Arbitragem', num: 'Lei nº 9.307/1996', arts: '44 arts.', available: false },
+    ]
+  },
+  administrativo: {
+    title: 'Direito Administrativo', count: '6 leis', iconClass: 'g-sky',
+    icon: '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    leis: [
+      { title: 'Lei de Licitações', num: 'Lei nº 14.133/2021', arts: '194 arts.', available: false },
+      { title: 'Lei de Improbidade', num: 'Lei nº 8.429/1992', arts: '25 arts.', available: false },
+      { title: 'Processo Administrativo Federal', num: 'Lei nº 9.784/1999', arts: '69 arts.', available: false },
+    ]
+  },
+  trabalho: {
+    title: 'Direito do Trabalho', count: '4 leis', iconClass: 'g-amber',
+    icon: '<svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>',
+    leis: [
+      { title: 'CLT', num: 'Decreto-Lei nº 5.452/1943', arts: '922 arts.', available: false },
+      { title: 'Reforma Trabalhista', num: 'Lei nº 13.467/2017', arts: '—', available: false },
+    ]
+  },
+  tributario: {
+    title: 'Direito Tributário', count: '3 leis', iconClass: 'g-indigo',
+    icon: '<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+    leis: [
+      { title: 'Código Tributário Nacional', num: 'Lei nº 5.172/1966', arts: '218 arts.', available: false },
+    ]
+  },
+  humanos: {
+    title: 'Direitos Humanos', count: '2 leis', iconClass: 'g-teal',
+    icon: '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
+    leis: [
+      { title: 'Convenção Americana de Direitos Humanos', num: 'Pacto de San José', arts: '82 arts.', available: false },
+    ]
+  },
+  eleitoral: {
+    title: 'Direito Eleitoral', count: '4 leis', iconClass: 'g-pink',
+    icon: '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    leis: [
+      { title: 'Código Eleitoral', num: 'Lei nº 4.737/1965', arts: '383 arts.', available: false },
+      { title: 'Lei das Eleições', num: 'Lei nº 9.504/1997', arts: '107 arts.', available: false },
+    ]
+  }
+};
+
+let currentCard = null;
+
+function openDrawer(key, cardEl) {
+  const data = materiaData[key];
+  if (!data) return;
+
+  // Deselect previous
+  if (currentCard) currentCard.classList.remove('selected');
+  cardEl.classList.add('selected');
+  currentCard = cardEl;
+
+  // Update drawer header
+  document.getElementById('drawer-icon').className = 'drawer-header-icon ' + data.iconClass;
+  document.getElementById('drawer-icon').innerHTML = data.icon;
+  document.getElementById('drawer-title').textContent = data.title;
+  document.getElementById('drawer-count').textContent = data.count;
+
+  // Build list
+  const list = document.getElementById('drawer-list');
+  list.innerHTML = data.leis.map(lei => {
+    if (lei.available) {
+      return `<a class="lei-item" href="#">
+        <span class="lei-dot on"></span>
+        <div class="lei-info">
+          <div class="lei-title">${lei.title}</div>
+          <div class="lei-num">${lei.num}</div>
+          ${lei.progress ? `<div class="lei-progress"><div class="lei-progress-bar"><div class="lei-progress-fill" style="width:${lei.progress}%"></div></div><div class="lei-progress-label">${lei.progress}% lido</div></div>` : ''}
+        </div>
+        <div class="lei-meta"><span class="lei-arts">${lei.arts}</span></div>
+        <div class="lei-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </a>`;
+    } else {
+      return `<div class="lei-item unavailable">
+        <span class="lei-dot off"></span>
+        <div class="lei-info">
+          <div class="lei-title">${lei.title}</div>
+          <div class="lei-num">${lei.num}</div>
+        </div>
+        <div class="lei-meta"><span class="lei-arts">${lei.arts}</span><span class="lei-badge-soon">Em breve</span></div>
+      </div>`;
+    }
+  }).join('');
+
+  // Open
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('visible');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('visible');
+  if (currentCard) { currentCard.classList.remove('selected'); currentCard = null; }
+}
+</script>
+
+</body>
+</html>

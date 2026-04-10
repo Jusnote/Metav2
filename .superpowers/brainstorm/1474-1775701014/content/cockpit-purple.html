@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --accent: #6c63ff;
+    --accent-light: #9b8afb;
+    --accent-bg: #f5f3ff;
+    --accent-bg2: #eeecfb;
+    --accent-hover: #f8f7fd;
+    --accent-dark: #4f46e5;
+    --text: #1a1625;
+    --text-2: #6b667a;
+    --text-3: #9e99ae;
+    --text-4: #c8c5d0;
+    --border: #f0eef5;
+    --bg: #faf9fd;
+    --white: #fff;
+    --green: #22c55e;
+    --red: #e54040;
+    --amber: #d9860b;
+    --teal: #0891b2;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    color: var(--text);
+  }
+  .container { max-width: 740px; width: 100%; }
+
+  .page {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 0 0 1px rgba(108,99,255,0.06), 0 4px 16px rgba(108,99,255,0.04), 0 12px 40px rgba(0,0,0,0.02);
+  }
+
+  /* ---- Header ---- */
+  .hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hdr-left { display: flex; align-items: center; gap: 14px; }
+  .toggle { display: flex; background: var(--accent-bg); border-radius: 9px; padding: 2.5px; }
+  .t-btn {
+    padding: 5px 15px; border: none; background: none; border-radius: 7px;
+    font-size: 12px; font-weight: 500; color: var(--text-3); cursor: pointer; transition: all 0.15s;
+  }
+  .t-btn.on { background: var(--accent); color: #fff; font-weight: 600; box-shadow: 0 1px 4px rgba(108,99,255,0.25); }
+  .week-nav { display: flex; align-items: center; gap: 6px; }
+  .week-nav button {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    width: 24px; height: 24px; font-size: 11px; color: var(--text-3); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: border-color 0.1s;
+  }
+  .week-nav button:hover { border-color: var(--accent-light); }
+  .week-nav span { font-size: 12px; font-weight: 600; color: var(--text); }
+  .hdr-right { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--text-3); }
+  .streak { font-weight: 700; color: #ea580c; }
+
+  /* ---- Score section ---- */
+  .score-section {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--accent-bg) 0%, var(--white) 100%);
+  }
+  .rings { display: flex; gap: 14px; }
+  .ring { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .ring svg { width: 46px; height: 46px; }
+  .ring-label { font-size: 9px; color: var(--text-3); font-weight: 500; letter-spacing: 0.2px; }
+
+  .score-block { text-align: right; }
+  .score-num {
+    font-size: 38px; font-weight: 800; letter-spacing: -2px; line-height: 1;
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .score-label { font-size: 14px; color: var(--text-4); font-weight: 400; -webkit-text-fill-color: var(--text-4); background: none; -webkit-background-clip: initial; }
+  .score-meta { font-size: 10px; color: var(--text-3); margin-top: 4px; }
+  .score-trend { color: var(--green); font-weight: 700; }
+  .days-badge {
+    display: inline-block; margin-left: 4px;
+    padding: 1px 6px; background: var(--accent-bg); border-radius: 4px;
+    font-size: 9px; font-weight: 600; color: var(--accent);
+  }
+
+  /* Week progress bar */
+  .week-bar {
+    padding: 0 24px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .week-bar-label { font-size: 10px; color: var(--text-3); font-weight: 500; white-space: nowrap; }
+  .week-bar-track { flex: 1; height: 4px; background: var(--accent-bg); border-radius: 3px; overflow: hidden; }
+  .week-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 3px; transition: width 0.5s; }
+  .week-bar-pct { font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* ---- Quick actions ---- */
+  .quick-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 24px; border-bottom: 1px solid var(--border);
+  }
+  .q-btn {
+    padding: 6px 14px; border: 1px solid var(--border); background: var(--white);
+    border-radius: 8px; font-size: 10px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: all 0.12s;
+  }
+  .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .q-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .q-btn.primary:hover { background: var(--accent-dark); }
+
+  /* ---- Sections ---- */
+  .sec {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 16px 24px 6px;
+  }
+  .sec-title { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .sec-right { font-size: 10px; color: var(--text-4); }
+  .sec-right .pts { color: var(--green); font-weight: 600; }
+
+  /* ---- Rows ---- */
+  .row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 24px; cursor: pointer; transition: background 0.08s;
+  }
+  .row:hover { background: var(--accent-hover); }
+  .row + .row { border-top: 1px solid #faf9fd; }
+
+  .row.suggested {
+    background: var(--accent-bg);
+    border-left: 2.5px solid var(--accent);
+    padding-left: 21.5px;
+  }
+  .row.suggested:hover { background: var(--accent-bg2); }
+  .row.done { opacity: 0.3; }
+  .row.done:hover { opacity: 0.45; }
+
+  .chk {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid var(--text-4); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all 0.1s;
+  }
+  .row:hover .chk { border-color: var(--accent-light); }
+  .row.suggested .chk { border-color: var(--accent-light); }
+  .chk.done { background: var(--accent); border-color: var(--accent); }
+
+  .row-body { flex: 1; min-width: 0; }
+  .row-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .row.done .row-title { text-decoration: line-through; color: var(--text-3); }
+  .row-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .deadline { color: var(--red); font-weight: 600; }
+  .pts-tag { color: var(--green); font-weight: 600; }
+
+  .row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .type-label { font-size: 10px; color: var(--text-4); width: 52px; text-align: right; }
+  .dur { font-size: 11px; font-weight: 600; color: var(--text-2); width: 38px; text-align: right; }
+  .row-btn {
+    padding: 5px 12px; background: var(--accent); color: #fff; border: none;
+    border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer;
+    opacity: 0; transition: all 0.12s;
+  }
+  .row:hover .row-btn { opacity: 1; }
+  .row.suggested .row-btn { opacity: 1; }
+  .row-btn:hover { background: var(--accent-dark); transform: translateY(-0.5px); box-shadow: 0 2px 8px rgba(108,99,255,0.2); }
+
+  /* ---- Separator ---- */
+  .sep { height: 1px; background: var(--border); margin: 0 24px; }
+
+  /* ---- Group label ---- */
+  .group-label { padding: 14px 24px 4px; font-size: 10px; font-weight: 600; color: var(--text-4); text-transform: uppercase; letter-spacing: 0.3px; }
+  .more-link { padding: 4px 24px 6px; font-size: 10px; color: var(--accent-light); cursor: pointer; }
+  .more-link:hover { color: var(--accent); }
+
+  /* ---- Insights ---- */
+  .insights { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 10px 24px 14px; }
+  .insight {
+    padding: 10px 12px; background: var(--accent-bg); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 10px; color: var(--text-2); line-height: 1.5;
+  }
+  .insight strong { color: var(--text); }
+  .insight .i-head { font-size: 9px; font-weight: 600; color: var(--accent); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  /* E se slider */
+  .whatif {
+    padding: 8px 24px 14px;
+  }
+  .whatif-box {
+    padding: 12px 14px; background: var(--accent-bg); border: 1px solid var(--border);
+    border-radius: 10px; display: flex; align-items: center; gap: 12px;
+  }
+  .whatif-label { font-size: 10px; color: var(--text-2); white-space: nowrap; }
+  .whatif-label strong { color: var(--text); }
+  .whatif-slider {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; background: var(--accent-bg2); border-radius: 3px; outline: none;
+  }
+  .whatif-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+    box-shadow: 0 1px 4px rgba(108,99,255,0.3);
+  }
+  .whatif-result { font-size: 12px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+
+  /* ---- Sessions ---- */
+  .sessions { padding: 4px 24px 10px; }
+  .s-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 10px; color: var(--text-3); }
+  .s-row .s-time { width: 68px; font-weight: 500; }
+  .s-row .s-desc { flex: 1; color: var(--text-2); }
+  .s-row .s-pts { font-weight: 700; color: var(--green); }
+
+  /* ---- Footer ---- */
+  .ftr {
+    padding: 12px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--accent-bg);
+    border-radius: 0 0 16px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; color: var(--text-3);
+  }
+  .ftr strong { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="toggle">
+        <button class="t-btn">Edital</button>
+        <button class="t-btn on">Cronograma</button>
+      </div>
+      <div class="week-nav">
+        <button>‹</button>
+        <span>7–13 Abril</span>
+        <button>›</button>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <span>TRF 3ª · Analista</span>
+      <span class="streak">🔥 3 sem.</span>
+    </div>
+  </div>
+
+  <!-- RINGS + SCORE -->
+  <div class="score-section">
+    <div class="rings">
+      <div class="ring">
+        <svg viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#eeecfb" stroke-width="3"/>
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#6c63ff" stroke-width="3" stroke-linecap="round"
+            stroke-dasharray="119.4" stroke-dashoffset="29.8" transform="rotate(-90 23 23)"/>
+          <text x="23" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#1a1625">6/8</text>
+        </svg>
+        <span class="ring-label">Estudo</span>
+      </div>
+      <div class="ring">
+        <svg viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#eeecfb" stroke-width="3"/>
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#9b8afb" stroke-width="3" stroke-linecap="round"
+            stroke-dasharray="119.4" stroke-dashoffset="47.8" transform="rotate(-90 23 23)"/>
+          <text x="23" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#1a1625">3/5</text>
+        </svg>
+        <span class="ring-label">Revisão</span>
+      </div>
+      <div class="ring">
+        <svg viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#eeecfb" stroke-width="3"/>
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#b4acf9" stroke-width="3" stroke-linecap="round"
+            stroke-dasharray="119.4" stroke-dashoffset="71.6" transform="rotate(-90 23 23)"/>
+          <text x="23" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#1a1625">2/5</text>
+        </svg>
+        <span class="ring-label">Questões</span>
+      </div>
+      <div class="ring">
+        <svg viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#eeecfb" stroke-width="3"/>
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round"
+            stroke-dasharray="119.4" stroke-dashoffset="0" transform="rotate(-90 23 23)"/>
+          <text x="23" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#4f46e5">2/2</text>
+        </svg>
+        <span class="ring-label">Lei Seca</span>
+      </div>
+    </div>
+    <div class="score-block">
+      <div><span class="score-num">76</span><span class="score-label">/100</span></div>
+      <div class="score-meta"><span class="score-trend">▲ +4</span> esta semana <span class="days-badge">38 dias</span></div>
+    </div>
+  </div>
+
+  <!-- WEEK PROGRESS BAR -->
+  <div class="week-bar">
+    <span class="week-bar-label">Semana</span>
+    <div class="week-bar-track"><div class="week-bar-fill" style="width: 72%;"></div></div>
+    <span class="week-bar-pct">13/18</span>
+  </div>
+
+  <!-- QUICK SESSION -->
+  <div class="quick-bar">
+    <button class="q-btn primary">Sessão automática · 50min</button>
+    <button class="q-btn">Sessão rápida · 25min</button>
+  </div>
+
+  <!-- SUGERIDO PARA HOJE -->
+  <div class="sec">
+    <span class="sec-title">Sugerido para hoje</span>
+    <span class="sec-right">3 atividades · 1h15 · <span class="pts">+1.9 pts</span></span>
+  </div>
+
+  <div class="row suggested">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Dir. Fundamentais — Revisão 2</div>
+      <div class="row-meta">
+        <span>Dir. Constitucional · CF Art. 5°</span>
+        <span class="deadline">até amanhã</span>
+        <span class="pts-tag">+0.4 pts</span>
+      </div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Revisão</span>
+      <span class="dur">15min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="row suggested">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Furto e Roubo — Parte 1</div>
+      <div class="row-meta">
+        <span>Dir. Penal · CP Art. 155-157</span>
+        <span class="pts-tag">+1.2 pts</span>
+      </div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Estudo</span>
+      <span class="dur">40min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="row suggested">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Questões Mistas — Penal + Constitucional</div>
+      <div class="row-meta">
+        <span>15 questões adaptativas</span>
+        <span class="pts-tag">+0.3 pts</span>
+      </div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Questões</span>
+      <span class="dur">20min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <!-- RESTANTE DA SEMANA -->
+  <div class="sec" style="padding-top: 18px;">
+    <span class="sec-title">Restante da semana</span>
+    <span class="sec-right">5 pendentes · 2h35</span>
+  </div>
+
+  <div class="row">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Atos Administrativos — Questões</div>
+      <div class="row-meta"><span>Dir. Administrativo · 15 questões</span> <span class="pts-tag">+0.5 pts</span></div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Questões</span>
+      <span class="dur">30min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Crimes contra a Fé Pública — Parte 1</div>
+      <div class="row-meta"><span>Dir. Penal · Art. 289-311 CP</span> <span class="pts-tag">+0.9 pts</span></div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Estudo</span>
+      <span class="dur">45min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Licitações — Revisão 1</div>
+      <div class="row-meta"><span>Dir. Administrativo · Lei 14.133/21</span> <span class="pts-tag">+0.3 pts</span></div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Revisão</span>
+      <span class="dur">15min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Poder Judiciário — Lei Seca</div>
+      <div class="row-meta"><span>Dir. Constitucional · CF Art. 92-126</span> <span class="pts-tag">+0.2 pts</span></div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Lei Seca</span>
+      <span class="dur">25min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="chk"></div>
+    <div class="row-body">
+      <div class="row-title">Lesão Corporal — Revisão 2</div>
+      <div class="row-meta"><span>Dir. Penal · CP Art. 129</span> <span class="deadline">até sexta</span> <span class="pts-tag">+0.4 pts</span></div>
+    </div>
+    <div class="row-right">
+      <span class="type-label">Revisão</span>
+      <span class="dur">15min</span>
+      <button class="row-btn">Iniciar</button>
+    </div>
+  </div>
+
+  <div class="sep" style="margin-top: 4px;"></div>
+
+  <!-- CONCLUÍDAS -->
+  <div class="group-label">Concluídas esta semana · 7</div>
+
+  <div class="row done">
+    <div class="chk done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="row-body"><div class="row-title">Homicídio — Parte 1</div><div class="row-meta">Dir. Penal · Estudo · 40min</div></div>
+    <div class="row-right"><span class="dur" style="color: var(--text-4);">+0.8</span></div>
+  </div>
+  <div class="row done">
+    <div class="chk done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="row-body"><div class="row-title">Homicídio — Revisão 1</div><div class="row-meta">Dir. Penal · Revisão · 15min</div></div>
+    <div class="row-right"><span class="dur" style="color: var(--text-4);">+0.4</span></div>
+  </div>
+  <div class="row done">
+    <div class="chk done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="row-body"><div class="row-title">Dir. Fundamentais — Parte 2</div><div class="row-meta">Dir. Constitucional · Estudo · 30min</div></div>
+    <div class="row-right"><span class="dur" style="color: var(--text-4);">+1.1</span></div>
+  </div>
+
+  <div class="more-link">+ 4 concluídas anteriores</div>
+
+  <div class="sep"></div>
+
+  <!-- INSIGHTS -->
+  <div class="sec"><span class="sec-title">Insights</span></div>
+  <div class="insights">
+    <div class="insight">
+      <div class="i-head">⚠ Ponto fraco</div>
+      <strong>Dir. Administrativo</strong> está em 38%. Maior retorno: <strong>+12.4 pts</strong>.
+    </div>
+    <div class="insight">
+      <div class="i-head">📈 Evolução</div>
+      Velocidade de questões <strong>+15%</strong> esta semana. Melhor horário: <strong>8h–10h</strong>.
+    </div>
+    <div class="insight">
+      <div class="i-head">🎯 Projeção</div>
+      Mantendo o ritmo → <strong>82/100</strong> no dia da prova. Meta: 80. <strong style="color: var(--green);">No caminho.</strong>
+    </div>
+  </div>
+
+  <!-- E SE? SLIDER -->
+  <div class="whatif">
+    <div class="whatif-box">
+      <span class="whatif-label">E se eu estudar</span>
+      <input type="range" class="whatif-slider" min="1" max="8" value="3" step="0.5">
+      <span class="whatif-label"><strong>3h/dia</strong></span>
+      <span class="whatif-result">→ 81 pts</span>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- SESSÕES RECENTES -->
+  <div class="sec"><span class="sec-title">Sessões recentes</span></div>
+  <div class="sessions">
+    <div class="s-row">
+      <span class="s-time">Hoje 09:30</span>
+      <span class="s-desc">50min · Homicídio P1 + Rev. Dir. Constitucional</span>
+      <span class="s-pts">+0.8</span>
+    </div>
+    <div class="s-row">
+      <span class="s-time">Ontem 14:00</span>
+      <span class="s-desc">25min · Questões mistas — Penal + Administrativo</span>
+      <span class="s-pts">+0.3</span>
+    </div>
+    <div class="s-row">
+      <span class="s-time">Ontem 09:00</span>
+      <span class="s-desc">50min · Dir. Fundamentais P2 + Lei Seca CF Art. 5°</span>
+      <span class="s-pts">+1.1</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="ftr">
+    <span>Fechar todos os anéis: <strong>+4.7 pts</strong> · Projeção: <strong>80.7</strong></span>
+    <span>🏛 TRF 3ª · Analista · 38 dias</span>
+  </div>
+
+</div>
+</div>
+</body>
+</html>

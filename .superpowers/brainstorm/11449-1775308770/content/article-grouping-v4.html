@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hierarquia Tipográfica — Variações</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500&family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f6f5f2;
+    color: #43505c;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 960px; margin: 0 auto; }
+
+  h1 {
+    font-family: 'Literata', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: #2a2a2a;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .proposal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.03);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .proposal:hover { border-color: #ddd; }
+  .proposal.selected { border-color: #4a7c59; }
+  .proposal.selected .proposal-badge { background: #4a7c59; color: #fff; }
+
+  .proposal-top {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .proposal-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: #eee;
+    color: #888;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .proposal-title {
+    font-family: 'Literata', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: #2a2a2a;
+  }
+
+  .proposal-desc {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .mockup-area {
+    background: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 24px 28px;
+    font-family: 'Literata', Georgia, serif;
+    color: rgb(67, 80, 92);
+    line-height: 1.9;
+    text-align: justify;
+  }
+
+  .hint {
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: #bbb;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .estrutura {
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #aaa;
+    padding: 12px 0 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .chevron {
+    position: absolute;
+    color: #d8d8d8;
+    user-select: none;
+  }
+
+  /* ─── Shared: separator + hover ─── */
+  .art-block {
+    padding: 14px 16px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    margin-bottom: 4px;
+  }
+  .art-block:hover {
+    background: rgba(0, 0, 0, 0.012);
+  }
+  .art-separator {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e8e6e2 20%, #e8e6e2 80%, transparent);
+    margin: 2px 0;
+  }
+
+  /* ═══ OPTION A: Sutil — 1px por nível ═══ */
+  .opt-a .artigo     { font-size: 15px; margin-bottom: 2px; }
+  .opt-a .paragrafo  { font-size: 14px; padding-left: 34px; position: relative; margin-bottom: 2px; }
+  .opt-a .inciso     { font-size: 13.5px; padding-left: 58px; position: relative; margin-bottom: 2px; }
+  .opt-a .alinea     { font-size: 13px; padding-left: 82px; position: relative; margin-bottom: 2px; }
+  .opt-a .pena       { font-size: 13.5px; padding-left: 34px; font-style: italic; color: #aaa; margin-bottom: 2px; }
+  .opt-a .paragrafo .chevron  { left: 16px; font-size: 13px; }
+  .opt-a .inciso .chevron     { left: 40px; font-size: 12px; }
+  .opt-a .alinea .chevron     { left: 64px; font-size: 11px; }
+
+  /* ═══ OPTION B: Moderada — 1.5px por nível + cor mais leve ═══ */
+  .opt-b .artigo     { font-size: 15px; margin-bottom: 2px; }
+  .opt-b .paragrafo  { font-size: 13.5px; padding-left: 34px; position: relative; margin-bottom: 2px; color: rgb(77, 90, 102); }
+  .opt-b .inciso     { font-size: 12.5px; padding-left: 58px; position: relative; margin-bottom: 2px; color: rgb(87, 100, 112); }
+  .opt-b .alinea     { font-size: 12px; padding-left: 82px; position: relative; margin-bottom: 2px; color: rgb(97, 108, 118); }
+  .opt-b .pena       { font-size: 12.5px; padding-left: 34px; font-style: italic; color: #aaa; margin-bottom: 2px; }
+  .opt-b .paragrafo .chevron  { left: 16px; font-size: 13px; }
+  .opt-b .inciso .chevron     { left: 40px; font-size: 12px; }
+  .opt-b .alinea .chevron     { left: 64px; font-size: 11px; }
+
+  /* ═══ OPTION C: Só tamanho, sem cor — contraste natural ═══ */
+  .opt-c .artigo     { font-size: 15.5px; font-weight: 400; margin-bottom: 2px; }
+  .opt-c .paragrafo  { font-size: 14px; padding-left: 34px; position: relative; margin-bottom: 2px; }
+  .opt-c .inciso     { font-size: 13px; padding-left: 58px; position: relative; margin-bottom: 2px; }
+  .opt-c .alinea     { font-size: 12.5px; padding-left: 82px; position: relative; margin-bottom: 2px; }
+  .opt-c .pena       { font-size: 13px; padding-left: 34px; font-style: italic; color: #aaa; margin-bottom: 2px; }
+  .opt-c .paragrafo .chevron  { left: 16px; font-size: 13px; }
+  .opt-c .inciso .chevron     { left: 40px; font-size: 12px; }
+  .opt-c .alinea .chevron     { left: 64px; font-size: 11px; }
+
+  .size-tag {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    color: #c0b8ae;
+    background: #f5f3f0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.3px;
+  }
+
+  .selection-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #4a7c59;
+    color: #fff;
+    text-align: center;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+    z-index: 100;
+  }
+  .selection-bar.visible { transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Hierarquia Tipográfica — 3 Intensidades</h1>
+<p class="subtitle">Base: separador gradient + hover (opção B anterior). Agora com font-size decrescente por nível. Passe o mouse para ver o hover.</p>
+
+<!-- ═══ OPTION A ═══ -->
+<div class="proposal" data-choice="a" onclick="select(this)">
+  <div class="proposal-top">
+    <span class="proposal-badge">A</span>
+    <span class="proposal-title">Sutil — redução de ~1px por nível</span>
+  </div>
+  <p class="proposal-desc">Artigo 15px > Parágrafo 14px > Inciso 13.5px > Alínea 13px. Quase imperceptível, mas cria ritmo.</p>
+
+  <div class="mockup-area opt-a">
+    <div class="hint">Passe o mouse nos artigos</div>
+    <div class="estrutura">Capítulo I — Da Personalidade e Da Capacidade</div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 1º Toda pessoa é capaz de direitos e deveres na ordem civil. <span class="size-tag">15px</span></div>
+    </div>
+    <div class="art-separator"></div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 4º São incapazes, relativamente a certos atos ou à maneira de os exercer: <span class="size-tag">15px</span></div>
+      <div class="inciso"><span class="chevron">›</span>I – os maiores de dezesseis e menores de dezoito anos; <span class="size-tag">13.5px</span></div>
+      <div class="inciso"><span class="chevron">›</span>II – os ébrios habituais e os viciados em tóxico;</div>
+      <div class="inciso"><span class="chevron">›</span>III – aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;</div>
+      <div class="inciso"><span class="chevron">›</span>IV – os pródigos.</div>
+      <div class="paragrafo"><span class="chevron">›</span>Parágrafo único. A capacidade dos indígenas será regulada por legislação especial. <span class="size-tag">14px</span></div>
+    </div>
+    <div class="art-separator"></div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 5º A menoridade cessa aos dezoito anos completos, quando a pessoa fica habilitada à prática de todos os atos da vida civil. <span class="size-tag">15px</span></div>
+      <div class="paragrafo"><span class="chevron">›</span>Parágrafo único. Cessará, para os menores, a incapacidade: <span class="size-tag">14px</span></div>
+      <div class="inciso"><span class="chevron">›</span>I – pela concessão dos pais, ou de um deles na falta do outro; <span class="size-tag">13.5px</span></div>
+      <div class="inciso"><span class="chevron">›</span>II – pelo casamento;</div>
+      <div class="inciso"><span class="chevron">›</span>III – pelo exercício de emprego público efetivo;</div>
+      <div class="alinea"><span class="chevron">›</span>a) incluindo o serviço militar; <span class="size-tag">13px</span></div>
+      <div class="alinea"><span class="chevron">›</span>b) incluindo a nomeação para cargo público.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OPTION B ═══ -->
+<div class="proposal" data-choice="b" onclick="select(this)">
+  <div class="proposal-top">
+    <span class="proposal-badge">B</span>
+    <span class="proposal-title">Moderada — tamanho + cor mais clara nos filhos</span>
+  </div>
+  <p class="proposal-desc">Artigo 15px > Parágrafo 13.5px > Inciso 12.5px > Alínea 12px. Filhos também ficam com cor ligeiramente mais clara.</p>
+
+  <div class="mockup-area opt-b">
+    <div class="hint">Passe o mouse nos artigos</div>
+    <div class="estrutura">Capítulo I — Da Personalidade e Da Capacidade</div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 1º Toda pessoa é capaz de direitos e deveres na ordem civil. <span class="size-tag">15px</span></div>
+    </div>
+    <div class="art-separator"></div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 4º São incapazes, relativamente a certos atos ou à maneira de os exercer: <span class="size-tag">15px</span></div>
+      <div class="inciso"><span class="chevron">›</span>I – os maiores de dezesseis e menores de dezoito anos; <span class="size-tag">12.5px</span></div>
+      <div class="inciso"><span class="chevron">›</span>II – os ébrios habituais e os viciados em tóxico;</div>
+      <div class="inciso"><span class="chevron">›</span>III – aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;</div>
+      <div class="inciso"><span class="chevron">›</span>IV – os pródigos.</div>
+      <div class="paragrafo"><span class="chevron">›</span>Parágrafo único. A capacidade dos indígenas será regulada por legislação especial. <span class="size-tag">13.5px</span></div>
+    </div>
+    <div class="art-separator"></div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 5º A menoridade cessa aos dezoito anos completos, quando a pessoa fica habilitada à prática de todos os atos da vida civil. <span class="size-tag">15px</span></div>
+      <div class="paragrafo"><span class="chevron">›</span>Parágrafo único. Cessará, para os menores, a incapacidade: <span class="size-tag">13.5px</span></div>
+      <div class="inciso"><span class="chevron">›</span>I – pela concessão dos pais, ou de um deles na falta do outro; <span class="size-tag">12.5px</span></div>
+      <div class="inciso"><span class="chevron">›</span>II – pelo casamento;</div>
+      <div class="inciso"><span class="chevron">›</span>III – pelo exercício de emprego público efetivo;</div>
+      <div class="alinea"><span class="chevron">›</span>a) incluindo o serviço militar; <span class="size-tag">12px</span></div>
+      <div class="alinea"><span class="chevron">›</span>b) incluindo a nomeação para cargo público.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OPTION C ═══ -->
+<div class="proposal" data-choice="c" onclick="select(this)">
+  <div class="proposal-top">
+    <span class="proposal-badge">C</span>
+    <span class="proposal-title">Artigo levemente maior — filhos reduzem, sem mudar cor</span>
+  </div>
+  <p class="proposal-desc">Artigo 15.5px > Parágrafo 14px > Inciso 13px > Alínea 12.5px. Mais contraste de tamanho, cor uniforme.</p>
+
+  <div class="mockup-area opt-c">
+    <div class="hint">Passe o mouse nos artigos</div>
+    <div class="estrutura">Capítulo I — Da Personalidade e Da Capacidade</div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 1º Toda pessoa é capaz de direitos e deveres na ordem civil. <span class="size-tag">15.5px</span></div>
+    </div>
+    <div class="art-separator"></div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 4º São incapazes, relativamente a certos atos ou à maneira de os exercer: <span class="size-tag">15.5px</span></div>
+      <div class="inciso"><span class="chevron">›</span>I – os maiores de dezesseis e menores de dezoito anos; <span class="size-tag">13px</span></div>
+      <div class="inciso"><span class="chevron">›</span>II – os ébrios habituais e os viciados em tóxico;</div>
+      <div class="inciso"><span class="chevron">›</span>III – aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;</div>
+      <div class="inciso"><span class="chevron">›</span>IV – os pródigos.</div>
+      <div class="paragrafo"><span class="chevron">›</span>Parágrafo único. A capacidade dos indígenas será regulada por legislação especial. <span class="size-tag">14px</span></div>
+    </div>
+    <div class="art-separator"></div>
+
+    <div class="art-block">
+      <div class="artigo">Art. 5º A menoridade cessa aos dezoito anos completos, quando a pessoa fica habilitada à prática de todos os atos da vida civil. <span class="size-tag">15.5px</span></div>
+      <div class="paragrafo"><span class="chevron">›</span>Parágrafo único. Cessará, para os menores, a incapacidade: <span class="size-tag">14px</span></div>
+      <div class="inciso"><span class="chevron">›</span>I – pela concessão dos pais, ou de um deles na falta do outro; <span class="size-tag">13px</span></div>
+      <div class="inciso"><span class="chevron">›</span>II – pelo casamento;</div>
+      <div class="inciso"><span class="chevron">›</span>III – pelo exercício de emprego público efetivo;</div>
+      <div class="alinea"><span class="chevron">›</span>a) incluindo o serviço militar; <span class="size-tag">12.5px</span></div>
+      <div class="alinea"><span class="chevron">›</span>b) incluindo a nomeação para cargo público.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="selection-bar" id="bar"></div>
+
+<script>
+let selected = null;
+function select(el) {
+  document.querySelectorAll('.proposal').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selected = el.dataset.choice;
+  const bar = document.getElementById('bar');
+  const labels = {
+    a: 'A — Sutil (~1px por nível)',
+    b: 'B — Moderada (tamanho + cor)',
+    c: 'C — Artigo maior, filhos reduzem, cor uniforme'
+  };
+  bar.textContent = 'Selecionado: ' + labels[selected];
+  bar.classList.add('visible');
+  fetch('/event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'click', choice: selected, text: labels[selected], timestamp: Date.now() })
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

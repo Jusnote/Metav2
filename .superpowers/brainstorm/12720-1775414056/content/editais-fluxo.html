@@ -1,0 +1,147 @@
+<h2>Fluxo de Editais — Qual abordagem?</h2>
+<p class="subtitle">Como o aluno navega de "escolher concurso" até "estudar o conteúdo programático"</p>
+
+<div class="cards">
+  <!-- Opção A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1a2e;border-radius:8px;padding:20px;font-family:sans-serif;color:#e0e0e0;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:11px;color:#888;margin-bottom:4px;">PASSO 1</div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:12px;margin-bottom:8px;">
+            <div style="font-size:10px;color:#666;margin-bottom:6px;">🔍 Buscar concurso...</div>
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <span style="background:#3a3a5a;padding:3px 8px;border-radius:12px;font-size:10px;">Federal</span>
+              <span style="background:#3a3a5a;padding:3px 8px;border-radius:12px;font-size:10px;">Estadual</span>
+              <span style="background:#3a3a5a;padding:3px 8px;border-radius:12px;font-size:10px;">Municipal</span>
+            </div>
+            <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:11px;margin-bottom:4px;border-left:3px solid #6366f1;">Polícia Federal — 41 cargos</div>
+            <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:11px;margin-bottom:4px;">TJ-SP — 18 cargos</div>
+            <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:11px;">PRF — 2 cargos</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:18px;margin-bottom:8px;">⬇️</div>
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:11px;color:#888;margin-bottom:4px;">PASSO 2</div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;font-weight:bold;margin-bottom:6px;">Polícia Federal</div>
+            <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:10px;margin-bottom:4px;border-left:3px solid #6366f1;">Delegado de Polícia</div>
+            <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:10px;margin-bottom:4px;">Agente de Polícia</div>
+            <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:10px;">Escrivão de Polícia</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:18px;margin-bottom:8px;">⬇️</div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;color:#888;margin-bottom:4px;">PASSO 3</div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;font-weight:bold;margin-bottom:6px;">Documents Organization</div>
+            <div style="font-size:10px;color:#888;">Disciplinas → Tópicos já carregados na árvore</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A) Wizard em 3 passos (páginas separadas)</h3>
+      <p>Página de editais → Página de cargos → Documents Organization. Cada passo é uma rota diferente. Breadcrumb no topo para voltar.</p>
+    </div>
+  </div>
+
+  <!-- Opção B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1a2e;border-radius:8px;padding:20px;font-family:sans-serif;color:#e0e0e0;">
+        <div style="display:flex;gap:12px;">
+          <!-- Sidebar -->
+          <div style="width:35%;background:#2a2a4a;border-radius:8px;padding:12px;">
+            <div style="font-size:10px;color:#888;margin-bottom:6px;">🔍 Buscar...</div>
+            <div style="font-size:10px;color:#6366f1;font-weight:bold;margin-bottom:6px;">EDITAIS</div>
+            <div style="background:#252545;padding:5px 8px;border-radius:4px;font-size:10px;margin-bottom:3px;border-left:3px solid #6366f1;">▼ Polícia Federal</div>
+            <div style="padding-left:12px;">
+              <div style="background:#1e1e3e;padding:4px 8px;border-radius:4px;font-size:9px;margin-bottom:2px;border-left:2px solid #f59e0b;">Delegado</div>
+              <div style="background:#1e1e3e;padding:4px 8px;border-radius:4px;font-size:9px;margin-bottom:2px;">Agente</div>
+              <div style="background:#1e1e3e;padding:4px 8px;border-radius:4px;font-size:9px;">Escrivão</div>
+            </div>
+            <div style="background:#252545;padding:5px 8px;border-radius:4px;font-size:10px;margin-top:6px;margin-bottom:3px;">▶ TJ-SP</div>
+            <div style="background:#252545;padding:5px 8px;border-radius:4px;font-size:10px;">▶ PRF</div>
+          </div>
+          <!-- Content -->
+          <div style="width:65%;background:#2a2a4a;border-radius:8px;padding:12px;">
+            <div style="font-size:10px;color:#888;margin-bottom:4px;">Delegado de Polícia • Polícia Federal</div>
+            <div style="font-size:11px;font-weight:bold;margin-bottom:8px;">Conteúdo Programático</div>
+            <div style="background:#252545;padding:5px 8px;border-radius:4px;font-size:10px;margin-bottom:3px;">▼ Língua Portuguesa (25)</div>
+            <div style="padding-left:12px;">
+              <div style="font-size:9px;color:#aaa;margin-bottom:2px;">1. Compreensão e interpretação</div>
+              <div style="font-size:9px;color:#aaa;margin-bottom:2px;">2. Tipologia textual</div>
+              <div style="font-size:9px;color:#aaa;">3. Ortografia oficial</div>
+            </div>
+            <div style="background:#252545;padding:5px 8px;border-radius:4px;font-size:10px;margin-top:6px;margin-bottom:3px;">▶ Dir. Constitucional (32)</div>
+            <div style="background:#252545;padding:5px 8px;border-radius:4px;font-size:10px;margin-top:3px;">▶ Dir. Administrativo (48)</div>
+            <div style="margin-top:12px;display:flex;gap:6px;">
+              <span style="background:#6366f1;padding:3px 8px;border-radius:4px;font-size:9px;">📝 Resumo</span>
+              <span style="background:#2563eb;padding:3px 8px;border-radius:4px;font-size:9px;">🗂 Flashcards</span>
+              <span style="background:#059669;padding:3px 8px;border-radius:4px;font-size:9px;">❓ Questões</span>
+              <span style="background:#d97706;padding:3px 8px;border-radius:4px;font-size:9px;">⚖️ Lei Seca</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Tudo integrado numa página (sidebar accordion)</h3>
+      <p>Sidebar esquerda com editais → cargos (accordion expansível). Ao selecionar cargo, o conteúdo programático carrega direto na área principal com os cards de estudo (resumo, flashcards, questões, lei seca).</p>
+    </div>
+  </div>
+
+  <!-- Opção C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1a2e;border-radius:8px;padding:20px;font-family:sans-serif;color:#e0e0e0;">
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;gap:8px;margin-bottom:12px;justify-content:center;">
+            <div style="background:#6366f1;padding:6px 14px;border-radius:20px;font-size:10px;font-weight:bold;">1. Edital</div>
+            <div style="color:#444;padding:6px 0;">→</div>
+            <div style="background:#3a3a5a;padding:6px 14px;border-radius:20px;font-size:10px;">2. Cargo</div>
+            <div style="color:#444;padding:6px 0;">→</div>
+            <div style="background:#3a3a5a;padding:6px 14px;border-radius:20px;font-size:10px;">3. Estudar</div>
+          </div>
+        </div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:16px;">
+          <div style="text-align:center;font-size:12px;font-weight:bold;margin-bottom:12px;">Escolha seu concurso</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;justify-content:center;">
+            <span style="background:#6366f1;padding:3px 10px;border-radius:12px;font-size:10px;">Todos</span>
+            <span style="background:#3a3a5a;padding:3px 10px;border-radius:12px;font-size:10px;">Federal</span>
+            <span style="background:#3a3a5a;padding:3px 10px;border-radius:12px;font-size:10px;">Estadual</span>
+            <span style="background:#3a3a5a;padding:3px 10px;border-radius:12px;font-size:10px;">Municipal</span>
+          </div>
+          <div style="background:#1e1e3e;padding:6px;border-radius:4px;margin-bottom:8px;font-size:10px;color:#666;">🔍 Buscar por nome ou sigla...</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:#252545;padding:10px;border-radius:6px;border:1px solid #6366f1;">
+              <div style="font-size:11px;font-weight:bold;">PF</div>
+              <div style="font-size:9px;color:#888;">Polícia Federal</div>
+              <div style="font-size:9px;color:#6366f1;margin-top:4px;">41 cargos • 356 disc</div>
+            </div>
+            <div style="background:#252545;padding:10px;border-radius:6px;">
+              <div style="font-size:11px;font-weight:bold;">PRF</div>
+              <div style="font-size:9px;color:#888;">Pol. Rodoviária Federal</div>
+              <div style="font-size:9px;color:#888;margin-top:4px;">2 cargos • 24 disc</div>
+            </div>
+            <div style="background:#252545;padding:10px;border-radius:6px;">
+              <div style="font-size:11px;font-weight:bold;">TJ-SP</div>
+              <div style="font-size:9px;color:#888;">Tribunal de Justiça SP</div>
+              <div style="font-size:9px;color:#888;margin-top:4px;">18 cargos • 152 disc</div>
+            </div>
+            <div style="background:#252545;padding:10px;border-radius:6px;">
+              <div style="font-size:11px;font-weight:bold;">MPU</div>
+              <div style="font-size:9px;color:#888;">Min. Público da União</div>
+              <div style="font-size:9px;color:#888;margin-top:4px;">37 cargos • 316 disc</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C) Stepper na mesma página (transição suave)</h3>
+      <p>Stepper (1→2→3) no topo. Passo 1: grid de cards com editais + busca + filtros. Passo 2: lista de cargos com animação slide. Passo 3: transição suave para documents-organization. Tudo na mesma URL, sem reload.</p>
+    </div>
+  </div>
+</div>

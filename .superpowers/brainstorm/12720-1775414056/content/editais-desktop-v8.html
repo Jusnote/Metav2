@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Editais</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@350;400;450;500;550;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fafafb; color:#1a1a1a; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  .layout { display:flex; height:100vh; }
+
+  .rail { width:56px; background:#fff; border-right:1px solid #f0eff2; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:4px; }
+  .rail-logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(140deg,#6c63ff,#9b8afb); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:white; margin-bottom:20px; box-shadow:0 2px 8px rgba(108,99,255,0.25); }
+  .rail-btn { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#c4c0ce; transition:all 0.15s; }
+  .rail-btn:hover { color:#6c63ff; background:#f5f3ff; }
+  .rail-btn.on { color:#6c63ff; background:#eeecfb; }
+
+  .content { flex:1; overflow-y:auto; }
+
+  .topbar { height:50px; background:#fff; border-bottom:1px solid #f0eff2; display:flex; align-items:center; padding:0 40px; }
+  .topbar b { font-size:13px; font-weight:600; color:#1a1a1a; }
+
+  .page { max-width:1100px; margin:0 auto; padding:36px 32px 80px; }
+
+  /* Hero section */
+  .hero { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; }
+  .hero-left {}
+  .hero h1 { font-size:26px; font-weight:800; color:#1a1a1a; letter-spacing:-0.6px; margin-bottom:6px; }
+  .hero h1 em { font-style:normal; background:linear-gradient(135deg,#6c63ff,#9b8afb); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero-sub { font-size:14px; color:#9994a8; max-width:420px; line-height:1.5; }
+  .hero-right { display:flex; gap:20px; }
+  .hero-stat { text-align:right; }
+  .hero-stat-val { font-size:24px; font-weight:800; color:#1a1a1a; font-variant-numeric:tabular-nums; letter-spacing:-0.5px; }
+  .hero-stat-lbl { font-size:11px; color:#b0adb8; font-weight:500; }
+
+  /* Search */
+  .search-row { display:flex; gap:12px; margin-bottom:20px; }
+  .search-box { flex:1; position:relative; }
+  .search-box input { width:100%; background:#fff; border:1.5px solid #eae8ee; border-radius:12px; padding:12px 18px 12px 42px; font-size:14px; color:#1a1a1a; outline:none; transition:all 0.2s; font-family:inherit; }
+  .search-box input::placeholder { color:#c4c0ce; }
+  .search-box input:focus { border-color:#6c63ff; box-shadow:0 0 0 4px rgba(108,99,255,0.06); }
+  .search-box svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#c4c0ce; }
+
+  .seg { display:inline-flex; background:#f0eff2; border-radius:10px; padding:3px; }
+  .seg-btn { padding:8px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; color:#9994a8; transition:all 0.15s; }
+  .seg-btn:hover { color:#6c63ff; }
+  .seg-btn.on { background:#fff; color:#1a1a1a; box-shadow:0 1px 3px rgba(0,0,0,0.06); font-weight:600; }
+
+  /* Featured section */
+  .section { margin-bottom:32px; }
+  .section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .section-title { font-size:13px; font-weight:700; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.4px; }
+  .section-more { font-size:12px; color:#6c63ff; font-weight:550; cursor:pointer; }
+
+  /* Featured cards (horizontal scroll) */
+  .featured-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; }
+  .featured-row::-webkit-scrollbar { height:0; }
+
+  .feat-card { min-width:280px; background:#fff; border:1.5px solid #eae8ee; border-radius:16px; padding:22px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; flex-shrink:0; }
+  .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .feat-card:hover { border-color:#c7c3ff; box-shadow:0 6px 20px rgba(108,99,255,0.08); transform:translateY(-2px); }
+
+  .feat-card.purple::before { background:linear-gradient(90deg,#6c63ff,#9b8afb); }
+  .feat-card.blue::before { background:linear-gradient(90deg,#4a8fe7,#60a5fa); }
+  .feat-card.green::before { background:linear-gradient(90deg,#2da87a,#4ade80); }
+
+  .feat-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .feat-sigla { font-size:20px; font-weight:800; letter-spacing:-0.5px; }
+  .feat-badge { font-size:10px; font-weight:600; padding:3px 10px; border-radius:6px; }
+  .feat-badge.fed { background:#eeecfb; color:#6c63ff; }
+  .feat-badge.est { background:#e8f1fd; color:#4a8fe7; }
+  .feat-badge.mun { background:#e4f8f0; color:#2da87a; }
+
+  .feat-nome { font-size:14px; font-weight:600; color:#1a1a1a; margin-bottom:4px; }
+  .feat-desc { font-size:12px; color:#b0adb8; margin-bottom:16px; }
+
+  .feat-stats { display:flex; gap:16px; }
+  .feat-stat {}
+  .feat-stat-val { font-size:16px; font-weight:700; color:#1a1a1a; }
+  .feat-stat-lbl { font-size:10px; color:#c4c0ce; text-transform:uppercase; letter-spacing:0.3px; }
+
+  .feat-cta { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:16px; padding:10px; background:#f8f7fd; border-radius:10px; font-size:12.5px; font-weight:600; color:#6c63ff; transition:background 0.12s; }
+  .feat-card:hover .feat-cta { background:#eeecfb; }
+
+  /* All editais grid */
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+
+  .ecard { background:#fff; border:1.5px solid #eae8ee; border-radius:14px; padding:18px 20px; cursor:pointer; transition:all 0.2s; }
+  .ecard:hover { border-color:#d4d0f0; box-shadow:0 4px 14px rgba(108,99,255,0.06); transform:translateY(-1px); }
+
+  .ecard-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .ecard-avatar { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .ecard-avatar.fed { background:linear-gradient(135deg,#eeecfb,#e0dcf8); color:#6c63ff; }
+  .ecard-avatar.est { background:linear-gradient(135deg,#e8f1fd,#dce8fa); color:#4a8fe7; }
+  .ecard-avatar.mun { background:linear-gradient(135deg,#e4f8f0,#d4f1e5); color:#2da87a; }
+
+  .ecard-esfera { font-size:10px; color:#b0adb8; font-weight:500; }
+
+  .ecard-nome { font-size:13.5px; font-weight:600; color:#1a1a1a; margin-bottom:3px; line-height:1.3; }
+  .ecard-org { font-size:11.5px; color:#b0adb8; margin-bottom:14px; }
+
+  .ecard-row { display:flex; gap:14px; padding-top:12px; border-top:1px solid #f5f4f7; }
+  .ecard-num { }
+  .ecard-num-val { font-size:14px; font-weight:700; color:#1a1a1a; }
+  .ecard-num-lbl { font-size:9.5px; color:#c4c0ce; text-transform:uppercase; letter-spacing:0.2px; }
+
+  /* Expanded card overlay */
+  .ecard.expanded { grid-column:1/-1; border-color:#6c63ff; box-shadow:0 8px 28px rgba(108,99,255,0.1); }
+  .ecard-expand { margin-top:18px; padding-top:18px; border-top:1px solid #f0eff2; }
+  .expand-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .expand-title { font-size:14px; font-weight:700; color:#1a1a1a; }
+  .expand-close { width:28px; height:28px; border-radius:8px; border:1px solid #eae8ee; background:#fafafb; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b0adb8; }
+  .expand-close:hover { background:#f0eff2; color:#1a1a1a; }
+
+  .cargo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .cargo { background:#fafafb; border:1.5px solid #eae8ee; border-radius:11px; padding:14px 16px; cursor:pointer; transition:all 0.15s; }
+  .cargo:hover { border-color:#c7c3ff; background:#f8f7fd; transform:translateY(-1px); box-shadow:0 3px 10px rgba(108,99,255,0.06); }
+  .cargo-name { font-size:13px; font-weight:600; color:#1a1a1a; margin-bottom:3px; }
+  .cargo-meta { font-size:11px; color:#b0adb8; }
+  .cargo-cta { display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:600; color:#6c63ff; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="rail">
+    <div class="rail-logo">P</div>
+    <div class="rail-btn">📄</div>
+    <div class="rail-btn on">📋</div>
+    <div class="rail-btn">🗂</div>
+    <div class="rail-btn">❓</div>
+    <div class="rail-btn">⚖️</div>
+    <div class="rail-btn" style="margin-top:auto">⚙️</div>
+  </div>
+
+  <div class="content">
+    <div class="topbar"><b>Editais</b></div>
+
+    <div class="page">
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-left">
+          <h1>Editais <em>verticalizados</em></h1>
+          <div class="hero-sub">Selecione um concurso, escolha seu cargo e estude o conteúdo programático completo.</div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-stat"><div class="hero-stat-val">690</div><div class="hero-stat-lbl">Editais</div></div>
+          <div class="hero-stat"><div class="hero-stat-val">3.420</div><div class="hero-stat-lbl">Cargos</div></div>
+          <div class="hero-stat"><div class="hero-stat-val">1,16M</div><div class="hero-stat-lbl">Tópicos</div></div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-row">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+          <input placeholder="Buscar por nome, sigla ou órgão..." />
+        </div>
+        <div class="seg">
+          <div class="seg-btn on">Todos</div>
+          <div class="seg-btn">Federal</div>
+          <div class="seg-btn">Estadual</div>
+          <div class="seg-btn">Municipal</div>
+        </div>
+      </div>
+
+      <!-- Featured -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Em destaque</div>
+          <div class="section-more">Ver todos →</div>
+        </div>
+        <div class="featured-row">
+          <div class="feat-card purple">
+            <div class="feat-top">
+              <div class="feat-sigla">PF</div>
+              <div class="feat-badge fed">Federal</div>
+            </div>
+            <div class="feat-nome">Polícia Federal</div>
+            <div class="feat-desc">Concurso público com 41 cargos de nível superior</div>
+            <div class="feat-stats">
+              <div class="feat-stat"><div class="feat-stat-val">41</div><div class="feat-stat-lbl">Cargos</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">356</div><div class="feat-stat-lbl">Disciplinas</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">19.609</div><div class="feat-stat-lbl">Tópicos</div></div>
+            </div>
+            <div class="feat-cta">Selecionar cargo →</div>
+          </div>
+
+          <div class="feat-card purple">
+            <div class="feat-top">
+              <div class="feat-sigla">PRF</div>
+              <div class="feat-badge fed">Federal</div>
+            </div>
+            <div class="feat-nome">Polícia Rodoviária Federal</div>
+            <div class="feat-desc">Policial rodoviário e agente administrativo</div>
+            <div class="feat-stats">
+              <div class="feat-stat"><div class="feat-stat-val">2</div><div class="feat-stat-lbl">Cargos</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">24</div><div class="feat-stat-lbl">Disciplinas</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">455</div><div class="feat-stat-lbl">Tópicos</div></div>
+            </div>
+            <div class="feat-cta">Selecionar cargo →</div>
+          </div>
+
+          <div class="feat-card purple">
+            <div class="feat-top">
+              <div class="feat-sigla">MPU</div>
+              <div class="feat-badge fed">Federal</div>
+            </div>
+            <div class="feat-nome">Ministério Público da União</div>
+            <div class="feat-desc">Analista e técnico em diversas áreas</div>
+            <div class="feat-stats">
+              <div class="feat-stat"><div class="feat-stat-val">37</div><div class="feat-stat-lbl">Cargos</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">316</div><div class="feat-stat-lbl">Disciplinas</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">19.307</div><div class="feat-stat-lbl">Tópicos</div></div>
+            </div>
+            <div class="feat-cta">Selecionar cargo →</div>
+          </div>
+
+          <div class="feat-card blue">
+            <div class="feat-top">
+              <div class="feat-sigla">TJ-SP</div>
+              <div class="feat-badge est">Estadual</div>
+            </div>
+            <div class="feat-nome">Tribunal de Justiça de São Paulo</div>
+            <div class="feat-desc">Escrevente técnico judiciário e outros</div>
+            <div class="feat-stats">
+              <div class="feat-stat"><div class="feat-stat-val">18</div><div class="feat-stat-lbl">Cargos</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">152</div><div class="feat-stat-lbl">Disciplinas</div></div>
+              <div class="feat-stat"><div class="feat-stat-val">8.430</div><div class="feat-stat-lbl">Tópicos</div></div>
+            </div>
+            <div class="feat-cta">Selecionar cargo →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de todos -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Todos os editais</div>
+        </div>
+
+        <div class="grid">
+          <!-- Expanded -->
+          <div class="ecard expanded">
+            <div class="ecard-top">
+              <div class="ecard-avatar fed">INSS</div>
+              <div class="ecard-esfera">Federal</div>
+            </div>
+            <div class="ecard-nome">Instituto Nacional do Seguro Social</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">2</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">28</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">1.240</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+            <div class="ecard-expand">
+              <div class="expand-head">
+                <div class="expand-title">Selecione o cargo</div>
+                <button class="expand-close">✕</button>
+              </div>
+              <div class="cargo-grid">
+                <div class="cargo">
+                  <div class="cargo-name">Técnico do Seguro Social</div>
+                  <div class="cargo-meta">14 disciplinas · 620 tópicos</div>
+                  <div class="cargo-cta">Estudar →</div>
+                </div>
+                <div class="cargo">
+                  <div class="cargo-name">Analista do Seguro Social</div>
+                  <div class="cargo-meta">14 disciplinas · 620 tópicos</div>
+                  <div class="cargo-cta">Estudar →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards normais -->
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar fed">TRF-1</div>
+              <div class="ecard-esfera">Federal</div>
+            </div>
+            <div class="ecard-nome">Tribunal Regional Federal da 1ª Região</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">33</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">319</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">10.898</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar est">SEFAZ</div>
+              <div class="ecard-esfera">Bahia</div>
+            </div>
+            <div class="ecard-nome">Secretaria da Fazenda da Bahia</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">3</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">42</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">2.180</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar mun">CM-GOI</div>
+              <div class="ecard-esfera">Goiás</div>
+            </div>
+            <div class="ecard-nome">Câmara Municipal de Goiânia</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">32</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">186</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">7.820</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar est">PC-DF</div>
+              <div class="ecard-esfera">Distrito Federal</div>
+            </div>
+            <div class="ecard-nome">Polícia Civil do Distrito Federal</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">8</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">96</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">4.520</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar fed">TCU</div>
+              <div class="ecard-esfera">Federal</div>
+            </div>
+            <div class="ecard-nome">Tribunal de Contas da União</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">4</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">68</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">3.450</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar est">PC-PR</div>
+              <div class="ecard-esfera">Paraná</div>
+            </div>
+            <div class="ecard-nome">Polícia Civil do Paraná</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">6</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">72</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">3.890</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar fed">BNDES</div>
+              <div class="ecard-esfera">Federal</div>
+            </div>
+            <div class="ecard-nome">Banco Nacional de Desenvolvimento</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">12</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">148</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">6.230</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+
+          <div class="ecard">
+            <div class="ecard-top">
+              <div class="ecard-avatar est">TJ-MG</div>
+              <div class="ecard-esfera">Minas Gerais</div>
+            </div>
+            <div class="ecard-nome">Tribunal de Justiça de Minas Gerais</div>
+            <div class="ecard-org">Concurso Público</div>
+            <div class="ecard-row">
+              <div class="ecard-num"><div class="ecard-num-val">15</div><div class="ecard-num-lbl">Cargos</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">128</div><div class="ecard-num-lbl">Disciplinas</div></div>
+              <div class="ecard-num"><div class="ecard-num-val">5.670</div><div class="ecard-num-lbl">Tópicos</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

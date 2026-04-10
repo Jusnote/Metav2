@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5f5f4; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; padding: 20px; display: flex; justify-content: center; }
+  .container { max-width: 780px; width: 100%; }
+
+  .page {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.02), 0 12px 32px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+
+  /* Header with toggle */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 1px solid #f4f4f5;
+  }
+  .toggle {
+    display: flex;
+    background: #f4f4f5;
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .toggle-btn {
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a1a1aa;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  .toggle-btn.active {
+    background: #18181b;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .header-meta {
+    font-size: 11px;
+    color: #a1a1aa;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-meta strong { color: #18181b; }
+  .streak {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    background: #fff7ed;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ea580c;
+  }
+
+  /* Rings section */
+  .rings-section {
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-bottom: 1px solid #f4f4f5;
+  }
+  .rings-group {
+    display: flex;
+    gap: 16px;
+  }
+  .ring-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .ring-svg { width: 52px; height: 52px; }
+  .ring-label { font-size: 9px; font-weight: 600; color: #a1a1aa; }
+  .ring-count { font-size: 9px; font-weight: 700; color: #18181b; }
+
+  .rings-stats {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 20px;
+    border-left: 1px solid #f4f4f5;
+  }
+  .nota-big {
+    font-size: 28px;
+    font-weight: 900;
+    color: #18181b;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .nota-big span { font-size: 14px; color: #a1a1aa; font-weight: 500; }
+  .nota-trend { font-size: 11px; color: #22c55e; font-weight: 600; }
+  .nota-meta { font-size: 10px; color: #a1a1aa; }
+
+  /* Suggested section */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 16px 28px 8px;
+  }
+
+  /* Activity cards */
+  .activity-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 28px;
+    border-bottom: 1px solid #fafafa;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .activity-card:hover { background: #fafaf9; }
+  .activity-card.urgent { background: #fffbeb; }
+  .activity-card.urgent:hover { background: #fef9c3; }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .card-icon.estudo { background: #eef2ff; }
+  .card-icon.revisao { background: #fef3c7; }
+  .card-icon.questoes { background: #fff7ed; }
+  .card-icon.lei { background: #ecfeff; }
+
+  .card-content { flex: 1; min-width: 0; }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #18181b;
+    line-height: 1.3;
+  }
+  .card-sub {
+    font-size: 11px;
+    color: #a1a1aa;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    align-items: center;
+  }
+  .tag {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+  .tag.type-estudo { background: #eef2ff; color: #4338ca; }
+  .tag.type-revisao { background: #fef3c7; color: #92400e; }
+  .tag.type-questoes { background: #fff7ed; color: #9a3412; }
+  .tag.type-lei { background: #ecfeff; color: #155e75; }
+  .tag.duration { background: #f4f4f5; color: #71717a; }
+  .tag.deadline { background: #fef2f2; color: #dc2626; }
+  .tag.points { background: #f0fdf4; color: #16a34a; }
+
+  .card-action {
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .btn-start {
+    padding: 7px 16px;
+    background: #18181b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-start:hover { transform: translateY(-0.5px); box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+  .btn-start.ghost {
+    background: #f4f4f5;
+    color: #71717a;
+  }
+  .btn-start.ghost:hover { background: #e5e5e5; box-shadow: none; transform: none; }
+
+  /* Divider */
+  .divider { height: 1px; background: #f4f4f5; margin: 0 28px; }
+
+  /* Insights */
+  .insights {
+    padding: 12px 28px;
+    display: flex;
+    gap: 12px;
+  }
+  .insight-card {
+    flex: 1;
+    padding: 10px 12px;
+    background: #fafaf9;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #71717a;
+    line-height: 1.5;
+  }
+  .insight-card strong { color: #18181b; }
+  .insight-card .emoji { font-size: 14px; display: block; margin-bottom: 4px; }
+
+  /* Sessions + Pool */
+  .recent-sessions {
+    padding: 8px 28px 12px;
+  }
+  .session-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 11px;
+    color: #a1a1aa;
+  }
+  .session-row .time { width: 80px; font-weight: 500; }
+  .session-row .desc { flex: 1; color: #71717a; }
+  .session-row .pts { font-weight: 700; color: #22c55e; }
+
+  .pool-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 11px;
+    color: #a1a1aa;
+    cursor: pointer;
+    border-top: 1px solid #f4f4f5;
+    transition: background 0.1s;
+  }
+  .pool-toggle:hover { background: #fafafa; color: #71717a; }
+
+  /* Footer */
+  .footer {
+    padding: 14px 28px;
+    background: #fafaf9;
+    border-top: 1px solid #f4f4f5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-left { font-size: 11px; color: #71717a; }
+  .footer-left strong { color: #18181b; }
+  .footer-right { font-size: 10px; color: #a1a1aa; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <div class="toggle">
+      <button class="toggle-btn">📋 Edital</button>
+      <button class="toggle-btn active">📅 Cronograma</button>
+    </div>
+    <div class="header-meta">
+      <span>Semana 7–13 Abril · Faltam 4 dias</span>
+      <div class="streak">🔥 3 sem.</div>
+    </div>
+  </div>
+
+  <!-- ===== RINGS + NOTA ===== -->
+  <div class="rings-section">
+    <div class="rings-group">
+      <!-- Ring: Estudo 75% -->
+      <div class="ring-item">
+        <svg class="ring-svg" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#f0f0f0" stroke-width="4"/>
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"
+            stroke-dasharray="138.2" stroke-dashoffset="34.6" transform="rotate(-90 26 26)"/>
+          <text x="26" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#18181b">75%</text>
+          <text x="26" y="33" text-anchor="middle" font-size="6" fill="#a1a1aa">6/8</text>
+        </svg>
+        <div class="ring-label">📖 Estudo</div>
+      </div>
+      <!-- Ring: Revisão 60% -->
+      <div class="ring-item">
+        <svg class="ring-svg" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#f0f0f0" stroke-width="4"/>
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#d97706" stroke-width="4" stroke-linecap="round"
+            stroke-dasharray="138.2" stroke-dashoffset="55.3" transform="rotate(-90 26 26)"/>
+          <text x="26" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#18181b">60%</text>
+          <text x="26" y="33" text-anchor="middle" font-size="6" fill="#a1a1aa">3/5</text>
+        </svg>
+        <div class="ring-label">🔄 Revisão</div>
+      </div>
+      <!-- Ring: Questões 40% -->
+      <div class="ring-item">
+        <svg class="ring-svg" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#f0f0f0" stroke-width="4"/>
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#ea580c" stroke-width="4" stroke-linecap="round"
+            stroke-dasharray="138.2" stroke-dashoffset="82.9" transform="rotate(-90 26 26)"/>
+          <text x="26" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#18181b">40%</text>
+          <text x="26" y="33" text-anchor="middle" font-size="6" fill="#a1a1aa">2/5</text>
+        </svg>
+        <div class="ring-label">❓ Questões</div>
+      </div>
+      <!-- Ring: Lei Seca 100% -->
+      <div class="ring-item">
+        <svg class="ring-svg" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#f0f0f0" stroke-width="4"/>
+          <circle cx="26" cy="26" r="22" fill="none" stroke="#0891b2" stroke-width="4" stroke-linecap="round"
+            stroke-dasharray="138.2" stroke-dashoffset="0" transform="rotate(-90 26 26)"/>
+          <text x="26" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#0891b2">100</text>
+          <text x="26" y="33" text-anchor="middle" font-size="6" fill="#a1a1aa">2/2</text>
+        </svg>
+        <div class="ring-label">⚖️ Lei Seca</div>
+      </div>
+    </div>
+
+    <div class="rings-stats">
+      <div class="nota-big">76<span>/100</span></div>
+      <div class="nota-trend">▲ +4 esta semana</div>
+      <div class="nota-meta">Meta: 80 · Prova em 38 dias</div>
+    </div>
+  </div>
+
+  <!-- ===== SUGERIDO PARA HOJE ===== -->
+  <div class="section-title">Sugerido para hoje</div>
+
+  <!-- Card 1: Revisão urgente -->
+  <div class="activity-card urgent">
+    <div class="card-icon revisao">🔄</div>
+    <div class="card-content">
+      <div class="card-title">Dir. Fundamentais — Revisão 2</div>
+      <div class="card-sub">Dir. Constitucional · CF Art. 5° · Última revisão: 82%</div>
+      <div class="card-tags">
+        <span class="tag type-revisao">🔄 Revisão</span>
+        <span class="tag duration">15min</span>
+        <span class="tag deadline">⚡ até amanhã</span>
+        <span class="tag points">+0.4 pts</span>
+      </div>
+    </div>
+    <div class="card-action">
+      <button class="btn-start">▶ Iniciar</button>
+    </div>
+  </div>
+
+  <!-- Card 2: Estudo novo -->
+  <div class="activity-card">
+    <div class="card-icon estudo">📖</div>
+    <div class="card-content">
+      <div class="card-title">Furto e Roubo — Parte 1</div>
+      <div class="card-sub">Dir. Penal · CP Art. 155-157 · Tópico #1 em retorno por hora</div>
+      <div class="card-tags">
+        <span class="tag type-estudo">📖 Estudo</span>
+        <span class="tag duration">40min</span>
+        <span class="tag points">+1.2 pts</span>
+      </div>
+    </div>
+    <div class="card-action">
+      <button class="btn-start">▶ Iniciar</button>
+    </div>
+  </div>
+
+  <!-- Card 3: Questões -->
+  <div class="activity-card">
+    <div class="card-icon questoes">❓</div>
+    <div class="card-content">
+      <div class="card-title">Questões Mistas — Penal + Constitucional</div>
+      <div class="card-sub">15 questões adaptativas · Foco em tópicos fracos</div>
+      <div class="card-tags">
+        <span class="tag type-questoes">❓ Questões</span>
+        <span class="tag duration">20min</span>
+        <span class="tag points">+0.3 pts</span>
+      </div>
+    </div>
+    <div class="card-action">
+      <button class="btn-start ghost">▶ Iniciar</button>
+    </div>
+  </div>
+
+  <!-- Quick session -->
+  <div style="padding: 8px 28px 4px; display: flex; align-items: center; gap: 8px;">
+    <span style="font-size: 10px; color: #a1a1aa;">Ou:</span>
+    <button class="btn-start" style="padding: 6px 14px; font-size: 10px; background: #f4f4f5; color: #18181b;">🎲 Sessão surpresa · 50min</button>
+    <button class="btn-start ghost" style="padding: 6px 14px; font-size: 10px;">⚡ Sessão rápida · 25min</button>
+  </div>
+
+  <div class="divider" style="margin-top: 12px;"></div>
+
+  <!-- ===== INSIGHTS ===== -->
+  <div class="section-title">Insights</div>
+  <div class="insights">
+    <div class="insight-card">
+      <div class="emoji">⚠️</div>
+      <strong>Dir. Administrativo</strong> está fraco (38%). É o tópico com <strong>maior retorno</strong>: +12.4pts possíveis.
+    </div>
+    <div class="insight-card">
+      <div class="emoji">📈</div>
+      Velocidade de questões <strong>melhorou 15%</strong> esta semana. Seu melhor horário: <strong>8h-10h</strong>.
+    </div>
+    <div class="insight-card">
+      <div class="emoji">🎯</div>
+      Se estudar <strong>2h a mais</strong> esta semana, nota sobe para <strong>78</strong>. Faltam 2 pontos para a meta.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ===== SESSÕES RECENTES ===== -->
+  <div class="section-title">Sessões recentes</div>
+  <div class="recent-sessions">
+    <div class="session-row">
+      <span class="time">Hoje 09:30</span>
+      <span class="desc">50min · Homicídio Parte 1 + Revisão Dir. Const.</span>
+      <span class="pts">+0.8</span>
+    </div>
+    <div class="session-row">
+      <span class="time">Ontem 14:00</span>
+      <span class="desc">25min · Questões mistas — Penal + Administrativo</span>
+      <span class="pts">+0.3</span>
+    </div>
+    <div class="session-row">
+      <span class="time">Ontem 09:00</span>
+      <span class="desc">50min · Dir. Fundamentais + Lei Seca CF Art. 5°</span>
+      <span class="pts">+1.1</span>
+    </div>
+  </div>
+
+  <!-- Pool toggle -->
+  <div class="pool-toggle">
+    Ver pool completo da semana (12/18 concluídas) ▾
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <div class="footer">
+    <div class="footer-left">
+      🏁 Ao concluir as 3 sugestões: <strong>+1.9 pontos</strong> · Projeção: <strong>77.9/100</strong>
+    </div>
+    <div class="footer-right">
+      🏛️ TRF 3ª · Analista Judiciário
+    </div>
+  </div>
+
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<h2>Modo Análise vs Modo Estudo — experiências distintas, mesmo layout</h2>
+<p class="subtitle">Cada slot do layout serve um propósito diferente em cada modo. Análise não é estudo desabilitado.</p>
+
+<!-- MODO ANÁLISE -->
+<div class="mockup" style="margin-bottom: 24px;">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #4338ca, #6366f1); color: white;">
+    MODO ANÁLISE — Dados da API, zero escrita no Supabase
+  </div>
+  <div class="mockup-body" style="padding: 0; font-size: 11px; display: flex; height: 520px;">
+
+    <!-- SIDEBAR ANÁLISE -->
+    <div style="width: 255px; border-right: 1px solid #e0e7ff; display: flex; flex-direction: column; background: #f5f7ff;">
+
+      <!-- Card edital -->
+      <div style="margin: 10px; padding: 10px 12px; background: linear-gradient(135deg, #eef2ff, #e0e7ff); border: 1px solid #c7d2fe; border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 32px; height: 32px; background: #4f46e5; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 10px;">TRF</div>
+          <div>
+            <div style="font-weight: 700; color: #3730a3; font-size: 11px;">TRF 3ª Região</div>
+            <div style="color: #6366f1; font-size: 9px;">Analista Judiciário — Área Judiciária</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <div style="flex: 1; text-align: center; background: #ddd6fe; border-radius: 6px; padding: 4px;">
+            <div style="font-weight: 800; color: #4338ca; font-size: 12px;">18</div>
+            <div style="font-size: 7px; color: #6366f1;">disciplinas</div>
+          </div>
+          <div style="flex: 1; text-align: center; background: #ddd6fe; border-radius: 6px; padding: 4px;">
+            <div style="font-weight: 800; color: #4338ca; font-size: 12px;">127</div>
+            <div style="font-size: 7px; color: #6366f1;">tópicos</div>
+          </div>
+          <div style="flex: 1; text-align: center; background: #ddd6fe; border-radius: 6px; padding: 4px;">
+            <div style="font-weight: 800; color: #4338ca; font-size: 12px;">~190h</div>
+            <div style="font-size: 7px; color: #6366f1;">estimadas</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-bottom: 1px solid #e0e7ff;"></div>
+
+      <!-- Header -->
+      <div style="padding: 10px 12px 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 12px; font-weight: 600; color: #3730a3;">Conteúdo Programático</span>
+        </div>
+        <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 6px; padding: 6px 10px; font-size: 10px; color: #818cf8;">🔍 Buscar disciplina ou tópico...</div>
+      </div>
+
+      <div style="border-bottom: 1px solid #e0e7ff;"></div>
+
+      <!-- Árvore limpa -->
+      <div style="flex: 1; overflow-y: auto; padding: 8px 10px;">
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; background: #e0e7ff; border-radius: 8px; cursor: pointer; border-left: 3px solid #6366f1;">
+            <span style="font-size: 9px; color: #4338ca;">▼</span>
+            <span style="font-weight: 600; color: #3730a3; font-size: 11px;">Direito Constitucional</span>
+            <span style="margin-left: auto; font-size: 8px; color: #818cf8;">4 tóp.</span>
+          </div>
+          <div style="margin-left: 14px; margin-top: 3px;">
+            <div style="padding: 5px 8px; border-radius: 6px; cursor: pointer; background: #c7d2fe; font-size: 10px; font-weight: 600; color: #3730a3; margin-bottom: 2px;">
+              Direitos Fundamentais
+            </div>
+            <div style="padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; color: #4b5563; margin-bottom: 2px; hover: background #f3f4f6;">
+              Organização do Estado
+            </div>
+            <div style="padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; color: #4b5563; margin-bottom: 2px;">
+              Poder Judiciário
+            </div>
+            <div style="padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; color: #4b5563;">
+              Controle de Constitucionalidade
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 8px; cursor: pointer;">
+            <span style="font-size: 9px; color: #9ca3af;">▶</span>
+            <span style="font-weight: 600; color: #374151; font-size: 11px;">Direito Administrativo</span>
+            <span style="margin-left: auto; font-size: 8px; color: #9ca3af;">6 tóp.</span>
+          </div>
+        </div>
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 8px; cursor: pointer;">
+            <span style="font-size: 9px; color: #9ca3af;">▶</span>
+            <span style="font-weight: 600; color: #374151; font-size: 11px;">Direito Penal</span>
+            <span style="margin-left: auto; font-size: 8px; color: #9ca3af;">5 tóp.</span>
+          </div>
+        </div>
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 8px; cursor: pointer;">
+            <span style="font-size: 9px; color: #9ca3af;">▶</span>
+            <span style="font-weight: 600; color: #374151; font-size: 11px;">Português</span>
+            <span style="margin-left: auto; font-size: 8px; color: #9ca3af;">4 tóp.</span>
+          </div>
+        </div>
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 8px; cursor: pointer;">
+            <span style="font-size: 9px; color: #9ca3af;">▶</span>
+            <span style="font-weight: 600; color: #374151; font-size: 11px;">Raciocínio Lógico</span>
+            <span style="margin-left: auto; font-size: 8px; color: #9ca3af;">3 tóp.</span>
+          </div>
+        </div>
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 8px; cursor: pointer;">
+            <span style="font-size: 9px; color: #9ca3af;">▶</span>
+            <span style="font-weight: 600; color: #374151; font-size: 11px;">Direito Processual Civil</span>
+            <span style="margin-left: auto; font-size: 8px; color: #9ca3af;">5 tóp.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA fixo no rodapé -->
+      <div style="padding: 10px; border-top: 1px solid #e0e7ff;">
+        <div style="padding: 10px 14px; background: linear-gradient(135deg, #4338ca, #6366f1); border-radius: 10px; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(79,70,229,0.3);">
+          <div style="color: white; font-weight: 700; font-size: 12px;">Começar a Estudar</div>
+          <div style="color: #c7d2fe; font-size: 9px; margin-top: 1px;">Cria seu plano de estudo pessoal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL DIREITO ANÁLISE -->
+    <div style="flex: 1; display: flex; flex-direction: column; overflow-y: auto;">
+      <!-- Breadcrumbs -->
+      <div style="padding: 12px 20px; border-bottom: 1px solid #e5e7eb;">
+        <div style="font-size: 10px; color: #6b7280;">
+          <span style="cursor: pointer; color: #6366f1;">Início</span>
+          <span style="margin: 0 4px;">›</span>
+          <span style="cursor: pointer; color: #6366f1;">Dir. Constitucional</span>
+          <span style="margin: 0 4px;">›</span>
+          <span style="color: #374151; font-weight: 500;">Direitos Fundamentais</span>
+        </div>
+      </div>
+
+      <div style="padding: 0 20px 16px;">
+        <!-- Stats row ANÁLISE — inteligência do edital -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 10px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px;">
+            <div style="width: 28px; height: 28px; background: #ddd6fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px;">⏱️</div>
+            <div>
+              <div style="font-size: 8px; color: #6366f1; text-transform: uppercase; font-weight: 600;">Estimativa</div>
+              <div style="font-size: 13px; font-weight: 800; color: #3730a3;">~8 horas</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; padding: 10px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px;">
+            <div style="width: 28px; height: 28px; background: #ddd6fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px;">🔥</div>
+            <div>
+              <div style="font-size: 8px; color: #6366f1; text-transform: uppercase; font-weight: 600;">Incidência</div>
+              <div style="font-size: 13px; font-weight: 800; color: #3730a3;">Alta</div>
+              <div style="font-size: 8px; color: #818cf8;">83% dos editais</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; padding: 10px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px;">
+            <div style="width: 28px; height: 28px; background: #ddd6fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px;">📋</div>
+            <div>
+              <div style="font-size: 8px; color: #6366f1; text-transform: uppercase; font-weight: 600;">Sub-tópicos</div>
+              <div style="font-size: 13px; font-weight: 800; color: #3730a3;">12</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 colunas: Editais que cobram | Peso do tópico | IA -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 10px; border-radius: 12px; overflow: hidden;">
+
+          <!-- EDITAIS QUE COBRAM (slot Revisões) -->
+          <div style="background: #f5f7ff; padding: 12px;">
+            <div style="font-size: 10px; font-weight: 700; color: #3730a3; margin-bottom: 8px;">Editais que cobram</div>
+            <div style="space-y: 4px;">
+              <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: #eef2ff; border-radius: 6px; margin-bottom: 4px;">
+                <div style="width: 20px; height: 20px; background: #4f46e5; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; font-size: 6px; font-weight: 800;">TRF1</div>
+                <div>
+                  <div style="font-size: 9px; font-weight: 600; color: #1e1b4b;">TRF 1ª Região</div>
+                  <div style="font-size: 8px; color: #818cf8;">12 tópicos em comum</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: #eef2ff; border-radius: 6px; margin-bottom: 4px;">
+                <div style="width: 20px; height: 20px; background: #4f46e5; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; font-size: 6px; font-weight: 800;">TRF5</div>
+                <div>
+                  <div style="font-size: 9px; font-weight: 600; color: #1e1b4b;">TRF 5ª Região</div>
+                  <div style="font-size: 8px; color: #818cf8;">10 tópicos em comum</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: #eef2ff; border-radius: 6px; margin-bottom: 4px;">
+                <div style="width: 20px; height: 20px; background: #4f46e5; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; font-size: 6px; font-weight: 800;">STJ</div>
+                <div>
+                  <div style="font-size: 9px; font-weight: 600; color: #1e1b4b;">STJ</div>
+                  <div style="font-size: 8px; color: #818cf8;">8 tópicos em comum</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: #eef2ff; border-radius: 6px;">
+                <div style="width: 20px; height: 20px; background: #4f46e5; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; font-size: 6px; font-weight: 800;">MPF</div>
+                <div>
+                  <div style="font-size: 9px; font-weight: 600; color: #1e1b4b;">MPF</div>
+                  <div style="font-size: 8px; color: #818cf8;">6 tópicos em comum</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PESO DO TÓPICO (slot Desempenho) -->
+          <div style="background: #f5f7ff; border-left: 1px solid #e0e7ff; padding: 12px;">
+            <div style="font-size: 10px; font-weight: 700; color: #3730a3; margin-bottom: 8px;">Peso do tópico</div>
+
+            <!-- Barra ranking -->
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 8px; color: #6366f1; margin-bottom: 3px;">
+                <span>Frequência em provas</span>
+                <span style="font-weight: 700;">83%</span>
+              </div>
+              <div style="height: 6px; background: #e0e7ff; border-radius: 4px;">
+                <div style="width: 83%; height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); border-radius: 4px;"></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 8px; color: #6366f1; margin-bottom: 3px;">
+                <span>Peso médio na prova</span>
+                <span style="font-weight: 700;">12%</span>
+              </div>
+              <div style="height: 6px; background: #e0e7ff; border-radius: 4px;">
+                <div style="width: 60%; height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); border-radius: 4px;"></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 8px; color: #6366f1; margin-bottom: 3px;">
+                <span>Ranking (neste edital)</span>
+                <span style="font-weight: 700;">#2 de 18</span>
+              </div>
+              <div style="height: 6px; background: #e0e7ff; border-radius: 4px;">
+                <div style="width: 90%; height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); border-radius: 4px;"></div>
+              </div>
+            </div>
+
+            <!-- Bancas -->
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e7ff;">
+              <div style="font-size: 8px; color: #818cf8; font-weight: 600; margin-bottom: 4px;">BANCAS QUE MAIS COBRAM</div>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                <span style="font-size: 8px; background: #ddd6fe; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-weight: 500;">FCC</span>
+                <span style="font-size: 8px; background: #ddd6fe; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-weight: 500;">CESPE</span>
+                <span style="font-size: 8px; background: #ddd6fe; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-weight: 500;">VUNESP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- IA ANÁLISE -->
+          <div style="background: #18181b; border-left: 1px solid #3f3f46; padding: 12px; border-radius: 0 12px 12px 0;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+              <div style="width: 22px; height: 22px; background: #4f46e5; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px;">✨</div>
+              <div>
+                <div style="font-size: 10px; font-weight: 600; color: #f4f4f5;">Análise IA</div>
+                <div style="font-size: 7px; color: #818cf8;">Beta</div>
+              </div>
+            </div>
+
+            <p style="font-size: 9px; color: #a1a1aa; line-height: 1.5; margin-bottom: 6px;">
+              <strong style="color: #c7d2fe;">Prioridade alta.</strong> Este tópico é cobrado em 83% dos editais de tribunais federais. Art. 5° e remédios constitucionais são os subtópicos mais recorrentes.
+            </p>
+            <p style="font-size: 9px; color: #a1a1aa; line-height: 1.5;">
+              Combinado com Dir. Administrativo, cobre <strong style="color: #c7d2fe;">~35% da prova</strong>.
+            </p>
+
+            <div style="space-y: 4px; margin-top: 10px;">
+              <button style="width: 100%; background: white; color: #18181b; border: none; padding: 7px; border-radius: 6px; font-size: 9px; font-weight: 600; cursor: pointer; margin-bottom: 4px;">✨ Analisar este tópico</button>
+              <button style="width: 100%; background: transparent; color: #71717a; border: none; padding: 5px; font-size: 9px; cursor: pointer;">Comparar com outro edital</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO INFERIOR — Conteúdo contextual (não materiais desabilitados) -->
+      <div style="padding: 0 20px 16px;">
+        <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 10px;">Explorar este tópico</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <!-- Questões de exemplo -->
+          <div style="border: 1px solid #c7d2fe; border-radius: 12px; padding: 14px; cursor: pointer; background: white;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #fff7ed, #fed7aa); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px;">❓</div>
+              <div>
+                <div style="font-weight: 600; font-size: 11px; color: #374151;">Questões de exemplo</div>
+                <div style="font-size: 9px; color: #ea580c;">23 questões disponíveis</div>
+              </div>
+            </div>
+            <div style="font-size: 9px; color: #6b7280; line-height: 1.4;">Veja como este tópico é cobrado em provas anteriores</div>
+          </div>
+
+          <!-- Leis relacionadas -->
+          <div style="border: 1px solid #c7d2fe; border-radius: 12px; padding: 14px; cursor: pointer; background: white;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #ecfeff, #cffafe); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px;">⚖️</div>
+              <div>
+                <div style="font-weight: 600; font-size: 11px; color: #374151;">Leis relacionadas</div>
+                <div style="font-size: 9px; color: #0891b2;">CF/88 Art. 5° ao 17</div>
+              </div>
+            </div>
+            <div style="font-size: 9px; color: #6b7280; line-height: 1.4;">Leitura dos dispositivos legais deste tópico</div>
+          </div>
+
+          <!-- Sub-tópicos detalhados -->
+          <div style="border: 1px solid #c7d2fe; border-radius: 12px; padding: 14px; cursor: pointer; background: white;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #eef2ff, #ddd6fe); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📑</div>
+              <div>
+                <div style="font-weight: 600; font-size: 11px; color: #374151;">Sub-tópicos</div>
+                <div style="font-size: 9px; color: #6366f1;">12 itens do edital</div>
+              </div>
+            </div>
+            <div style="font-size: 9px; color: #6b7280; line-height: 1.4;">Lista completa de sub-tópicos exigidos</div>
+          </div>
+
+          <!-- Editais similares -->
+          <div style="border: 1px solid #c7d2fe; border-radius: 12px; padding: 14px; cursor: pointer; background: white;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #fdf4ff, #f5d0fe); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px;">🔗</div>
+              <div>
+                <div style="font-weight: 600; font-size: 11px; color: #374151;">Editais similares</div>
+                <div style="font-size: 9px; color: #a855f7;">4 editais com este tópico</div>
+              </div>
+            </div>
+            <div style="font-size: 9px; color: #6b7280; line-height: 1.4;">Compare como outros editais cobram o mesmo tema</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODO ESTUDO -->
+<div class="mockup">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #047857, #10b981); color: white;">
+    MODO ESTUDO — Snapshot no Supabase, cronograma ativo
+  </div>
+  <div class="mockup-body" style="padding: 0; font-size: 11px; display: flex; height: 520px;">
+
+    <!-- SIDEBAR ESTUDO -->
+    <div style="width: 255px; border-right: 1px solid #d1fae5; display: flex; flex-direction: column; background: #f0fdf4;">
+
+      <!-- Card edital compacto -->
+      <div style="margin: 10px 10px 6px; padding: 8px 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+        <div style="width: 24px; height: 24px; background: #059669; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7px;">TRF</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: 600; color: #065f46; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TRF 3ª · Analista Judiciário</div>
+          <div style="font-size: 8px; color: #059669;">Faltam 38 dias · 67% concluído</div>
+        </div>
+      </div>
+
+      <!-- Cronograma calendário -->
+      <div style="margin: 0 10px 6px; padding: 8px 10px; background: white; border: 1px solid #bbf7d0; border-radius: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+          <span style="font-size: 9px; color: #9ca3af; cursor: pointer;">‹</span>
+          <span style="font-size: 9px; color: #6b7280; font-weight: 500;">7 Abr — 13 Abr</span>
+          <div style="display: flex; gap: 2px;">
+            <span style="font-size: 9px; color: #9ca3af; cursor: pointer;">›</span>
+            <span style="font-size: 9px; color: #9ca3af; cursor: pointer;">⇕</span>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; justify-items: center;">
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">D</div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">S</div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">T</div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">Q</div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">Q</div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">S</div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center;">S</div>
+
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">7</div>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; box-shadow: 0 2px 6px rgba(5,150,105,0.3);">8</div>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">9</div>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">10</div>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">11</div>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">12</div>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">13</div>
+        </div>
+        <div style="margin-top: 4px; display: flex; align-items: center; justify-content: space-between; padding: 3px 6px; background: #dcfce7; border-radius: 5px;">
+          <span style="font-size: 8px; font-weight: 500; color: #166534;">8 Abr — 3 tópicos</span>
+          <span style="font-size: 8px; color: #6b7280; cursor: pointer;">✕</span>
+        </div>
+      </div>
+
+      <div style="border-bottom: 1px solid #d1fae5;"></div>
+
+      <!-- Header -->
+      <div style="padding: 8px 12px 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 12px; font-weight: 600; color: #065f46;">Tarefas do Dia</span>
+          <div style="display: flex; gap: 2px;">
+            <div style="width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; color: #059669;">🎯</div>
+            <div style="width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; color: #059669;">✏️</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-bottom: 1px solid #d1fae5;"></div>
+
+      <!-- Árvore filtrada com progresso -->
+      <div style="flex: 1; overflow-y: auto; padding: 6px 10px;">
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: #dcfce7; border-radius: 8px; cursor: pointer; border-left: 3px solid #10b981;">
+            <span style="font-size: 9px; color: #065f46;">▼</span>
+            <span style="font-weight: 600; color: #065f46; font-size: 11px; flex: 1;">Dir. Constitucional</span>
+            <span style="background: #bbf7d0; color: #166534; padding: 1px 6px; border-radius: 8px; font-size: 8px; font-weight: 600;">40%</span>
+          </div>
+          <div style="margin-left: 14px; margin-top: 3px;">
+            <div style="padding: 5px 8px; border-radius: 6px; cursor: pointer; background: #bbf7d0; font-size: 10px; font-weight: 600; color: #065f46; margin-bottom: 2px; display: flex; justify-content: space-between;">
+              <span>Direitos Fundamentais</span>
+              <span style="font-size: 8px; color: #059669; font-weight: 400;">P1 · 40min</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: #fef3c7; border-radius: 8px; cursor: pointer; border-left: 3px solid #f59e0b;">
+            <span style="font-size: 9px; color: #92400e;">▼</span>
+            <span style="font-weight: 600; color: #92400e; font-size: 11px; flex: 1;">Dir. Administrativo</span>
+            <span style="background: #fde68a; color: #92400e; padding: 1px 6px; border-radius: 8px; font-size: 8px; font-weight: 600;">25%</span>
+          </div>
+          <div style="margin-left: 14px; margin-top: 3px;">
+            <div style="padding: 5px 8px; border-radius: 6px; font-size: 10px; color: #92400e; display: flex; justify-content: space-between;">
+              <span>Atos Administrativos</span>
+              <span style="font-size: 8px; color: #d97706;">Rev 2 · 15min 🔄</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; cursor: pointer; border-left: 3px solid #d1d5db;">
+            <span style="font-size: 9px; color: #6b7280;">▼</span>
+            <span style="font-weight: 600; color: #374151; font-size: 11px; flex: 1;">Dir. Penal</span>
+            <span style="background: #fee2e2; color: #991b1b; padding: 1px 6px; border-radius: 8px; font-size: 8px; font-weight: 600;">10%</span>
+          </div>
+          <div style="margin-left: 14px; margin-top: 3px;">
+            <div style="padding: 5px 8px; border-radius: 6px; font-size: 10px; color: #4b5563; display: flex; justify-content: space-between;">
+              <span>Crimes contra a AP</span>
+              <span style="font-size: 8px; color: #6b7280;">P2 · 50min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL DIREITO ESTUDO -->
+    <div style="flex: 1; display: flex; flex-direction: column; overflow-y: auto;">
+      <!-- Breadcrumbs -->
+      <div style="padding: 12px 20px; border-bottom: 1px solid #e5e7eb;">
+        <div style="font-size: 10px; color: #6b7280;">
+          <span style="cursor: pointer; color: #059669;">Início</span>
+          <span style="margin: 0 4px;">›</span>
+          <span style="cursor: pointer; color: #059669;">Dir. Constitucional</span>
+          <span style="margin: 0 4px;">›</span>
+          <span style="color: #374151; font-weight: 500;">Direitos Fundamentais</span>
+        </div>
+      </div>
+
+      <div style="padding: 0 20px 16px;">
+        <!-- Stepper -->
+        <div style="background: #f4f4f5; border-radius: 12px; padding: 10px 16px; margin-top: 12px;">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #3f3f46; display: flex; align-items: center; justify-content: center; font-size: 10px;">📚</div>
+              <span style="font-size: 7px; color: #71717a; margin-top: 2px;">Estudante</span>
+            </div>
+            <div style="flex: 1; height: 2px; background: #52525b; margin: 0 2px -8px; border-radius: 2px;"></div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #3f3f46; display: flex; align-items: center; justify-content: center; font-size: 10px;">⚖️</div>
+              <span style="font-size: 7px; color: #71717a; margin-top: 2px;">Conhecedor</span>
+            </div>
+            <div style="flex: 1; height: 2px; background: #d4d4d8; margin: 0 2px -8px;"><div style="height: 100%; width: 50%; background: #059669; border-radius: 2px;"></div></div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #059669; box-shadow: 0 2px 8px rgba(5,150,105,0.3); display: flex; align-items: center; justify-content: center; font-size: 10px;">🏛️</div>
+              <span style="font-size: 7px; color: #059669; font-weight: 700; margin-top: 2px;">↑ Proficiente</span>
+            </div>
+            <div style="flex: 1; height: 2px; background: #e5e7eb; margin: 0 2px -8px;"></div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #f4f4f5; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 10px; opacity: 0.4;">👨‍⚖️</div>
+              <span style="font-size: 7px; color: #d4d4d8; margin-top: 2px;">Especialista</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats row ESTUDO — dados reais -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 10px; background: #f4f4f5; border-radius: 10px;">
+            <div style="width: 28px; height: 28px; background: #f4f4f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px;">🕐</div>
+            <div>
+              <div style="font-size: 8px; color: #71717a; text-transform: uppercase; font-weight: 600;">Último acesso</div>
+              <div style="font-size: 13px; font-weight: 800; color: #18181b;">Há 3h</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; padding: 10px; background: #f4f4f5; border-radius: 10px;">
+            <div style="width: 28px; height: 28px; background: #f4f4f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px;">⚡</div>
+            <div>
+              <div style="font-size: 8px; color: #71717a; text-transform: uppercase; font-weight: 600;">Tempo investido</div>
+              <div style="font-size: 13px; font-weight: 800; color: #18181b;">1h 20m</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; padding: 10px; background: #f4f4f5; border-radius: 10px; cursor: pointer;">
+            <div style="width: 28px; height: 28px; background: #f4f4f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px;">📝</div>
+            <div>
+              <div style="font-size: 8px; color: #71717a; text-transform: uppercase; font-weight: 600;">Anotações</div>
+              <div style="font-size: 13px; font-weight: 800; color: #2563eb;">Ver notas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 colunas: Revisões reais | Desempenho real | IA estudo -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 10px; border-radius: 12px; overflow: hidden;">
+          <div style="background: #f4f4f5; padding: 12px;">
+            <div style="font-size: 10px; font-weight: 700; color: #374151; margin-bottom: 6px;">Revisões</div>
+            <div style="display: flex; align-items: center; gap: 4px; padding: 3px 0;">
+              <div style="width: 12px; height: 12px; background: #dcfce7; border: 2px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 6px; color: #16a34a;">✓</span>
+              </div>
+              <span style="font-size: 9px; font-weight: 500;">15/01</span>
+              <span style="font-size: 9px; font-weight: 700; color: #16a34a; margin-left: auto;">85%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; padding: 3px 0;">
+              <div style="width: 12px; height: 12px; background: #dcfce7; border: 2px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 6px; color: #16a34a;">✓</span>
+              </div>
+              <span style="font-size: 9px; font-weight: 500;">12/01</span>
+              <span style="font-size: 9px; font-weight: 700; color: #16a34a; margin-left: auto;">78%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; padding: 3px 0;">
+              <div style="width: 12px; height: 12px; background: #fff7ed; border: 2px solid #f59e0b; border-radius: 50%;"></div>
+              <span style="font-size: 9px; font-weight: 500; color: #d97706;">18/01</span>
+              <span style="font-size: 8px; background: #fff7ed; color: #d97706; padding: 1px 5px; border-radius: 8px; margin-left: auto; font-weight: 500;">Fazer</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; padding: 3px 0;">
+              <div style="width: 12px; height: 12px; background: #f3f4f6; border: 2px solid #d1d5db; border-radius: 50%;"></div>
+              <span style="font-size: 9px; color: #9ca3af;">22/01</span>
+              <span style="font-size: 8px; color: #9ca3af; margin-left: auto;">4d</span>
+            </div>
+          </div>
+          <div style="background: #f4f4f5; border-left: 1px solid #e5e7eb; padding: 12px;">
+            <div style="font-size: 10px; font-weight: 700; color: #374151; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+              Desempenho <span style="color: #10b981;">↑</span>
+            </div>
+            <svg viewBox="0 0 120 50" style="width: 100%; height: 50px; margin-top: 4px;">
+              <polyline points="5,40 20,35 40,38 60,28 80,22 100,15 115,10" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="115" cy="10" r="3" fill="#10b981"/>
+            </svg>
+            <div style="display: flex; justify-content: space-between; font-size: 7px; color: #9ca3af; margin-top: 2px;">
+              <span>Nov</span><span>Dez</span><span>Jan</span>
+            </div>
+          </div>
+          <div style="background: #18181b; border-left: 1px solid #3f3f46; padding: 12px; border-radius: 0 12px 12px 0;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+              <div style="width: 22px; height: 22px; background: #2563eb; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px;">✨</div>
+              <div>
+                <div style="font-size: 10px; font-weight: 600; color: #f4f4f5;">Assistente IA</div>
+                <div style="font-size: 7px; color: #60a5fa;">Beta</div>
+              </div>
+            </div>
+            <p style="font-size: 9px; color: #a1a1aa; line-height: 1.5;">Desempenho crescendo. Foque nos detalhes de exceções e qualificadoras para alcançar 90%.</p>
+            <button style="margin-top: 8px; width: 100%; background: white; color: #18181b; border: none; padding: 7px; border-radius: 6px; font-size: 9px; font-weight: 600; cursor: pointer;">✨ Conversar sobre este tópico</button>
+            <button style="width: 100%; background: transparent; color: #71717a; border: none; padding: 5px; font-size: 9px; cursor: pointer; margin-top: 2px;">Gerar questões</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Materiais ATIVOS -->
+      <div style="padding: 0 20px 16px;">
+        <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 10px;">Materiais de Estudo</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div style="border: 1px solid #86efac; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; background: white; transition: all 0.2s;">
+            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">📄</div>
+            <div><div style="font-weight: 600; font-size: 11px; color: #374151;">Documento</div><div style="font-size: 9px; color: #059669; font-weight: 500;">3 resumos</div></div>
+          </div>
+          <div style="border: 1px solid #c4b5fd; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; background: white;">
+            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🃏</div>
+            <div><div style="font-weight: 600; font-size: 11px; color: #374151;">Flashcards</div><div style="font-size: 9px; color: #7c3aed; font-weight: 500;">12 cartões</div></div>
+          </div>
+          <div style="border: 1px solid #fdba74; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; background: white;">
+            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #fff7ed, #fed7aa); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">❓</div>
+            <div><div style="font-weight: 600; font-size: 11px; color: #374151;">Questões</div><div style="font-size: 9px; color: #ea580c; font-weight: 500;">8 questões</div></div>
+          </div>
+          <div style="border: 1px solid #67e8f9; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; background: white;">
+            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #ecfeff, #cffafe); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">⚖️</div>
+            <div><div style="font-weight: 600; font-size: 11px; color: #374151;">Lei Seca</div><div style="font-size: 9px; color: #0891b2; font-weight: 500;">Leitura da lei</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mapa de slots -->
+<div style="margin-top: 24px; padding: 16px; background: #1a1a2e; border-radius: 12px; color: #e2e8f0; font-size: 11px;">
+  <h3 style="color: white; margin-bottom: 12px; font-size: 14px;">Mapa de slots — mesmo layout, conteúdo diferente</h3>
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid #334155;">
+        <th style="text-align: left; padding: 6px; color: #64748b; font-size: 9px; width: 140px;">SLOT</th>
+        <th style="text-align: left; padding: 6px; color: #818cf8; font-size: 9px;">🔵 ANÁLISE (API read-only)</th>
+        <th style="text-align: left; padding: 6px; color: #34d399; font-size: 9px;">🟢 ESTUDO (Supabase ativo)</th>
+      </tr>
+    </thead>
+    <tbody style="color: #cbd5e1;">
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Sidebar topo</td>
+        <td style="padding: 6px;">Card edital expandido (stats detalhados)</td>
+        <td style="padding: 6px;">Card edital compacto (1 linha) + Calendário</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Sidebar título</td>
+        <td style="padding: 6px;">"Conteúdo Programático"</td>
+        <td style="padding: 6px;">"Tarefas do Dia" (filtrado) / "Edital" (sem filtro)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Árvore</td>
+        <td style="padding: 6px;">Limpa, contagem de tópicos por disciplina</td>
+        <td style="padding: 6px;">Badges % progresso, tipo sessão + duração</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Sidebar rodapé</td>
+        <td style="padding: 6px;">CTA "Começar a Estudar" fixo</td>
+        <td style="padding: 6px;">—</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Stepper</td>
+        <td style="padding: 6px;">Oculto (sem dados de progressão)</td>
+        <td style="padding: 6px;">Visível com nível real</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Stats row</td>
+        <td style="padding: 6px;">Estimativa · Incidência · Sub-tópicos (indigo)</td>
+        <td style="padding: 6px;">Último acesso · Tempo investido · Anotações (neutro)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Col. esquerda</td>
+        <td style="padding: 6px;"><strong>Editais que cobram</strong> — lista com tópicos em comum</td>
+        <td style="padding: 6px;"><strong>Revisões</strong> — histórico com datas e %</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Col. central</td>
+        <td style="padding: 6px;"><strong>Peso do tópico</strong> — frequência, ranking, bancas</td>
+        <td style="padding: 6px;"><strong>Desempenho</strong> — gráfico ECharts</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e293b;">
+        <td style="padding: 6px; font-weight: 600;">Col. IA</td>
+        <td style="padding: 6px;">Contexto de análise + "Comparar com outro edital"</td>
+        <td style="padding: 6px;">Feedback de desempenho + "Gerar questões"</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px; font-weight: 600;">Seção inferior</td>
+        <td style="padding: 6px;"><strong>"Explorar este tópico"</strong> — Questões exemplo, Leis, Sub-tópicos, Editais similares</td>
+        <td style="padding: 6px;"><strong>"Materiais de Estudo"</strong> — Documento, Flashcards, Questões, Lei Seca (ativos)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

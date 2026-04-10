@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lei Seca — Landing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600;7..72,700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #eef1f5;
+    min-height: 100vh;
+    color: #333;
+  }
+
+  .app-shell {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Icon Rail 76px ── */
+  .icon-rail {
+    width: 76px; min-width: 76px;
+    background: #fff;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; gap: 2px;
+  }
+  .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 8px rgba(30,64,175,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    color: white; font-size: 13px; font-weight: 700;
+  }
+  .nav-btn {
+    width: 60px; padding: 6px 4px; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    position: relative; cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn:hover { background: rgba(0,0,0,0.03); }
+  .nav-btn svg { width: 18px; height: 18px; stroke-width: 1.75; fill: none; }
+  .nav-btn .lbl { font-size: 9px; font-weight: 500; color: #9ca3af; white-space: nowrap; }
+  .nav-btn.active { background: rgba(219,234,254,0.8); box-shadow: 0 1px 4px rgba(30,64,175,0.08); }
+  .nav-btn.active svg { stroke: #1E40AF; }
+  .nav-btn.active .lbl { color: #1E40AF; font-weight: 600; }
+  .nav-btn.active::before {
+    content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%);
+    width: 2.5px; height: 22px;
+    background: linear-gradient(180deg, #1E40AF, #3B82F6);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-btn.inactive svg { stroke: #8b8fa3; }
+  .sep-h { width: 28px; height: 1px; background: rgba(0,0,0,0.06); margin: 4px auto; }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 6px rgba(30,64,175,0.25);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 11px; font-weight: 600; margin-top: 4px;
+  }
+
+  /* ── SoftGlow ── */
+  .glow {
+    width: 1px; align-self: stretch; position: relative; flex-shrink: 0;
+    background: linear-gradient(180deg, transparent 5%, #dbeafe 30%, #93c5fd 50%, #dbeafe 70%, transparent 95%);
+    opacity: 0.6;
+  }
+  .glow::after {
+    content: ''; position: absolute; top: 0; left: -4px;
+    width: 9px; height: 100%;
+    background: linear-gradient(180deg, transparent 5%, rgba(59,130,246,0.04) 30%, rgba(59,130,246,0.06) 50%, rgba(59,130,246,0.04) 70%, transparent 95%);
+  }
+
+  /* ── Landing Content ── */
+  .landing {
+    flex: 1;
+    background: #f7f6f3;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .landing-inner {
+    width: 100%;
+    max-width: 780px;
+    padding: 60px 32px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Badge */
+  .badge-top {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(30,64,175,0.06);
+    border: 1px solid rgba(30,64,175,0.08);
+    font-size: 12px; font-weight: 500; color: #1E40AF;
+    margin-bottom: 16px;
+  }
+  .badge-top svg { width: 14px; height: 14px; stroke: #3B82F6; stroke-width: 2; fill: none; }
+
+  /* Title */
+  .landing-title {
+    font-family: 'Literata', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+  .landing-title .dot {
+    color: #1E40AF;
+  }
+
+  .landing-subtitle {
+    font-size: 15px;
+    color: #7c8594;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 420px;
+    margin-bottom: 32px;
+  }
+
+  /* Search */
+  .search-bar {
+    width: 100%;
+    max-width: 520px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #e8e5df;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    margin-bottom: 40px;
+    transition: all 0.2s;
+  }
+  .search-bar:hover { border-color: #d0cdc7; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .search-bar svg { width: 18px; height: 18px; stroke: #b0aca5; stroke-width: 2; fill: none; flex-shrink: 0; }
+  .search-bar span { font-size: 14px; color: #b0aca5; }
+
+  /* Cards Grid */
+  .cards-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .law-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #eae7e2;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+  }
+  .law-card:hover {
+    border-color: #BFDBFE;
+    box-shadow: 0 4px 16px rgba(30,64,175,0.06);
+    transform: translateY(-2px);
+  }
+  .law-card.available:hover { border-color: #93c5fd; }
+
+  /* Icon circle */
+  .law-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .law-icon.active {
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 8px rgba(30,64,175,0.25);
+  }
+  .law-icon.active svg { stroke: white; }
+  .law-icon.muted {
+    background: #f0eeea;
+  }
+  .law-icon.muted svg { stroke: #b0aca5; }
+  .law-icon svg { width: 20px; height: 20px; stroke-width: 1.75; fill: none; }
+
+  .law-name {
+    font-size: 15px; font-weight: 600; color: #1a1a1a;
+    line-height: 1.3;
+  }
+  .law-number {
+    font-size: 12px; color: #9ca3af; margin-top: 1px;
+  }
+
+  .law-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: auto;
+  }
+  .law-articles {
+    font-size: 12px; font-weight: 500; color: #7c8594;
+  }
+
+  .law-badge-soon {
+    font-size: 10px; font-weight: 500;
+    color: #b0aca5;
+    background: #f5f3ef;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .law-arrow {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: #f0f4ff;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .law-card:hover .law-arrow { background: #DBEAFE; }
+  .law-arrow svg { width: 14px; height: 14px; stroke: #1E40AF; stroke-width: 2; fill: none; }
+
+  /* Progress mini */
+  .law-progress {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 2px;
+  }
+  .law-progress-bar {
+    flex: 1; height: 3px; border-radius: 2px;
+    background: #f0eeea;
+    overflow: hidden;
+  }
+  .law-progress-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, #1E40AF, #3B82F6);
+  }
+  .law-progress-label {
+    font-size: 10px; font-weight: 600; color: #1E40AF;
+    white-space: nowrap;
+  }
+
+  /* Footer */
+  .landing-footer {
+    width: 100%;
+    text-align: center;
+    padding: 24px 0 32px;
+    border-top: 1px solid #eae7e2;
+    margin-top: auto;
+  }
+  .landing-footer p {
+    font-size: 12px; color: #b0aca5;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ══ Icon Rail ══ -->
+  <div class="icon-rail">
+    <div class="logo">M</div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="lbl">Home</span></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg><span class="lbl">Flashcards</span></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg><span class="lbl">Questões</span></div>
+    <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg><span class="lbl">Lei Seca</span></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span class="lbl">Conteúdos</span></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span class="lbl">Cadernos</span></div>
+    <div class="sep-h"></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg><span class="lbl">Crono</span></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><span class="lbl">Resumos</span></div>
+    <div style="flex:1;"></div>
+    <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="lbl">Config</span></div>
+    <div class="avatar">A</div>
+  </div>
+
+  <div class="glow"></div>
+
+  <!-- ══ Landing Page ══ -->
+  <div class="landing">
+    <div class="landing-inner">
+
+      <!-- Badge -->
+      <div class="badge-top">
+        <svg viewBox="0 0 24 24"><path d="M12 2L9 9H2l6 4.5L5.5 21 12 16.5 18.5 21 16 13.5 22 9h-7z"/></svg>
+        Estudo Inteligente
+      </div>
+
+      <!-- Title -->
+      <h1 class="landing-title">Lei Seca<span class="dot">.</span></h1>
+
+      <!-- Subtitle -->
+      <p class="landing-subtitle">
+        Escolha a legislação que deseja estudar. Leitura ativa, questões, jurisprudência e muito mais.
+      </p>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Buscar legislação...</span>
+      </div>
+
+      <!-- Cards -->
+      <div class="cards-grid">
+
+        <!-- Código Civil (available) -->
+        <div class="law-card available">
+          <div class="law-icon active">
+            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg>
+          </div>
+          <div>
+            <div class="law-name">Código Civil</div>
+            <div class="law-number">Lei nº 10.406/2002</div>
+          </div>
+          <div class="law-progress">
+            <div class="law-progress-bar"><div class="law-progress-fill" style="width:34%;"></div></div>
+            <span class="law-progress-label">34%</span>
+          </div>
+          <div class="law-bottom">
+            <span class="law-articles">2046 artigos</span>
+            <div class="law-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+
+        <!-- Constituição Federal (available) -->
+        <div class="law-card available">
+          <div class="law-icon active">
+            <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+          </div>
+          <div>
+            <div class="law-name">Constituição Federal</div>
+            <div class="law-number">1988</div>
+          </div>
+          <div class="law-progress">
+            <div class="law-progress-bar"><div class="law-progress-fill" style="width:12%;"></div></div>
+            <span class="law-progress-label">12%</span>
+          </div>
+          <div class="law-bottom">
+            <span class="law-articles">250 artigos</span>
+            <div class="law-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+
+        <!-- Código de Processo Civil -->
+        <div class="law-card available">
+          <div class="law-icon active">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="law-name">Código de Processo Civil</div>
+            <div class="law-number">Lei nº 13.105/2015</div>
+          </div>
+          <div class="law-progress">
+            <div class="law-progress-bar"><div class="law-progress-fill" style="width:0%;"></div></div>
+            <span class="law-progress-label" style="color:#9ca3af;">—</span>
+          </div>
+          <div class="law-bottom">
+            <span class="law-articles">1072 artigos</span>
+            <div class="law-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+
+        <!-- Código Penal -->
+        <div class="law-card available">
+          <div class="law-icon active">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="law-name">Código Penal</div>
+            <div class="law-number">Decreto-Lei nº 2.848/1940</div>
+          </div>
+          <div class="law-progress">
+            <div class="law-progress-bar"><div class="law-progress-fill" style="width:72%;"></div></div>
+            <span class="law-progress-label">72%</span>
+          </div>
+          <div class="law-bottom">
+            <span class="law-articles">361 artigos</span>
+            <div class="law-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+
+        <!-- Código de Defesa do Consumidor -->
+        <div class="law-card">
+          <div class="law-icon muted">
+            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+          <div>
+            <div class="law-name">Código de Defesa do Consumidor</div>
+            <div class="law-number">Lei nº 8.078/1990</div>
+          </div>
+          <div class="law-bottom">
+            <span class="law-articles">119 artigos</span>
+            <span class="law-badge-soon">Em breve</span>
+          </div>
+        </div>
+
+        <!-- CLT -->
+        <div class="law-card">
+          <div class="law-icon muted">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          </div>
+          <div>
+            <div class="law-name">Consolidação das Leis do Trabalho</div>
+            <div class="law-number">Decreto-Lei nº 5.452/1943</div>
+          </div>
+          <div class="law-bottom">
+            <span class="law-articles">922 artigos</span>
+            <span class="law-badge-soon">Em breve</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="landing-footer">
+        <p>Feito para concurseiros que levam a sério.</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

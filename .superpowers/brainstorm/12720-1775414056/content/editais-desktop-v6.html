@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Editais</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fff; color:#111; font-family:'Inter',system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:'cv02','cv03','cv04','cv11'; }
+
+  .layout { display:flex; height:100vh; }
+
+  /* Nav rail */
+  .rail { width:52px; background:#fff; border-right:1px solid #eee; display:flex; flex-direction:column; align-items:center; padding:14px 0; gap:2px; }
+  .rail-logo { width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,#635bff,#8b5cf6); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:white; margin-bottom:16px; }
+  .rail-btn { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer; color:#bbb; transition:all 0.12s ease; }
+  .rail-btn:hover { color:#666; background:#f5f5f5; }
+  .rail-btn.on { color:#111; background:#f0f0f0; }
+
+  .content { flex:1; overflow-y:auto; background:#fff; }
+
+  /* Top bar */
+  .topbar { height:48px; border-bottom:1px solid #eee; display:flex; align-items:center; padding:0 32px; }
+  .topbar-crumb { font-size:13px; color:#999; }
+  .topbar-crumb b { color:#111; font-weight:550; }
+
+  /* Page */
+  .page-inner { max-width:960px; margin:0 auto; padding:36px 24px 64px; }
+
+  .page-title { font-size:21px; font-weight:700; color:#111; letter-spacing:-0.4px; margin-bottom:3px; }
+  .page-desc { font-size:13.5px; color:#888; margin-bottom:24px; }
+
+  /* Counters */
+  .counters { display:flex; gap:24px; margin-bottom:24px; }
+  .counter-val { font-size:19px; font-weight:700; color:#111; font-variant-numeric:tabular-nums; }
+  .counter-lbl { font-size:11px; color:#aaa; margin-top:1px; }
+
+  /* Search */
+  .search { position:relative; margin-bottom:14px; }
+  .search input { width:100%; background:#fafafa; border:1px solid #e8e8e8; border-radius:10px; padding:10px 16px 10px 38px; color:#111; font-size:13.5px; outline:none; transition:all 0.15s; font-family:inherit; }
+  .search input::placeholder { color:#bbb; }
+  .search input:focus { border-color:#635bff; box-shadow:0 0 0 3px rgba(99,91,255,0.08); background:#fff; }
+  .search svg { position:absolute; left:13px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:#bbb; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:1px; margin-bottom:22px; background:#f3f3f3; border-radius:8px; padding:2px; width:fit-content; }
+  .tab { padding:5px 14px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; color:#888; transition:all 0.12s; }
+  .tab:hover { color:#555; }
+  .tab.on { background:#fff; color:#111; box-shadow:0 1px 2px rgba(0,0,0,0.06); }
+
+  /* List header */
+  .list-header { display:grid; grid-template-columns:1fr 90px 90px 90px; gap:16px; padding:0 16px 8px; }
+  .list-header span { font-size:11px; font-weight:550; color:#bbb; text-transform:uppercase; letter-spacing:0.4px; }
+  .list-header span:not(:first-child) { text-align:right; }
+
+  /* List */
+  .list { border:1px solid #eee; border-radius:12px; overflow:hidden; }
+
+  .row { display:grid; grid-template-columns:1fr 90px 90px 90px; gap:16px; padding:13px 16px; align-items:center; border-bottom:1px solid #f5f5f5; cursor:pointer; transition:background 0.1s; }
+  .row:last-child { border-bottom:none; }
+  .row:hover { background:#fafafa; }
+  .row.expanded { background:#f8f7ff; border-bottom:none; }
+
+  .row-left { display:flex; align-items:center; gap:12px; }
+  .row-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; letter-spacing:-0.2px; }
+  .row-icon.federal { background:#eef0ff; color:#635bff; }
+  .row-icon.estadual { background:#eef6ff; color:#3b82f6; }
+  .row-icon.municipal { background:#eefbf5; color:#059669; }
+
+  .row-name { font-size:13.5px; font-weight:550; color:#111; margin-bottom:1px; }
+  .row-org { font-size:12px; color:#aaa; }
+
+  .row-num { font-size:13px; font-weight:500; color:#666; text-align:right; font-variant-numeric:tabular-nums; }
+
+  /* Expanded */
+  .row-expand { padding:0 16px 16px; background:#f8f7ff; border-bottom:1px solid #f0f0f0; }
+  .expand-label { font-size:11px; font-weight:600; color:#bbb; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:10px; padding-left:46px; }
+
+  .cargo-list { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding-left:46px; }
+  .cargo-item { background:#fff; border:1px solid #eee; border-radius:9px; padding:13px 14px; transition:all 0.12s; cursor:pointer; }
+  .cargo-item:hover { border-color:#c7c3ff; background:#fcfbff; }
+  .cargo-item-name { font-size:13px; font-weight:550; color:#111; margin-bottom:3px; }
+  .cargo-item-meta { font-size:11.5px; color:#aaa; }
+  .cargo-item-cta { font-size:11px; font-weight:600; color:#635bff; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="rail">
+    <div class="rail-logo">P</div>
+    <div class="rail-btn">📄</div>
+    <div class="rail-btn on">📋</div>
+    <div class="rail-btn">🗂</div>
+    <div class="rail-btn">❓</div>
+    <div class="rail-btn">⚖️</div>
+    <div class="rail-btn" style="margin-top:auto">⚙️</div>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <span class="topbar-crumb"><b>Editais</b></span>
+    </div>
+
+    <div class="page-inner">
+      <div class="page-title">Editais verticalizados</div>
+      <div class="page-desc">Conteúdo programático completo de 690 concursos, verticalizado por cargo.</div>
+
+      <div class="counters">
+        <div class="counter"><div class="counter-val">690</div><div class="counter-lbl">editais</div></div>
+        <div class="counter"><div class="counter-val">3.420</div><div class="counter-lbl">cargos</div></div>
+        <div class="counter"><div class="counter-val">28.165</div><div class="counter-lbl">disciplinas</div></div>
+        <div class="counter"><div class="counter-val">1,16M</div><div class="counter-lbl">tópicos</div></div>
+      </div>
+
+      <div class="search">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+        <input placeholder="Buscar por nome, sigla ou órgão..." />
+      </div>
+
+      <div class="tabs">
+        <div class="tab on">Todos</div>
+        <div class="tab">Federal</div>
+        <div class="tab">Estadual</div>
+        <div class="tab">Municipal</div>
+      </div>
+
+      <div class="list-header">
+        <span>Edital</span>
+        <span>Cargos</span>
+        <span>Disciplinas</span>
+        <span>Tópicos</span>
+      </div>
+
+      <div class="list">
+        <div class="row expanded">
+          <div class="row-left">
+            <div class="row-icon federal">PF</div>
+            <div>
+              <div class="row-name">Polícia Federal</div>
+              <div class="row-org">Federal</div>
+            </div>
+          </div>
+          <div class="row-num">41</div>
+          <div class="row-num">356</div>
+          <div class="row-num">19.609</div>
+        </div>
+        <div class="row-expand">
+          <div class="expand-label">Selecione o cargo</div>
+          <div class="cargo-list">
+            <div class="cargo-item">
+              <div class="cargo-item-name">Delegado de Polícia</div>
+              <div class="cargo-item-meta">24 disciplinas · 455 tópicos</div>
+              <div class="cargo-item-cta">Estudar →</div>
+            </div>
+            <div class="cargo-item">
+              <div class="cargo-item-name">Agente de Polícia</div>
+              <div class="cargo-item-meta">18 disciplinas · 380 tópicos</div>
+              <div class="cargo-item-cta">Estudar →</div>
+            </div>
+            <div class="cargo-item">
+              <div class="cargo-item-name">Escrivão de Polícia</div>
+              <div class="cargo-item-meta">16 disciplinas · 320 tópicos</div>
+              <div class="cargo-item-cta">Estudar →</div>
+            </div>
+            <div class="cargo-item">
+              <div class="cargo-item-name">Perito Criminal</div>
+              <div class="cargo-item-meta">12 disciplinas · 280 tópicos</div>
+              <div class="cargo-item-cta">Estudar →</div>
+            </div>
+            <div class="cargo-item">
+              <div class="cargo-item-name">Papiloscopista</div>
+              <div class="cargo-item-meta">14 disciplinas · 310 tópicos</div>
+              <div class="cargo-item-cta">Estudar →</div>
+            </div>
+            <div class="cargo-item">
+              <div class="cargo-item-name">Agente Administrativo</div>
+              <div class="cargo-item-meta">8 disciplinas · 150 tópicos</div>
+              <div class="cargo-item-cta">Estudar →</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon federal">PRF</div>
+            <div>
+              <div class="row-name">Polícia Rodoviária Federal</div>
+              <div class="row-org">Federal</div>
+            </div>
+          </div>
+          <div class="row-num">2</div>
+          <div class="row-num">24</div>
+          <div class="row-num">455</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon estadual">TJ-SP</div>
+            <div>
+              <div class="row-name">Tribunal de Justiça de São Paulo</div>
+              <div class="row-org">São Paulo</div>
+            </div>
+          </div>
+          <div class="row-num">18</div>
+          <div class="row-num">152</div>
+          <div class="row-num">8.430</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon federal">MPU</div>
+            <div>
+              <div class="row-name">Ministério Público da União</div>
+              <div class="row-org">Federal</div>
+            </div>
+          </div>
+          <div class="row-num">37</div>
+          <div class="row-num">316</div>
+          <div class="row-num">19.307</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon federal">TRF-1</div>
+            <div>
+              <div class="row-name">Tribunal Regional Federal da 1ª Região</div>
+              <div class="row-org">Federal</div>
+            </div>
+          </div>
+          <div class="row-num">33</div>
+          <div class="row-num">319</div>
+          <div class="row-num">10.898</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon federal">INSS</div>
+            <div>
+              <div class="row-name">Instituto Nacional do Seguro Social</div>
+              <div class="row-org">Federal</div>
+            </div>
+          </div>
+          <div class="row-num">2</div>
+          <div class="row-num">28</div>
+          <div class="row-num">1.240</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon municipal">CM-GOI</div>
+            <div>
+              <div class="row-name">Câmara Municipal de Goiânia</div>
+              <div class="row-org">Goiás</div>
+            </div>
+          </div>
+          <div class="row-num">32</div>
+          <div class="row-num">186</div>
+          <div class="row-num">7.820</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon estadual">SEFAZ</div>
+            <div>
+              <div class="row-name">Secretaria da Fazenda da Bahia</div>
+              <div class="row-org">Bahia</div>
+            </div>
+          </div>
+          <div class="row-num">3</div>
+          <div class="row-num">42</div>
+          <div class="row-num">2.180</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon estadual">PC-DF</div>
+            <div>
+              <div class="row-name">Polícia Civil do Distrito Federal</div>
+              <div class="row-org">Distrito Federal</div>
+            </div>
+          </div>
+          <div class="row-num">8</div>
+          <div class="row-num">96</div>
+          <div class="row-num">4.520</div>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <div class="row-icon federal">TCU</div>
+            <div>
+              <div class="row-name">Tribunal de Contas da União</div>
+              <div class="row-org">Federal</div>
+            </div>
+          </div>
+          <div class="row-num">4</div>
+          <div class="row-num">68</div>
+          <div class="row-num">3.450</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<h2>Como organizar os itens na barra de navegação?</h2>
+<p class="subtitle">Você tem 10 seções. Veja 3 formas de encaixar tudo. Clique na melhor.</p>
+
+<div class="cards">
+  <!-- Approach A: Flat — all visible -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0;overflow:hidden;border-radius:10px 10px 0 0;">
+      <div style="height:3px;background:#1E40AF;"></div>
+      <!-- Row 1 -->
+      <div style="background:#fff;padding:8px 20px;display:flex;align-items:center;font-family:-apple-system,system-ui,sans-serif;border-bottom:1px solid #e5e7eb;">
+        <div style="display:flex;align-items:center;gap:7px;margin-right:16px;">
+          <div style="width:26px;height:26px;border-radius:7px 3px 7px 3px;background:linear-gradient(135deg,#1E40AF,#3B82F6);"></div>
+          <span style="color:#1e293b;font-size:14px;font-weight:700;">Papiro</span>
+        </div>
+        <div style="flex:1;max-width:300px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;">
+          <span style="color:#94a3b8;font-size:11px;">Buscar disciplinas, provas...</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:11px;padding:5px 12px;background:#1E40AF;color:#fff;border-radius:5px;font-weight:600;">Upgrade</span>
+          <span style="color:#94a3b8;font-size:14px;">&#9881;</span>
+          <div style="width:26px;height:26px;border-radius:50%;background:#1E40AF;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:10px;font-weight:700;">A</span>
+          </div>
+        </div>
+      </div>
+      <!-- Row 2: ALL items flat -->
+      <div style="background:#fff;padding:0 20px;display:flex;align-items:center;font-family:-apple-system,system-ui,sans-serif;border-bottom:1px solid #e5e7eb;overflow-x:auto;">
+        <span style="color:#1e293b;font-size:12px;padding:10px 10px;font-weight:500;white-space:nowrap;border-bottom:2px solid #1E40AF;">Dashboard</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Flashcards</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Questões</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Lei Seca</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Cadernos</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Editais</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Cronograma</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Resumos</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 10px;white-space:nowrap;">Editor</span>
+      </div>
+      <div style="background:#f8fafc;padding:14px 20px;">
+        <span style="color:#94a3b8;font-size:11px;">Home / Dashboard</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A) Flat — Todos visíveis</h3>
+      <p>Todos os 9 itens na barra. Simples e direto. Pode ficar apertado em telas menores (1366px). Zero cliques extras.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Tudo acessível com 1 clique</li><li>Mais simples de implementar</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Apertado em telas pequenas</li><li>Sem hierarquia visual</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach B: Grouped with dropdowns -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0;overflow:hidden;border-radius:10px 10px 0 0;">
+      <div style="height:3px;background:#1E40AF;"></div>
+      <!-- Row 1 -->
+      <div style="background:#fff;padding:8px 20px;display:flex;align-items:center;font-family:-apple-system,system-ui,sans-serif;border-bottom:1px solid #e5e7eb;">
+        <div style="display:flex;align-items:center;gap:7px;margin-right:16px;">
+          <div style="width:26px;height:26px;border-radius:7px 3px 7px 3px;background:linear-gradient(135deg,#1E40AF,#3B82F6);"></div>
+          <span style="color:#1e293b;font-size:14px;font-weight:700;">Papiro</span>
+        </div>
+        <div style="flex:1;max-width:300px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;">
+          <span style="color:#94a3b8;font-size:11px;">Buscar disciplinas, provas...</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:11px;padding:5px 12px;background:#1E40AF;color:#fff;border-radius:5px;font-weight:600;">Upgrade</span>
+          <span style="color:#94a3b8;font-size:14px;">&#9881;</span>
+          <div style="width:26px;height:26px;border-radius:50%;background:#1E40AF;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:10px;font-weight:700;">A</span>
+          </div>
+        </div>
+      </div>
+      <!-- Row 2: Grouped -->
+      <div style="background:#fff;padding:0 20px;display:flex;align-items:center;font-family:-apple-system,system-ui,sans-serif;border-bottom:1px solid #e5e7eb;">
+        <span style="color:#1e293b;font-size:12px;padding:10px 12px;font-weight:500;border-bottom:2px solid #1E40AF;">Dashboard</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Flashcards</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Questões</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Lei Seca</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Cadernos</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Editais</span>
+        <!-- Separator -->
+        <span style="color:#e2e8f0;padding:0 4px;">|</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Ferramentas &#9662;</span>
+      </div>
+      <!-- Dropdown preview -->
+      <div style="background:#f8fafc;padding:14px 20px;position:relative;">
+        <div style="position:absolute;right:40px;top:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,0.08);min-width:160px;">
+          <div style="padding:8px 12px;font-size:12px;color:#1e293b;border-radius:5px;font-family:system-ui;">Cronograma</div>
+          <div style="padding:8px 12px;font-size:12px;color:#64748b;border-radius:5px;font-family:system-ui;background:#f8fafc;">Resumos</div>
+          <div style="padding:8px 12px;font-size:12px;color:#64748b;border-radius:5px;font-family:system-ui;">Editor</div>
+        </div>
+        <span style="color:#94a3b8;font-size:11px;">Home / Dashboard</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Agrupado — Ferramentas em dropdown</h3>
+      <p>6 itens principais visíveis + "Ferramentas ▼" agrupa Cronograma, Resumos, Editor. Limpo e organizado.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Barra limpa, não fica apertada</li><li>Hierarquia clara (principal vs ferramenta)</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Ferramentas ficam a 2 cliques</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approach C: Main + Mais -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0;overflow:hidden;border-radius:10px 10px 0 0;">
+      <div style="height:3px;background:#1E40AF;"></div>
+      <!-- Row 1 -->
+      <div style="background:#fff;padding:8px 20px;display:flex;align-items:center;font-family:-apple-system,system-ui,sans-serif;border-bottom:1px solid #e5e7eb;">
+        <div style="display:flex;align-items:center;gap:7px;margin-right:16px;">
+          <div style="width:26px;height:26px;border-radius:7px 3px 7px 3px;background:linear-gradient(135deg,#1E40AF,#3B82F6);"></div>
+          <span style="color:#1e293b;font-size:14px;font-weight:700;">Papiro</span>
+        </div>
+        <div style="flex:1;max-width:300px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;">
+          <span style="color:#94a3b8;font-size:11px;">Buscar disciplinas, provas...</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:11px;padding:5px 12px;background:#1E40AF;color:#fff;border-radius:5px;font-weight:600;">Upgrade</span>
+          <span style="color:#94a3b8;font-size:14px;">&#9881;</span>
+          <div style="width:26px;height:26px;border-radius:50%;background:#1E40AF;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:10px;font-weight:700;">A</span>
+          </div>
+        </div>
+      </div>
+      <!-- Row 2: Main items + Mais -->
+      <div style="background:#fff;padding:0 20px;display:flex;align-items:center;font-family:-apple-system,system-ui,sans-serif;border-bottom:1px solid #e5e7eb;">
+        <span style="color:#1E40AF;font-size:11px;padding:10px 12px;font-weight:700;letter-spacing:0.3px;">PAPIRO</span>
+        <span style="color:#d1d5db;padding:0 2px;">&#8226;</span>
+        <span style="color:#1e293b;font-size:12px;padding:10px 12px;font-weight:500;border-bottom:2px solid #1E40AF;">Início</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Flashcards</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Questões</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Lei Seca</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Cadernos</span>
+        <span style="color:#64748b;font-size:12px;padding:10px 12px;">Editais</span>
+        <!-- Right side -->
+        <div style="margin-left:auto;display:flex;align-items:center;gap:0;">
+          <span style="color:#64748b;font-size:12px;padding:10px 12px;">Cronograma</span>
+          <span style="color:#64748b;font-size:12px;padding:10px 12px;">Mais &#9662;</span>
+        </div>
+      </div>
+      <!-- Dropdown preview -->
+      <div style="background:#f8fafc;padding:14px 20px;position:relative;">
+        <div style="position:absolute;right:20px;top:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,0.08);min-width:160px;">
+          <div style="padding:8px 12px;font-size:12px;color:#64748b;border-radius:5px;font-family:system-ui;">Resumos</div>
+          <div style="padding:8px 12px;font-size:12px;color:#64748b;border-radius:5px;font-family:system-ui;">Editor</div>
+          <div style="height:1px;background:#e2e8f0;margin:4px 0;"></div>
+          <div style="padding:8px 12px;font-size:12px;color:#8b5cf6;border-radius:5px;font-family:system-ui;">Moderação</div>
+        </div>
+        <span style="color:#94a3b8;font-size:11px;">Home / Início</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C) QConcursos-style — Principais + Mais</h3>
+      <p>Igual QConcursos: itens frequentes visíveis à esquerda, menos usados em "Mais ▼" à direita. Moderação fica no Mais.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Idêntico à referência que você gostou</li><li>Escala bem — itens novos vão pro Mais</li><li>Moderação escondida naturalmente</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Resumos/Editor ficam a 2 cliques</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

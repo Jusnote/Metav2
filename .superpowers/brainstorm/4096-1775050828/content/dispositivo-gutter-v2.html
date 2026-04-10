@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispositivo — gutter com reação + ações</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f4; font-family: 'Literata', Georgia, serif; padding: 40px 20px; display: flex; flex-direction: column; gap: 48px; align-items: center; }
+
+  .tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600; color: #7c3aed;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: -28px;
+  }
+  .note {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; color: #71717a; margin-bottom: -28px; text-align: center;
+  }
+
+  .page {
+    width: 100%; max-width: 1024px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 32px 40px;
+  }
+
+  .section-header {
+    text-align: center; padding: 20px 0 8px;
+    font-size: 13px; font-weight: 600; color: #a0a0a0;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── Dispositivo row ── */
+  .disp {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    padding: 4px 0;
+    line-height: 1.9;
+    font-size: 16px;
+    color: rgb(67, 80, 92);
+  }
+
+  .disp-text { flex: 1; min-width: 0; text-align: justify; }
+  .disp-num { font-weight: 600; color: rgb(50, 62, 72); }
+  .disp-indent { padding-left: 24px; }
+  .disp-indent-2 { padding-left: 48px; }
+  .highlight { background: rgba(250, 204, 21, 0.2); border-radius: 2px; padding: 0 1px; }
+
+  /* ── Gutter — two icons ── */
+  .disp-gutter {
+    width: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 2px;
+    padding-top: 6px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .disp:hover .disp-gutter { opacity: 1; }
+  @media (max-width: 768px) {
+    .disp-gutter { opacity: 0.4; }
+    .disp:hover .disp-gutter { opacity: 1; }
+  }
+
+  .g-btn {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px; border: none; background: transparent;
+    color: #c4c4c4; cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    position: relative;
+  }
+  .g-btn:hover { background: #f4f4f5; color: #888; }
+  .g-btn.active { background: #f0f0f0; color: #555; }
+
+  /* Reaction button specific */
+  .g-btn-react:hover { color: #e25555; }
+  .g-btn-react.has-reaction { opacity: 1 !important; color: #e25555; }
+
+  /* ── Reaction picker ── */
+  .reaction-picker {
+    position: absolute; top: -4px; right: 28px;
+    display: flex; gap: 2px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 4px 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+    z-index: 10;
+    animation: pickerIn 0.15s ease-out;
+  }
+  @keyframes pickerIn {
+    from { opacity: 0; transform: scale(0.9) translateX(8px); }
+    to { opacity: 1; transform: scale(1) translateX(0); }
+  }
+
+  .reaction-picker button {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent;
+    border-radius: 8px; cursor: pointer;
+    font-size: 16px;
+    transition: all 0.12s;
+  }
+  .reaction-picker button:hover {
+    background: #f5f5f5;
+    transform: scale(1.2);
+  }
+
+  /* ── Reaction badges inline ── */
+  .reaction-badges {
+    display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle;
+  }
+  .reaction-badge {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 6px; border-radius: 10px;
+    background: #fafafa; border: 1px solid #f0f0f0;
+    font-size: 12px; cursor: pointer;
+    transition: all 0.12s;
+    font-family: 'Inter', sans-serif;
+  }
+  .reaction-badge:hover { background: #f0f0f0; border-color: #e0e0e0; }
+  .reaction-badge .count { font-size: 10px; color: #888; font-weight: 600; }
+
+  /* ── Inline footer ── */
+  .disp-footer {
+    display: flex; align-items: center; gap: 2px;
+    padding: 6px 0 8px; margin-top: 2px;
+    border-top: 1px solid #f4f4f5;
+    animation: footerIn 0.2s ease-out;
+  }
+  @keyframes footerIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .footer-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 10px; border-radius: 6px;
+    border: none; background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 500; color: #9a9a9a;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .footer-btn:hover { background: #f5f5f5; color: #3a3a3a; }
+  .footer-btn svg { flex-shrink: 0; }
+  .footer-sep { width: 1px; height: 12px; background: #f0f0f0; margin: 0 4px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Interativo — hover pra ver os ícones        -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">Hover nos dispositivos — dois ícones aparecem</div>
+<p class="note">❤️ abre picker de reações · ··· abre footer com ações</p>
+
+<div class="page">
+  <div class="section-header">Capítulo I — Dos crimes praticados por funcionário público</div>
+
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio:
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react" onclick="toggleReactionPicker(this)" title="Reagir">♡</button>
+      <button class="g-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      Pena — reclusão, de dois a doze anos, e multa.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react" onclick="toggleReactionPicker(this)" title="Reagir">♡</button>
+      <button class="g-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 1º — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai, ou concorre para que seja subtraído, em proveito próprio ou alheio, valendo-se de facilidade que lhe proporciona a qualidade de funcionário.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react" onclick="toggleReactionPicker(this)" title="Reagir">♡</button>
+      <button class="g-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react" onclick="toggleReactionPicker(this)" title="Reagir">♡</button>
+      <button class="g-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent-2">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react" onclick="toggleReactionPicker(this)" title="Reagir">♡</button>
+      <button class="g-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 3º — No caso do parágrafo anterior, a reparação do dano, se precede à sentença irrecorrível, extingue a punibilidade; se lhe é posterior, reduz de metade a pena imposta.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react" onclick="toggleReactionPicker(this)" title="Reagir">♡</button>
+      <button class="g-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Exemplo fixo — reações + footer aberto      -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">Exemplo: reações aplicadas + footer aberto</div>
+<p class="note">Art. 312 tem 3 reações. §2º tem footer aberto.</p>
+
+<div class="page">
+  <div class="section-header">Com reações e footer</div>
+
+  <!-- Art with reactions -->
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio:
+      <span class="reaction-badges">
+        <span class="reaction-badge">🔥 <span class="count">12</span></span>
+        <span class="reaction-badge">⚠️ <span class="count">5</span></span>
+        <span class="reaction-badge">📌 <span class="count">8</span></span>
+      </span>
+    </div>
+    <div class="disp-gutter" style="opacity:1;">
+      <button class="g-btn g-btn-react has-reaction" style="color:#e25555;">♥</button>
+      <button class="g-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      Pena — reclusão, de dois a doze anos, e multa.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react">♡</button>
+      <button class="g-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 1º — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai...
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react">♡</button>
+      <button class="g-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+      <span class="reaction-badges">
+        <span class="reaction-badge">📌 <span class="count">3</span></span>
+      </span>
+    </div>
+    <div class="disp-gutter" style="opacity:1;">
+      <button class="g-btn g-btn-react">♡</button>
+      <button class="g-btn active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer open -->
+  <div class="disp-footer" style="padding-left: 24px;">
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838.838-2.872a2 2 0 0 1 .506-.855z"/></svg>
+      Anotar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+      Grifar
+    </button>
+    <div class="footer-sep"></div>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Reportar
+    </button>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent-2">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-btn-react">♡</button>
+      <button class="g-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function closeAll() {
+  document.querySelectorAll('.reaction-picker').forEach(p => p.remove());
+  document.querySelectorAll('.disp-footer.dynamic').forEach(f => f.remove());
+  document.querySelectorAll('.g-btn.active').forEach(b => b.classList.remove('active'));
+}
+
+function toggleReactionPicker(btn) {
+  const existing = btn.querySelector('.reaction-picker');
+  if (existing) { existing.remove(); return; }
+
+  closeAll();
+
+  const picker = document.createElement('div');
+  picker.className = 'reaction-picker';
+  picker.innerHTML = `
+    <button onclick="addReaction(this, '🔥')" title="Cai em prova">🔥</button>
+    <button onclick="addReaction(this, '📌')" title="Decorar">📌</button>
+    <button onclick="addReaction(this, '⚠️')" title="Pegadinha">⚠️</button>
+    <button onclick="addReaction(this, '💡')" title="Insight">💡</button>
+    <button onclick="addReaction(this, '❤️')" title="Importante">❤️</button>
+  `;
+  btn.appendChild(picker);
+
+  // Close on outside click
+  setTimeout(() => {
+    const handler = (e) => {
+      if (!picker.contains(e.target) && e.target !== btn) {
+        picker.remove();
+        document.removeEventListener('mousedown', handler);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+  }, 0);
+}
+
+function addReaction(emojiBtn, emoji) {
+  const picker = emojiBtn.closest('.reaction-picker');
+  const gBtn = picker.parentElement;
+  const disp = gBtn.closest('.disp');
+  const textEl = disp.querySelector('.disp-text');
+
+  // Add badge
+  let badges = textEl.querySelector('.reaction-badges');
+  if (!badges) {
+    badges = document.createElement('span');
+    badges.className = 'reaction-badges';
+    textEl.appendChild(badges);
+  }
+  const badge = document.createElement('span');
+  badge.className = 'reaction-badge';
+  badge.innerHTML = `${emoji} <span class="count">1</span>`;
+  badges.appendChild(badge);
+
+  // Update heart
+  gBtn.innerHTML = '♥';
+  gBtn.classList.add('has-reaction');
+  gBtn.style.color = '#e25555';
+
+  picker.remove();
+}
+
+function toggleFooter(btn) {
+  const disp = btn.closest('.disp');
+  const next = disp.nextElementSibling;
+
+  document.querySelectorAll('.disp-footer.dynamic').forEach(f => f.remove());
+  document.querySelectorAll('.g-btn.active').forEach(b => b.classList.remove('active'));
+
+  if (next && next.classList.contains('dynamic')) return;
+
+  btn.classList.add('active');
+
+  const footer = document.createElement('div');
+  footer.className = 'disp-footer dynamic';
+  const indent = disp.querySelector('.disp-indent-2') ? '48px' : disp.querySelector('.disp-indent') ? '24px' : '0';
+  footer.style.paddingLeft = indent;
+  footer.innerHTML = `
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838.838-2.872a2 2 0 0 1 .506-.855z"/></svg>
+      Anotar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+      Grifar
+    </button>
+    <div class="footer-sep"></div>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Reportar
+    </button>
+  `;
+  disp.after(footer);
+}
+</script>
+
+</body>
+</html>

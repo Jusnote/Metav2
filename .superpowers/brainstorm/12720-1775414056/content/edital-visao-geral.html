@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>PF — Delegado de Polícia</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@350;400;450;500;550;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fafafb; color:#1a1a1a; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  .layout { display:flex; height:100vh; }
+
+  .rail { width:56px; background:#fff; border-right:1px solid #f0eff2; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:4px; }
+  .rail-logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(140deg,#6c63ff,#9b8afb); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:white; margin-bottom:20px; box-shadow:0 2px 8px rgba(108,99,255,0.25); }
+  .rail-btn { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#c4c0ce; transition:all 0.15s; }
+  .rail-btn:hover { color:#6c63ff; background:#f5f3ff; }
+  .rail-btn.on { color:#6c63ff; background:#eeecfb; }
+
+  .content { flex:1; overflow-y:auto; }
+
+  .topbar { height:50px; background:#fff; border-bottom:1px solid #f0eff2; display:flex; align-items:center; padding:0 40px; gap:8px; }
+  .topbar-back { width:28px; height:28px; border-radius:7px; border:1px solid #eae8ee; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; color:#b0adb8; transition:all 0.12s; }
+  .topbar-back:hover { background:#f5f3ff; color:#6c63ff; border-color:#d4d0f0; }
+  .topbar-crumb { font-size:13px; color:#b0adb8; }
+  .topbar-crumb b { color:#1a1a1a; font-weight:600; }
+  .topbar-crumb span { color:#6c63ff; }
+
+  .page { max-width:900px; margin:0 auto; padding:32px 24px 80px; }
+
+  /* Header do edital */
+  .ed-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; }
+  .ed-header-left { display:flex; gap:16px; align-items:flex-start; }
+  .ed-avatar { width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#eeecfb,#e0dcf8); color:#6c63ff; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; flex-shrink:0; }
+  .ed-title { font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:2px; }
+  .ed-subtitle { font-size:14px; color:#9994a8; }
+  .ed-actions { display:flex; gap:8px; }
+  .ed-btn { padding:9px 18px; border-radius:9px; font-size:12.5px; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; font-family:inherit; }
+  .ed-btn.primary { background:#6c63ff; color:#fff; }
+  .ed-btn.primary:hover { background:#5b52ee; }
+  .ed-btn.secondary { background:#fff; color:#1a1a1a; border:1.5px solid #eae8ee; }
+  .ed-btn.secondary:hover { border-color:#d4d0f0; background:#faf9fd; }
+
+  /* Stats cards */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:28px; }
+  .stat-card { background:#fff; border:1.5px solid #eae8ee; border-radius:12px; padding:16px 18px; }
+  .stat-card-val { font-size:22px; font-weight:800; color:#1a1a1a; font-variant-numeric:tabular-nums; letter-spacing:-0.3px; }
+  .stat-card-lbl { font-size:11.5px; color:#b0adb8; margin-top:2px; }
+  .stat-card-bar { height:3px; background:#f0eff2; border-radius:2px; margin-top:10px; }
+  .stat-card-bar-fill { height:3px; border-radius:2px; }
+
+  /* Progresso geral */
+  .progress-section { background:#fff; border:1.5px solid #eae8ee; border-radius:12px; padding:18px 20px; margin-bottom:20px; display:flex; align-items:center; gap:16px; }
+  .progress-label { font-size:13px; font-weight:600; white-space:nowrap; }
+  .progress-track { flex:1; height:8px; background:#f0eff2; border-radius:4px; }
+  .progress-fill { height:8px; border-radius:4px; background:linear-gradient(90deg,#6c63ff,#9b8afb); }
+  .progress-pct { font-size:15px; font-weight:700; color:#6c63ff; }
+  .progress-detail { font-size:11px; color:#b0adb8; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:0; border-bottom:1.5px solid #f0eff2; margin-bottom:20px; }
+  .tab { padding:10px 20px; font-size:13px; font-weight:550; color:#b0adb8; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1.5px; transition:all 0.12s; }
+  .tab:hover { color:#6c63ff; }
+  .tab.on { color:#6c63ff; border-bottom-color:#6c63ff; }
+
+  /* Disciplinas */
+  .disc-list { display:flex; flex-direction:column; gap:6px; }
+
+  .disc { background:#fff; border:1.5px solid #eae8ee; border-radius:11px; overflow:hidden; transition:all 0.2s; }
+  .disc:hover { border-color:#d4d0f0; }
+  .disc.open { border-color:#6c63ff; box-shadow:0 2px 12px rgba(108,99,255,0.06); }
+
+  .disc-header { display:flex; align-items:center; padding:13px 18px; cursor:pointer; gap:12px; }
+  .disc-arrow { color:#d4d0de; font-size:14px; transition:transform 0.2s; flex-shrink:0; width:16px; }
+  .disc.open .disc-arrow { transform:rotate(90deg); color:#6c63ff; }
+  .disc-name { font-size:13.5px; font-weight:600; flex:1; }
+  .disc-alias { font-size:11.5px; color:#b0adb8; font-weight:400; margin-left:6px; }
+  .disc-count { font-size:11px; color:#b0adb8; flex-shrink:0; }
+  .disc-progress { width:56px; height:4px; background:#f0eff2; border-radius:2px; flex-shrink:0; }
+  .disc-progress-fill { height:4px; border-radius:2px; }
+  .disc-pct { font-size:11px; font-weight:600; flex-shrink:0; width:32px; text-align:right; }
+  .disc-study { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600; color:#6c63ff; background:#f5f3ff; cursor:pointer; flex-shrink:0; opacity:0; transition:opacity 0.12s; border:none; font-family:inherit; }
+  .disc:hover .disc-study { opacity:1; }
+
+  /* Tópicos */
+  .disc-topics { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+  .disc.open .disc-topics { max-height:1000px; }
+
+  .topics-inner { padding:4px 18px 14px 46px; }
+  .topic { display:flex; align-items:center; padding:7px 0; gap:10px; border-bottom:1px solid #faf9fc; font-size:12.5px; }
+  .topic:last-child { border-bottom:none; }
+  .topic-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .topic-dot.done { background:#10b981; }
+  .topic-dot.partial { background:#f59e0b; }
+  .topic-dot.new { background:#e4e3e8; }
+  .topic-name { flex:1; color:#4a4658; line-height:1.4; }
+  .topic-actions { display:flex; gap:6px; opacity:0; transition:opacity 0.12s; }
+  .topic:hover .topic-actions { opacity:1; }
+  .topic-btn { font-size:10px; padding:3px 8px; border-radius:5px; border:1px solid #eae8ee; background:#fff; color:#9994a8; cursor:pointer; font-family:inherit; transition:all 0.1s; }
+  .topic-btn:hover { border-color:#6c63ff; color:#6c63ff; }
+
+  /* Resources bar */
+  .resources { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+  .res-card { background:#fff; border:1.5px solid #eae8ee; border-radius:11px; padding:14px 16px; cursor:pointer; transition:all 0.15s; text-align:center; }
+  .res-card:hover { border-color:#d4d0f0; background:#faf9fd; }
+  .res-icon { font-size:20px; margin-bottom:6px; }
+  .res-label { font-size:12px; font-weight:600; color:#1a1a1a; margin-bottom:2px; }
+  .res-count { font-size:11px; color:#b0adb8; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="rail">
+    <div class="rail-logo">P</div>
+    <div class="rail-btn">📄</div>
+    <div class="rail-btn on">📋</div>
+    <div class="rail-btn">🗂</div>
+    <div class="rail-btn">❓</div>
+    <div class="rail-btn">⚖️</div>
+    <div class="rail-btn" style="margin-top:auto">⚙️</div>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <div class="topbar-back">←</div>
+      <span class="topbar-crumb">Editais › Polícia Federal › <span>Delegado de Polícia</span></span>
+    </div>
+
+    <div class="page">
+      <!-- Header -->
+      <div class="ed-header">
+        <div class="ed-header-left">
+          <div class="ed-avatar">PF</div>
+          <div>
+            <div class="ed-title">Delegado de Polícia</div>
+            <div class="ed-subtitle">Polícia Federal · Federal · Concurso Público</div>
+          </div>
+        </div>
+        <div class="ed-actions">
+          <button class="ed-btn primary">Gerar cronograma</button>
+          <button class="ed-btn secondary">Baixar edital</button>
+          <button class="ed-btn secondary">Trocar cargo</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-val">24</div>
+          <div class="stat-card-lbl">Disciplinas</div>
+          <div class="stat-card-bar"><div class="stat-card-bar-fill" style="width:100%;background:#6c63ff;"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val">455</div>
+          <div class="stat-card-lbl">Tópicos</div>
+          <div class="stat-card-bar"><div class="stat-card-bar-fill" style="width:42%;background:#6c63ff;"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val">1.247</div>
+          <div class="stat-card-lbl">Questões disponíveis</div>
+          <div class="stat-card-bar"><div class="stat-card-bar-fill" style="width:68%;background:#10b981;"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val">8</div>
+          <div class="stat-card-lbl">Leis cobradas</div>
+          <div class="stat-card-bar"><div class="stat-card-bar-fill" style="width:30%;background:#f59e0b;"></div></div>
+        </div>
+      </div>
+
+      <!-- Progresso -->
+      <div class="progress-section">
+        <div class="progress-label">Progresso geral</div>
+        <div class="progress-track"><div class="progress-fill" style="width:42%"></div></div>
+        <div class="progress-pct">42%</div>
+        <div class="progress-detail">191 de 455 tópicos</div>
+      </div>
+
+      <!-- Recursos -->
+      <div class="resources">
+        <div class="res-card">
+          <div class="res-icon">📝</div>
+          <div class="res-label">Resumos</div>
+          <div class="res-count">12 criados</div>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">🗂</div>
+          <div class="res-label">Flashcards</div>
+          <div class="res-count">340 cards · 23 pendentes</div>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">❓</div>
+          <div class="res-label">Questões</div>
+          <div class="res-count">1.247 disponíveis · 72% acerto</div>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">⚖️</div>
+          <div class="res-label">Lei Seca</div>
+          <div class="res-count">8 leis vinculadas</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab on">Disciplinas</div>
+        <div class="tab">Provas anteriores</div>
+        <div class="tab">Edital PDF</div>
+        <div class="tab">Estatísticas</div>
+      </div>
+
+      <!-- Disciplinas -->
+      <div class="disc-list" id="discList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const disciplinas = [
+  { nome:'Língua Portuguesa', alias:null, tops:25, pct:85, color:'#10b981',
+    topicos:[
+      {n:'1. Compreensão e interpretação de textos de gêneros variados',s:'done'},
+      {n:'2. Reconhecimento de tipos e gêneros textuais',s:'done'},
+      {n:'3. Domínio da ortografia oficial',s:'done'},
+      {n:'4. Domínio dos mecanismos de coesão textual',s:'partial'},
+      {n:'4.1. Emprego de elementos de referenciação, substituição e repetição',s:'partial'},
+      {n:'5. Emprego das classes de palavras',s:'new'},
+      {n:'6. Emprego do sinal indicativo de crase',s:'new'},
+    ]},
+  { nome:'Raciocínio Lógico-matemático', alias:null, tops:25, pct:60, color:'#f59e0b',
+    topicos:[
+      {n:'1. Modelagem de situações-problema por meio de equações',s:'done'},
+      {n:'2. Noção de função',s:'done'},
+      {n:'2.1. Análise gráfica',s:'partial'},
+      {n:'2.2. Funções afim, quadrática, exponencial e logarítmica',s:'partial'},
+      {n:'3. Princípios de contagem e probabilidade',s:'new'},
+    ]},
+  { nome:'Direito Constitucional', alias:'Noções de Direito Constitucional', tops:32, pct:30, color:'#ef4444',
+    topicos:[
+      {n:'1. Constituição: conceito, classificações, princípios fundamentais',s:'done'},
+      {n:'2. Direitos e garantias fundamentais',s:'partial'},
+      {n:'2.1. Direitos e deveres individuais e coletivos',s:'partial'},
+      {n:'2.2. Direitos sociais',s:'new'},
+      {n:'3. Organização do Estado',s:'new'},
+    ]},
+  { nome:'Direito Administrativo', alias:null, tops:48, pct:15, color:'#ef4444',
+    topicos:[
+      {n:'1. Ato administrativo: conceito, requisitos, atributos',s:'partial'},
+      {n:'2. Poderes administrativos',s:'new'},
+      {n:'3. Licitações e contratos (Lei nº 14.133/2021)',s:'new'},
+      {n:'4. Serviços públicos',s:'new'},
+    ]},
+  { nome:'Direito Penal', alias:null, tops:38, pct:0, color:'#e4e3e8' },
+  { nome:'Direito Processual Penal', alias:null, tops:35, pct:0, color:'#e4e3e8' },
+  { nome:'Informática', alias:'Noções de Informática', tops:13, pct:100, color:'#10b981' },
+  { nome:'Física', alias:null, tops:9, pct:70, color:'#f59e0b' },
+  { nome:'Ética e Cidadania', alias:null, tops:18, pct:50, color:'#f59e0b' },
+  { nome:'Geopolítica', alias:null, tops:13, pct:20, color:'#ef4444' },
+  { nome:'Língua Inglesa', alias:null, tops:2, pct:100, color:'#10b981' },
+  { nome:'Língua Espanhola', alias:null, tops:2, pct:0, color:'#e4e3e8' },
+];
+
+let openDisc = 0;
+const discList = document.getElementById('discList');
+
+function renderDiscs() {
+  discList.innerHTML = '';
+  disciplinas.forEach((d, i) => {
+    const isOpen = openDisc === i;
+    const div = document.createElement('div');
+    div.className = 'disc' + (isOpen ? ' open' : '');
+
+    let topicsHtml = '';
+    if (d.topicos) {
+      d.topicos.forEach(t => {
+        topicsHtml += '<div class="topic"><div class="topic-dot ' + t.s + '"></div><div class="topic-name">' + t.n + '</div><div class="topic-actions"><button class="topic-btn">Questões</button><button class="topic-btn">Resumo</button></div></div>';
+      });
+      if (d.topicos.length < d.tops) {
+        topicsHtml += '<div class="topic" style="color:#b0adb8;font-size:11px;padding-left:17px;">+ ' + (d.tops - d.topicos.length) + ' tópicos</div>';
+      }
+    }
+
+    const aliasHtml = d.alias ? '<span class="disc-alias">(' + d.alias + ')</span>' : '';
+    const pctColor = d.pct >= 80 ? '#10b981' : d.pct >= 40 ? '#f59e0b' : d.pct > 0 ? '#ef4444' : '#c4c0ce';
+
+    div.innerHTML =
+      '<div class="disc-header" onclick="toggleDisc(' + i + ')">' +
+        '<div class="disc-arrow">›</div>' +
+        '<div class="disc-name">' + d.nome + aliasHtml + '</div>' +
+        '<div class="disc-count">' + d.tops + ' tóp</div>' +
+        '<div class="disc-progress"><div class="disc-progress-fill" style="width:' + d.pct + '%;background:' + d.color + '"></div></div>' +
+        '<div class="disc-pct" style="color:' + pctColor + '">' + d.pct + '%</div>' +
+        '<button class="disc-study" onclick="studyDisc(event,\'' + d.nome + '\')">Estudar</button>' +
+      '</div>' +
+      '<div class="disc-topics"><div class="topics-inner">' + topicsHtml + '</div></div>';
+
+    discList.appendChild(div);
+  });
+}
+
+function toggleDisc(i) {
+  openDisc = openDisc === i ? null : i;
+  renderDiscs();
+}
+
+function studyDisc(e, nome) {
+  e.stopPropagation();
+  alert('Abrindo ' + nome + ' no documents-organization...');
+}
+
+renderDiscs();
+</script>
+</body>
+</html>

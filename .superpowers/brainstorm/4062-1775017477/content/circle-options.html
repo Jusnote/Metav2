@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolinha — 6 variações</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; font-family: 'Nunito', sans-serif; padding: 40px 20px; display: flex; flex-direction: column; gap: 40px; align-items: center; }
+
+  h2 { font-size: 14px; color: #18181b; font-weight: 700; margin-bottom: -20px; }
+  .subtitle { font-size: 12px; color: #71717a; margin-bottom: -20px; }
+
+  .row {
+    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+    width: 100%; max-width: 900px;
+  }
+
+  .option {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    padding: 24px 20px; background: white; border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    cursor: pointer; transition: all 0.15s; border: 2px solid transparent;
+    min-width: 120px;
+  }
+  .option:hover { border-color: #e4e4e7; }
+  .option.sel { border-color: #7c3aed; background: #faf8ff; }
+
+  .opt-label { font-size: 11px; font-weight: 700; color: #52525b; text-align: center; }
+  .opt-desc { font-size: 10px; color: #a1a1aa; text-align: center; max-width: 100px; }
+
+  /* ── Previews (default + selected + correct + wrong) ── */
+  .preview-row { display: flex; gap: 8px; align-items: center; }
+
+  /* Base circle — current */
+  .c-base {
+    width: 24px; height: 24px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .c-sq {
+    width: 24px; height: 24px; border-radius: 7px; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .c-pill {
+    width: auto; min-width: 24px; height: 24px; border-radius: 6px; display: flex;
+    align-items: center; justify-content: center; padding: 0 8px;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .c-text {
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+    width: 20px; text-align: center;
+    transition: all 0.15s;
+  }
+  .c-dot-wrap {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .c-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .c-underline {
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+    width: 20px; text-align: center;
+    padding-bottom: 2px;
+    transition: all 0.15s;
+  }
+
+  /* States */
+  .st-def { background: #f4f4f5; color: #71717a; }
+  .st-sel { background: #18181b; color: white; box-shadow: 0 0 0 3px rgba(24,24,27,0.08); }
+  .st-ok { background: #22c55e; color: white; }
+  .st-err { background: #ef4444; color: white; }
+  .st-dim { background: #f4f4f5; color: #c4c4c4; }
+
+  .sq-def { background: #f4f4f5; color: #71717a; }
+  .sq-sel { background: #18181b; color: white; box-shadow: 0 0 0 3px rgba(24,24,27,0.08); }
+  .sq-ok { background: #22c55e; color: white; }
+  .sq-err { background: #ef4444; color: white; }
+
+  .pill-def { background: #f4f4f5; color: #71717a; }
+  .pill-sel { background: #18181b; color: white; }
+  .pill-ok { background: #dcfce7; color: #166534; }
+  .pill-err { background: #fef2f2; color: #991b1b; }
+
+  .txt-def { color: #c4c4c4; }
+  .txt-sel { color: #7c3aed; }
+  .txt-ok { color: #22c55e; }
+  .txt-err { color: #ef4444; }
+
+  .dot-def { background: #d4d4d8; }
+  .dot-sel { background: #7c3aed; }
+  .dot-ok { background: #22c55e; }
+  .dot-err { background: #ef4444; }
+
+  .ul-def { color: #c4c4c4; border-bottom: 2px solid transparent; }
+  .ul-sel { color: #7c3aed; border-bottom: 2px solid #7c3aed; }
+  .ul-ok { color: #22c55e; border-bottom: 2px solid #22c55e; }
+  .ul-err { color: #ef4444; border-bottom: 2px solid #ef4444; }
+
+  .state-label { font-size: 9px; color: #a1a1aa; width: 56px; text-align: right; }
+
+  /* ── Full alternative preview ── */
+  .full-preview {
+    width: 100%; max-width: 700px; background: white; border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden;
+  }
+  .fp-title {
+    padding: 12px 24px; border-bottom: 1px solid #f4f4f5;
+    font-size: 11px; font-weight: 700; color: #7c3aed; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .fp-alts { padding: 8px 24px 16px; }
+  .fp-alt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .fp-alt:hover { background: #faf8ff; }
+  .fp-alt.sel { background: #f5f3ff; }
+  .fp-text { font-size: 14px; line-height: 1.7; color: #374151; padding-top: 1px; }
+  .fp-alt.sel .fp-text { color: #1a1a1a; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<h2>A bolinha — qual formato?</h2>
+<p class="subtitle">Cada opção nos 4 estados: padrão, selecionada, correta, errada</p>
+
+<div class="row">
+  <!-- 1. Current circle -->
+  <div class="option" onclick="selectOpt(this, 'circle')">
+    <div class="opt-label">Atual (círculo)</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="preview-row"><span class="state-label">padrão</span><span class="c-base st-def">A</span></div>
+      <div class="preview-row"><span class="state-label">seleção</span><span class="c-base st-sel">A</span></div>
+      <div class="preview-row"><span class="state-label">correto</span><span class="c-base st-ok">✓</span></div>
+      <div class="preview-row"><span class="state-label">errado</span><span class="c-base st-err">✗</span></div>
+    </div>
+    <div class="opt-desc">24px, borda arredondada total</div>
+  </div>
+
+  <!-- 2. Rounded square -->
+  <div class="option" onclick="selectOpt(this, 'square')">
+    <div class="opt-label">Rounded square</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="preview-row"><span class="state-label">padrão</span><span class="c-sq sq-def">A</span></div>
+      <div class="preview-row"><span class="state-label">seleção</span><span class="c-sq sq-sel">A</span></div>
+      <div class="preview-row"><span class="state-label">correto</span><span class="c-sq sq-ok">✓</span></div>
+      <div class="preview-row"><span class="state-label">errado</span><span class="c-sq sq-err">✗</span></div>
+    </div>
+    <div class="opt-desc">24px, radius 7px, mais moderno</div>
+  </div>
+
+  <!-- 3. Pill -->
+  <div class="option" onclick="selectOpt(this, 'pill')">
+    <div class="opt-label">Pill badge</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="preview-row"><span class="state-label">padrão</span><span class="c-pill pill-def">A</span></div>
+      <div class="preview-row"><span class="state-label">seleção</span><span class="c-pill pill-sel">A</span></div>
+      <div class="preview-row"><span class="state-label">correto</span><span class="c-pill pill-ok">✓ A</span></div>
+      <div class="preview-row"><span class="state-label">errado</span><span class="c-pill pill-err">✗ A</span></div>
+    </div>
+    <div class="opt-desc">Expande no resultado pra caber ícone + letra</div>
+  </div>
+
+  <!-- 4. Solo text -->
+  <div class="option" onclick="selectOpt(this, 'text')">
+    <div class="opt-label">Só texto</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="preview-row"><span class="state-label">padrão</span><span class="c-text txt-def">A</span></div>
+      <div class="preview-row"><span class="state-label">seleção</span><span class="c-text txt-sel">A</span></div>
+      <div class="preview-row"><span class="state-label">correto</span><span class="c-text txt-ok">A</span></div>
+      <div class="preview-row"><span class="state-label">errado</span><span class="c-text txt-err">A</span></div>
+    </div>
+    <div class="opt-desc">Sem fundo, só cor muda. Mínimo absoluto.</div>
+  </div>
+
+  <!-- 5. Dot + text -->
+  <div class="option" onclick="selectOpt(this, 'dot')">
+    <div class="opt-label">Dot + texto</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="preview-row"><span class="state-label">padrão</span><div class="c-dot-wrap"><span class="c-dot dot-def"></span><span class="c-text txt-def" style="width:auto;">A</span></div></div>
+      <div class="preview-row"><span class="state-label">seleção</span><div class="c-dot-wrap"><span class="c-dot dot-sel"></span><span class="c-text txt-sel" style="width:auto;">A</span></div></div>
+      <div class="preview-row"><span class="state-label">correto</span><div class="c-dot-wrap"><span class="c-dot dot-ok"></span><span class="c-text txt-ok" style="width:auto;">A</span></div></div>
+      <div class="preview-row"><span class="state-label">errado</span><div class="c-dot-wrap"><span class="c-dot dot-err"></span><span class="c-text txt-err" style="width:auto;">A</span></div></div>
+    </div>
+    <div class="opt-desc">Dot 6px indica estado, letra acompanha</div>
+  </div>
+
+  <!-- 6. Underline -->
+  <div class="option" onclick="selectOpt(this, 'underline')">
+    <div class="opt-label">Underline</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="preview-row"><span class="state-label">padrão</span><span class="c-underline ul-def">A</span></div>
+      <div class="preview-row"><span class="state-label">seleção</span><span class="c-underline ul-sel">A</span></div>
+      <div class="preview-row"><span class="state-label">correto</span><span class="c-underline ul-ok">A</span></div>
+      <div class="preview-row"><span class="state-label">errado</span><span class="c-underline ul-err">A</span></div>
+    </div>
+    <div class="opt-desc">Linha embaixo aparece ao selecionar</div>
+  </div>
+</div>
+
+<!-- ═══════ Full context previews ═══════ -->
+
+<h2 style="margin-top:16px;">Em contexto — antes de responder</h2>
+
+<!-- Preview: Rounded square -->
+<div class="full-preview" id="preview-square">
+  <div class="fp-title">Rounded Square — em contexto</div>
+  <div class="fp-alts">
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-sq').className='c-sq sq-def'});this.classList.add('sel');this.querySelector('.c-sq').className='c-sq sq-sel'">
+      <span class="c-sq sq-def">A</span>
+      <span class="fp-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-sq').className='c-sq sq-def'});this.classList.add('sel');this.querySelector('.c-sq').className='c-sq sq-sel'">
+      <span class="c-sq sq-def">B</span>
+      <span class="fp-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse pessoal.</span>
+    </div>
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-sq').className='c-sq sq-def'});this.classList.add('sel');this.querySelector('.c-sq').className='c-sq sq-sel'">
+      <span class="c-sq sq-def">C</span>
+      <span class="fp-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+  </div>
+</div>
+
+<!-- Preview: Solo text -->
+<div class="full-preview" id="preview-text">
+  <div class="fp-title">Só Texto — em contexto</div>
+  <div class="fp-alts">
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-text').className='c-text txt-def'});this.classList.add('sel');this.querySelector('.c-text').className='c-text txt-sel'">
+      <span class="c-text txt-def">A</span>
+      <span class="fp-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-text').className='c-text txt-def'});this.classList.add('sel');this.querySelector('.c-text').className='c-text txt-sel'">
+      <span class="c-text txt-def">B</span>
+      <span class="fp-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse pessoal.</span>
+    </div>
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-text').className='c-text txt-def'});this.classList.add('sel');this.querySelector('.c-text').className='c-text txt-sel'">
+      <span class="c-text txt-def">C</span>
+      <span class="fp-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+  </div>
+</div>
+
+<!-- Preview: Dot + text -->
+<div class="full-preview" id="preview-dot">
+  <div class="fp-title">Dot + Texto — em contexto</div>
+  <div class="fp-alts">
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-dot').className='c-dot dot-def';a.querySelector('.lt').className='lt c-text txt-def'});this.classList.add('sel');this.querySelector('.c-dot').className='c-dot dot-sel';this.querySelector('.lt').className='lt c-text txt-sel'">
+      <div class="c-dot-wrap"><span class="c-dot dot-def"></span><span class="lt c-text txt-def" style="width:auto;">A</span></div>
+      <span class="fp-text">Peculato admite forma culposa, prevista expressamente no §2º do art. 312 do Código Penal.</span>
+    </div>
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-dot').className='c-dot dot-def';a.querySelector('.lt').className='lt c-text txt-def'});this.classList.add('sel');this.querySelector('.c-dot').className='c-dot dot-sel';this.querySelector('.lt').className='lt c-text txt-sel'">
+      <div class="c-dot-wrap"><span class="c-dot dot-def"></span><span class="lt c-text txt-def" style="width:auto;">B</span></div>
+      <span class="fp-text">Prevaricação exige dolo específico consistente no objetivo de satisfazer interesse pessoal.</span>
+    </div>
+    <div class="fp-alt" onclick="this.parentElement.querySelectorAll('.fp-alt').forEach(a=>{a.classList.remove('sel');a.querySelector('.c-dot').className='c-dot dot-def';a.querySelector('.lt').className='lt c-text txt-def'});this.classList.add('sel');this.querySelector('.c-dot').className='c-dot dot-sel';this.querySelector('.lt').className='lt c-text txt-sel'">
+      <div class="c-dot-wrap"><span class="c-dot dot-def"></span><span class="lt c-text txt-def" style="width:auto;">C</span></div>
+      <span class="fp-text">Concussão é crime formal que se consuma com a mera exigência da vantagem indevida.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+function selectOpt(el, type) {
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+</script>
+</body>
+</html>

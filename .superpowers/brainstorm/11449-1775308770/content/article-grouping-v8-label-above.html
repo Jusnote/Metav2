@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art. como Label Acima — Variações</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500&family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #ffffff;
+    color: rgb(67, 80, 92);
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    background: #fff; border-bottom: 1px solid #eee;
+    padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .toolbar-left div:first-child { font-size: 13px; font-weight: 600; color: #2a2a2a; }
+  .toolbar-left div:last-child { font-size: 11px; color: #aaa; }
+  .toolbar-right { display: flex; gap: 8px; }
+  .toolbar-btn { font-size: 11px; padding: 4px 10px; border-radius: 5px; border: 1px solid #e0e0e0; background: #fafafa; color: #888; cursor: pointer; }
+
+  .lei-container {
+    max-width: 1024px; margin: 0 auto; padding: 24px 20px 80px;
+    font-family: 'Literata', Georgia, serif; line-height: 1.9; text-align: justify;
+  }
+
+  .estrutura {
+    text-align: center; font-family: 'DM Sans', sans-serif; font-size: 12px;
+    font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #aaa;
+    padding: 20px 0 10px; margin-bottom: 8px; border-bottom: 1px solid #eee;
+  }
+
+  .art-block {
+    padding: 12px 16px; border-radius: 8px;
+    transition: background 0.2s ease; margin-bottom: 4px;
+  }
+  .art-block:hover { background: rgba(0, 0, 0, 0.014); }
+
+  .caput { font-size: 15px; color: rgb(67, 80, 92); margin-bottom: 3px; }
+
+  .filho {
+    font-size: 13px; color: rgb(85, 96, 107); margin-bottom: 2px; position: relative;
+  }
+
+  .paragrafo { padding-left: 34px; }
+  .inciso    { padding-left: 58px; }
+  .alinea    { padding-left: 82px; }
+
+  .chevron { position: absolute; color: #d8d8d8; font-size: 12px; user-select: none; }
+  .paragrafo .chevron { left: 16px; }
+  .inciso .chevron    { left: 40px; }
+  .alinea .chevron    { left: 64px; }
+
+  .anotacao { font-size: 12px; color: #bbb; font-style: italic; margin-left: 4px; }
+  .revogado { text-decoration: line-through; color: #ccc; }
+
+  /* ═══ LABEL VARIANTS ═══ */
+
+  /* A: Label pequeno, sans-serif, uppercase, cor suave */
+  .art-label-a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #b8b0a6;
+    margin-bottom: 2px;
+  }
+
+  /* B: Label serif, peso medium, cor do texto mas menor */
+  .art-label-b {
+    font-family: 'Literata', serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a09890;
+    margin-bottom: 2px;
+  }
+
+  /* C: Label sans-serif com pill sutil */
+  .art-label-c {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #a8a098;
+    background: rgba(0,0,0,0.03);
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+
+  /* D: Label sans-serif minimalista, só o número em destaque */
+  .art-label-d {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #c0b8ae;
+    margin-bottom: 2px;
+  }
+
+  /* ─── Selector ─── */
+  .selector {
+    position: fixed; top: 56px; right: 16px; z-index: 20;
+    display: flex; flex-direction: column; gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sel-btn {
+    padding: 8px 14px; border-radius: 8px; border: 2px solid #e0e0e0;
+    background: #fff; font-size: 11px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.06); text-align: left;
+  }
+  .sel-btn:hover { border-color: #ccc; }
+  .sel-btn.active { border-color: #4a7c59; background: #f0f7f2; }
+  .sel-label { font-size: 10px; color: #999; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div>Código Civil — Lei 10.406/2002</div>
+    <div>Livro I — Das Pessoas</div>
+  </div>
+  <div class="toolbar-right">
+    <button class="toolbar-btn">Aa−</button>
+    <button class="toolbar-btn">Aa+</button>
+    <button class="toolbar-btn">Lei Seca</button>
+  </div>
+</div>
+
+<div class="selector">
+  <div class="sel-label">Estilo do label</div>
+  <button class="sel-btn active" onclick="setLabel('a')">A — Sans uppercase</button>
+  <button class="sel-btn" onclick="setLabel('b')">B — Serif medium</button>
+  <button class="sel-btn" onclick="setLabel('c')">C — Sans + pill</button>
+  <button class="sel-btn" onclick="setLabel('d')">D — Sans leve</button>
+</div>
+
+<div class="lei-container">
+
+  <div class="estrutura">Título I — Das Pessoas Naturais</div>
+  <div class="estrutura" style="border-bottom:none;padding-top:4px;margin-bottom:16px;">Capítulo I — Da Personalidade e Da Capacidade</div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 1º</div>
+    <div class="caput">Toda pessoa é capaz de direitos e deveres na ordem civil.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 2º</div>
+    <div class="caput">A personalidade civil da pessoa começa do nascimento com vida; mas a lei põe a salvo, desde a concepção, os direitos do nascituro.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 3º</div>
+    <div class="caput">São absolutamente incapazes de exercer pessoalmente os atos da vida civil os menores de 16 (dezesseis) anos. <span class="anotacao">(Redação dada pela Lei nº 13.146, de 2015)</span></div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 4º</div>
+    <div class="caput">São incapazes, relativamente a certos atos ou à maneira de os exercer: <span class="anotacao">(Redação dada pela Lei nº 13.146, de 2015)</span></div>
+    <div class="filho inciso"><span class="chevron">›</span>I – os maiores de dezesseis e menores de dezoito anos;</div>
+    <div class="filho inciso"><span class="chevron">›</span>II – os ébrios habituais e os viciados em tóxico;</div>
+    <div class="filho inciso"><span class="chevron">›</span>III – aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;</div>
+    <div class="filho inciso revogado"><span class="chevron">›</span>IV – (Revogado);</div>
+    <div class="filho paragrafo"><span class="chevron">›</span>Parágrafo único. A capacidade dos indígenas será regulada por legislação especial.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 5º</div>
+    <div class="caput">A menoridade cessa aos dezoito anos completos, quando a pessoa fica habilitada à prática de todos os atos da vida civil.</div>
+    <div class="filho paragrafo"><span class="chevron">›</span>Parágrafo único. Cessará, para os menores, a incapacidade:</div>
+    <div class="filho inciso"><span class="chevron">›</span>I – pela concessão dos pais, ou de um deles na falta do outro, mediante instrumento público, independentemente de homologação judicial, ou por sentença do juiz, ouvido o tutor, se o menor tiver dezesseis anos completos;</div>
+    <div class="filho inciso"><span class="chevron">›</span>II – pelo casamento;</div>
+    <div class="filho inciso"><span class="chevron">›</span>III – pelo exercício de emprego público efetivo;</div>
+    <div class="filho inciso"><span class="chevron">›</span>IV – pela colação de grau em curso de ensino superior;</div>
+    <div class="filho inciso"><span class="chevron">›</span>V – pelo estabelecimento civil ou comercial, ou pela existência de relação de emprego, desde que, em função deles, o menor com dezesseis anos completos tenha economia própria.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 6º</div>
+    <div class="caput">A existência da pessoa natural termina com a morte; presume-se esta, quanto aos ausentes, nos casos em que a lei autoriza a abertura de sucessão definitiva.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 7º</div>
+    <div class="caput">Pode ser declarada a morte presumida, sem decretação de ausência:</div>
+    <div class="filho inciso"><span class="chevron">›</span>I – se for extremamente provável a morte de quem estava em perigo de vida;</div>
+    <div class="filho inciso"><span class="chevron">›</span>II – se alguém, desaparecido em campanha ou feito prisioneiro, não for encontrado até dois anos após o término da guerra.</div>
+    <div class="filho paragrafo"><span class="chevron">›</span>Parágrafo único. A declaração da morte presumida, nesses casos, somente poderá ser requerida depois de esgotadas as buscas e averiguações, devendo a sentença fixar a data provável do falecimento.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 8º</div>
+    <div class="caput">Se dois ou mais indivíduos falecerem na mesma ocasião, não se podendo averiguar se algum dos comorientes precedeu aos outros, presumir-se-ão simultaneamente mortos.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 9º</div>
+    <div class="caput">Serão registrados em registro público:</div>
+    <div class="filho inciso"><span class="chevron">›</span>I – os nascimentos, casamentos e óbitos;</div>
+    <div class="filho inciso"><span class="chevron">›</span>II – a emancipação por outorga dos pais ou por sentença do juiz;</div>
+    <div class="filho inciso"><span class="chevron">›</span>III – a interdição por incapacidade absoluta ou relativa;</div>
+    <div class="filho inciso"><span class="chevron">›</span>IV – a sentença declaratória de ausência e de morte presumida.</div>
+  </div>
+
+  <div class="art-block">
+    <div class="art-label art-label-a">Art. 10.</div>
+    <div class="caput">Far-se-á averbação em registro público:</div>
+    <div class="filho inciso"><span class="chevron">›</span>I – das sentenças que decretarem a nulidade ou anulação do casamento, o divórcio, a separação judicial e o restabelecimento da sociedade conjugal;</div>
+    <div class="filho inciso"><span class="chevron">›</span>II – dos atos judiciais ou extrajudiciais que declararem ou reconhecerem a filiação;</div>
+    <div class="filho inciso"><span class="chevron">›</span>III – dos atos judiciais ou extrajudiciais de adoção.</div>
+  </div>
+
+</div>
+
+<script>
+function setLabel(variant) {
+  document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const classMap = { a: 'art-label-a', b: 'art-label-b', c: 'art-label-c', d: 'art-label-d' };
+  document.querySelectorAll('.art-label').forEach(l => {
+    l.classList.remove('art-label-a', 'art-label-b', 'art-label-c', 'art-label-d');
+    l.classList.add(classMap[variant]);
+  });
+  fetch('/event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'click', choice: variant, text: 'Label ' + variant.toUpperCase(), timestamp: Date.now() })
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

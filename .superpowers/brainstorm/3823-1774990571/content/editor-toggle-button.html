@@ -1,0 +1,220 @@
+<h2>Editor: botão toggle — sem gestos ambíguos</h2>
+<p class="subtitle">Um botão explícito alterna entre editor (70%) e questão (30%). Sem drag, sem conflito.</p>
+
+<div class="cards">
+  <!-- State 1: Editor focused -->
+  <div class="card" data-choice="editor-mode" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:12px;font-family:system-ui;font-size:12px;">
+        <div style="text-align:center;font-size:10px;color:#7c3aed;font-weight:600;margin-bottom:8px;">Estado 1: Escrevendo</div>
+        <div style="position:relative;background:white;border-radius:16px;border:2px solid #27272a;overflow:hidden;max-width:270px;margin:0 auto;height:500px;">
+          <!-- Status bar -->
+          <div style="background:#27272a;padding:4px 12px;display:flex;justify-content:space-between;">
+            <span style="font-size:8px;color:white;">9:41</span>
+            <span style="font-size:8px;color:white;">📶 🔋</span>
+          </div>
+
+          <!-- Question peek (dimmed, not interactive) -->
+          <div style="height:18%;padding:8px 12px;background:#fafafa;overflow:hidden;opacity:0.5;">
+            <div style="font-size:9px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+            <div style="font-size:8px;color:#a1a1aa;">CESPE · 2024 · #12345</div>
+            <div style="font-size:9px;color:#52525b;margin-top:4px;line-height:1.4;">A respeito dos crimes contra a administração pública previstos no CP, julgue...</div>
+          </div>
+
+          <!-- Sheet -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:82%;background:white;border-radius:14px 14px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);display:flex;flex-direction:column;">
+            <!-- Header with toggle button -->
+            <div style="padding:8px 12px;border-bottom:1px solid #f4f4f5;display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <button style="display:flex;align-items:center;gap:4px;padding:5px 10px;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:6px;font-size:9px;color:#52525b;font-weight:600;cursor:pointer;">
+                  👁 Ver questão
+                </button>
+                <div style="font-size:9px;color:#a1a1aa;">Questão #12345</div>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <div style="font-size:10px;color:#a1a1aa;cursor:pointer;">✕</div>
+                <div style="background:#7c3aed;color:white;font-size:9px;padding:5px 12px;border-radius:6px;font-weight:600;">Publicar</div>
+              </div>
+            </div>
+
+            <!-- Editor area -->
+            <div style="flex:1;padding:10px 14px;overflow-y:auto;">
+              <div style="font-size:11px;color:#27272a;line-height:1.7;">Na verdade, o peculato admite sim a forma culposa, conforme art. 312 §2º do CP.
+
+A questão está correta porque o legislador previu expressamente essa modalidade no parágrafo segundo.<span style="display:inline-block;width:2px;height:13px;background:#7c3aed;margin-left:1px;"></span></div>
+            </div>
+
+            <!-- Toolbar -->
+            <div style="border-top:1px solid #e4e4e7;padding:6px 8px;display:flex;gap:3px;background:#fafafa;">
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;">B</div>
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-style:italic;">I</div>
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">U̲</div>
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">≡</div>
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">📎</div>
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">🔗</div>
+              <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">···</div>
+            </div>
+
+            <!-- Keyboard -->
+            <div style="background:#d4d4d8;height:44px;display:flex;align-items:center;justify-content:center;">
+              <div style="font-size:8px;color:#71717a;">⌨ Teclado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>✏️ Modo escrita</h3>
+      <p>Editor ocupa 82%. Questão aparece como preview opaco no topo (não interativa). Botão "👁 Ver questão" no header.</p>
+    </div>
+  </div>
+
+  <!-- State 2: Question focused -->
+  <div class="card" data-choice="question-mode" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:12px;font-family:system-ui;font-size:12px;">
+        <div style="text-align:center;font-size:10px;color:#f59e0b;font-weight:600;margin-bottom:8px;">Estado 2: Lendo questão</div>
+        <div style="position:relative;background:white;border-radius:16px;border:2px solid #27272a;overflow:hidden;max-width:270px;margin:0 auto;height:500px;">
+          <!-- Status bar -->
+          <div style="background:#27272a;padding:4px 12px;display:flex;justify-content:space-between;">
+            <span style="font-size:8px;color:white;">9:41</span>
+            <span style="font-size:8px;color:white;">📶 🔋</span>
+          </div>
+
+          <!-- Question fully visible and scrollable -->
+          <div style="height:70%;padding:10px 12px;background:white;overflow-y:auto;">
+            <div style="font-size:9px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+            <div style="font-size:8px;color:#a1a1aa;margin-top:2px;">CESPE · 2024 · Questão #12345</div>
+            <div style="font-size:10px;color:#27272a;margin-top:8px;line-height:1.6;">A respeito dos crimes contra a administração pública previstos no Código Penal, julgue o item que se segue.</div>
+
+            <!-- Alternatives -->
+            <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
+              <div style="padding:7px 8px;border:1px solid #22c55e;background:#f0fdf4;border-radius:6px;font-size:9px;display:flex;gap:4px;">
+                <span style="font-weight:700;color:#22c55e;">A ✓</span> Peculato admite forma culposa.
+              </div>
+              <div style="padding:7px 8px;border:1px solid #ef4444;background:#fef2f2;border-radius:6px;font-size:9px;display:flex;gap:4px;">
+                <span style="font-weight:700;color:#ef4444;">B ✗</span> Prevaricação exige dolo específico.
+              </div>
+              <div style="padding:7px 8px;border:1px solid #e4e4e7;border-radius:6px;font-size:9px;display:flex;gap:4px;">
+                <span style="font-weight:700;color:#71717a;">C</span> Concussão é crime formal.
+              </div>
+              <div style="padding:7px 8px;border:1px solid #e4e4e7;border-radius:6px;font-size:9px;display:flex;gap:4px;">
+                <span style="font-weight:700;color:#71717a;">D</span> Corrupção passiva exige vantagem.
+              </div>
+            </div>
+
+            <!-- Comments section -->
+            <div style="margin-top:10px;padding-top:8px;border-top:1px solid #f4f4f5;">
+              <div style="font-size:9px;font-weight:600;color:#52525b;margin-bottom:6px;">💬 3 comentários</div>
+              <div style="padding:6px 8px;background:#fafafa;border-radius:6px;margin-bottom:4px;">
+                <div style="font-size:8px;color:#7c3aed;font-weight:600;">João Silva · 2h</div>
+                <div style="font-size:9px;color:#52525b;margin-top:2px;line-height:1.4;">Art. 312 §2º é claro sobre a modalidade culposa do peculato.</div>
+              </div>
+              <div style="padding:6px 8px;background:#fafafa;border-radius:6px;margin-bottom:4px;">
+                <div style="font-size:8px;color:#7c3aed;font-weight:600;">Maria Santos · 1h</div>
+                <div style="font-size:9px;color:#52525b;margin-top:2px;line-height:1.4;">Exato. E o §3º trata da reparação do dano antes do recebimento da denúncia.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Editor minimized at bottom -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:30%;background:white;border-radius:14px 14px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);display:flex;flex-direction:column;">
+            <!-- Header with toggle -->
+            <div style="padding:8px 12px;border-bottom:1px solid #f4f4f5;display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <button style="display:flex;align-items:center;gap:4px;padding:5px 10px;background:#7c3aed;border:none;border-radius:6px;font-size:9px;color:white;font-weight:600;cursor:pointer;">
+                  ✏️ Voltar ao editor
+                </button>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <div style="font-size:10px;color:#a1a1aa;cursor:pointer;">✕</div>
+                <div style="background:#7c3aed;color:white;font-size:9px;padding:5px 12px;border-radius:6px;font-weight:600;">Publicar</div>
+              </div>
+            </div>
+
+            <!-- Draft preview -->
+            <div style="flex:1;padding:8px 14px;overflow:hidden;">
+              <div style="font-size:9px;color:#a1a1aa;margin-bottom:4px;">Seu rascunho:</div>
+              <div style="font-size:9px;color:#52525b;line-height:1.5;opacity:0.7;">Na verdade, o peculato admite sim a forma culposa, conforme art. 312 §2º do CP. A questão está correta porque o legislador previu expressamente...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>👁 Modo leitura</h3>
+      <p>Questão + alternativas + comentários visíveis e scrolláveis. Editor minimiza pra 30% com preview do draft. Botão "✏️ Voltar ao editor" pra retomar.</p>
+    </div>
+  </div>
+
+  <!-- Tablet stays same -->
+  <div class="card" data-choice="tablet" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:12px;font-family:system-ui;font-size:12px;">
+        <div style="text-align:center;font-size:10px;color:#22c55e;font-weight:600;margin-bottom:8px;">Tablet — não precisa de toggle</div>
+        <div style="position:relative;background:white;border-radius:12px;border:2px solid #27272a;overflow:hidden;max-width:480px;margin:0 auto;height:280px;display:flex;">
+          <!-- Left: question -->
+          <div style="flex:1;border-right:1px solid #e4e4e7;overflow:hidden;display:flex;flex-direction:column;">
+            <div style="padding:8px 10px;border-bottom:1px solid #f4f4f5;background:#fafafa;">
+              <div style="font-size:9px;color:#7c3aed;font-weight:600;">Direito Penal | Crimes contra AP</div>
+              <div style="font-size:8px;color:#a1a1aa;">CESPE · 2024</div>
+            </div>
+            <div style="flex:1;overflow:auto;padding:8px 10px;">
+              <div style="font-size:9px;color:#27272a;line-height:1.5;">A respeito dos crimes contra a administração pública...</div>
+              <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+                <div style="padding:4px 6px;border:1px solid #22c55e;background:#f0fdf4;border-radius:4px;font-size:8px;">✓ Peculato admite forma culposa.</div>
+                <div style="padding:4px 6px;border:1px solid #e4e4e7;border-radius:4px;font-size:8px;">B Prevaricação exige dolo específico.</div>
+              </div>
+              <div style="margin-top:6px;padding-top:4px;border-top:1px solid #f4f4f5;font-size:8px;color:#52525b;">
+                <div style="font-weight:600;">💬 Comentários</div>
+                <div style="background:#fafafa;padding:4px 6px;border-radius:4px;margin-top:3px;font-size:8px;">João: Art. 312 §2º...</div>
+              </div>
+            </div>
+          </div>
+          <!-- Right: editor -->
+          <div style="width:50%;display:flex;flex-direction:column;">
+            <div style="padding:8px 10px;border-bottom:1px solid #f4f4f5;display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:9px;font-weight:600;color:#27272a;">Novo comentário</div>
+              <div style="background:#7c3aed;color:white;font-size:8px;padding:4px 8px;border-radius:4px;font-weight:600;">Publicar</div>
+            </div>
+            <div style="flex:1;padding:8px 10px;">
+              <div style="font-size:9px;color:#27272a;line-height:1.6;">Na verdade, o peculato admite sim a forma culposa...<span style="display:inline-block;width:1px;height:10px;background:#7c3aed;"></span></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:6px;font-size:9px;color:#22c55e;">Tudo visível lado a lado — sem toggle necessário</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>📱 Tablet — Split (sem mudança)</h3>
+      <p>No tablet, questão + editor são visíveis ao mesmo tempo. O botão toggle não aparece.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <h3>Fluxo no celular</h3>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#52525b;">
+    <span style="background:#ede9fe;padding:4px 10px;border-radius:6px;font-weight:600;color:#7c3aed;">Toca 💬</span>
+    <span>→</span>
+    <span style="background:#f4f4f5;padding:4px 10px;border-radius:6px;">Sheet abre 82%</span>
+    <span>→</span>
+    <span style="background:#f4f4f5;padding:4px 10px;border-radius:6px;">Escreve...</span>
+    <span>→</span>
+    <span style="background:#fef3c7;padding:4px 10px;border-radius:6px;font-weight:600;color:#92400e;">Toca "👁 Ver questão"</span>
+    <span>→</span>
+    <span style="background:#f4f4f5;padding:4px 10px;border-radius:6px;">Sheet anima pra 30%</span>
+    <span>→</span>
+    <span style="background:#f4f4f5;padding:4px 10px;border-radius:6px;">Lê, scrolla questão</span>
+    <span>→</span>
+    <span style="background:#ede9fe;padding:4px 10px;border-radius:6px;font-weight:600;color:#7c3aed;">Toca "✏️ Voltar"</span>
+    <span>→</span>
+    <span style="background:#f4f4f5;padding:4px 10px;border-radius:6px;">Sheet volta 82%</span>
+    <span>→</span>
+    <span style="background:#f4f4f5;padding:4px 10px;border-radius:6px;">Continua escrevendo</span>
+  </div>
+</div>
+
+<div class="section" style="margin-top:12px;padding:12px 16px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;">
+  <p style="font-size:13px;color:#166534;margin:0;"><strong>Zero ambiguidade:</strong> botão explícito, sem gestos, sem conflito com seleção de texto, sem área "morta". A questão no modo leitura é totalmente scrollável e interativa.</p>
+</div>

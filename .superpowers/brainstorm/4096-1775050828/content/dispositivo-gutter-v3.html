@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispositivo — elegante</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f7f7f6; font-family: 'Literata', Georgia, serif; padding: 48px 20px; display: flex; flex-direction: column; gap: 56px; align-items: center; }
+
+  .tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600; color: #999;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: -32px;
+  }
+
+  .page {
+    width: 100%; max-width: 1024px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    padding: 40px 48px;
+  }
+
+  .section-header {
+    text-align: center; padding: 0 0 24px;
+    font-size: 11px; font-weight: 600; color: #b8b8b8;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── Dispositivo ── */
+  .disp {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    padding: 6px 0;
+    line-height: 1.95;
+    font-size: 16px;
+    color: #43505c;
+    transition: background 0.12s;
+    border-radius: 8px;
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .disp:hover { background: #fafaf9; }
+
+  .disp-text { flex: 1; min-width: 0; text-align: justify; }
+  .disp-num { font-weight: 600; color: #2d3740; }
+  .disp-indent .disp-text { padding-left: 28px; }
+  .disp-indent-2 .disp-text { padding-left: 52px; }
+  .highlight { background: rgba(250, 204, 21, 0.15); border-radius: 2px; padding: 0 2px; }
+
+  /* ── Gutter ── */
+  .disp-gutter {
+    width: 52px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 4px; padding-top: 8px;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .disp:hover .disp-gutter { opacity: 1; }
+  @media (max-width: 768px) {
+    .disp-gutter { opacity: 0.35; }
+    .disp:hover .disp-gutter { opacity: 1; }
+  }
+
+  .g-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 7px; border: none; background: transparent;
+    color: #ccc; cursor: pointer;
+    transition: all 0.15s; position: relative;
+  }
+  .g-btn:hover { background: #f0f0ef; color: #888; }
+
+  .g-react:hover { color: #dc7c7c; }
+  .g-react.liked { color: #e8554a; opacity: 1 !important; }
+  .g-more:hover { color: #888; }
+  .g-more.open { background: #f0f0ef; color: #555; }
+
+  /* ── Reaction picker — floating pill ── */
+  .picker {
+    position: absolute; right: 30px; top: 50%; transform: translateY(-50%);
+    display: flex; gap: 0;
+    background: white; border: 1px solid #eee;
+    border-radius: 24px; padding: 3px 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.03);
+    z-index: 10;
+    animation: pickerPop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pickerPop {
+    from { opacity: 0; transform: translateY(-50%) scale(0.85); }
+    to { opacity: 1; transform: translateY(-50%) scale(1); }
+  }
+
+  .picker button {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent;
+    border-radius: 20px; cursor: pointer;
+    font-size: 17px; transition: all 0.12s;
+  }
+  .picker button:hover {
+    background: #f8f8f7;
+    transform: scale(1.25);
+  }
+
+  /* ── Reaction badges ── */
+  .badges {
+    display: inline-flex; gap: 3px; margin-left: 10px; vertical-align: middle;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 7px 2px 5px; border-radius: 12px;
+    background: #f8f8f7; border: 1px solid #f0efed;
+    font-size: 13px; cursor: default;
+    transition: all 0.12s;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+  }
+  .badge .n { font-size: 10px; color: #aaa; font-weight: 600; }
+  .badge:hover { border-color: #e4e3e0; background: #f3f2f0; }
+
+  /* ── Footer ── */
+  .foot {
+    display: flex; align-items: center; gap: 0;
+    padding: 8px 0 6px;
+    animation: slideDown 0.18s ease-out;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .foot-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 7px;
+    border: none; background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px; font-weight: 500; color: #b0b0b0;
+    cursor: pointer; transition: all 0.12s;
+    letter-spacing: 0.01em;
+  }
+  .foot-btn:hover { background: #f5f5f4; color: #555; }
+  .foot-btn svg { opacity: 0.5; transition: opacity 0.12s; }
+  .foot-btn:hover svg { opacity: 0.8; }
+  .foot-sep { width: 1px; height: 14px; background: #eee; margin: 0 2px; }
+
+  /* ── Thin divider between artigos ── */
+  .art-gap { height: 1px; background: #f4f3f1; margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<div class="tag">Interativo — hover pra ver ícones, clica pra testar</div>
+
+<div class="page">
+  <div class="section-header">Capítulo I — Dos crimes praticados por funcionário público</div>
+
+  <div class="disp" id="d1">
+    <div class="disp-text">
+      <span class="disp-num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio:
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp disp-indent">
+    <div class="disp-text">
+      Pena — reclusão, de dois a doze anos, e multa.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp disp-indent">
+    <div class="disp-text">
+      § 1º — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai, ou concorre para que seja subtraído, em proveito próprio ou alheio, valendo-se de facilidade que lhe proporciona a qualidade de funcionário.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp disp-indent">
+    <div class="disp-text">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp disp-indent-2">
+    <div class="disp-text">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp disp-indent">
+    <div class="disp-text">
+      § 3º — No caso do parágrafo anterior, a reparação do dano, se precede à sentença irrecorrível, extingue a punibilidade; se lhe é posterior, reduz de metade a pena imposta.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="art-gap"></div>
+
+  <!-- Art 313 with existing reactions (static example) -->
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 313</span> — Apropriar-se de dinheiro ou qualquer utilidade que, no exercício do cargo, recebeu por erro de outrem:
+      <span class="badges">
+        <span class="badge">🔥 <span class="n">12</span></span>
+        <span class="badge">📌 <span class="n">8</span></span>
+      </span>
+    </div>
+    <div class="disp-gutter" style="opacity:1;">
+      <button class="g-btn g-react liked">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp disp-indent">
+    <div class="disp-text">
+      Pena — reclusão, de um a quatro anos, e multa.
+    </div>
+    <div class="disp-gutter">
+      <button class="g-btn g-react" onclick="openPicker(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="g-btn g-more" onclick="openFoot(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function closeAll() {
+  document.querySelectorAll('.picker').forEach(p => p.remove());
+  document.querySelectorAll('.foot.dyn').forEach(f => f.remove());
+  document.querySelectorAll('.g-more.open').forEach(b => b.classList.remove('open'));
+}
+
+function openPicker(btn) {
+  const had = btn.querySelector('.picker');
+  closeAll();
+  if (had) return;
+
+  const p = document.createElement('div');
+  p.className = 'picker';
+  p.innerHTML = ['🔥','📌','⚠️','💡','❤️'].map(e =>
+    `<button onclick="react(this,'${e}')">${e}</button>`
+  ).join('');
+  btn.appendChild(p);
+
+  setTimeout(() => {
+    const h = (ev) => {
+      if (!p.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)) {
+        p.remove(); document.removeEventListener('mousedown', h);
+      }
+    };
+    document.addEventListener('mousedown', h);
+  }, 0);
+}
+
+function react(emojiBtn, emoji) {
+  const p = emojiBtn.closest('.picker');
+  const gBtn = p.parentElement;
+  const disp = gBtn.closest('.disp');
+  const text = disp.querySelector('.disp-text');
+
+  let b = text.querySelector('.badges');
+  if (!b) { b = document.createElement('span'); b.className = 'badges'; text.appendChild(b); }
+
+  const badge = document.createElement('span');
+  badge.className = 'badge';
+  badge.innerHTML = `${emoji} <span class="n">1</span>`;
+  b.appendChild(badge);
+
+  gBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  gBtn.classList.add('liked');
+  p.remove();
+}
+
+function openFoot(btn) {
+  const disp = btn.closest('.disp');
+  const next = disp.nextElementSibling;
+  const had = next && next.classList.contains('dyn');
+
+  closeAll();
+  if (had) return;
+
+  btn.classList.add('open');
+  const f = document.createElement('div');
+  f.className = 'foot dyn';
+
+  const indent = disp.classList.contains('disp-indent-2') ? '52px' : disp.classList.contains('disp-indent') ? '28px' : '0';
+  f.style.paddingLeft = `calc(12px + ${indent})`;
+
+  f.innerHTML = `
+    <button class="foot-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar</button>
+    <button class="foot-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838.838-2.872a2 2 0 0 1 .506-.855z"/></svg>Anotar</button>
+    <button class="foot-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>Grifar</button>
+    <span class="foot-sep"></span>
+    <button class="foot-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>Reportar</button>
+  `;
+  disp.after(f);
+}
+</script>
+
+</body>
+</html>

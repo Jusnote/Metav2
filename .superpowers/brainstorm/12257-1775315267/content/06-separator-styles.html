@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Separadores — Sidebar / Content</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+    padding: 32px;
+    color: #333;
+  }
+
+  h1 { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #888; margin-bottom: 36px; }
+
+  .state-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #94a3b8; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .state-label .tag {
+    font-size: 9px; padding: 2px 7px; border-radius: 4px;
+    background: #DBEAFE; color: #1E40AF; letter-spacing: 0.5px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  /* ── App Shell (shared) ── */
+  .app-shell {
+    display: flex;
+    height: 520px;
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 10px 36px rgba(0,0,0,0.06);
+  }
+
+  /* ── Icon Rail (shared) ── */
+  .icon-rail {
+    width: 56px; min-width: 56px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; gap: 3px;
+    z-index: 2;
+  }
+
+  .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 8px rgba(30,64,175,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    color: white; font-size: 13px; font-weight: 700;
+  }
+
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; cursor: pointer; transition: all 0.15s ease;
+  }
+  .nav-btn svg { width: 18px; height: 18px; stroke-width: 1.75; fill: none; }
+  .nav-btn.active { background: rgba(219,234,254,0.8); }
+  .nav-btn.active svg { stroke: #1E40AF; }
+  .nav-btn.active::before {
+    content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%);
+    width: 2.5px; height: 18px;
+    background: linear-gradient(180deg, #1E40AF, #3B82F6);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-btn.inactive svg { stroke: #8b8fa3; }
+  .separator { width: 24px; height: 1px; background: rgba(0,0,0,0.06); margin: 6px 0; }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 6px rgba(30,64,175,0.25);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 11px; font-weight: 600; margin-top: 4px;
+  }
+
+  /* ── Content ── */
+  .content-area {
+    flex: 1; padding: 28px; overflow: hidden;
+  }
+  .content-header { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .content-sub { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+  .mock-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .mock-card {
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 10px; padding: 14px;
+  }
+  .mock-card-title { font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+  .mock-card-line { height: 5px; border-radius: 3px; background: #f1f5f9; margin-bottom: 4px; }
+  .mock-card-line.short { width: 55%; }
+  .mock-card-accent {
+    display: inline-block; padding: 2px 7px; border-radius: 4px;
+    background: #DBEAFE; color: #1E40AF;
+    font-size: 9px; font-weight: 600; margin-top: 5px;
+  }
+
+  /* ──────── VARIANT A: Thin Line ──────── */
+  .shell-a { background: #ffffff; }
+  .shell-a .icon-rail { background: #ffffff; }
+  .shell-a .divider {
+    width: 1px;
+    background: #e5e7eb;
+    align-self: stretch;
+  }
+  .shell-a .content-area { background: #f8f9fb; }
+
+  /* ──────── VARIANT B: Gradient Fade ──────── */
+  .shell-b { background: #f8f9fb; }
+  .shell-b .icon-rail { background: #ffffff; }
+  .shell-b .divider {
+    width: 16px;
+    align-self: stretch;
+    background: linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 100%);
+  }
+  .shell-b .content-area { background: #f8f9fb; }
+
+  /* ──────── VARIANT C: Soft Glow Line ──────── */
+  .shell-c { background: #f8f9fb; }
+  .shell-c .icon-rail { background: #ffffff; }
+  .shell-c .divider {
+    width: 1px;
+    align-self: stretch;
+    position: relative;
+    background: linear-gradient(180deg, transparent 5%, #dbeafe 30%, #93c5fd 50%, #dbeafe 70%, transparent 95%);
+    opacity: 0.6;
+  }
+  .shell-c .divider::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -4px;
+    width: 9px; height: 100%;
+    background: linear-gradient(180deg, transparent 5%, rgba(59,130,246,0.04) 30%, rgba(59,130,246,0.06) 50%, rgba(59,130,246,0.04) 70%, transparent 95%);
+    pointer-events: none;
+  }
+  .shell-c .content-area { background: #f8f9fb; }
+
+  /* ── Choice card wrapper ── */
+  .choice-wrap {
+    cursor: pointer;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    padding: 4px;
+    transition: all 0.2s ease;
+  }
+  .choice-wrap:hover { border-color: #BFDBFE; }
+  .choice-wrap.selected { border-color: #3B82F6; background: #EFF6FF; }
+
+  .choice-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-top: 12px; }
+  .choice-desc { font-size: 12px; color: #6b7280; margin-top: 4px; line-height: 1.5; }
+
+  /* ── With flyout section ── */
+  .flyout {
+    width: 180px; min-width: 180px;
+    padding: 18px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .flyout-title { font-size: 13px; font-weight: 600; color: #1a1a1a; padding: 0 6px; margin-bottom: 10px; }
+  .flyout-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px; border-radius: 7px;
+    font-size: 12px; color: #64748b;
+  }
+  .flyout-item.active { background: #DBEAFE; color: #1E40AF; font-weight: 500; }
+  .flyout-item svg { width: 14px; height: 14px; stroke-width: 1.75; fill: none; stroke: currentColor; }
+
+  /* Flyout dividers per variant */
+  .shell-a .flyout { background: #ffffff; }
+  .shell-b .flyout { background: #ffffff; }
+  .shell-c .flyout { background: #ffffff; }
+
+  .two-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Separador Visual — Sidebar / Content</h1>
+<p class="page-sub">Sem glass/floating — sidebar integrada com separador elegante. Clique no favorito.</p>
+
+<!-- ═══ NORMAL STATE (3 options) ═══ -->
+<div class="state-label">Estado Normal <span class="tag">Sem flyout</span></div>
+
+<div class="grid-3">
+
+  <!-- A: Thin Line -->
+  <div>
+    <div class="choice-wrap" onclick="document.querySelectorAll('.choice-wrap').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');">
+      <div class="app-shell shell-a">
+        <div class="icon-rail">
+          <div class="logo">M</div>
+          <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="separator"></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+          <div style="flex:1;"></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+          <div class="avatar">A</div>
+        </div>
+        <div class="divider"></div>
+        <div class="content-area">
+          <div class="content-header">Dashboard</div>
+          <div class="content-sub">Bem-vindo, Aldemir</div>
+          <div class="mock-cards">
+            <div class="mock-card"><div class="mock-card-title">Flashcards</div><div class="mock-card-line"></div><div class="mock-card-accent">42 cards</div></div>
+            <div class="mock-card"><div class="mock-card-title">Questões</div><div class="mock-card-line"></div><div class="mock-card-accent">18 pendentes</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="choice-title">A — Linha Fina</div>
+    <div class="choice-desc">1px solid <code style="font-size:11px;background:#f1f5f9;padding:1px 4px;border-radius:3px;">#e5e7eb</code>. Clean, quase invisível. Sidebar branca, content off-white.</div>
+  </div>
+
+  <!-- B: Gradient Fade -->
+  <div>
+    <div class="choice-wrap" onclick="document.querySelectorAll('.choice-wrap').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');">
+      <div class="app-shell shell-b">
+        <div class="icon-rail">
+          <div class="logo">M</div>
+          <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="separator"></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+          <div style="flex:1;"></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+          <div class="avatar">A</div>
+        </div>
+        <div class="divider"></div>
+        <div class="content-area">
+          <div class="content-header">Dashboard</div>
+          <div class="content-sub">Bem-vindo, Aldemir</div>
+          <div class="mock-cards">
+            <div class="mock-card"><div class="mock-card-title">Flashcards</div><div class="mock-card-line"></div><div class="mock-card-accent">42 cards</div></div>
+            <div class="mock-card"><div class="mock-card-title">Questões</div><div class="mock-card-line"></div><div class="mock-card-accent">18 pendentes</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="choice-title">B — Gradient Fade</div>
+    <div class="choice-desc">Sombra suave de 16px que "derrete" da sidebar pro content. Sem linha — profundidade natural, tipo macOS sidebar.</div>
+  </div>
+
+  <!-- C: Soft Glow -->
+  <div>
+    <div class="choice-wrap" onclick="document.querySelectorAll('.choice-wrap').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');">
+      <div class="app-shell shell-c">
+        <div class="icon-rail">
+          <div class="logo">M</div>
+          <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="separator"></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><rect stroke="currentColor" x="3" y="4" width="18" height="18" rx="2"/><line stroke="currentColor" x1="16" y1="2" x2="16" y2="6"/><line stroke="currentColor" x1="8" y1="2" x2="8" y2="6"/></svg></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+          <div style="flex:1;"></div>
+          <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="3"/><path stroke="currentColor" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+          <div class="avatar">A</div>
+        </div>
+        <div class="divider"></div>
+        <div class="content-area">
+          <div class="content-header">Dashboard</div>
+          <div class="content-sub">Bem-vindo, Aldemir</div>
+          <div class="mock-cards">
+            <div class="mock-card"><div class="mock-card-title">Flashcards</div><div class="mock-card-line"></div><div class="mock-card-accent">42 cards</div></div>
+            <div class="mock-card"><div class="mock-card-title">Questões</div><div class="mock-card-line"></div><div class="mock-card-accent">18 pendentes</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="choice-title">C — Soft Glow</div>
+    <div class="choice-desc">Linha 1px com gradiente azul sutil (fade top/bottom) + glow suave de 9px. O azul da marca aparece como detalhe premium.</div>
+  </div>
+
+</div>
+
+<!-- ═══ WITH FLYOUT (best option applied) ═══ -->
+<div class="state-label" style="margin-top:8px;">Com Flyout <span class="tag">Mesmos separadores entre rail / flyout / content</span></div>
+
+<div class="grid-3">
+
+  <!-- A: Thin Line + Flyout -->
+  <div>
+    <div class="app-shell shell-a" style="height:420px;">
+      <div class="icon-rail">
+        <div class="logo">M</div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+        <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+        <div style="flex:1;"></div>
+        <div class="avatar">A</div>
+      </div>
+      <div class="divider"></div>
+      <div class="flyout" style="background:#ffffff;">
+        <div class="flyout-title">Conteúdos</div>
+        <div class="flyout-item active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Visão Geral</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Dir. Penal</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Dir. Civil</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Constitucional</div>
+      </div>
+      <div class="divider"></div>
+      <div class="content-area">
+        <div class="content-header">Visão Geral</div>
+        <div class="content-sub">Conteúdos por matéria</div>
+        <div class="mock-cards"><div class="mock-card"><div class="mock-card-title">Penal</div><div class="mock-card-line"></div><div class="mock-card-accent">24</div></div><div class="mock-card"><div class="mock-card-title">Civil</div><div class="mock-card-line"></div><div class="mock-card-accent">18</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Gradient + Flyout -->
+  <div>
+    <div class="app-shell shell-b" style="height:420px;">
+      <div class="icon-rail">
+        <div class="logo">M</div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+        <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+        <div style="flex:1;"></div>
+        <div class="avatar">A</div>
+      </div>
+      <div class="divider"></div>
+      <div class="flyout" style="background:#ffffff;">
+        <div class="flyout-title">Conteúdos</div>
+        <div class="flyout-item active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Visão Geral</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Dir. Penal</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Dir. Civil</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Constitucional</div>
+      </div>
+      <div class="divider"></div>
+      <div class="content-area">
+        <div class="content-header">Visão Geral</div>
+        <div class="content-sub">Conteúdos por matéria</div>
+        <div class="mock-cards"><div class="mock-card"><div class="mock-card-title">Penal</div><div class="mock-card-line"></div><div class="mock-card-accent">24</div></div><div class="mock-card"><div class="mock-card-title">Civil</div><div class="mock-card-line"></div><div class="mock-card-accent">18</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Glow + Flyout -->
+  <div>
+    <div class="app-shell shell-c" style="height:420px;">
+      <div class="icon-rail">
+        <div class="logo">M</div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><polygon stroke="currentColor" points="5 3 19 12 5 21 5 3"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><circle stroke="currentColor" cx="12" cy="12" r="10"/><path stroke="currentColor" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M12 3c-4.97 0-9 2.69-9 6v6c0 3.31 4.03 6 9 6s9-2.69 9-6V9c0-3.31-4.03-6-9-6z"/></svg></div>
+        <div class="nav-btn active"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path stroke="currentColor" d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <div class="nav-btn inactive"><svg viewBox="0 0 24 24"><path stroke="currentColor" d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path stroke="currentColor" d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+        <div style="flex:1;"></div>
+        <div class="avatar">A</div>
+      </div>
+      <div class="divider"></div>
+      <div class="flyout" style="background:#ffffff;">
+        <div class="flyout-title">Conteúdos</div>
+        <div class="flyout-item active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Visão Geral</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Dir. Penal</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Dir. Civil</div>
+        <div class="flyout-item"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Constitucional</div>
+      </div>
+      <div class="divider"></div>
+      <div class="content-area">
+        <div class="content-header">Visão Geral</div>
+        <div class="content-sub">Conteúdos por matéria</div>
+        <div class="mock-cards"><div class="mock-card"><div class="mock-card-title">Penal</div><div class="mock-card-line"></div><div class="mock-card-accent">24</div></div><div class="mock-card"><div class="mock-card-title">Civil</div><div class="mock-card-line"></div><div class="mock-card-accent">18</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

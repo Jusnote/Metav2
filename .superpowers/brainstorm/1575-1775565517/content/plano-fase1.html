@@ -1,0 +1,349 @@
+<h2>Mockup do plano — Fase 1</h2>
+<p class="subtitle">Exatamente o que o plano descreve: toggle, calendário na sidebar, CronogramaDayView no painel.</p>
+
+<div class="split">
+
+  <!-- MODO EDITAL (inalterado) -->
+  <div class="mockup">
+    <div class="mockup-header" style="background: linear-gradient(135deg, #27272a, #3f3f46); color: white; font-size: 11px;">
+      Modo Edital — comportamento atual mantido
+    </div>
+    <div class="mockup-body" style="padding: 0; font-size: 11px; display: flex; height: 530px;">
+
+      <!-- SIDEBAR -->
+      <div style="width: 220px; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; background: #fafafa; flex-shrink: 0;">
+
+        <!-- Segmented Control -->
+        <div style="margin: 8px 8px 6px; display: flex; background: #f4f4f5; border-radius: 8px; padding: 3px; border: 1px solid #e5e7eb;">
+          <div style="flex: 1; text-align: center; padding: 5px; background: white; border-radius: 6px; font-size: 9px; font-weight: 700; color: #18181b; box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer;">Edital</div>
+          <div style="flex: 1; text-align: center; padding: 5px; border-radius: 6px; font-size: 9px; font-weight: 500; color: #9ca3af; cursor: pointer;">Cronograma</div>
+        </div>
+
+        <!-- Search -->
+        <div style="padding: 0 8px 6px;">
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 5px 8px; font-size: 8px; color: #9ca3af;">🔍 Buscar tópico...</div>
+        </div>
+
+        <div style="border-bottom: 1px solid #e5e7eb;"></div>
+
+        <!-- Header -->
+        <div style="padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 10px; font-weight: 600; color: #18181b;">Edital</span>
+          <div style="display: flex; gap: 2px;">
+            <span style="font-size: 10px; cursor: pointer; color: #3b82f6;">🎯</span>
+            <span style="font-size: 10px; cursor: pointer; color: #71717a;">✏️</span>
+          </div>
+        </div>
+
+        <div style="border-bottom: 1px solid #e5e7eb;"></div>
+
+        <!-- Árvore existente -->
+        <div style="flex: 1; overflow-y: auto; padding: 4px 6px;">
+          <div style="margin-bottom: 3px;">
+            <div style="display: flex; align-items: center; gap: 4px; padding: 5px 6px; background: #f4f4f5; border-radius: 6px; border-left: 3px solid #18181b; cursor: pointer;">
+              <span style="font-size: 7px; color: #18181b;">▼</span>
+              <span style="font-weight: 600; color: #18181b; font-size: 9px; flex: 1;">Unidade 1</span>
+            </div>
+            <div style="margin-left: 10px; margin-top: 2px;">
+              <div style="display: flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 4px; margin-bottom: 1px; cursor: pointer; background: #e5e7eb;">
+                <span style="font-size: 8px; font-weight: 600; color: #18181b;">Introduction to Biochemistry</span>
+              </div>
+              <div style="margin-left: 8px; margin-top: 1px;">
+                <div style="padding: 2px 6px; font-size: 7px; color: #6b7280; margin-bottom: 1px; cursor: pointer;">• Amino Acids</div>
+                <div style="padding: 2px 6px; font-size: 7px; color: #6b7280; margin-bottom: 1px; cursor: pointer;">• Protein Structure</div>
+                <div style="padding: 2px 6px; font-size: 7px; color: #6b7280; cursor: pointer;">• Enzymes</div>
+              </div>
+              <div style="padding: 3px 6px; border-radius: 4px; margin-top: 2px; cursor: pointer;">
+                <span style="font-size: 8px; color: #374151;">Organic Chemistry Basics</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 3px;">
+            <div style="display: flex; align-items: center; gap: 4px; padding: 5px 6px; border-radius: 6px; cursor: pointer;">
+              <span style="font-size: 7px; color: #9ca3af;">▶</span>
+              <span style="font-weight: 600; color: #374151; font-size: 9px;">Unidade 2</span>
+            </div>
+          </div>
+          <div style="margin-bottom: 3px;">
+            <div style="display: flex; align-items: center; gap: 4px; padding: 5px 6px; border-radius: 6px; cursor: pointer;">
+              <span style="font-size: 7px; color: #9ca3af;">▶</span>
+              <span style="font-weight: 600; color: #374151; font-size: 9px;">Unidade 3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL DIREITO — layout atual inalterado -->
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="padding: 8px 16px; border-bottom: 1px solid #e5e7eb;">
+          <span style="font-size: 8px; color: #71717a;">Unidade 1 › </span><span style="font-size: 9px; color: #18181b; font-weight: 600;">Introduction to Biochemistry</span>
+        </div>
+
+        <div style="flex: 1; overflow-y: auto; padding: 12px 16px;">
+          <!-- Stepper -->
+          <div style="background: #f4f4f5; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 2px;">
+              <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #3f3f46; font-size: 6px; display: flex; align-items: center; justify-content: center;">📚</div><span style="font-size: 5px; color: #71717a;">Estudante</span></div>
+              <div style="flex: 1; height: 2px; background: #52525b;"></div>
+              <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #3f3f46; font-size: 6px; display: flex; align-items: center; justify-content: center;">⚖️</div><span style="font-size: 5px; color: #71717a;">Conhecedor</span></div>
+              <div style="flex: 1; height: 2px; background: #d4d4d8;"><div style="height: 100%; width: 50%; background: #2563eb; border-radius: 2px;"></div></div>
+              <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #2563eb; font-size: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(37,99,235,0.3);">🏛️</div><span style="font-size: 5px; color: #2563eb; font-weight: 700;">↑ Proficiente</span></div>
+              <div style="flex: 1; height: 2px; background: #e5e7eb;"></div>
+              <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #f4f4f5; border: 1px solid #e5e7eb; font-size: 6px; display: flex; align-items: center; justify-content: center; opacity: 0.4;">👨‍⚖️</div><span style="font-size: 5px; color: #d4d4d8;">Especialista</span></div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 8px;">
+            <div style="background: #f4f4f5; border-radius: 6px; padding: 6px; text-align: center;"><div style="font-size: 10px;">🕐</div><div style="font-size: 5px; color: #71717a;">ÚLTIMO ACESSO</div><div style="font-size: 9px; font-weight: 700; color: #18181b;">Há 3h</div></div>
+            <div style="background: #f4f4f5; border-radius: 6px; padding: 6px; text-align: center;"><div style="font-size: 10px;">⚡</div><div style="font-size: 5px; color: #71717a;">INVESTIDO</div><div style="font-size: 9px; font-weight: 700; color: #18181b;">1h20</div></div>
+            <div style="background: #f4f4f5; border-radius: 6px; padding: 6px; text-align: center; cursor: pointer;"><div style="font-size: 10px;">📝</div><div style="font-size: 5px; color: #2563eb;">ANOTAÇÕES</div><div style="font-size: 9px; font-weight: 700; color: #2563eb;">Ver notas</div></div>
+          </div>
+
+          <!-- Revisões + Desempenho + IA -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-radius: 8px; overflow: hidden; margin-bottom: 8px;">
+            <div style="background: #f4f4f5; padding: 8px;">
+              <div style="font-size: 7px; font-weight: 700; color: #18181b; margin-bottom: 3px;">Revisões</div>
+              <div style="display: flex; align-items: center; gap: 2px; padding: 2px 0; border-bottom: 1px solid #e5e7eb;"><div style="width: 8px; height: 8px; background: #dcfce7; border: 1.5px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><span style="font-size: 4px; color: #16a34a;">✓</span></div><span style="font-size: 7px;">15/01</span><span style="font-size: 7px; font-weight: 700; color: #16a34a; margin-left: auto;">85%</span></div>
+              <div style="display: flex; align-items: center; gap: 2px; padding: 2px 0;"><div style="width: 8px; height: 8px; background: #fff7ed; border: 1.5px solid #f59e0b; border-radius: 50%;"></div><span style="font-size: 7px; color: #d97706;">18/01</span><span style="font-size: 6px; background: #fff7ed; color: #d97706; padding: 1px 3px; border-radius: 3px; margin-left: auto;">Fazer</span></div>
+            </div>
+            <div style="background: #f4f4f5; border-left: 1px solid #e5e7eb; padding: 8px;">
+              <div style="font-size: 7px; font-weight: 700; color: #18181b; margin-bottom: 3px;">Desempenho ↑</div>
+              <svg viewBox="0 0 90 30" style="width: 100%; height: 28px;"><polyline points="5,22 25,18 45,20 65,14 85,8" fill="none" stroke="#18181b" stroke-width="1.5" stroke-linecap="round"/><circle cx="85" cy="8" r="2" fill="#18181b"/></svg>
+            </div>
+            <div style="background: #18181b; padding: 8px; border-radius: 0 8px 8px 0;">
+              <div style="display: flex; align-items: center; gap: 2px; margin-bottom: 3px;"><div style="width: 10px; height: 10px; background: #2563eb; border-radius: 2px; font-size: 6px; display: flex; align-items: center; justify-content: center;">✨</div><span style="font-size: 7px; font-weight: 600; color: #f4f4f5;">IA</span><span style="font-size: 5px; color: #60a5fa;">Beta</span></div>
+              <p style="font-size: 6px; color: #a1a1aa; line-height: 1.3;">Seu desempenho está crescendo. Foque nos detalhes de exceções.</p>
+            </div>
+          </div>
+
+          <!-- Materiais 2x2 -->
+          <div style="font-size: 9px; font-weight: 600; color: #18181b; margin-bottom: 6px;">Materiais de Estudo</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white;">
+              <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px;">📄</div>
+              <div><div style="font-weight: 600; font-size: 8px;">Documento</div><div style="font-size: 6px; color: #059669;">3 resumos</div></div>
+            </div>
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white;">
+              <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px;">🃏</div>
+              <div><div style="font-weight: 600; font-size: 8px;">Flashcards</div><div style="font-size: 6px; color: #7c3aed;">12 cartões</div></div>
+            </div>
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white;">
+              <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #fff7ed, #fed7aa); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px;">❓</div>
+              <div><div style="font-weight: 600; font-size: 8px;">Questões</div><div style="font-size: 6px; color: #ea580c;">0 questões</div></div>
+            </div>
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; background: white;">
+              <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #ecfeff, #cffafe); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px;">⚖️</div>
+              <div><div style="font-weight: 600; font-size: 8px;">Lei Seca</div><div style="font-size: 6px; color: #0891b2;">Leitura da lei</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO CRONOGRAMA -->
+  <div class="mockup">
+    <div class="mockup-header" style="background: linear-gradient(135deg, #18181b, #27272a); color: white; font-size: 11px;">
+      Modo Cronograma — sidebar calendário + CronogramaDayView
+    </div>
+    <div class="mockup-body" style="padding: 0; font-size: 11px; display: flex; height: 530px;">
+
+      <!-- SIDEBAR CALENDÁRIO -->
+      <div style="width: 220px; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; background: #fafafa; flex-shrink: 0;">
+
+        <!-- Segmented Control -->
+        <div style="margin: 8px 8px 6px; display: flex; background: #f4f4f5; border-radius: 8px; padding: 3px; border: 1px solid #e5e7eb;">
+          <div style="flex: 1; text-align: center; padding: 5px; border-radius: 6px; font-size: 9px; font-weight: 500; color: #9ca3af; cursor: pointer;">Edital</div>
+          <div style="flex: 1; text-align: center; padding: 5px; background: #18181b; border-radius: 6px; font-size: 9px; font-weight: 700; color: white; cursor: pointer;">Cronograma</div>
+        </div>
+
+        <!-- Calendário mensal -->
+        <div style="margin: 0 8px; padding: 10px; background: white; border: 1px solid #e5e7eb; border-radius: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 8px; color: #9ca3af; cursor: pointer; padding: 2px 6px;">‹</span>
+            <span style="font-size: 11px; font-weight: 700; color: #18181b;">Abril 2026</span>
+            <span style="font-size: 8px; color: #9ca3af; cursor: pointer; padding: 2px 6px;">›</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px;">
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">D</div>
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">S</div>
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">T</div>
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">Q</div>
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">Q</div>
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">S</div>
+            <div style="text-align: center; font-size: 7px; color: #9ca3af; font-weight: 600;">S</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
+            <div style="height: 26px;"></div><div style="height: 26px;"></div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">1</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">2</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">3</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">4</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">5</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">6</div>
+            <!-- 7 - hoje com progresso -->
+            <div style="height: 26px; border-radius: 6px; background: #dcfce7; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #16a34a; font-weight: 600; cursor: pointer; position: relative;">7<div style="position: absolute; bottom: 1px; width: 4px; height: 4px; background: #16a34a; border-radius: 50%;"></div></div>
+            <!-- 8 - selecionado -->
+            <div style="height: 26px; border-radius: 6px; background: #18181b; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">8</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer; position: relative;">9<div style="position: absolute; bottom: 1px; width: 4px; height: 4px; background: #4338ca; border-radius: 50%;"></div></div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer; position: relative;">10<div style="position: absolute; bottom: 1px; width: 4px; height: 4px; background: #4338ca; border-radius: 50%;"></div></div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">11</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">12</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">13</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">14</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">15</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">16</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">17</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">18</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">19</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">20</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">21</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">22</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">23</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">24</div>
+            <div style="height: 26px; border-radius: 6px; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4338ca; cursor: pointer;">25</div>
+            <div style="height: 26px; border-radius: 6px; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #9ca3af;">26</div>
+          </div>
+        </div>
+
+        <!-- Stats do dia selecionado -->
+        <div style="margin: 8px; padding: 10px; background: white; border: 1px solid #e5e7eb; border-radius: 10px;">
+          <div style="font-size: 11px; font-weight: 800; color: #18181b; text-align: center;">7 Abril</div>
+          <div style="font-size: 8px; color: #71717a; text-align: center; margin-top: 2px;">5 tópicos · 2h30min</div>
+          <div style="margin-top: 6px; height: 5px; background: #e5e7eb; border-radius: 3px;">
+            <div style="width: 40%; height: 100%; background: #18181b; border-radius: 3px;"></div>
+          </div>
+          <div style="font-size: 7px; color: #9ca3af; text-align: center; margin-top: 3px;">2 de 5 completos</div>
+        </div>
+
+        <div style="flex: 1;"></div>
+
+        <!-- Reagendamento -->
+        <div style="padding: 6px 8px; border-top: 1px solid #e5e7eb;">
+          <div style="padding: 6px; background: #f4f4f5; border-radius: 6px; text-align: center; cursor: pointer; font-size: 8px; color: #71717a;">🔀 Reagendamento Manual</div>
+        </div>
+      </div>
+
+      <!-- PAINEL DIREITO — CronogramaDayView -->
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fafafa;">
+
+        <!-- Header do dia -->
+        <div style="padding: 12px 18px; border-bottom: 1px solid #e5e7eb; background: white;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: #18181b;">7 Abril</div>
+              <div style="font-size: 8px; color: #71717a; margin-top: 1px;">Disponibilidade: 3h</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 8px; color: #71717a;">Progresso</div>
+              <div style="font-size: 14px; font-weight: 900; color: #18181b;">2/5</div>
+            </div>
+          </div>
+          <div style="margin-top: 6px; height: 5px; background: #e5e7eb; border-radius: 3px;">
+            <div style="width: 40%; height: 100%; background: linear-gradient(90deg, #18181b, #3f3f46); border-radius: 3px;"></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <span style="font-size: 7px; color: #71717a;">5 tópicos</span>
+            <span style="font-size: 7px; color: #71717a;">·</span>
+            <span style="font-size: 7px; color: #71717a;">2h30min</span>
+            <span style="font-size: 7px; color: #71717a;">·</span>
+            <span style="font-size: 7px; color: #71717a;">45 cards</span>
+          </div>
+        </div>
+
+        <!-- Topic Cards -->
+        <div style="flex: 1; overflow-y: auto; padding: 12px 18px;">
+
+          <!-- Card 1: Não concluído, expandível -->
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin-bottom: 8px; cursor: pointer;">
+            <div style="display: flex; align-items: flex-start; gap: 8px;">
+              <div style="width: 18px; height: 18px; background: #f4f4f5; border: 2px solid #d4d4d8; border-radius: 50%; flex-shrink: 0; margin-top: 1px; cursor: pointer;"></div>
+              <div style="flex: 1;">
+                <div style="font-size: 10px; font-weight: 700; color: #18181b;">Introduction to Biochemistry</div>
+                <div style="font-size: 7px; color: #71717a; margin-top: 1px;">25 min · 12 cards · Unidade 1</div>
+
+                <!-- Subtopics expandidos -->
+                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #f4f4f5;">
+                  <div style="display: flex; align-items: center; gap: 6px; padding: 3px 0;">
+                    <div style="width: 12px; height: 12px; background: #f4f4f5; border: 1.5px solid #d4d4d8; border-radius: 3px;"></div>
+                    <span style="font-size: 8px; color: #374151;">Amino Acids</span>
+                    <span style="font-size: 6px; color: #9ca3af; margin-left: auto;">8 min</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px; padding: 3px 0;">
+                    <div style="width: 12px; height: 12px; background: #f4f4f5; border: 1.5px solid #d4d4d8; border-radius: 3px;"></div>
+                    <span style="font-size: 8px; color: #374151;">Protein Structure</span>
+                    <span style="font-size: 6px; color: #9ca3af; margin-left: auto;">10 min</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px; padding: 3px 0;">
+                    <div style="width: 12px; height: 12px; background: #f4f4f5; border: 1.5px solid #d4d4d8; border-radius: 3px;"></div>
+                    <span style="font-size: 8px; color: #374151;">Enzymes</span>
+                    <span style="font-size: 6px; color: #9ca3af; margin-left: auto;">7 min</span>
+                  </div>
+                </div>
+
+                <!-- Quick actions -->
+                <div style="display: flex; gap: 4px; margin-top: 8px;">
+                  <div style="padding: 4px 8px; background: #f4f4f5; border-radius: 5px; font-size: 7px; color: #71717a; cursor: pointer;">📄 Doc</div>
+                  <div style="padding: 4px 8px; background: #f4f4f5; border-radius: 5px; font-size: 7px; color: #71717a; cursor: pointer;">🃏 Flash</div>
+                  <div style="padding: 4px 8px; background: #f4f4f5; border-radius: 5px; font-size: 7px; color: #71717a; cursor: pointer;">❓ Quest</div>
+                  <div style="padding: 4px 8px; background: #18181b; border-radius: 5px; font-size: 7px; color: white; font-weight: 600; cursor: pointer; margin-left: auto;">▶ Iniciar</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Concluído -->
+          <div style="background: white; border: 1px solid #d1fae5; border-radius: 10px; padding: 12px; margin-bottom: 8px; opacity: 0.65;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 18px; height: 18px; background: #22c55e; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div style="flex: 1;">
+                <div style="font-size: 10px; font-weight: 600; color: #6b7280; text-decoration: line-through;">Organic Chemistry Basics</div>
+                <div style="font-size: 7px; color: #16a34a;">18 min · 8 cards · Revisão · Unidade 1</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Não concluído -->
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin-bottom: 8px; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 18px; height: 18px; background: #f4f4f5; border: 2px solid #d4d4d8; border-radius: 50%; flex-shrink: 0;"></div>
+              <div style="flex: 1;">
+                <div style="font-size: 10px; font-weight: 700; color: #18181b;">Cell Biology Fundamentals</div>
+                <div style="font-size: 7px; color: #71717a;">30 min · 15 cards · Unidade 2</div>
+              </div>
+              <span style="font-size: 7px; color: #9ca3af;">▸</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Concluído -->
+          <div style="background: white; border: 1px solid #d1fae5; border-radius: 10px; padding: 12px; margin-bottom: 8px; opacity: 0.65;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 18px; height: 18px; background: #22c55e; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div style="flex: 1;">
+                <div style="font-size: 10px; font-weight: 600; color: #6b7280; text-decoration: line-through;">Genetics Overview</div>
+                <div style="font-size: 7px; color: #16a34a;">20 min · 10 cards · Unidade 2</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Não concluído -->
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 18px; height: 18px; background: #f4f4f5; border: 2px solid #d4d4d8; border-radius: 50%; flex-shrink: 0;"></div>
+              <div style="flex: 1;">
+                <div style="font-size: 10px; font-weight: 700; color: #18181b;">Molecular Biology Techniques</div>
+                <div style="font-size: 7px; color: #71717a;">35 min · 0 cards · Unidade 3</div>
+              </div>
+              <span style="font-size: 7px; color: #9ca3af;">▸</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

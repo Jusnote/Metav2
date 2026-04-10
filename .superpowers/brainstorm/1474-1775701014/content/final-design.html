@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Papiro — Design Final da Navegação</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f1f3f5; color: #1e293b; }
+
+  .design-title {
+    text-align: center;
+    padding: 32px 20px 8px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  .design-subtitle {
+    text-align: center;
+    padding: 0 20px 28px;
+    font-size: 14px;
+    color: #64748b;
+  }
+
+  .mockup-container {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 20px;
+  }
+
+  .mockup-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #1E40AF;
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  .mockup-frame {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    border: 1px solid #e2e8f0;
+  }
+
+  /* ---- Top Bar (Row 1) ---- */
+  .top-bar {
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; margin-right: 8px; }
+  .logo-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px 4px 8px 4px;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    box-shadow: 0 2px 8px rgba(30,64,175,0.3);
+  }
+  .logo-text { font-size: 16px; font-weight: 700; color: #1e293b; letter-spacing: -0.4px; }
+
+  .search-box {
+    flex: 1; max-width: 400px;
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 8px 14px; display: flex; align-items: center; gap: 8px;
+    transition: border-color 0.15s;
+  }
+  .search-box:hover { border-color: #cbd5e1; }
+  .search-text { color: #94a3b8; font-size: 13px; }
+  .search-kbd {
+    margin-left: auto; background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 4px; padding: 1px 6px; font-size: 11px; color: #94a3b8;
+  }
+
+  .top-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .btn-upgrade {
+    font-size: 12px; font-weight: 600; padding: 7px 18px;
+    background: #1E40AF; color: #fff; border-radius: 7px; border: none;
+    box-shadow: 0 2px 6px rgba(30,64,175,0.25);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-upgrade:hover { background: #1d3fa0; }
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #64748b; font-size: 16px; transition: all 0.15s;
+  }
+  .icon-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 6px rgba(30,64,175,0.2);
+  }
+  .user-avatar span { color: #fff; font-size: 12px; font-weight: 700; }
+  .user-name { font-size: 13px; color: #475569; cursor: pointer; }
+
+  /* ---- Nav Bar (Row 2) ---- */
+  .nav-bar {
+    padding: 0 24px;
+    display: flex; align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+  }
+  .nav-brand {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    color: #1E40AF; padding: 12px 14px 12px 0; text-transform: uppercase;
+  }
+  .nav-dot { color: #d1d5db; padding: 0 6px 0 0; font-size: 8px; }
+  .nav-item {
+    font-size: 13px; padding: 12px 14px; color: #64748b;
+    cursor: pointer; position: relative; transition: color 0.15s;
+    white-space: nowrap; text-decoration: none; display: inline-block;
+  }
+  .nav-item:hover { color: #1e293b; }
+  .nav-item.active {
+    color: #1e293b; font-weight: 500;
+  }
+  .nav-item.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 14px; right: 14px;
+    height: 2px; background: #1E40AF; border-radius: 2px 2px 0 0;
+  }
+  .nav-item .arrow { font-size: 10px; margin-left: 3px; color: #94a3b8; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; }
+
+  /* ---- Content Area ---- */
+  .content-area {
+    background: #f8fafc; padding: 20px 24px; min-height: 300px;
+  }
+  .breadcrumb { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+  .breadcrumb a { color: #64748b; text-decoration: none; }
+  .breadcrumb a:hover { color: #1E40AF; }
+
+  .content-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+  .stat-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .stat-label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: #1e293b; }
+  .stat-sub { font-size: 11px; color: #22c55e; margin-top: 4px; }
+
+  .content-main {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .content-main h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .content-row {
+    display: flex; align-items: center; padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #475569;
+  }
+  .content-row:last-child { border-bottom: none; }
+  .content-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+    margin-left: auto;
+  }
+  .badge-new { background: #dbeafe; color: #1E40AF; }
+  .badge-review { background: #fef3c7; color: #92400e; }
+  .badge-done { background: #dcfce7; color: #166534; }
+
+  /* ---- Dropdown Preview ---- */
+  .dropdown-preview {
+    position: absolute; top: 100%; right: 0; margin-top: 4px;
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    min-width: 180px; z-index: 10;
+  }
+  .dropdown-item {
+    padding: 9px 14px; font-size: 13px; color: #475569;
+    border-radius: 6px; cursor: pointer; transition: background 0.1s;
+  }
+  .dropdown-item:hover { background: #f8fafc; }
+  .dropdown-sep { height: 1px; background: #e2e8f0; margin: 4px 8px; }
+  .dropdown-item.mod { color: #7c3aed; }
+
+  /* ---- Section label ---- */
+  .section-divider {
+    max-width: 1200px; margin: 40px auto 0; padding: 0 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: #e2e8f0;
+  }
+  .section-divider span {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: #94a3b8;
+  }
+
+  /* Annotation */
+  .annotation {
+    max-width: 1200px; margin: 16px auto 0; padding: 0 20px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;
+  }
+  .ann-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 14px 16px; display: flex; gap: 10px;
+  }
+  .ann-num {
+    width: 24px; height: 24px; border-radius: 50%; background: #1E40AF;
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ann-text { font-size: 12px; color: #475569; line-height: 1.5; }
+  .ann-text strong { color: #1e293b; }
+</style>
+</head>
+<body>
+
+<div class="design-title">Design Final — Navegação Papiro</div>
+<div class="design-subtitle">Estrutura QConcursos · Royal Blue (#1E40AF) · Desktop</div>
+
+<!-- Desktop Mockup -->
+<div class="mockup-container">
+  <div class="mockup-label">Desktop — Estado normal</div>
+  <div class="mockup-frame">
+    <!-- Top accent -->
+    <div style="height:3px;background:linear-gradient(90deg,#1E40AF,#3B82F6,#1E40AF);"></div>
+
+    <!-- Row 1: Top Bar -->
+    <div class="top-bar">
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <span class="logo-text">Papiro</span>
+      </div>
+
+      <div class="search-box">
+        <span style="color:#94a3b8;font-size:14px;">&#128269;</span>
+        <span class="search-text">Buscar disciplinas, concursos e provas</span>
+        <span class="search-kbd">Ctrl K</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn-upgrade">Upgrade</button>
+        <div class="icon-btn" title="Notificações">&#128276;</div>
+        <div class="icon-btn" title="Configurações">&#9881;</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="user-avatar"><span>A</span></div>
+          <span class="user-name">Aldemir &#9662;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Nav Bar -->
+    <div class="nav-bar" style="position:relative;">
+      <span class="nav-brand">PAPIRO</span>
+      <span class="nav-dot">&#9679;</span>
+      <a class="nav-item active">Início</a>
+      <a class="nav-item">Flashcards<span class="arrow">&#9662;</span></a>
+      <a class="nav-item">Questões</a>
+      <a class="nav-item">Lei Seca</a>
+      <a class="nav-item">Cadernos</a>
+      <a class="nav-item">Editais</a>
+      <div class="nav-right">
+        <a class="nav-item">Cronograma</a>
+        <a class="nav-item" style="position:relative;">
+          Mais<span class="arrow">&#9662;</span>
+          <div class="dropdown-preview">
+            <div class="dropdown-item">Resumos</div>
+            <div class="dropdown-item">Editor</div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item mod">Moderação</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-area">
+      <div class="breadcrumb">
+        <a href="#">Home</a> / <strong>Dashboard</strong>
+      </div>
+
+      <div class="content-grid">
+        <div class="stat-card">
+          <div class="stat-label">Cards para revisar</div>
+          <div class="stat-value">42</div>
+          <div class="stat-sub">&#8593; 8 novos hoje</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Questões resolvidas</div>
+          <div class="stat-value">1.284</div>
+          <div class="stat-sub">&#8593; 73% acerto</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Artigos lidos</div>
+          <div class="stat-value">356</div>
+          <div class="stat-sub">&#8593; 12 esta semana</div>
+        </div>
+      </div>
+
+      <div class="content-main">
+        <h3>Próximas revisões</h3>
+        <div class="content-row">
+          <span>Direito Constitucional — Art. 5º</span>
+          <span class="content-badge badge-review">Revisar</span>
+        </div>
+        <div class="content-row">
+          <span>Direito Administrativo — Licitações</span>
+          <span class="content-badge badge-new">Novo</span>
+        </div>
+        <div class="content-row">
+          <span>Direito Penal — Crimes contra a pessoa</span>
+          <span class="content-badge badge-done">Concluído</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Annotations -->
+<div class="section-divider"><span>Decisões de design</span></div>
+<div class="annotation" style="margin-bottom: 40px;">
+  <div class="ann-card">
+    <div class="ann-num">1</div>
+    <div class="ann-text"><strong>Barra 1 (topo):</strong> Logo + Busca com Ctrl+K + Upgrade + Notificações + Config + Avatar do usuário com dropdown</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-num">2</div>
+    <div class="ann-text"><strong>Barra 2 (nav):</strong> PAPIRO (marca) • Início, Flashcards▼, Questões, Lei Seca, Cadernos, Editais | à direita: Cronograma, Mais▼</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-num">3</div>
+    <div class="ann-text"><strong>"Mais" agrupa:</strong> Resumos, Editor, e Moderação (só visível pra moderadores). Escala fácil pra novos itens.</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-num">4</div>
+    <div class="ann-text"><strong>Item ativo:</strong> Texto escurece + underline azul de 2px. Hover: texto escurece sem underline. Limpo como QConcursos.</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-num">5</div>
+    <div class="ann-text"><strong>Accent line:</strong> Faixa fina de 3px no topo (gradiente Royal Blue) — identidade visual sutil sem poluir.</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-num">6</div>
+    <div class="ann-text"><strong>Mobile:</strong> Hamburger overlay fullscreen. Logo + hamburger na barra, menu cobre tudo com animação slide-in.</div>
+  </div>
+</div>
+
+</body>
+</html>

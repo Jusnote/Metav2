@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispositivo — footer + comentários inline</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=Inter:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f4; font-family: 'Literata', Georgia, serif; padding: 48px 20px; display: flex; flex-direction: column; gap: 56px; align-items: center; }
+
+  .tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600; color: #999;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: -32px;
+  }
+
+  .page {
+    width: 100%; max-width: 1024px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    padding: 40px 48px;
+  }
+
+  .section-header {
+    text-align: center; padding: 0 0 20px;
+    font-size: 11px; font-weight: 600; color: #b8b8b8;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── Dispositivo ── */
+  .disp {
+    position: relative;
+    padding: 6px 0;
+    line-height: 1.95; font-size: 16px; color: #43505c;
+    border-radius: 8px;
+    transition: background 0.12s;
+  }
+  .disp:hover { background: #fafaf9; }
+  .disp:hover .disp-icons { opacity: 1; }
+
+  .disp-text { text-align: justify; }
+  .disp-num { font-weight: 600; color: #2d3740; }
+  .indent-1 { padding-left: 24px; }
+  .indent-2 { padding-left: 48px; }
+  .highlight { background: rgba(250,204,21,0.15); border-radius: 2px; padding: 0 2px; }
+
+  /* ── Floating icons — overlay, no squeeze ── */
+  .disp-icons {
+    position: absolute; right: 4px; top: 6px;
+    display: flex; align-items: center; gap: 3px;
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .disp-icons.has-content { opacity: 1; }
+  @media (max-width: 768px) {
+    .disp-icons { opacity: 0.35; }
+    .disp:hover .disp-icons { opacity: 1; }
+    .disp-icons.has-content { opacity: 1; }
+  }
+
+  .icon-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 7px; border: none; background: white;
+    color: #c4c4c4; cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    font-size: 13px;
+  }
+  .icon-btn:hover { background: #f5f5f4; color: #666; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .icon-btn.active { background: #f0f0ef; color: #444; }
+  .icon-btn.has-items { color: #7c3aed; }
+
+  .icon-sep { width: 1px; height: 14px; background: #eceae7; }
+
+  /* ── Footer bar — full width below ── */
+  .disp-footer {
+    display: flex; align-items: center; gap: 1px;
+    padding: 6px 4px;
+    margin-top: 4px;
+    background: #fafafa;
+    border-radius: 10px;
+    animation: footSlide 0.2s ease-out;
+  }
+  @keyframes footSlide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .foot-tab {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border-radius: 8px;
+    border: none; background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px; font-weight: 500; color: #a0a0a0;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .foot-tab:hover { background: white; color: #555; }
+  .foot-tab.active-comm { background: white; color: #2563eb; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .foot-tab.active-note { background: white; color: #d97706; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .foot-tab .badge { font-size: 10px; font-weight: 700; }
+  .foot-tab .dot { width: 5px; height: 5px; border-radius: 50%; background: #d97706; }
+
+  .foot-sep { width: 1px; height: 14px; background: #e8e8e6; margin: 0 2px; }
+
+  .foot-action {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 10px; border-radius: 8px;
+    border: none; background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 500; color: #b8b8b8;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .foot-action:hover { background: white; color: #555; }
+  .foot-action svg { opacity: 0.5; }
+  .foot-action:hover svg { opacity: 0.8; }
+
+  /* ── Comments section — inline below footer ── */
+  .comments-section {
+    margin-top: 4px; padding: 12px 16px;
+    background: #fafafa; border-radius: 10px;
+    animation: footSlide 0.2s ease-out;
+  }
+
+  .comment {
+    display: flex; gap: 10px; padding: 8px 0;
+  }
+  .comment + .comment { border-top: 1px solid #f0f0ee; }
+
+  .comment-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
+
+  .comment-body { flex: 1; min-width: 0; }
+  .comment-header {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Inter', sans-serif; font-size: 11px;
+  }
+  .comment-name { font-weight: 600; color: #3a3a3a; }
+  .comment-time { color: #b8b8b8; }
+  .comment-badge {
+    font-size: 9px; font-weight: 600; color: #7c3aed;
+    background: #f3f0ff; padding: 1px 6px; border-radius: 4px;
+  }
+  .comment-text {
+    font-family: 'Nunito', sans-serif; font-size: 13px;
+    line-height: 1.6; color: #555; margin-top: 3px;
+  }
+
+  .comment-actions {
+    display: flex; gap: 8px; margin-top: 4px;
+    font-family: 'Inter', sans-serif; font-size: 10px; color: #c4c4c4;
+  }
+  .comment-actions button {
+    border: none; background: none; color: inherit; cursor: pointer;
+    font-family: inherit; font-size: inherit;
+    transition: color 0.12s;
+  }
+  .comment-actions button:hover { color: #666; }
+
+  .write-trigger {
+    margin-top: 8px; padding: 10px 14px;
+    border: 1px solid #e8e8e6; border-radius: 10px;
+    background: white;
+    font-family: 'Inter', sans-serif; font-size: 12px; color: #b8b8b8;
+    cursor: pointer; transition: border-color 0.15s;
+    width: 100%; text-align: left;
+  }
+  .write-trigger:hover { border-color: #d0d0ce; }
+
+  /* ── Note section ── */
+  .note-section {
+    margin-top: 4px; padding: 12px 16px;
+    background: #fffdf5; border-radius: 10px; border: 1px solid #fef3c7;
+    animation: footSlide 0.2s ease-out;
+  }
+  .note-text {
+    font-family: 'Nunito', sans-serif; font-size: 13px;
+    line-height: 1.6; color: #92400e;
+  }
+  .note-meta {
+    font-family: 'Inter', sans-serif; font-size: 10px; color: #d4a574;
+    margin-top: 4px;
+  }
+
+  .art-gap { height: 1px; background: #f0efed; margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STATE 1: Hover — icons overlay no squeeze   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">1 — Hover: ícones flutuam no canto, sem espremer texto</div>
+
+<div class="page">
+  <div class="section-header">Capítulo I — Dos crimes praticados por funcionário público</div>
+
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio:
+    </div>
+    <div class="disp-icons">
+      <button class="icon-btn" title="Reagir">♡</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text indent-1">
+      Pena — reclusão, de dois a doze anos, e multa.
+    </div>
+    <div class="disp-icons">
+      <button class="icon-btn" title="Reagir">♡</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text indent-1">
+      § 1º — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai, ou concorre para que seja subtraído, em proveito próprio ou alheio.
+    </div>
+    <div class="disp-icons">
+      <button class="icon-btn" title="Reagir">♡</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STATE 2: ··· com conteúdo → ícone muda      -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">2 — Ícone muda conforme conteúdo (sempre visível quando tem)</div>
+
+<div class="page">
+  <div class="section-header">Ícones contextuais</div>
+
+  <!-- Sem nada -->
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro...
+    </div>
+    <div class="disp-icons">
+      <button class="icon-btn">♡</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+    <div style="font-family:Inter,sans-serif;font-size:10px;color:#ccc;text-align:right;margin-top:2px;">↑ sem conteúdo = ···</div>
+  </div>
+
+  <div class="art-gap"></div>
+
+  <!-- Tem comentários -->
+  <div class="disp">
+    <div class="disp-text indent-1">
+      § 1º — Aplica-se a mesma pena, se o funcionário público...
+    </div>
+    <div class="disp-icons has-content">
+      <button class="icon-btn">🔥</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn has-items" style="font-size:12px;">
+        💬 <span style="font-size:9px;font-weight:700;font-family:Inter,sans-serif;">3</span>
+      </button>
+    </div>
+    <div style="font-family:Inter,sans-serif;font-size:10px;color:#ccc;text-align:right;margin-top:2px;">↑ tem comentários = 💬 3</div>
+  </div>
+
+  <div class="art-gap"></div>
+
+  <!-- Tem anotação -->
+  <div class="disp">
+    <div class="disp-text indent-1">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-icons has-content">
+      <button class="icon-btn">📌</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn has-items" style="font-size:12px;">
+        ✏️ <span class="dot" style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#d97706;vertical-align:middle;margin-left:1px;"></span>
+      </button>
+    </div>
+    <div style="font-family:Inter,sans-serif;font-size:10px;color:#ccc;text-align:right;margin-top:2px;">↑ tem anotação = ✏️ com dot amber</div>
+  </div>
+
+  <div class="art-gap"></div>
+
+  <!-- Tem ambos -->
+  <div class="disp">
+    <div class="disp-text indent-1">
+      § 3º — No caso do parágrafo anterior, a reparação do dano...
+    </div>
+    <div class="disp-icons has-content">
+      <button class="icon-btn">🔥</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn has-items" style="font-size:11px;gap:2px;display:flex;">
+        <span>💬</span><span style="font-size:9px;font-weight:700;font-family:Inter,sans-serif;color:#7c3aed;">2</span>
+        <span style="width:1px;height:10px;background:#e0e0e0;margin:0 1px;"></span>
+        <span>✏️</span>
+      </button>
+    </div>
+    <div style="font-family:Inter,sans-serif;font-size:10px;color:#ccc;text-align:right;margin-top:2px;">↑ tem ambos = 💬 2 | ✏️</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STATE 3: Footer aberto — tabs como questões -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">3 — Footer aberto com tabs (igual QuestionCard)</div>
+
+<div class="page">
+  <div class="section-header">§ 2º com footer aberto — tab Comunidade ativa</div>
+
+  <div class="disp">
+    <div class="disp-text indent-1">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-icons has-content" style="opacity:1;">
+      <button class="icon-btn" style="color:#e8554a;">🔥</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn active has-items" style="font-size:11px;">
+        💬 <span style="font-size:9px;font-weight:700;font-family:Inter,sans-serif;">2</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer bar -->
+  <div class="disp-footer" style="margin-left:24px;">
+    <button class="foot-tab active-comm">💬 Comunidade <span class="badge" style="color:#2563eb;">2</span></button>
+    <button class="foot-tab">✏️ Nota <span class="dot"></span></button>
+    <span class="foot-sep"></span>
+    <button class="foot-action">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar
+    </button>
+    <button class="foot-action">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+      Grifar
+    </button>
+    <button class="foot-action">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Reportar
+    </button>
+  </div>
+
+  <!-- Comments inline -->
+  <div class="comments-section" style="margin-left:24px;">
+    <div class="comment">
+      <div class="comment-avatar">J</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">João Silva</span>
+          <span class="comment-badge">Professor</span>
+          <span class="comment-time">· 2h</span>
+        </div>
+        <div class="comment-text">O peculato culposo é o único crime contra a administração pública que admite modalidade culposa. A pena é significativamente menor (detenção de 3 meses a 1 ano).</div>
+        <div class="comment-actions">
+          <button>▲ 12</button>
+          <button>Responder</button>
+          <button>❤️ 3</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="comment">
+      <div class="comment-avatar">M</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">Maria Santos</span>
+          <span class="comment-time">· 1h</span>
+        </div>
+        <div class="comment-text">Complementando: o §3º trata da reparação do dano. Se antes da sentença irrecorrível → extingue punibilidade. Se depois → reduz metade da pena.</div>
+        <div class="comment-actions">
+          <button>▲ 5</button>
+          <button>Responder</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="write-trigger">Escreva um comentário...</div>
+  </div>
+
+  <!-- Pena below continues -->
+  <div class="disp" style="margin-top:8px;">
+    <div class="disp-text indent-2">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-icons">
+      <button class="icon-btn">♡</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STATE 4: Tab Nota ativa                     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">4 — Tab Nota ativa — anotação pessoal inline</div>
+
+<div class="page">
+  <div class="section-header">§ 2º com nota pessoal aberta</div>
+
+  <div class="disp">
+    <div class="disp-text indent-1">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-icons has-content" style="opacity:1;">
+      <button class="icon-btn" style="color:#e8554a;">📌</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn active has-items" style="font-size:12px;">
+        ✏️ <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#d97706;"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer bar — nota active -->
+  <div class="disp-footer" style="margin-left:24px;">
+    <button class="foot-tab">💬 Comunidade <span class="badge" style="color:#a0a0a0;">2</span></button>
+    <button class="foot-tab active-note">✏️ Nota</button>
+    <span class="foot-sep"></span>
+    <button class="foot-action">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar
+    </button>
+    <button class="foot-action">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+      Grifar
+    </button>
+    <button class="foot-action">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Reportar
+    </button>
+  </div>
+
+  <!-- Note section -->
+  <div class="note-section" style="margin-left:24px;">
+    <div class="note-text">
+      ATENÇÃO: Único crime funcional que admite culpa. Cai muito em CESPE. Decorar: §2º = culposo, §3º = reparação do dano. A pena do culposo é detenção (não reclusão).
+    </div>
+    <div class="note-meta">Editado há 3 dias</div>
+  </div>
+
+  <div class="disp" style="margin-top:8px;">
+    <div class="disp-text indent-2">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-icons">
+      <button class="icon-btn">♡</button>
+      <span class="icon-sep"></span>
+      <button class="icon-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

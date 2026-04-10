@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispositivo — ícone + footer inline</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f4; font-family: 'Literata', Georgia, serif; padding: 40px 20px; display: flex; flex-direction: column; gap: 48px; align-items: center; }
+
+  .tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600; color: #7c3aed;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: -28px;
+  }
+  .note {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; color: #71717a; margin-bottom: -28px; text-align: center;
+  }
+
+  .page {
+    width: 100%; max-width: 1024px;
+    background: white; border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 32px 40px;
+  }
+
+  /* ── Dispositivo row ── */
+  .disp {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    padding: 4px 0;
+    line-height: 1.9;
+    font-size: 16px;
+    color: rgb(67, 80, 92);
+  }
+
+  .disp-text {
+    flex: 1;
+    min-width: 0;
+    text-align: justify;
+  }
+
+  .disp-num {
+    font-weight: 600;
+    color: rgb(50, 62, 72);
+  }
+
+  .disp-indent { padding-left: 24px; }
+  .disp-indent-2 { padding-left: 48px; }
+
+  /* ── Gutter — fixed width, right side ── */
+  .disp-gutter {
+    width: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 6px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .disp:hover .disp-gutter {
+    opacity: 1;
+  }
+  /* Mobile: always visible */
+  @media (max-width: 768px) {
+    .disp-gutter { opacity: 0.5; }
+    .disp:hover .disp-gutter { opacity: 1; }
+  }
+
+  .gutter-btn {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px; border: none; background: transparent;
+    color: #b8b8b8; cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .gutter-btn:hover {
+    background: #f4f4f5;
+    color: #555;
+  }
+  .gutter-btn.active {
+    background: #f0f0f0;
+    color: #3a3a3a;
+  }
+
+  /* ── Inline footer ── */
+  .disp-footer {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 0 8px;
+    margin-top: 2px;
+    border-top: 1px solid #f4f4f5;
+    animation: footerIn 0.2s ease-out;
+  }
+  @keyframes footerIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .footer-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 10px; border-radius: 6px;
+    border: none; background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 500; color: #9a9a9a;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .footer-btn:hover {
+    background: #f5f5f5;
+    color: #3a3a3a;
+  }
+  .footer-btn svg { flex-shrink: 0; }
+
+  .footer-sep {
+    width: 1px; height: 12px; background: #f0f0f0; margin: 0 4px;
+  }
+
+  /* ── Section header ── */
+  .section-header {
+    text-align: center;
+    padding: 20px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #a0a0a0;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .highlight {
+    background: rgba(250, 204, 21, 0.2);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STATE 1: Hover — ícone aparece              -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">Passe o mouse nos dispositivos</div>
+<p class="note">Ícone "···" aparece no hover à direita. Gutter reservado (36px), sem sobreposição.</p>
+
+<div class="page">
+  <div class="section-header">Capítulo I — Dos crimes praticados por funcionário público</div>
+
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 312</span> — Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio:
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      Pena — reclusão, de dois a doze anos, e multa.
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 1º — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai, ou concorre para que seja subtraído, em proveito próprio ou alheio, valendo-se de facilidade que lhe proporciona a qualidade de funcionário.
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent-2">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 3º — No caso do parágrafo anterior, a reparação do dano, se precede à sentença irrecorrível, extingue a punibilidade; se lhe é posterior, reduz de metade a pena imposta.
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div style="height:16px;"></div>
+
+  <div class="disp">
+    <div class="disp-text">
+      <span class="disp-num">Art. 313</span> — Apropriar-se de dinheiro ou qualquer utilidade que, no exercício do cargo, recebeu por erro de outrem:
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      Pena — reclusão, de um a quatro anos, e multa.
+    </div>
+    <div class="disp-gutter">
+      <button class="gutter-btn" onclick="toggleFooter(this)" title="Ações">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STATE 2: Footer aberto no §2º               -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tag">Footer aberto — clica no "···" pra ver</div>
+<p class="note">Clica em qualquer "···" acima pra abrir/fechar. Exemplo fixo abaixo:</p>
+
+<div class="page">
+  <div class="section-header">Exemplo: footer aberto no § 2º</div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 1º — Aplica-se a mesma pena, se o funcionário público, embora não tendo a posse do dinheiro, valor ou bem, o subtrai...
+    </div>
+    <div class="disp-gutter" style="opacity:0.3;">
+      <button class="gutter-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      <span class="highlight">§ 2º — Se o funcionário concorre culposamente para o crime de outrem:</span>
+    </div>
+    <div class="disp-gutter" style="opacity:1;">
+      <button class="gutter-btn active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Inline footer -->
+  <div class="disp-footer" style="padding-left: 24px;">
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838.838-2.872a2 2 0 0 1 .506-.855z"/></svg>
+      Anotar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+      Grifar
+    </button>
+    <div class="footer-sep"></div>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Reportar
+    </button>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent-2">
+      Pena — detenção, de três meses a um ano.
+    </div>
+    <div class="disp-gutter" style="opacity:0.3;">
+      <button class="gutter-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="disp">
+    <div class="disp-text disp-indent">
+      § 3º — No caso do parágrafo anterior, a reparação do dano, se precede à sentença irrecorrível, extingue a punibilidade...
+    </div>
+    <div class="disp-gutter" style="opacity:0.3;">
+      <button class="gutter-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleFooter(btn) {
+  const disp = btn.closest('.disp');
+  const existing = disp.nextElementSibling;
+
+  // Close any other open footer
+  document.querySelectorAll('.disp-footer.dynamic').forEach(f => f.remove());
+  document.querySelectorAll('.gutter-btn.active').forEach(b => b.classList.remove('active'));
+
+  if (existing && existing.classList.contains('dynamic')) return;
+
+  btn.classList.add('active');
+
+  const footer = document.createElement('div');
+  footer.className = 'disp-footer dynamic';
+  footer.innerHTML = `
+    <button class="footer-btn" onclick="navigator.clipboard.writeText(this.closest('.disp-footer').previousElementSibling.querySelector('.disp-text').textContent.trim())">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838.838-2.872a2 2 0 0 1 .506-.855z"/></svg>
+      Anotar
+    </button>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+      Grifar
+    </button>
+    <div class="footer-sep"></div>
+    <button class="footer-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Reportar
+    </button>
+  `;
+  disp.after(footer);
+}
+</script>
+
+</body>
+</html>

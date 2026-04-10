@@ -7,6 +7,7 @@ import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { AppTopNav } from "./components/AppTopNav";
+import { AppBreadcrumb } from "./components/AppBreadcrumb";
 import { TimerProvider } from "./contexts/TimerContext";
 import { StudyConfigProvider } from "./contexts/StudyConfigContext";
 
@@ -130,6 +131,7 @@ const AppContent = () => {
       <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'px-4 py-5'}`} style={{
         paddingBottom: isTimerVisible ? '80px' : isFullWidth ? '0' : '24px'
       }}>
+        {!isFullWidth && <AppBreadcrumb />}
         <Outlet />
       </main>
       <GlobalTimer

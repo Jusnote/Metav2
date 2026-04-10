@@ -1,0 +1,121 @@
+<h2>Editor de comentários no mobile</h2>
+<p class="subtitle">Quando o usuário toca em "Comentar" no celular, como o editor aparece?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;font-size:12px;">
+        <!-- Phone frame -->
+        <div style="background:white;border-radius:12px;border:2px solid #e4e4e7;overflow:hidden;max-width:280px;margin:0 auto;">
+          <!-- Question card header -->
+          <div style="padding:10px 12px;border-bottom:1px solid #f4f4f5;">
+            <div style="font-size:10px;color:#a1a1aa;">CESPE · 2024</div>
+            <div style="font-size:11px;color:#27272a;margin-top:2px;">Sobre o princípio da legalidade...</div>
+          </div>
+          <!-- Editor inline -->
+          <div style="padding:8px;background:#fafafa;border-top:1px solid #f0f0f0;">
+            <!-- Toolbar collapsed -->
+            <div style="display:flex;gap:4px;padding:4px 0;border-bottom:1px solid #e4e4e7;margin-bottom:6px;flex-wrap:nowrap;overflow-x:auto;">
+              <div style="flex-shrink:0;width:28px;height:28px;background:white;border:1px solid #e4e4e7;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;">B</div>
+              <div style="flex-shrink:0;width:28px;height:28px;background:white;border:1px solid #e4e4e7;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-style:italic;">I</div>
+              <div style="flex-shrink:0;width:28px;height:28px;background:white;border:1px solid #e4e4e7;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;">≡</div>
+              <div style="flex-shrink:0;width:28px;height:28px;background:#7c3aed;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;">···</div>
+            </div>
+            <!-- Text area -->
+            <div style="min-height:48px;padding:6px;font-size:11px;color:#71717a;">Escreva seu comentário...</div>
+            <div style="display:flex;justify-content:flex-end;padding-top:4px;">
+              <div style="background:#7c3aed;color:white;font-size:10px;padding:4px 12px;border-radius:6px;">Publicar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Inline com toolbar colapsada</h3>
+      <p>Editor abre dentro do card. Toolbar mostra 3 botões + menu "···" pro resto. Mínimo de espaço vertical.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;font-size:12px;">
+        <!-- Phone frame fullscreen -->
+        <div style="background:white;border-radius:12px;border:2px solid #e4e4e7;overflow:hidden;max-width:280px;margin:0 auto;">
+          <!-- Header bar -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #f4f4f5;background:white;">
+            <div style="font-size:11px;color:#7c3aed;font-weight:600;">✕ Cancelar</div>
+            <div style="font-size:11px;font-weight:700;color:#27272a;">Comentar</div>
+            <div style="background:#7c3aed;color:white;font-size:10px;padding:4px 12px;border-radius:6px;font-weight:600;">Publicar</div>
+          </div>
+          <!-- Context -->
+          <div style="padding:8px 12px;background:#faf8ff;border-bottom:1px solid #f0f0f0;">
+            <div style="font-size:9px;color:#a1a1aa;">Respondendo em</div>
+            <div style="font-size:10px;color:#52525b;">Questão #12345 · Direito Penal</div>
+          </div>
+          <!-- Editor area fullscreen -->
+          <div style="padding:12px;min-height:140px;">
+            <div style="font-size:11px;color:#71717a;">Escreva seu comentário...</div>
+          </div>
+          <!-- Bottom toolbar above keyboard -->
+          <div style="border-top:1px solid #e4e4e7;padding:6px 8px;display:flex;gap:4px;background:#fafafa;flex-wrap:wrap;">
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;">B</div>
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-style:italic;">I</div>
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">U̲</div>
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">≡</div>
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">📎</div>
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">🔗</div>
+            <div style="width:32px;height:32px;background:white;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">···</div>
+          </div>
+          <!-- Fake keyboard -->
+          <div style="background:#d4d4d8;height:50px;display:flex;align-items:center;justify-content:center;">
+            <div style="font-size:9px;color:#71717a;">⌨ Teclado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Bottom sheet fullscreen</h3>
+      <p>Editor toma a tela inteira. Toolbar fixa acima do teclado com scroll horizontal. Foco total na escrita. Padrão WhatsApp/Notion mobile.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8f8f8;border-radius:8px;padding:16px;font-family:system-ui;font-size:12px;">
+        <!-- Phone frame -->
+        <div style="background:white;border-radius:12px;border:2px solid #e4e4e7;overflow:hidden;max-width:280px;margin:0 auto;">
+          <!-- Question card header -->
+          <div style="padding:10px 12px;border-bottom:1px solid #f4f4f5;">
+            <div style="font-size:10px;color:#a1a1aa;">CESPE · 2024</div>
+            <div style="font-size:11px;color:#27272a;margin-top:2px;">Sobre o princípio da legalidade...</div>
+          </div>
+          <!-- Comments area -->
+          <div style="padding:8px 12px;">
+            <div style="font-size:10px;color:#52525b;padding:6px 0;">2 comentários</div>
+          </div>
+          <!-- Editor inline -->
+          <div style="padding:8px 12px;background:white;">
+            <div style="min-height:48px;padding:6px;font-size:11px;color:#71717a;border:1px solid #e4e4e7;border-radius:8px;">Escreva seu comentário...</div>
+          </div>
+          <!-- Fixed bottom toolbar -->
+          <div style="border-top:1px solid #e4e4e7;padding:6px 8px;display:flex;gap:3px;background:white;position:relative;">
+            <div style="width:30px;height:30px;background:#fafafa;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;">B</div>
+            <div style="width:30px;height:30px;background:#fafafa;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-style:italic;">I</div>
+            <div style="width:30px;height:30px;background:#fafafa;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">≡</div>
+            <div style="width:30px;height:30px;background:#fafafa;border:1px solid #e4e4e7;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">📎</div>
+            <div style="flex:1"></div>
+            <div style="background:#7c3aed;color:white;font-size:10px;padding:6px 14px;border-radius:6px;display:flex;align-items:center;font-weight:600;">Publicar</div>
+          </div>
+          <!-- Fake keyboard -->
+          <div style="background:#d4d4d8;height:50px;display:flex;align-items:center;justify-content:center;">
+            <div style="font-size:9px;color:#71717a;">⌨ Teclado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Inline + toolbar fixa no bottom</h3>
+      <p>Editor fica inline no card, mas a toolbar gruda na borda superior do teclado (tipo iOS Notes). Misto dos dois.</p>
+    </div>
+  </div>
+</div>

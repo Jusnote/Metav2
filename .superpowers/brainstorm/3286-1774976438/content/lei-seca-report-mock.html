@@ -1,0 +1,143 @@
+<h2>Report de Dispositivo Legal — Lei Seca</h2>
+<p class="subtitle">Como o botão de report aparece no artigo e o modal de formulário</p>
+
+<div class="split">
+  <!-- Left: Article with flag -->
+  <div class="mockup">
+    <div class="mockup-header">Artigo com botão de report (hover)</div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden;">
+      <div style="font-family: 'Literata', Georgia, serif; font-size: 15px; line-height: 1.7; color: #1a1a1a; padding: 24px; background: white;">
+
+        <!-- Previous article (no hover) -->
+        <div style="margin-bottom: 16px; padding: 8px 12px; border-radius: 6px;">
+          <span style="font-weight: 600;">Art. 154</span> - Revelar alguém, sem justa causa, segredo, de que tem ciência em razão de função, ministério, ofício ou profissão, e cuja revelação possa produzir dano a outrem:
+          <div style="color: #666; font-size: 13px; margin-top: 4px;">Pena - detenção, de três meses a um ano, ou multa.</div>
+        </div>
+
+        <!-- HOVERED article — flag visible -->
+        <div style="margin-bottom: 16px; padding: 8px 12px; border-radius: 6px; background: #faf8ff; border: 1px solid #ede9fe; position: relative;">
+          <div style="display: flex; align-items: flex-start; gap: 8px;">
+            <div style="flex: 1;">
+              <span style="font-weight: 600;">Art. 155</span> - Subtrair, para si ou para outrem, coisa alheia móvel:
+              <div style="color: #666; font-size: 13px; margin-top: 4px;">Pena - reclusão, de um a quatro anos, e multa.</div>
+              <div style="margin-top: 6px;">
+                <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: #8a9a8f; background: #f5f7f6; border: 1px solid #e8ede9; border-radius: 99px; padding: 2px 8px; cursor: pointer;">📝 2 notas</span>
+              </div>
+            </div>
+            <!-- Flag button -->
+            <button style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; cursor: pointer; color: #a1a1aa; transition: all 0.15s; margin-top: 2px;" onmouseover="this.style.background='#f5f3ff'; this.style.color='#7c3aed'" onmouseout="this.style.background='transparent'; this.style.color='#a1a1aa'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Next article (no hover) -->
+        <div style="margin-bottom: 16px; padding: 8px 12px; border-radius: 6px;">
+          <span style="font-weight: 600;">§ 1º</span> - A pena aumenta-se de um terço, se o crime é praticado durante o repouso noturno.
+        </div>
+
+        <div style="margin-bottom: 16px; padding: 8px 12px; border-radius: 6px;">
+          <span style="font-weight: 600;">§ 2º</span> - Se o criminoso é primário, e é de pequeno valor a coisa furtada, o juiz pode substituir a pena de reclusão pela de detenção, diminuí-la de um a dois terços, ou aplicar somente a pena de multa.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Report modal -->
+  <div class="mockup">
+    <div class="mockup-header">Modal de Report (após clicar ⚑)</div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden;">
+      <div style="font-family: 'Inter', -apple-system, sans-serif; background: rgba(0,0,0,0.3); padding: 20px; min-height: 480px; display: flex; align-items: center; justify-content: center;">
+
+        <!-- Modal -->
+        <div style="background: white; border-radius: 12px; width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden;">
+          <!-- Header -->
+          <div style="padding: 18px 20px; border-bottom: 1px solid #f4f4f5;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #18181b; letter-spacing: -0.3px;">Reportar dispositivo</h3>
+              <button style="border: none; background: none; color: #a1a1aa; cursor: pointer; padding: 4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div style="padding: 18px 20px;">
+            <!-- Preview -->
+            <div style="background: #fafafa; border: 1px solid #f0f0f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px;">
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #a1a1aa; font-weight: 600; margin-bottom: 4px;">Art. 155 — Código Penal</div>
+              <div style="font-size: 12px; color: #52525b; line-height: 1.5; font-family: 'Literata', Georgia, serif;">Subtrair, para si ou para outrem, coisa alheia móvel...</div>
+            </div>
+
+            <!-- Motivo -->
+            <div style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; margin-bottom: 8px;">Motivo</label>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 6px 8px; border-radius: 6px; border: 1px solid #e4e4e7;" onmouseover="this.style.borderColor='#c4b5fd'" onmouseout="this.style.borderColor='#e4e4e7'">
+                  <input type="radio" name="reason" style="accent-color: #7c3aed;" checked /> Redação desatualizada
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 6px 8px; border-radius: 6px; border: 1px solid #e4e4e7;" onmouseover="this.style.borderColor='#c4b5fd'" onmouseout="this.style.borderColor='#e4e4e7'">
+                  <input type="radio" name="reason" style="accent-color: #7c3aed;" /> Artigo revogado
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 6px 8px; border-radius: 6px; border: 1px solid #e4e4e7;" onmouseover="this.style.borderColor='#c4b5fd'" onmouseout="this.style.borderColor='#e4e4e7'">
+                  <input type="radio" name="reason" style="accent-color: #7c3aed;" /> Erro de digitação
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3f3f46; cursor: pointer; padding: 6px 8px; border-radius: 6px; border: 1px solid #e4e4e7;" onmouseover="this.style.borderColor='#c4b5fd'" onmouseout="this.style.borderColor='#e4e4e7'">
+                  <input type="radio" name="reason" style="accent-color: #7c3aed;" /> Outro
+                </label>
+              </div>
+            </div>
+
+            <!-- Descrição -->
+            <div style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; margin-bottom: 6px;">Descrição</label>
+              <textarea style="width: 100%; box-sizing: border-box; border: 1px solid #e4e4e7; border-radius: 6px; padding: 8px 10px; font-size: 13px; color: #3f3f46; resize: vertical; min-height: 60px; font-family: inherit; outline: none;" placeholder="Descreva o problema encontrado..."></textarea>
+            </div>
+
+            <!-- Teacher+ fields -->
+            <div style="border-top: 1px dashed #e4e4e7; padding-top: 14px; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
+                <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7c3aed;">Campos de professor</span>
+                <span style="font-size: 9px; background: #f5f3ff; color: #7c3aed; padding: 1px 6px; border-radius: 4px; font-weight: 600;">Teacher+</span>
+              </div>
+              <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 11px; color: #71717a; margin-bottom: 4px;">Lei/norma que alterou</label>
+                <input type="text" style="width: 100%; box-sizing: border-box; border: 1px solid #e4e4e7; border-radius: 6px; padding: 7px 10px; font-size: 12px; color: #3f3f46; outline: none;" placeholder="Ex: Lei 14.321/2022, art. 2º" />
+              </div>
+              <div>
+                <label style="display: block; font-size: 11px; color: #71717a; margin-bottom: 4px;">Nova redação sugerida</label>
+                <textarea style="width: 100%; box-sizing: border-box; border: 1px solid #e4e4e7; border-radius: 6px; padding: 7px 10px; font-size: 12px; color: #3f3f46; resize: vertical; min-height: 50px; font-family: inherit; outline: none;" placeholder="Cole a redação atualizada..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="padding: 14px 20px; border-top: 1px solid #f4f4f5; display: flex; justify-content: flex-end; gap: 8px;">
+            <button style="padding: 7px 14px; border-radius: 6px; border: none; background: #f4f4f5; color: #52525b; font-size: 13px; font-weight: 600; cursor: pointer;">Cancelar</button>
+            <button style="padding: 7px 14px; border-radius: 6px; border: none; background: #7c3aed; color: white; font-size: 13px; font-weight: 600; cursor: pointer;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">Enviar report</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <h3>Comportamento</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 10px;">
+    <div style="border: 1px solid #ede9fe; border-radius: 8px; padding: 14px; background: #faf8ff;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 6px; color: #7c3aed;">Flag no hover</div>
+      <div style="font-size: 12px; color: #52525b; line-height: 1.6;">Ícone Flag 14px aparece no canto direito do dispositivo ao passar o mouse. Fundo lavanda sutil no artigo hovered. Mesma interação do GrifoPopup.</div>
+    </div>
+    <div style="border: 1px solid #f0f0f0; border-radius: 8px; padding: 14px;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 6px;">Modal minimalista</div>
+      <div style="font-size: 12px; color: #52525b; line-height: 1.6;">Preview do artigo no topo. Radio buttons pra motivo. Textarea pra descrição. Overlay escuro. Escape fecha. Consistente com design do painel.</div>
+    </div>
+    <div style="border: 1px solid #f0f0f0; border-radius: 8px; padding: 14px;">
+      <div style="font-weight: 600; font-size: 12px; margin-bottom: 6px;">Campos teacher+</div>
+      <div style="font-size: 12px; color: #52525b; line-height: 1.6;">Separados por linha tracejada. Só visíveis pra role >= teacher via useUserRole. Lei que alterou + nova redação sugerida.</div>
+    </div>
+  </div>
+</div>

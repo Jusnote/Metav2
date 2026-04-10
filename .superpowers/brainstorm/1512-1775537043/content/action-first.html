@@ -1,0 +1,308 @@
+<h2>Action-First Design — o painel evolui com o aluno</h2>
+<p class="subtitle">5 estados do mesmo tópico "Homicídio". O painel lidera com a ação mais relevante.</p>
+
+<!-- ESTADO 1: NÃO AGENDADO -->
+<div class="mockup" style="margin-bottom: 16px;">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #4338ca, #6366f1); color: white; font-size: 11px;">
+    Estado 1 — Sem cronograma
+  </div>
+  <div class="mockup-body" style="padding: 0; font-size: 11px; display: flex; height: 420px;">
+    <div style="width: 180px; border-right: 1px solid #e5e7eb; background: #fafafa; display: flex; flex-direction: column;">
+      <div style="margin: 6px; padding: 6px 8px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 6px;">
+        <div style="font-weight: 700; color: #3730a3; font-size: 9px;">🏛️ TRF 3ª Região</div>
+        <div style="color: #6366f1; font-size: 7px;">Analista · 18 disc.</div>
+      </div>
+      <div style="border-bottom: 1px solid #e5e7eb;"></div>
+      <div style="flex: 1; padding: 4px 6px; overflow-y: auto;">
+        <div style="margin-bottom: 2px;">
+          <div style="padding: 4px 5px; background: #e0e7ff; border-radius: 4px; border-left: 3px solid #6366f1; display: flex; align-items: center; gap: 3px;">
+            <span style="font-size: 6px; color: #4338ca;">▼</span><span style="font-weight: 600; color: #3730a3; font-size: 8px;">Dir. Penal</span>
+          </div>
+          <div style="margin-left: 9px; margin-top: 1px;">
+            <div style="padding: 2px 5px; background: #c7d2fe; border-radius: 3px; font-size: 7px; font-weight: 600; color: #3730a3; margin-bottom: 1px;">Homicídio</div>
+            <div style="padding: 2px 5px; font-size: 7px; color: #6b7280; margin-bottom: 1px;">Lesão Corporal</div>
+            <div style="padding: 2px 5px; font-size: 7px; color: #6b7280;">Furto e Roubo</div>
+          </div>
+        </div>
+        <div style="padding: 4px 5px;"><span style="font-size: 6px; color: #9ca3af;">▶</span><span style="font-weight: 600; color: #374151; font-size: 8px; margin-left: 3px;">Dir. Constitucional</span></div>
+        <div style="padding: 4px 5px;"><span style="font-size: 6px; color: #9ca3af;">▶</span><span style="font-weight: 600; color: #374151; font-size: 8px; margin-left: 3px;">Dir. Administrativo</span></div>
+      </div>
+    </div>
+
+    <!-- PAINEL -->
+    <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
+      <div style="padding: 8px 14px; border-bottom: 1px solid #e5e7eb;">
+        <span style="font-size: 8px; color: #71717a;">Dir. Penal › </span><span style="font-size: 9px; color: #18181b; font-weight: 600;">Homicídio</span>
+      </div>
+
+      <div style="flex: 1; padding: 12px 14px; overflow-y: auto;">
+        <!-- ACTION CARD — CTA principal -->
+        <div style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); border: 1px solid #c7d2fe; border-radius: 12px; padding: 16px; margin-bottom: 12px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 6px;">📋</div>
+          <div style="font-size: 13px; font-weight: 800; color: #1e1b4b; margin-bottom: 2px;">Sem cronograma para este edital</div>
+          <div style="font-size: 9px; color: #6366f1; margin-bottom: 12px;">Crie um cronograma para organizar seu estudo e acompanhar progresso</div>
+          <div style="display: inline-block; background: linear-gradient(135deg, #4338ca, #6366f1); color: white; padding: 8px 24px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(79,70,229,0.25);">
+            📅 Criar Cronograma
+          </div>
+        </div>
+
+        <!-- INTELIGÊNCIA — contexto completo -->
+        <div style="background: linear-gradient(135deg, #f8f9ff, #eef2ff); border: 1px solid #ddd6fe; border-radius: 10px; padding: 12px; position: relative; overflow: hidden;">
+          <div style="position: absolute; top: -15px; right: -15px; width: 60px; height: 60px; background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
+          <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+            <div>
+              <div style="font-size: 12px; font-weight: 800; color: #1e1b4b;">Homicídio</div>
+              <div style="font-size: 7px; color: #6366f1;">Art. 121, Código Penal</div>
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 3px;">
+              <span style="font-size: 7px; background: rgba(99,102,241,0.12); color: #4338ca; padding: 3px 6px; border-radius: 5px; font-weight: 700;">~6h</span>
+              <span style="font-size: 7px; background: rgba(239,68,68,0.08); color: #dc2626; padding: 3px 6px; border-radius: 5px; font-weight: 700;">Alta</span>
+              <span style="font-size: 7px; background: rgba(99,102,241,0.12); color: #4338ca; padding: 3px 6px; border-radius: 5px; font-weight: 700;">#1/5</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <div style="font-size: 6px; font-weight: 700; color: #4338ca; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">O que mais cai</div>
+              <div style="margin-bottom: 3px;"><div style="display: flex; justify-content: space-between; margin-bottom: 1px;"><span style="font-size: 7px; color: #1e1b4b;">Qualificadoras (§2°)</span><span style="font-size: 6px; font-weight: 700; color: #4338ca;">94%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px;"><div style="width: 94%; height: 100%; background: linear-gradient(90deg, #4338ca, #6366f1); border-radius: 2px;"></div></div></div>
+              <div style="margin-bottom: 3px;"><div style="display: flex; justify-content: space-between; margin-bottom: 1px;"><span style="font-size: 7px; color: #1e1b4b;">Feminicídio (§2°-A)</span><span style="font-size: 6px; font-weight: 700; color: #4338ca;">87%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px;"><div style="width: 87%; height: 100%; background: linear-gradient(90deg, #4338ca, #818cf8); border-radius: 2px;"></div></div></div>
+              <div style="margin-bottom: 3px;"><div style="display: flex; justify-content: space-between; margin-bottom: 1px;"><span style="font-size: 7px; color: #1e1b4b;">Privilegiado (§1°)</span><span style="font-size: 6px; font-weight: 700; color: #818cf8;">62%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px;"><div style="width: 62%; height: 100%; background: linear-gradient(90deg, #818cf8, #a5b4fc); border-radius: 2px;"></div></div></div>
+              <div><div style="display: flex; justify-content: space-between; margin-bottom: 1px;"><span style="font-size: 7px; color: #1e1b4b;">Culposo (§3°)</span><span style="font-size: 6px; font-weight: 700; color: #a5b4fc;">45%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px;"><div style="width: 45%; height: 100%; background: linear-gradient(90deg, #a5b4fc, #c7d2fe); border-radius: 2px;"></div></div></div>
+            </div>
+            <div>
+              <div style="font-size: 6px; font-weight: 700; color: #4338ca; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Contexto</div>
+              <div style="margin-bottom: 6px;"><div style="font-size: 6px; color: #71717a; margin-bottom: 2px;">6 editais cobram</div><div style="display: flex; flex-wrap: wrap; gap: 2px;"><span style="font-size: 5px; background: #4f46e5; color: white; padding: 1px 4px; border-radius: 2px;">TRF 3ª</span><span style="font-size: 5px; background: #6366f1; color: white; padding: 1px 4px; border-radius: 2px;">TRF 1ª</span><span style="font-size: 5px; background: #6366f1; color: white; padding: 1px 4px; border-radius: 2px;">TRF 5ª</span><span style="font-size: 5px; background: #818cf8; color: white; padding: 1px 4px; border-radius: 2px;">STJ</span><span style="font-size: 5px; background: #818cf8; color: white; padding: 1px 4px; border-radius: 2px;">MPF</span><span style="font-size: 5px; background: #a5b4fc; color: white; padding: 1px 4px; border-radius: 2px;">DPU</span></div></div>
+              <div style="margin-bottom: 6px;"><div style="font-size: 6px; color: #71717a; margin-bottom: 2px;">Legislação</div><div style="display: flex; gap: 2px;"><span style="font-size: 6px; background: white; border: 1px solid #c7d2fe; color: #3730a3; padding: 1px 4px; border-radius: 3px;">⚖️ CP Art. 121</span><span style="font-size: 6px; background: white; border: 1px solid #c7d2fe; color: #3730a3; padding: 1px 4px; border-radius: 3px;">⚖️ L.13.104</span></div></div>
+              <div><div style="font-size: 6px; color: #71717a; margin-bottom: 2px;">Bancas: <span style="color: #4338ca;">CESPE · FCC · VUNESP</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTADO 2: AGENDADO PARA O FUTURO -->
+<div class="mockup" style="margin-bottom: 16px;">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; font-size: 11px;">
+    Estado 2 — Agendado para 15/04 (futuro)
+  </div>
+  <div class="mockup-body" style="padding: 14px; font-size: 11px; max-height: 380px; overflow-y: auto;">
+    <!-- ACTION CARD -->
+    <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 48px; height: 48px; background: white; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(59,130,246,0.15); flex-shrink: 0;">
+        <div style="font-size: 7px; color: #3b82f6; font-weight: 700; text-transform: uppercase;">Abr</div>
+        <div style="font-size: 18px; font-weight: 900; color: #1e3a5f; line-height: 1;">15</div>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 800; color: #1e3a5f;">Agendado para 15 de Abril</div>
+        <div style="font-size: 8px; color: #3b82f6; margin-top: 1px;">Parte 1 · 40min · Daqui a 8 dias</div>
+        <div style="display: flex; gap: 6px; margin-top: 6px;">
+          <span style="font-size: 7px; background: white; border: 1px solid #93c5fd; color: #1e40af; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-weight: 500;">Antecipar</span>
+          <span style="font-size: 7px; background: white; border: 1px solid #93c5fd; color: #1e40af; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-weight: 500;">Reagendar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTELIGÊNCIA (compacta, mesma coisa) -->
+    <div style="background: linear-gradient(135deg, #f8f9ff, #eef2ff); border: 1px solid #ddd6fe; border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+        <div style="font-size: 11px; font-weight: 800; color: #1e1b4b;">Homicídio</div>
+        <div style="font-size: 6px; color: #6366f1;">Art. 121, CP</div>
+        <div style="margin-left: auto; display: flex; gap: 3px;">
+          <span style="font-size: 6px; background: rgba(99,102,241,0.12); color: #4338ca; padding: 2px 5px; border-radius: 4px; font-weight: 700;">~6h</span>
+          <span style="font-size: 6px; background: rgba(239,68,68,0.08); color: #dc2626; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Alta</span>
+          <span style="font-size: 6px; background: rgba(99,102,241,0.12); color: #4338ca; padding: 2px 5px; border-radius: 4px; font-weight: 700;">#1/5</span>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div>
+          <div style="font-size: 6px; font-weight: 700; color: #4338ca; text-transform: uppercase; margin-bottom: 3px;">O que mais cai</div>
+          <div style="margin-bottom: 2px;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 7px; color: #1e1b4b;">Qualificadoras (§2°)</span><span style="font-size: 6px; color: #4338ca; font-weight: 700;">94%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px; margin-top: 1px;"><div style="width: 94%; height: 100%; background: #6366f1; border-radius: 2px;"></div></div></div>
+          <div style="margin-bottom: 2px;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 7px; color: #1e1b4b;">Feminicídio (§2°-A)</span><span style="font-size: 6px; color: #4338ca; font-weight: 700;">87%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px; margin-top: 1px;"><div style="width: 87%; height: 100%; background: #818cf8; border-radius: 2px;"></div></div></div>
+          <div><div style="display: flex; justify-content: space-between;"><span style="font-size: 7px; color: #1e1b4b;">Privilegiado (§1°)</span><span style="font-size: 6px; color: #818cf8; font-weight: 700;">62%</span></div><div style="height: 3px; background: #e0e7ff; border-radius: 2px; margin-top: 1px;"><div style="width: 62%; height: 100%; background: #a5b4fc; border-radius: 2px;"></div></div></div>
+        </div>
+        <div>
+          <div style="font-size: 6px; font-weight: 700; color: #4338ca; text-transform: uppercase; margin-bottom: 3px;">Contexto</div>
+          <div style="margin-bottom: 4px;"><div style="display: flex; flex-wrap: wrap; gap: 2px;"><span style="font-size: 5px; background: #4f46e5; color: white; padding: 1px 3px; border-radius: 2px;">TRF 3ª</span><span style="font-size: 5px; background: #6366f1; color: white; padding: 1px 3px; border-radius: 2px;">TRF 1ª</span><span style="font-size: 5px; background: #818cf8; color: white; padding: 1px 3px; border-radius: 2px;">STJ</span><span style="font-size: 5px; background: #818cf8; color: white; padding: 1px 3px; border-radius: 2px;">+3</span></div></div>
+          <div style="display: flex; gap: 2px;"><span style="font-size: 6px; background: white; border: 1px solid #c7d2fe; color: #3730a3; padding: 1px 4px; border-radius: 3px;">⚖️ CP Art. 121</span></div>
+          <div style="font-size: 6px; color: #818cf8; margin-top: 4px;">CESPE · FCC · VUNESP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERIAIS (acessíveis mas vazios) -->
+    <div style="font-size: 9px; font-weight: 700; color: #374151; margin-bottom: 6px;">Preparar antecipadamente</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px;">
+      <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">📄</div><div style="font-size: 6px; color: #6b7280;">Resumo</div><div style="font-size: 6px; color: #9ca3af;">0</div></div>
+      <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">🃏</div><div style="font-size: 6px; color: #6b7280;">Flashcards</div><div style="font-size: 6px; color: #9ca3af;">0</div></div>
+      <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">❓</div><div style="font-size: 6px; color: #6b7280;">Questões</div><div style="font-size: 6px; color: #9ca3af;">0</div></div>
+      <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">⚖️</div><div style="font-size: 6px; color: #6b7280;">Lei Seca</div><div style="font-size: 6px; color: #9ca3af;">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTADO 3: TAREFA DE HOJE -->
+<div class="mockup" style="margin-bottom: 16px;">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #047857, #10b981); color: white; font-size: 11px;">
+    Estado 3 — Tarefa de hoje
+  </div>
+  <div class="mockup-body" style="padding: 14px; font-size: 11px; max-height: 380px; overflow-y: auto;">
+    <!-- ACTION CARD — Estudar agora -->
+    <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #6ee7b7; border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #059669, #10b981); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(5,150,105,0.25); flex-shrink: 0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 800; color: #064e3b;">Estudar Agora</div>
+        <div style="font-size: 8px; color: #059669; margin-top: 1px;">Parte 1 · 40min estimados · Hoje</div>
+        <div style="margin-top: 6px; height: 4px; background: #a7f3d0; border-radius: 3px; width: 120px;">
+          <div style="width: 0%; height: 100%; background: #059669; border-radius: 3px;"></div>
+        </div>
+        <div style="font-size: 6px; color: #6ee7b7; margin-top: 2px;">0% concluído</div>
+      </div>
+    </div>
+
+    <!-- Inteligência compacta (como contexto, não protagonista) -->
+    <div style="background: #f8f9ff; border: 1px solid #e0e7ff; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+      <div style="font-size: 9px; font-weight: 700; color: #3730a3;">Homicídio</div>
+      <div style="font-size: 6px; color: #818cf8;">Art. 121 CP</div>
+      <div style="margin-left: auto; display: flex; gap: 3px;">
+        <span style="font-size: 6px; background: #eef2ff; color: #4338ca; padding: 2px 4px; border-radius: 3px; font-weight: 600;">~6h</span>
+        <span style="font-size: 6px; background: #fef2f2; color: #dc2626; padding: 2px 4px; border-radius: 3px; font-weight: 600;">Alta</span>
+        <span style="font-size: 6px; background: #eef2ff; color: #4338ca; padding: 2px 4px; border-radius: 3px; font-weight: 600;">#1/5</span>
+      </div>
+      <span style="font-size: 6px; color: #818cf8; cursor: pointer; font-weight: 500; white-space: nowrap;">ver mais ›</span>
+    </div>
+
+    <!-- Materiais prontos -->
+    <div style="font-size: 9px; font-weight: 700; color: #374151; margin-bottom: 6px;">Materiais</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+      <div style="border: 1px solid #86efac; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: white;">
+        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📄</div>
+        <div><div style="font-weight: 600; font-size: 9px; color: #374151;">Documento</div><div style="font-size: 7px; color: #059669;">Criar resumo</div></div>
+      </div>
+      <div style="border: 1px solid #c4b5fd; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: white;">
+        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px;">🃏</div>
+        <div><div style="font-weight: 600; font-size: 9px; color: #374151;">Flashcards</div><div style="font-size: 7px; color: #7c3aed;">0 cartões</div></div>
+      </div>
+      <div style="border: 1px solid #fdba74; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: white;">
+        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #fff7ed, #fed7aa); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px;">❓</div>
+        <div><div style="font-weight: 600; font-size: 9px; color: #374151;">Questões</div><div style="font-size: 7px; color: #ea580c;">23 disponíveis</div></div>
+      </div>
+      <div style="border: 1px solid #67e8f9; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: white;">
+        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #ecfeff, #cffafe); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px;">⚖️</div>
+        <div><div style="font-weight: 600; font-size: 9px; color: #374151;">Lei Seca</div><div style="font-size: 7px; color: #0891b2;">CP Art. 121</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTADO 4: EM ANDAMENTO -->
+<div class="mockup" style="margin-bottom: 16px;">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #18181b, #27272a); color: white; font-size: 11px;">
+    Estado 4 — Em andamento (60% concluído)
+  </div>
+  <div class="mockup-body" style="padding: 14px; font-size: 11px; max-height: 420px; overflow-y: auto;">
+    <!-- ACTION CARD — Continuar -->
+    <div style="background: linear-gradient(135deg, #f8f9ff, #eef2ff); border: 1px solid #c7d2fe; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;">
+      <div style="width: 44px; height: 44px; position: relative; flex-shrink: 0;">
+        <svg viewBox="0 0 36 36" style="width: 44px; height: 44px; transform: rotate(-90deg);">
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#e0e7ff" stroke-width="3"/>
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#4338ca" stroke-width="3" stroke-dasharray="94.2" stroke-dashoffset="37.7" stroke-linecap="round"/>
+        </svg>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 800; color: #4338ca;">60%</div>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 11px; font-weight: 800; color: #1e1b4b;">Continuar Estudando</div>
+        <div style="font-size: 7px; color: #6366f1; margin-top: 1px;">Parte 2 pendente · 24min restantes</div>
+        <div style="font-size: 7px; color: #818cf8; margin-top: 2px;">Último acesso: há 3h · 1h20 investido</div>
+      </div>
+    </div>
+
+    <!-- Inteligência como barra compacta -->
+    <div style="background: #f8f9ff; border: 1px solid #e0e7ff; border-radius: 6px; padding: 6px 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+      <span style="font-size: 8px; font-weight: 700; color: #3730a3;">Homicídio</span>
+      <span style="font-size: 6px; color: #818cf8;">Art. 121 CP · ~6h · Alta · #1/5</span>
+      <span style="font-size: 6px; color: #818cf8; cursor: pointer; margin-left: auto;">ver mais ›</span>
+    </div>
+
+    <!-- Stepper -->
+    <div style="background: #f4f4f5; border-radius: 7px; padding: 5px 10px; margin-bottom: 6px;">
+      <div style="display: flex; align-items: center; gap: 2px;">
+        <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #3f3f46; font-size: 6px; display: flex; align-items: center; justify-content: center;">📚</div><span style="font-size: 5px; color: #71717a;">Estudante</span></div>
+        <div style="flex: 1; height: 2px; background: #52525b;"></div>
+        <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #3f3f46; font-size: 6px; display: flex; align-items: center; justify-content: center;">⚖️</div><span style="font-size: 5px; color: #71717a;">Conhecedor</span></div>
+        <div style="flex: 1; height: 2px; background: #d4d4d8;"><div style="height: 100%; width: 50%; background: #18181b; border-radius: 2px;"></div></div>
+        <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #18181b; font-size: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">🏛️</div><span style="font-size: 5px; color: #18181b; font-weight: 700;">↑ Proficiente</span></div>
+        <div style="flex: 1; height: 2px; background: #e5e7eb;"></div>
+        <div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 16px; height: 16px; border-radius: 50%; background: #f4f4f5; border: 1px solid #e5e7eb; font-size: 6px; display: flex; align-items: center; justify-content: center; opacity: 0.4;">👨‍⚖️</div><span style="font-size: 5px; color: #d4d4d8;">Especialista</span></div>
+      </div>
+    </div>
+
+    <!-- 3 colunas: Revisões + Desempenho + IA -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-radius: 7px; overflow: hidden; margin-bottom: 6px;">
+      <div style="background: #f4f4f5; padding: 7px;">
+        <div style="font-size: 7px; font-weight: 700; color: #18181b; margin-bottom: 3px;">Revisões</div>
+        <div style="display: flex; align-items: center; gap: 2px; padding: 2px 0; border-bottom: 1px solid #e5e7eb;"><div style="width: 8px; height: 8px; background: #dcfce7; border: 1.5px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><span style="font-size: 4px; color: #16a34a;">✓</span></div><span style="font-size: 7px;">15/01</span><span style="font-size: 7px; font-weight: 700; color: #16a34a; margin-left: auto;">85%</span></div>
+        <div style="display: flex; align-items: center; gap: 2px; padding: 2px 0; border-bottom: 1px solid #e5e7eb;"><div style="width: 8px; height: 8px; background: #dcfce7; border: 1.5px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><span style="font-size: 4px; color: #16a34a;">✓</span></div><span style="font-size: 7px;">12/01</span><span style="font-size: 7px; font-weight: 700; color: #16a34a; margin-left: auto;">78%</span></div>
+        <div style="display: flex; align-items: center; gap: 2px; padding: 2px 0;"><div style="width: 8px; height: 8px; background: #fff7ed; border: 1.5px solid #f59e0b; border-radius: 50%;"></div><span style="font-size: 7px; color: #d97706;">18/01</span><span style="font-size: 5px; background: #fff7ed; color: #d97706; padding: 1px 3px; border-radius: 3px; margin-left: auto;">Fazer</span></div>
+      </div>
+      <div style="background: #f4f4f5; border-left: 1px solid #e5e7eb; padding: 7px;">
+        <div style="font-size: 7px; font-weight: 700; color: #18181b; margin-bottom: 3px;">Desempenho ↑</div>
+        <svg viewBox="0 0 100 35" style="width: 100%; height: 35px;"><polyline points="5,28 20,24 38,26 55,18 72,14 88,10 97,6" fill="none" stroke="#18181b" stroke-width="1.5" stroke-linecap="round"/><circle cx="97" cy="6" r="2" fill="#18181b"/></svg>
+      </div>
+      <div style="background: #18181b; padding: 7px; border-radius: 0 7px 7px 0;">
+        <div style="display: flex; align-items: center; gap: 3px; margin-bottom: 3px;"><div style="width: 12px; height: 12px; background: #2563eb; border-radius: 3px; font-size: 6px; display: flex; align-items: center; justify-content: center;">✨</div><span style="font-size: 7px; font-weight: 600; color: #f4f4f5;">IA</span></div>
+        <p style="font-size: 6px; color: #a1a1aa; line-height: 1.3; margin-bottom: 4px;">Foque nas qualificadoras (§2°) — 94% das provas cobram.</p>
+        <button style="width: 100%; background: white; color: #18181b; border: none; padding: 3px; border-radius: 3px; font-size: 6px; font-weight: 600; cursor: pointer;">✨ Conversar</button>
+      </div>
+    </div>
+
+    <!-- Materiais -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+      <div style="border: 1px solid #86efac; border-radius: 6px; padding: 6px; display: flex; align-items: center; gap: 5px; cursor: pointer; background: white;"><div style="width: 18px; height: 18px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 4px; font-size: 8px; display: flex; align-items: center; justify-content: center;">📄</div><div><div style="font-weight: 600; font-size: 7px;">Documento</div><div style="font-size: 6px; color: #059669;">3 resumos</div></div></div>
+      <div style="border: 1px solid #c4b5fd; border-radius: 6px; padding: 6px; display: flex; align-items: center; gap: 5px; cursor: pointer; background: white;"><div style="width: 18px; height: 18px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 4px; font-size: 8px; display: flex; align-items: center; justify-content: center;">🃏</div><div><div style="font-weight: 600; font-size: 7px;">Flashcards</div><div style="font-size: 6px; color: #7c3aed;">12 cartões</div></div></div>
+      <div style="border: 1px solid #fdba74; border-radius: 6px; padding: 6px; display: flex; align-items: center; gap: 5px; cursor: pointer; background: white;"><div style="width: 18px; height: 18px; background: linear-gradient(135deg, #fff7ed, #fed7aa); border-radius: 4px; font-size: 8px; display: flex; align-items: center; justify-content: center;">❓</div><div><div style="font-weight: 600; font-size: 7px;">Questões</div><div style="font-size: 6px; color: #ea580c;">8 questões</div></div></div>
+      <div style="border: 1px solid #67e8f9; border-radius: 6px; padding: 6px; display: flex; align-items: center; gap: 5px; cursor: pointer; background: white;"><div style="width: 18px; height: 18px; background: linear-gradient(135deg, #ecfeff, #cffafe); border-radius: 4px; font-size: 8px; display: flex; align-items: center; justify-content: center;">⚖️</div><div><div style="font-weight: 600; font-size: 7px;">Lei Seca</div><div style="font-size: 6px; color: #0891b2;">Leitura</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTADO 5: CONCLUÍDO -->
+<div class="mockup">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #15803d, #22c55e); color: white; font-size: 11px;">
+    Estado 5 — Concluído
+  </div>
+  <div class="mockup-body" style="padding: 14px; font-size: 11px; max-height: 340px; overflow-y: auto;">
+    <!-- ACTION CARD — Conquista -->
+    <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #15803d, #22c55e); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(34,197,94,0.25);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 800; color: #14532d;">Tópico Concluído</div>
+        <div style="font-size: 8px; color: #16a34a; margin-top: 1px;">3 revisões feitas · Desempenho médio: 82%</div>
+        <div style="display: flex; gap: 4px; margin-top: 4px;">
+          <span style="font-size: 6px; background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: 500;">5h32 investido</span>
+          <span style="font-size: 6px; background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: 500;">Nível: Proficiente</span>
+          <span style="font-size: 6px; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-weight: 500;">Próxima revisão: 22/04</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inteligência compacta -->
+    <div style="background: #f8f9ff; border: 1px solid #e0e7ff; border-radius: 6px; padding: 6px 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+      <span style="font-size: 8px; font-weight: 700; color: #3730a3;">Homicídio</span>
+      <span style="font-size: 6px; color: #818cf8;">Art. 121 CP · ~6h · Alta · #1/5</span>
+      <span style="font-size: 6px; color: #818cf8; cursor: pointer; margin-left: auto;">ver mais ›</span>
+    </div>
+
+    <!-- Materiais (com contadores finais) -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px;">
+      <div style="border: 1px solid #86efac; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">📄</div><div style="font-size: 6px; color: #374151; font-weight: 600;">Resumo</div><div style="font-size: 7px; color: #059669; font-weight: 700;">3</div></div>
+      <div style="border: 1px solid #c4b5fd; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">🃏</div><div style="font-size: 6px; color: #374151; font-weight: 600;">Flashcards</div><div style="font-size: 7px; color: #7c3aed; font-weight: 700;">12</div></div>
+      <div style="border: 1px solid #fdba74; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">❓</div><div style="font-size: 6px; color: #374151; font-weight: 600;">Questões</div><div style="font-size: 7px; color: #ea580c; font-weight: 700;">15/23</div></div>
+      <div style="border: 1px solid #67e8f9; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; background: white;"><div style="font-size: 12px; margin-bottom: 2px;">⚖️</div><div style="font-size: 6px; color: #374151; font-weight: 600;">Lei Seca</div><div style="font-size: 7px; color: #0891b2; font-weight: 700;">✓</div></div>
+    </div>
+  </div>
+</div>

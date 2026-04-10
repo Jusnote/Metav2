@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDocumentsOrganization } from '@/contexts/DocumentsOrganizationContext';
 import { NotesModal } from '../components/NotesModal';
@@ -22,7 +22,6 @@ const TOPICOS_QUERY = `
 const DocumentsOrganizationPage = () => {
   const navigate = typeof window !== 'undefined' ? useNavigate() : null;
   const [aiDrawerOpen, setAiDrawerOpen] = React.useState(false);
-  const pageContainerRef = useRef<HTMLDivElement>(null);
 
   // ---- Edital mode detection ----
   const [searchParams] = useSearchParams();
@@ -166,7 +165,7 @@ const DocumentsOrganizationPage = () => {
   }, []);
 
   return (
-    <div ref={pageContainerRef} className="h-full relative">
+    <div className="h-full relative">
       <div className="h-full overflow-y-auto">
       {/* ===== EDITAL / CRONOGRAMA TOGGLE ===== */}
       <div className="max-w-5xl mx-auto px-8 pt-5 pb-0">
@@ -417,7 +416,6 @@ const DocumentsOrganizationPage = () => {
         onOpenNotes={handleOpenNotes}
         onOpenAI={handleOpenAI}
         onPlaySubtopico={handlePlaySubtopico}
-        container={pageContainerRef.current}
       />
 
       {/* ===== AI Assistant ===== */}

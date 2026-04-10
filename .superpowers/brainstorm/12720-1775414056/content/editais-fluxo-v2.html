@@ -1,0 +1,176 @@
+<h2>Fluxo de Editais — Com mobile em mente</h2>
+<p class="subtitle">Qual abordagem funciona bem no desktop E no celular?</p>
+
+<div class="cards">
+  <!-- Opção B revisada -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1a2e;border-radius:8px;padding:16px;font-family:sans-serif;color:#e0e0e0;">
+        <div style="text-align:center;font-size:10px;color:#6366f1;margin-bottom:8px;font-weight:bold;">DESKTOP</div>
+        <div style="display:flex;gap:10px;">
+          <div style="width:35%;background:#2a2a4a;border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:#888;margin-bottom:4px;">🔍 Buscar...</div>
+            <div style="background:#252545;padding:4px 8px;border-radius:4px;font-size:9px;margin-bottom:2px;border-left:3px solid #6366f1;">▼ Polícia Federal</div>
+            <div style="padding-left:10px;">
+              <div style="background:#1e1e3e;padding:3px 6px;border-radius:3px;font-size:8px;margin-bottom:2px;border-left:2px solid #f59e0b;">Delegado</div>
+              <div style="background:#1e1e3e;padding:3px 6px;border-radius:3px;font-size:8px;margin-bottom:2px;">Agente</div>
+            </div>
+            <div style="background:#252545;padding:4px 8px;border-radius:4px;font-size:9px;margin-top:4px;">▶ TJ-SP</div>
+          </div>
+          <div style="width:65%;background:#2a2a4a;border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:#888;">Delegado • PF</div>
+            <div style="font-size:10px;font-weight:bold;margin-bottom:6px;">Conteúdo Programático</div>
+            <div style="background:#252545;padding:4px 8px;border-radius:4px;font-size:9px;margin-bottom:2px;">▼ Língua Portuguesa (25)</div>
+            <div style="background:#252545;padding:4px 8px;border-radius:4px;font-size:9px;margin-bottom:2px;">▶ Dir. Constitucional (32)</div>
+            <div style="display:flex;gap:4px;margin-top:8px;">
+              <span style="background:#6366f1;padding:2px 6px;border-radius:3px;font-size:8px;">📝</span>
+              <span style="background:#2563eb;padding:2px 6px;border-radius:3px;font-size:8px;">🗂</span>
+              <span style="background:#059669;padding:2px 6px;border-radius:3px;font-size:8px;">❓</span>
+              <span style="background:#d97706;padding:2px 6px;border-radius:3px;font-size:8px;">⚖️</span>
+            </div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #333;margin-top:12px;padding-top:12px;">
+          <div style="text-align:center;font-size:10px;color:#6366f1;margin-bottom:8px;font-weight:bold;">MOBILE</div>
+          <div style="max-width:180px;margin:0 auto;background:#2a2a4a;border-radius:12px;padding:10px;">
+            <div style="font-size:9px;color:#888;margin-bottom:4px;">🔍 Buscar...</div>
+            <div style="background:#252545;padding:4px 8px;border-radius:4px;font-size:9px;margin-bottom:2px;">▼ Polícia Federal</div>
+            <div style="padding-left:8px;">
+              <div style="background:#1e1e3e;padding:3px 6px;border-radius:3px;font-size:8px;margin-bottom:2px;border-left:2px solid #f59e0b;">Delegado →</div>
+              <div style="background:#1e1e3e;padding:3px 6px;border-radius:3px;font-size:8px;">Agente →</div>
+            </div>
+            <div style="text-align:center;font-size:8px;color:#666;margin-top:6px;">Toca no cargo → abre conteúdo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B) Sidebar accordion (desktop) + lista full-screen (mobile)</h3>
+      <p>Desktop: sidebar fixa com editais/cargos, conteúdo à direita. Mobile: lista accordion full-screen, ao tocar no cargo abre o conteúdo programático como nova tela (push navigation). Mesmo componente, layout responsivo.</p>
+    </div>
+  </div>
+
+  <!-- Opção D - NOVA -->
+  <div class="card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1a2e;border-radius:8px;padding:16px;font-family:sans-serif;color:#e0e0e0;">
+        <div style="text-align:center;font-size:10px;color:#6366f1;margin-bottom:8px;font-weight:bold;">DESKTOP & MOBILE (mesmo fluxo)</div>
+        <!-- Step 1 -->
+        <div style="background:#2a2a4a;border-radius:8px;padding:10px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="background:#6366f1;width:20px;height:20px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:bold;">1</div>
+            <div style="font-size:10px;font-weight:bold;">Meu Concurso</div>
+            <div style="font-size:9px;color:#888;margin-left:auto;">PF - Delegado ✕</div>
+          </div>
+          <div style="font-size:9px;color:#888;">Concurso e cargo selecionados. Toque para trocar.</div>
+        </div>
+        <!-- Conteudo -->
+        <div style="background:#2a2a4a;border-radius:8px;padding:10px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="background:#10b981;width:20px;height:20px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;">📚</div>
+            <div style="font-size:10px;font-weight:bold;">Conteúdo Programático</div>
+            <div style="font-size:9px;color:#888;margin-left:auto;">356 disc • 19.609 tópicos</div>
+          </div>
+          <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:9px;margin-bottom:3px;display:flex;justify-content:space-between;">
+            <span>▼ Língua Portuguesa</span>
+            <span style="color:#888;">25 tópicos</span>
+          </div>
+          <div style="padding-left:14px;margin-bottom:6px;">
+            <div style="font-size:8px;color:#aaa;padding:2px 0;display:flex;justify-content:space-between;">
+              <span>1. Compreensão e interpretação</span>
+              <span style="color:#10b981;">● 85%</span>
+            </div>
+            <div style="font-size:8px;color:#aaa;padding:2px 0;display:flex;justify-content:space-between;">
+              <span>2. Tipologia textual</span>
+              <span style="color:#f59e0b;">● 60%</span>
+            </div>
+            <div style="font-size:8px;color:#aaa;padding:2px 0;display:flex;justify-content:space-between;">
+              <span>3. Ortografia oficial</span>
+              <span style="color:#ef4444;">● 30%</span>
+            </div>
+          </div>
+          <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:9px;margin-bottom:3px;display:flex;justify-content:space-between;">
+            <span>▶ Dir. Constitucional</span>
+            <span style="color:#888;">32 tópicos</span>
+          </div>
+          <div style="background:#252545;padding:6px 10px;border-radius:4px;font-size:9px;display:flex;justify-content:space-between;">
+            <span>▶ Dir. Administrativo</span>
+            <span style="color:#888;">48 tópicos</span>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:6px;">
+            <div style="flex:1;background:#6366f1;padding:6px;border-radius:6px;text-align:center;font-size:9px;">📝 Resumo</div>
+            <div style="flex:1;background:#2563eb;padding:6px;border-radius:6px;text-align:center;font-size:9px;">🗂 Cards</div>
+            <div style="flex:1;background:#059669;padding:6px;border-radius:6px;text-align:center;font-size:9px;">❓ Questões</div>
+            <div style="flex:1;background:#d97706;padding:6px;border-radius:6px;text-align:center;font-size:9px;">⚖️ Leis</div>
+          </div>
+        </div>
+        <!-- Progresso geral -->
+        <div style="background:#2a2a4a;border-radius:8px;padding:8px 10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:9px;">Progresso geral</div>
+          <div style="flex:1;background:#1e1e3e;height:6px;border-radius:3px;margin:0 10px;">
+            <div style="background:linear-gradient(90deg,#6366f1,#10b981);width:42%;height:6px;border-radius:3px;"></div>
+          </div>
+          <div style="font-size:9px;color:#10b981;">42%</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>D) "Meu Concurso" — página dedicada com progresso</h3>
+      <p>O aluno "adota" um concurso+cargo. Tudo aparece numa página dedicada: conteúdo programático com progresso por tópico (%), botões de ação (resumo, cards, questões, leis) em cada nível, barra de progresso geral. Funciona igual no desktop e mobile — é uma lista vertical. O concurso fica "fixo" no topo como contexto, troca quando quiser.</p>
+    </div>
+  </div>
+
+  <!-- Opção E -->
+  <div class="card" data-choice="e" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1a2e;border-radius:8px;padding:16px;font-family:sans-serif;color:#e0e0e0;">
+        <div style="text-align:center;font-size:10px;color:#6366f1;margin-bottom:8px;font-weight:bold;">DASHBOARD DO CONCURSEIRO</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div style="background:#2a2a4a;border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:#888;">Meu concurso</div>
+            <div style="font-size:12px;font-weight:bold;">PF</div>
+            <div style="font-size:9px;">Delegado</div>
+            <div style="font-size:9px;color:#10b981;margin-top:4px;">42% concluído</div>
+          </div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:#888;">Próxima revisão</div>
+            <div style="font-size:12px;font-weight:bold;">Hoje</div>
+            <div style="font-size:9px;">23 cards pendentes</div>
+            <div style="font-size:9px;color:#f59e0b;margin-top:4px;">5 matérias</div>
+          </div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:#888;">Questões</div>
+            <div style="font-size:12px;font-weight:bold;">1.247</div>
+            <div style="font-size:9px;">resolvidas</div>
+            <div style="font-size:9px;color:#10b981;margin-top:4px;">72% acerto</div>
+          </div>
+          <div style="background:#2a2a4a;border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:#888;">Dias para prova</div>
+            <div style="font-size:12px;font-weight:bold;color:#ef4444;">87</div>
+            <div style="font-size:9px;">15/jun/2026</div>
+            <div style="font-size:9px;color:#888;margin-top:4px;">cronograma ativo</div>
+          </div>
+        </div>
+        <div style="background:#2a2a4a;border-radius:8px;padding:10px;">
+          <div style="font-size:10px;font-weight:bold;margin-bottom:6px;">Matérias prioritárias</div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:1px solid #333;">
+            <span>Dir. Constitucional</span>
+            <span style="color:#ef4444;">30% ↑ prioridade</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:1px solid #333;">
+            <span>Dir. Administrativo</span>
+            <span style="color:#f59e0b;">55%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;">
+            <span>Língua Portuguesa</span>
+            <span style="color:#10b981;">85%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>E) Dashboard completo do concurseiro</h3>
+      <p>Página inicial = dashboard do concurso adotado. Cards com: progresso, revisões pendentes, questões feitas, dias para prova, matérias prioritárias (ordenadas por necessidade). Ao clicar em qualquer matéria, entra no conteúdo programático detalhado. É o "cockpit" do concurseiro.</p>
+    </div>
+  </div>
+</div>
