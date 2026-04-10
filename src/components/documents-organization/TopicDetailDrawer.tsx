@@ -318,7 +318,7 @@ function DrawerInnerContent({
 
   // Query local progress from Supabase by origin_topico_ref
   const originRef = (item as any)._originRef as number | undefined;
-  const { progress: localProgress, refetch: refetchProgress } = useLocalProgress(originRef || null);
+  const { progress: localProgress } = useLocalProgress(originRef || null);
 
   const hasProgress = localProgress !== null && (
     (localProgress.tempo_investido || 0) > 0 ||
@@ -532,7 +532,7 @@ function DrawerInnerContent({
 
             if (result.success) {
               toast.success(`Estudo registrado! Mastery: ${result.masteryScore || 0}%`);
-              refetchProgress();
+              // Progress queries invalidated automatically via React Query in completeStudy
             } else {
               toast.error('Erro ao registrar estudo. Tente novamente.');
             }

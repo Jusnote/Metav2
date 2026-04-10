@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useCallback } from 'react';
 
 export interface LocalProgress {
   id: string;
@@ -17,66 +18,93 @@ export interface LocalProgress {
   completed_at: string | null;
 }
 
+const PROGRESS_SELECT = 'id, origin_topico_ref, mastery_score, learning_stage, question_accuracy, questions_total, questoes_acertos, questoes_erros, tempo_investido, teoria_finalizada, leis_lidas, last_access, completed_at';
+
+async function getUserId(): Promise<string | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id || null;
+}
+
 /**
  * Single topic: query local progress by origin_topico_ref
+ * Uses React Query — cache key: ['local-progress', originTopicoRef]
  */
 export function useLocalProgress(originTopicoRef: number | null) {
-  const [progress, setProgress] = useState<LocalProgress | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const refetch = useCallback(async () => {
-    if (!originTopicoRef) { setProgress(null); return; }
-    setIsLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setIsLoading(false); return; }
+  const { data: progress = null, isLoading } = useQuery({
+    queryKey: ['local-progress', originTopicoRef],
+    queryFn: async (): Promise<LocalProgress | null> => {
+      if (!originTopicoRef) return null;
+      const userId = await getUserId();
+      if (!userId) return null;
 
-    const { data } = await supabase
-      .from('topicos')
-      .select('id, origin_topico_ref, mastery_score, learning_stage, question_accuracy, questions_total, questoes_acertos, questoes_erros, tempo_investido, teoria_finalizada, leis_lidas, last_access, completed_at')
-      .eq('user_id', user.id)
-      .eq('origin_topico_ref', originTopicoRef)
-      .maybeSingle();
+      const { data } = await supabase
+        .from('topicos')
+        .select(PROGRESS_SELECT)
+        .eq('user_id', userId)
+        .eq('origin_topico_ref', originTopicoRef)
+        .maybeSingle();
 
-    setProgress((data as LocalProgress | null) ?? null);
-    setIsLoading(false);
-  }, [originTopicoRef]);
+      return (data as LocalProgress | null) ?? null;
+    },
+    enabled: !!originTopicoRef,
+    staleTime: 30 * 1000, // 30s — fresh enough for progress data
+    gcTime: 5 * 60 * 1000, // 5min
+  });
 
-  useEffect(() => { refetch(); }, [refetch]);
+  const refetch = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['local-progress'] });
+  }, [queryClient]);
 
   return { progress, isLoading, refetch };
 }
 
 /**
  * Batch: query local progress for multiple topics at once (for the topic list)
+ * Uses React Query — cache key: ['local-progress-batch', sortedRefs]
  */
 export function useLocalProgressBatch(originRefs: number[]) {
-  const [progressMap, setProgressMap] = useState<Map<number, LocalProgress>>(new Map());
-  const [isLoading, setIsLoading] = useState(false);
+  const sortedKey = [...originRefs].sort().join(',');
 
-  const refetch = useCallback(async () => {
-    if (originRefs.length === 0) { setProgressMap(new Map()); return; }
-    setIsLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setIsLoading(false); return; }
+  const { data: progressMap = new Map<number, LocalProgress>(), isLoading } = useQuery({
+    queryKey: ['local-progress-batch', sortedKey],
+    queryFn: async (): Promise<Map<number, LocalProgress>> => {
+      if (originRefs.length === 0) return new Map();
+      const userId = await getUserId();
+      if (!userId) return new Map();
 
-    const { data } = await supabase
-      .from('topicos')
-      .select('id, origin_topico_ref, mastery_score, learning_stage, question_accuracy, questions_total, questoes_acertos, questoes_erros, tempo_investido, teoria_finalizada, leis_lidas, last_access, completed_at')
-      .eq('user_id', user.id)
-      .in('origin_topico_ref', originRefs);
+      const { data } = await supabase
+        .from('topicos')
+        .select(PROGRESS_SELECT)
+        .eq('user_id', userId)
+        .in('origin_topico_ref', originRefs);
 
-    const map = new Map<number, LocalProgress>();
-    if (data) {
-      for (const row of data) {
-        const ref = (row as any).origin_topico_ref;
-        if (ref) map.set(ref, row as unknown as LocalProgress);
+      const map = new Map<number, LocalProgress>();
+      if (data) {
+        for (const row of data) {
+          const ref = (row as any).origin_topico_ref;
+          if (ref) map.set(ref, row as unknown as LocalProgress);
+        }
       }
-    }
-    setProgressMap(map);
-    setIsLoading(false);
-  }, [originRefs.join(',')]);
+      return map;
+    },
+    enabled: originRefs.length > 0,
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => { refetch(); }, [refetch]);
+  return { progressMap, isLoading };
+}
 
-  return { progressMap, isLoading, refetch };
+/**
+ * Call this after writing progress data to invalidate all progress queries.
+ * Both useLocalProgress and useLocalProgressBatch will refetch automatically.
+ */
+export function useInvalidateProgress() {
+  const queryClient = useQueryClient();
+  return useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['local-progress'] });
+    queryClient.invalidateQueries({ queryKey: ['local-progress-batch'] });
+  }, [queryClient]);
 }

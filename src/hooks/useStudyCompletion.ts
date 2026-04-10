@@ -2,10 +2,12 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useEditalSnapshot } from './useEditalSnapshot';
 import { calculateMasteryScore } from './useQuestoesLog';
+import { useInvalidateProgress } from './useLocalProgress';
 import type { CompletionData } from '@/components/documents-organization/StudyCompletionForm';
 
 export function useStudyCompletion() {
   const { ensureTopicoLocal } = useEditalSnapshot();
+  const invalidateProgress = useInvalidateProgress();
 
   const completeStudy = useCallback(async (params: {
     // Topic identification (either local ID or origin refs for lazy creation)
@@ -142,8 +144,11 @@ export function useStudyCompletion() {
       created_at: new Date().toISOString(),
     });
 
+    // Invalidate all progress queries — drawer + list update automatically
+    invalidateProgress();
+
     return { success: true, masteryScore: mastery_score };
-  }, [ensureTopicoLocal]);
+  }, [ensureTopicoLocal, invalidateProgress]);
 
   return { completeStudy };
 }
