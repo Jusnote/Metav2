@@ -150,6 +150,7 @@ function CompactRevisionsChart() {
     { revisao: 'Rev 3', score: 78 },
     { revisao: 'Rev 4', score: 85 },
     { revisao: 'Rev 5', score: 90 },
+    { revisao: 'Rev 6', score: 88 },
   ];
   const scores = chartData.map(d => d.score);
   const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
