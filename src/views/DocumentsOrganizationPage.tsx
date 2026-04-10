@@ -165,7 +165,8 @@ const DocumentsOrganizationPage = () => {
   }, []);
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full relative">
+      <div className="h-full overflow-y-auto">
       {/* ===== EDITAL / CRONOGRAMA TOGGLE ===== */}
       <div className="max-w-5xl mx-auto px-8 pt-5 pb-0">
         <div className="flex items-center justify-between">
@@ -405,7 +406,9 @@ const DocumentsOrganizationPage = () => {
       </div>
       )}
 
-      {/* ===== RIGHT DRAWER / BOTTOM SHEET ===== */}
+      </div>{/* end scroll container */}
+
+      {/* ===== RIGHT DRAWER / BOTTOM SHEET (absolute within relative wrapper) ===== */}
       <TopicDetailDrawer
         detail={drawerDetail}
         onClose={handleCloseDrawer}
