@@ -21,6 +21,7 @@ import { TopicoIntelligence } from './TopicoIntelligence';
 import { ProgressDots, calculateProgressDots } from './ProgressDots';
 import { MasteryBadge } from './MasteryBadge';
 import { useTopicoIntelligence } from '@/hooks/useTopicoIntelligence';
+import { useLocalProgress } from '@/hooks/useLocalProgress';
 import type { Topico, Subtopico } from '@/hooks/useDisciplinasManager';
 
 // ============ Types ============
@@ -411,15 +412,24 @@ function DrawerInnerContent({
   );
 
   const item = detail.item;
-  const hasProgress = !item.id.startsWith('api-') && ((item as any).tempo_investido > 0 || (item as any).questoes_acertos > 0 || (item as any).completed_at);
+
+  // Query local progress from Supabase by origin_topico_ref
+  const originRef = (item as any)._originRef as number | undefined;
+  const { progress: localProgress, refetch: refetchProgress } = useLocalProgress(originRef || null);
+
+  const hasProgress = localProgress !== null && (
+    (localProgress.tempo_investido || 0) > 0 ||
+    (localProgress.questoes_acertos || 0) > 0 ||
+    localProgress.completed_at !== null
+  );
 
   const dots = calculateProgressDots({
-    completed_at: (item as any).completed_at,
-    teoria_finalizada: (item as any).teoria_finalizada,
-    tempo_investido: (item as any).tempo_investido,
-    questoes_acertos: (item as any).questoes_acertos,
-    questoes_erros: (item as any).questoes_erros,
-    leis_lidas: (item as any).leis_lidas,
+    completed_at: localProgress?.completed_at ?? (item as any).completed_at,
+    teoria_finalizada: localProgress?.teoria_finalizada ?? (item as any).teoria_finalizada,
+    tempo_investido: localProgress?.tempo_investido ?? (item as any).tempo_investido,
+    questoes_acertos: localProgress?.questoes_acertos ?? (item as any).questoes_acertos,
+    questoes_erros: localProgress?.questoes_erros ?? (item as any).questoes_erros,
+    leis_lidas: localProgress?.leis_lidas ?? (item as any).leis_lidas,
   });
 
   return (
@@ -614,6 +624,7 @@ function DrawerInnerContent({
               data,
             });
             setShowCompletionForm(false);
+            refetchProgress();
           }}
         />
       )}
