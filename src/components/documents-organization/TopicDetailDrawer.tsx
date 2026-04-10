@@ -3,12 +3,11 @@ import {
   X, Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
 } from 'lucide-react';
 import {
-  Drawer,
-  DrawerContent as ShadcnDrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-} from '@/components/ui/drawer';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { Bar as BarLocal, BarChart as BarChartLocal, CartesianGrid as CartesianGridLocal, XAxis as XAxisLocal } from 'recharts';
 import {
   ChartContainer as ChartContainerLocal,
@@ -329,25 +328,18 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const itemTitle = item?.nome || '';
 
   return (
-    <Drawer direction="right" open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <ShadcnDrawerContent direction="right" className="h-full w-[35%] max-w-[480px] min-w-[360px] rounded-none">
-        <DrawerHeader className="px-6 pb-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.1em]">
-                {moduleLabel}
-              </span>
-              <DrawerTitle className="text-[15px] font-semibold text-[#6b667a] leading-tight mt-1">
-                {title}
-              </DrawerTitle>
-            </div>
-            <DrawerClose className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
-              <X className="w-4 h-4 text-muted-foreground" />
-            </DrawerClose>
-          </div>
-        </DrawerHeader>
+    <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <SheetContent side="right" className="w-[35%] max-w-[480px] min-w-[360px] p-0 flex flex-col">
+        <SheetHeader className="px-6 pt-5 pb-0">
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.1em]">
+            {moduleLabel}
+          </span>
+          <SheetTitle className="text-[15px] font-semibold text-[#6b667a] leading-tight">
+            {title}
+          </SheetTitle>
+        </SheetHeader>
 
-        <div className="no-scrollbar overflow-y-auto flex-1 px-0">
+        <div className="overflow-y-auto flex-1">
           {detail && (
             <DrawerInnerContent
               detail={detail}
@@ -368,8 +360,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             />
           )}
         </div>
-      </ShadcnDrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 };
 
