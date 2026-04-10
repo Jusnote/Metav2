@@ -165,9 +165,9 @@ const DocumentsOrganizationPage = () => {
   }, []);
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full flex flex-col">
       {/* ===== EDITAL / CRONOGRAMA TOGGLE ===== */}
-      <div className="max-w-5xl mx-auto px-8 pt-5 pb-0">
+      <div className="max-w-5xl mx-auto px-8 pt-5 pb-3 w-full shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex bg-[#f5f3ff] rounded-[9px] p-[2.5px]">
             <button
@@ -193,6 +193,11 @@ const DocumentsOrganizationPage = () => {
           </div>
         </div>
       </div>
+
+      {/* ===== Content + Drawer flex container ===== */}
+      <div className="flex-1 flex min-h-0">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto min-w-0">
 
       {cronogramaMode ? (
         <CronogramaWeekView />
@@ -405,15 +410,18 @@ const DocumentsOrganizationPage = () => {
       </div>
       )}
 
-      {/* ===== RIGHT DRAWER / BOTTOM SHEET ===== */}
-      <TopicDetailDrawer
-        detail={drawerDetail}
-        onClose={handleCloseDrawer}
-        materialCounts={materialCounts}
-        onOpenNotes={handleOpenNotes}
-        onOpenAI={handleOpenAI}
-        onPlaySubtopico={handlePlaySubtopico}
-      />
+        </div>{/* End scrollable content */}
+
+        {/* Desktop drawer as flex sibling */}
+        <TopicDetailDrawer
+          detail={drawerDetail}
+          onClose={handleCloseDrawer}
+          materialCounts={materialCounts}
+          onOpenNotes={handleOpenNotes}
+          onOpenAI={handleOpenAI}
+          onPlaySubtopico={handlePlaySubtopico}
+        />
+      </div>{/* End Content + Drawer flex container */}
 
       {/* ===== AI Assistant ===== */}
       <TopicAIAssistant

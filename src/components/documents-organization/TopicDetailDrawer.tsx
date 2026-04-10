@@ -301,17 +301,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   onPlaySubtopico,
 }) => {
   const [mobileSheet, setMobileSheet] = useState<'half' | 'full'>('half');
-  const overlayRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number | null>(null);
   const isOpen = detail !== null;
-
-  // Close on overlay click (desktop)
-  const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) {
-      onClose();
-    }
-  }, [onClose]);
 
   // Close on Escape
   useEffect(() => {
@@ -351,80 +343,70 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     if (isOpen) setMobileSheet('half');
   }, [isOpen, detail?.item]);
 
-  if (!detail) {
-    return null;
-  }
-
-  const item = detail.item;
-  const isTopico = detail.type === 'topico';
-  const title = item.nome;
-  const lastAccess = (item as any).lastAccess;
-  const tempoInvestido = (item as any).tempoInvestido;
-  const estimatedMinutes = (item as any).estimated_duration_minutes || 0;
-  const level = getLevel(item);
-  const moduleLabel = isTopico ? detail.disciplinaNome : detail.topicoNome || detail.disciplinaNome;
+  const item = detail?.item;
+  const isTopico = detail?.type === 'topico';
+  const title = item?.nome || '';
+  const lastAccess = (item as any)?.lastAccess;
+  const tempoInvestido = (item as any)?.tempoInvestido;
+  const estimatedMinutes = (item as any)?.estimated_duration_minutes || 0;
+  const level = item ? getLevel(item) : 'Intermediario';
+  const moduleLabel = detail
+    ? (isTopico ? detail.disciplinaNome : detail.topicoNome || detail.disciplinaNome)
+    : '';
 
   // Priority heuristic
   const priority = (() => {
+    if (!item) return 80;
     if ((item as Subtopico).status === 'completed') return 25;
     if ((item as Subtopico).status === 'in-progress') return 65;
     return 80;
   })();
 
-  const itemId = item.id;
-  const itemTitle = item.nome;
+  const itemId = item?.id || '';
+  const itemTitle = item?.nome || '';
 
   return (
     <>
-      {/* ===== DESKTOP DRAWER ===== */}
-      <div className="hidden lg:contents">
-        {/* Overlay */}
-        <div
-          ref={overlayRef}
-          onClick={handleOverlayClick}
-          className={`fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40 transition-opacity duration-300 ${
-            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-        />
+      {/* ===== DESKTOP DRAWER — flex layout sibling ===== */}
+      <div className={`hidden lg:flex flex-col border-l bg-background transition-all duration-300 ease-out overflow-hidden relative ${
+        isOpen ? 'w-[35%] max-w-[480px] min-w-[360px] border-border' : 'w-0 min-w-0 border-l-0'
+      }`}>
+        {isOpen && detail && (
+          <>
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors z-10"
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
 
-        {/* Drawer panel */}
-        <div
-          className={`fixed top-0 right-0 h-full w-[35%] max-w-[480px] min-w-[360px] bg-background border-l border-border shadow-2xl z-50 transition-transform duration-300 ease-out flex flex-col ${
-            isOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors z-10"
-          >
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto">
-            <DrawerContent
-              detail={detail}
-              title={title}
-              moduleLabel={moduleLabel}
-              lastAccess={lastAccess}
-              tempoInvestido={tempoInvestido}
-              estimatedMinutes={estimatedMinutes}
-              level={level}
-              priority={priority}
-              materialCounts={materialCounts}
-              itemId={itemId}
-              itemTitle={itemTitle}
-              isTopico={isTopico}
-              onOpenNotes={onOpenNotes}
-              onOpenAI={onOpenAI}
-              onPlaySubtopico={onPlaySubtopico}
-            />
-          </div>
-        </div>
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto relative">
+              <DrawerContent
+                detail={detail}
+                title={title}
+                moduleLabel={moduleLabel}
+                lastAccess={lastAccess}
+                tempoInvestido={tempoInvestido}
+                estimatedMinutes={estimatedMinutes}
+                level={level}
+                priority={priority}
+                materialCounts={materialCounts}
+                itemId={itemId}
+                itemTitle={itemTitle}
+                isTopico={isTopico}
+                onOpenNotes={onOpenNotes}
+                onOpenAI={onOpenAI}
+                onPlaySubtopico={onPlaySubtopico}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* ===== MOBILE BOTTOM SHEET ===== */}
+      {detail && (
       <div className="lg:hidden">
         {/* Overlay */}
         <div
@@ -477,6 +459,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           </div>
         </div>
       </div>
+      )}
     </>
   );
 };
