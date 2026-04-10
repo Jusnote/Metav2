@@ -449,7 +449,7 @@ function DrawerContent({
       </div>
 
       {/* Title */}
-      <h2 className="text-xl font-bold text-foreground leading-tight pr-8">
+      <h2 className="text-[15px] font-semibold text-[#6b667a] leading-tight pr-8">
         {title}
       </h2>
 
