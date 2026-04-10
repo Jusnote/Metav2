@@ -184,14 +184,14 @@ function CompactRevisionsChart() {
       {/* Bar chart — compact */}
       <div className="h-[60px]">
         <ChartContainerLocal config={chartConfig} className="!aspect-auto h-full w-full">
-          <BarChartLocal data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <BarChartLocal data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barSize={12} barGap={4}>
             <ChartTooltipLocal
               content={<ChartTooltipContentLocal hideLabel formatter={(value) => `${value}%`} />}
             />
             <BarLocal
               dataKey="score"
               fill="#6c63ff"
-              radius={[3, 3, 0, 0]}
+              radius={[2, 2, 0, 0]}
             />
           </BarChartLocal>
         </ChartContainerLocal>
