@@ -182,7 +182,7 @@ function CompactRevisionsChart() {
       </div>
 
       {/* Bar chart — compact */}
-      <div className="h-[100px]">
+      <div className="h-[130px]">
         <ChartContainerLocal config={chartConfig} className="!aspect-auto h-full w-full">
           <BarChartLocal accessibilityLayer data={chartData}>
             <CartesianGridLocal vertical={false} />
