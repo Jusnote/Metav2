@@ -378,7 +378,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
         {/* Drawer panel */}
         <div
-          className={`fixed top-0 right-0 h-full w-[45%] max-w-[640px] min-w-[400px] bg-background border-l border-border shadow-2xl z-50 transition-transform duration-300 ease-out flex flex-col ${
+          className={`fixed top-0 right-0 h-full w-[35%] max-w-[480px] min-w-[360px] bg-background border-l border-border shadow-2xl z-50 transition-transform duration-300 ease-out flex flex-col ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
