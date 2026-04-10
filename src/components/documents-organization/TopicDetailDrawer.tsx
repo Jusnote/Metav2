@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  X, Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
+  Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
 } from 'lucide-react';
 import {
   Sheet,
@@ -14,7 +14,7 @@ import {
   ChartTooltip as ChartTooltipLocal,
   ChartTooltipContent as ChartTooltipContentLocal,
 } from '@/components/ui/chart';
-import { DesempenhoChart } from '@/components/DesempenhoChart';
+
 import { StudyCompletionForm, type CompletionData } from './StudyCompletionForm';
 import { useStudyCompletion } from '@/hooks/useStudyCompletion';
 import { TopicoIntelligence } from './TopicoIntelligence';
@@ -75,50 +75,6 @@ function formatLastAccess(raw: string | undefined): string {
 function getLevel(_item: Topico | Subtopico): string {
   // Placeholder - could be computed from review data
   return 'Intermediario';
-}
-
-// ============ Importance Ring ============
-
-function ImportanceRing({ priority }: { priority: number }) {
-  // priority: 0-100
-  const radius = 22;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (priority / 100) * circumference;
-
-  const color = priority >= 70 ? '#DC2626' : priority >= 40 ? '#D97706' : '#059669';
-  const label = priority >= 70 ? 'Alta' : priority >= 40 ? 'Media' : 'Baixa';
-
-  return (
-    <div className="flex items-center gap-3">
-      <div className="relative w-14 h-14 shrink-0">
-        <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
-          <circle
-            cx="28" cy="28" r={radius}
-            fill="none" stroke="currentColor"
-            className="text-gray-100"
-            strokeWidth="4"
-          />
-          <circle
-            cx="28" cy="28" r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeDasharray={`${circumference}`}
-            strokeDashoffset={`${offset}`}
-            className="transition-all duration-700"
-          />
-        </svg>
-        <span className="absolute inset-0 flex items-center justify-center text-xs font-bold" style={{ color }}>
-          {priority}
-        </span>
-      </div>
-      <div>
-        <div className="text-xs text-muted-foreground">Importancia</div>
-        <div className="text-sm font-semibold" style={{ color }}>{label} prioridade</div>
-      </div>
-    </div>
-  );
 }
 
 // ============ Material Pill ============
@@ -239,71 +195,6 @@ function CompactRevisionsChart({ acertos, erros }: { acertos: number; erros: num
       {/* Detail summary */}
       <div className="flex items-center justify-between mt-3 text-[10px] text-[#9e99ae]">
         <span>{acertos + erros} questões respondidas</span>
-      </div>
-    </div>
-  );
-}
-
-// ============ Revisions Section (legacy, kept for reference) ============
-
-function RevisionsSection() {
-  // Placeholder revision data - will be connected to real data later
-  const revisions = [
-    { date: '15/01', score: 85, status: 'done' as const },
-    { date: '12/01', score: 78, status: 'done' as const },
-    { date: '18/01', score: null, status: 'pending' as const },
-    { date: '22/01', score: null, status: 'future' as const },
-  ];
-
-  return (
-    <div>
-      <h4 className="text-xs font-semibold text-foreground mb-2">Revisoes</h4>
-      <div className="space-y-1.5">
-        {revisions.map((rev, i) => (
-          <div
-            key={i}
-            className={`flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-              rev.status === 'done' ? 'hover:bg-green-50' :
-              rev.status === 'pending' ? 'hover:bg-orange-50' : ''
-            }`}
-          >
-            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-              rev.status === 'done' ? 'bg-green-100 border-green-500' :
-              rev.status === 'pending' ? 'bg-orange-100 border-orange-400' :
-              'bg-gray-100 border-gray-300'
-            }`}>
-              {rev.status === 'done' && (
-                <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-              {rev.status === 'pending' && (
-                <div className="w-1 h-1 bg-orange-500 rounded-full animate-pulse" />
-              )}
-              {rev.status === 'future' && (
-                <div className="w-1 h-1 bg-gray-400 rounded-full" />
-              )}
-            </div>
-            <span className={`text-[11px] font-medium ${
-              rev.status === 'pending' ? 'text-orange-600' :
-              rev.status === 'future' ? 'text-muted-foreground' :
-              'text-foreground'
-            }`}>{rev.date}</span>
-            {rev.score !== null && (
-              <span className="text-[11px] font-bold text-green-600 ml-auto">{rev.score}%</span>
-            )}
-            {rev.status === 'pending' && (
-              <button className="px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-medium rounded-full hover:bg-orange-200 transition-colors ml-auto">
-                Fazer
-              </button>
-            )}
-            {rev.status === 'future' && (
-              <span className="text-[10px] text-muted-foreground ml-auto">
-                {4 + i}d
-              </span>
-            )}
-          </div>
-        ))}
       </div>
     </div>
   );

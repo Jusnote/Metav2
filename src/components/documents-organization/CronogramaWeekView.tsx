@@ -5,6 +5,7 @@ import { ProgressRing } from "./ProgressRing";
 import { WeekSelector } from "./WeekSelector";
 import { useWeekSchedule, type WeekActivity } from "@/hooks/useWeekSchedule";
 import { useDocumentsOrganization } from "@/contexts/DocumentsOrganizationContext";
+import { usePlanosEstudo } from "@/hooks/usePlanosEstudo";
 
 // ============ CONSTANTS ============
 
@@ -288,6 +289,28 @@ export function CronogramaWeekView() {
   const { cronogramaWeek, setCronogramaWeek } = useDocumentsOrganization();
   const { activities, stats } = useWeekSchedule(cronogramaWeek);
   const [activeTab, setActiveTab] = useState<Tab>("tarefas");
+  const { planos } = usePlanosEstudo();
+  const hasActivePlan = planos.length > 0;
+
+  if (!hasActivePlan) {
+    return (
+      <div className="max-w-5xl mx-auto px-8 py-6">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="text-4xl mb-4">📅</div>
+          <h3 className="text-sm font-semibold text-[#1a1625] mb-1">Cronograma não ativo</h3>
+          <p className="text-xs text-[#9e99ae] max-w-[300px] mb-5 leading-relaxed">
+            Crie um plano de estudo vinculado a um edital para ativar o cronograma semanal com atividades, anéis e acompanhamento.
+          </p>
+          <button
+            onClick={() => { /* TODO: navigate to editais or open plan dialog */ }}
+            className="px-5 py-2.5 bg-[#6c63ff] hover:bg-[#5b54e0] text-white text-xs font-semibold rounded-lg transition-colors"
+          >
+            Explorar Editais
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-8 py-6 flex flex-col gap-0">

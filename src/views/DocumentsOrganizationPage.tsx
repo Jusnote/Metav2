@@ -13,6 +13,8 @@ import type { Topico, Subtopico, Disciplina } from '@/hooks/useDisciplinasManage
 import { useDisciplinasApi, useCargoData, type ApiTopico } from '@/hooks/useEditaisData';
 import { useLocalProgressBatch } from '@/hooks/useLocalProgress';
 import { usePlanosEstudo } from '@/hooks/usePlanosEstudo';
+import { useScoreEngine } from '@/hooks/useScoreEngine';
+import { BasicScoreDisplay } from '@/components/documents-organization/BasicScoreDisplay';
 import { editaisQuery } from '@/lib/editais-client';
 import { toast } from 'sonner';
 
@@ -130,6 +132,29 @@ const DocumentsOrganizationPage = () => {
   }, [displayDisciplinas]);
 
   const { progressMap, refetch: refetchListProgress } = useLocalProgressBatch(allOriginRefs);
+
+  // ---- Score engine ----
+  const scoreData = useMemo(() => {
+    if (progressMap.size === 0) return [];
+    return displayDisciplinas.flatMap(d =>
+      d.topicos
+        .filter(t => {
+          const ref = (t as any)._originRef;
+          return ref && progressMap.has(ref);
+        })
+        .map(t => {
+          const ref = (t as any)._originRef;
+          const prog = progressMap.get(ref)!;
+          return {
+            disciplinaNome: d.nome,
+            peso_edital: prog.peso_edital || null,
+            mastery_score: prog.mastery_score || 0,
+          };
+        })
+    );
+  }, [displayDisciplinas, progressMap]);
+
+  const scoreProjection = useScoreEngine(scoreData);
 
   // Handle topico click -> open drawer
   const handleTopicoClick = useCallback((disciplinaId: string, topico: Topico) => {
@@ -301,6 +326,13 @@ const DocumentsOrganizationPage = () => {
                 )}
               </div>
             </div>
+
+            {/* Nota estimada */}
+            {scoreProjection.current > 0 && scoreData.length >= 2 && (
+              <div className="mt-3">
+                <BasicScoreDisplay score={scoreProjection.current} targetScore={80} />
+              </div>
+            )}
           </div>
         )}
 
