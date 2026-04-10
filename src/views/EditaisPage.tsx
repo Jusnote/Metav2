@@ -83,6 +83,11 @@ export default function EditaisPage() {
             <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(planos.length, 3)}, 1fr)` }}>
               {planos.slice(0, 3).map((plano) => {
                 const editalLink = plano.editais[0];
+                const sigla = plano.nome.split(/[\s—–-]/)[0]?.substring(0, 3).toUpperCase() || 'PLN';
+                const diasProva = plano.data_prova
+                  ? Math.max(0, Math.ceil((new Date(plano.data_prova).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+                  : null;
+
                 return (
                   <div
                     key={plano.id}
@@ -91,32 +96,40 @@ export default function EditaisPage() {
                         navigate(`/documents-organization?editalId=${editalLink.edital_id}&cargoId=${editalLink.cargo_id}`);
                       }
                     }}
-                    className="group bg-[#f5f3ff] border border-[#eeecfb] rounded-xl p-4 cursor-pointer transition-all hover:border-[#6c63ff] hover:shadow-[0_2px_12px_rgba(108,99,255,0.08)]"
+                    className="group bg-white border border-[#eae8ee] rounded-xl p-4 cursor-pointer transition-all shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(108,99,255,0.1)] hover:border-[#d4d0e0]"
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-[#6c63ff] rounded-lg flex items-center justify-center text-white text-[9px] font-bold">
-                          {plano.nome.split(' ')[0]?.substring(0, 3).toUpperCase() || 'PLN'}
+                    {/* Top: avatar + name + action */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-[#6c63ff] to-[#9b8afb] rounded-full flex items-center justify-center text-white text-[10px] font-bold tracking-wide shrink-0">
+                        {sigla}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-semibold text-[#1a1625] leading-tight truncate">
+                          {plano.nome}
                         </div>
-                        <div>
-                          <div className="text-[13px] font-semibold text-[#1a1625] leading-tight">
-                            {plano.nome}
-                          </div>
-                          {plano.data_prova && (
-                            <div className="text-[10px] text-[#9e99ae] mt-0.5">
-                              Prova: {new Date(plano.data_prova).toLocaleDateString('pt-BR')}
-                            </div>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {diasProva !== null && (
+                            <span className="text-[10px] text-[#9e99ae]">
+                              {diasProva > 0 ? `${diasProva} dias` : 'Hoje'}
+                            </span>
                           )}
+                          {diasProva !== null && <span className="text-[10px] text-[#d4d0e0]">·</span>}
+                          <span className="text-[10px] text-[#9e99ae]">
+                            {plano.source_type === 'edital' ? 'Edital' : 'Manual'}
+                          </span>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-[10px] text-[#9e99ae]">
-                        {plano.source_type === 'edital' ? 'Edital vinculado' : 'Manual'}
-                      </div>
-                      <div className="text-[10px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-[11px] font-semibold text-[#6c63ff] shrink-0">
                         Continuar →
                       </div>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="h-[3px] bg-[#f0eef5] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#6c63ff] to-[#9b8afb] rounded-full transition-all duration-500"
+                        style={{ width: '0%' }}
+                      />
                     </div>
                   </div>
                 );
