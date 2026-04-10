@@ -12,7 +12,9 @@ import { CronogramaWeekView } from '@/components/documents-organization/Cronogra
 import type { Topico, Subtopico, Disciplina } from '@/hooks/useDisciplinasManager';
 import { useDisciplinasApi, useCargoData, type ApiTopico } from '@/hooks/useEditaisData';
 import { useLocalProgressBatch } from '@/hooks/useLocalProgress';
+import { usePlanosEstudo } from '@/hooks/usePlanosEstudo';
 import { editaisQuery } from '@/lib/editais-client';
+import { toast } from 'sonner';
 
 const TOPICOS_QUERY = `
   query Topicos($disciplinaId: Int!) {
@@ -36,6 +38,8 @@ const DocumentsOrganizationPage = () => {
   // ---- API data (only fetched when in edital mode) ----
   const { data: apiDisciplinas, isLoading: apiLoading } = useDisciplinasApi(isEditalMode ? cargoId : null);
   const { data: cargoData } = useCargoData(editalId, cargoId);
+  const { findPlanoByEdital, createPlano } = usePlanosEstudo();
+  const existingPlano = editalId && cargoId ? findPlanoByEdital(editalId, cargoId) : null;
 
   const [apiConvertedDisciplinas, setApiConvertedDisciplinas] = useState<Disciplina[]>([]);
   const [loadingApiTopicos, setLoadingApiTopicos] = useState(false);
@@ -254,14 +258,48 @@ const DocumentsOrganizationPage = () => {
 
         {isEditalMode && cargoData && (
           <div className="mb-8 pb-6 border-b">
-            <div className="text-[11px] font-semibold tracking-[0.15em] text-muted-foreground uppercase">
-              {cargoData.edital.sigla || cargoData.edital.nome} · {cargoData.edital.esfera}
-            </div>
-            <h1 className="text-[24px] font-bold text-foreground tracking-tight mt-1">
-              {cargoData.nome}
-            </h1>
-            <div className="text-[13px] text-muted-foreground mt-1">
-              {cargoData.qtdDisciplinas} disciplinas · {cargoData.qtdTopicos} topicos
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-semibold tracking-[0.15em] text-muted-foreground uppercase">
+                  {cargoData.edital.sigla || cargoData.edital.nome} · {cargoData.edital.esfera}
+                </div>
+                <h1 className="text-[24px] font-bold text-foreground tracking-tight mt-1">
+                  {cargoData.nome}
+                </h1>
+                <div className="text-[13px] text-muted-foreground mt-1">
+                  {cargoData.qtdDisciplinas} disciplinas · {cargoData.qtdTopicos} topicos
+                </div>
+              </div>
+
+              {/* Plan CTA or Badge */}
+              <div>
+                {existingPlano ? (
+                  <span className="text-xs text-[#6c63ff] font-medium bg-[#f5f3ff] px-3 py-1.5 rounded-lg">
+                    Plano: {existingPlano.nome}
+                  </span>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      const nome = `${cargoData.edital.sigla || cargoData.edital.nome} — ${cargoData.nome}`;
+                      const plano = await createPlano({
+                        nome,
+                        edital_id: editalId!,
+                        cargo_id: cargoId!,
+                        source_type: 'edital',
+                        study_mode: 'edital',
+                      });
+                      if (plano) {
+                        toast.success('Plano de estudo criado!');
+                      } else {
+                        toast.error('Erro ao criar plano.');
+                      }
+                    }}
+                    className="px-4 py-2 bg-[#6c63ff] hover:bg-[#5b54e0] text-white text-xs font-semibold rounded-lg transition-colors"
+                  >
+                    Criar Plano de Estudo
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
