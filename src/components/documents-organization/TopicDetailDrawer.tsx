@@ -257,13 +257,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   }
 
   const item = detail.item;
-  const isTopicoo = detail.type === 'topico';
+  const isTopico = detail.type === 'topico';
   const title = item.nome;
   const lastAccess = (item as any).lastAccess;
   const tempoInvestido = (item as any).tempoInvestido;
   const estimatedMinutes = (item as any).estimated_duration_minutes || 0;
   const level = getLevel(item);
-  const moduleLabel = isTopicoo ? detail.disciplinaNome : detail.topicoNome || detail.disciplinaNome;
+  const moduleLabel = isTopico ? detail.disciplinaNome : detail.topicoNome || detail.disciplinaNome;
 
   // Priority heuristic
   const priority = (() => {
