@@ -138,94 +138,59 @@ function getScoreLabel(score: number): { text: string; color: string } {
 
 function CompactRevisionsChart() {
   // Mock data — will be connected to real questoes_log + schedule_items
-  const scores = [72, 68, 78, 85];
-  const latest = scores[scores.length - 1];
-  const previous = scores.length >= 2 ? scores[scores.length - 2] : null;
-  const trend = previous !== null ? latest - previous : 0;
-  const label = getScoreLabel(latest);
+  const scores = [72, 68, 78, 85, 90];
+  const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  const label = getScoreLabel(avg);
+  const maxScore = 100;
+  const barHeight = 40;
   const nextReview = '18/01';
-
-  // Build SVG sparkline path
-  const sparkWidth = 200;
-  const sparkHeight = 36;
-  const padding = 4;
-  const points = scores.map((s, i) => {
-    const x = padding + (i / (scores.length - 1)) * (sparkWidth - padding * 2);
-    const y = sparkHeight - padding - ((s - 50) / 50) * (sparkHeight - padding * 2);
-    return { x, y };
-  });
-  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-  const areaD = `${pathD} L ${points[points.length - 1].x.toFixed(1)} ${sparkHeight} L ${points[0].x.toFixed(1)} ${sparkHeight} Z`;
 
   return (
     <div>
       <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho prático</div>
 
-      {/* Big score + trend + label */}
-      <div className="flex items-baseline gap-2 mb-1">
-        <span className="text-[28px] font-extrabold leading-none bg-gradient-to-r from-[#4f46e5] to-[#9b8afb] bg-clip-text text-transparent">
-          {latest}%
-        </span>
-        {trend !== 0 && (
-          <span className={`text-[12px] font-bold ${trend > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-            {trend > 0 ? '▲' : '▼'}{Math.abs(trend)}
+      <div className="flex gap-5">
+        {/* Left: big average score */}
+        <div className="flex flex-col items-start flex-shrink-0">
+          <span className="text-[28px] font-extrabold leading-none bg-gradient-to-r from-[#4f46e5] to-[#9b8afb] bg-clip-text text-transparent">
+            {avg}%
           </span>
-        )}
-        <span className={`text-[11px] font-semibold ${label.color}`}>
-          {label.text}
-        </span>
+          <span className={`text-[10px] font-semibold mt-0.5 ${label.color}`}>
+            {label.text}
+          </span>
+          <span className="text-[9px] text-[#9e99ae] mt-1">
+            média de {scores.length} revisões
+          </span>
+        </div>
+
+        {/* Right: bars */}
+        <div className="flex-1 flex items-end gap-[6px]">
+          {scores.map((score, i) => {
+            const h = (score / maxScore) * barHeight;
+            const scoreLabel = getScoreLabel(score);
+            return (
+              <div key={i} className="flex-1 flex flex-col items-center gap-[2px]" title={`${score}% — ${scoreLabel.text}`}>
+                <div className="w-full relative" style={{ height: `${barHeight}px` }}>
+                  <div
+                    className="absolute bottom-0 w-full rounded-t-[3px] transition-all duration-500"
+                    style={{
+                      height: `${h}px`,
+                      background: `linear-gradient(180deg, #6c63ff ${100 - (i / scores.length) * 30}%, #9b8afb)`,
+                      opacity: 0.4 + (i / scores.length) * 0.6,
+                    }}
+                  />
+                </div>
+                <span className="text-[8px] font-semibold text-[#9e99ae]">{score}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Detail line */}
-      <div className="flex items-center gap-1 text-[10px] text-[#9e99ae] mb-3">
-        <span>Última revisão · 15/01 · 12/15 questões · 23min</span>
-      </div>
-
-      {/* Sparkline SVG */}
-      <div className="mb-2">
-        <svg width="100%" height={sparkHeight} viewBox={`0 0 ${sparkWidth} ${sparkHeight}`} preserveAspectRatio="none" className="overflow-visible">
-          {/* Area fill */}
-          <path d={areaD} fill="url(#sparkGradient)" opacity="0.15" />
-          {/* Line */}
-          <path d={pathD} fill="none" stroke="#6c63ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          {/* Dots */}
-          {points.map((p, i) => (
-            <circle
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={i === points.length - 1 ? 4 : 2.5}
-              fill={i === points.length - 1 ? '#6c63ff' : '#fff'}
-              stroke="#6c63ff"
-              strokeWidth={i === points.length - 1 ? 0 : 1.5}
-            />
-          ))}
-          {/* Score labels under dots */}
-          {scores.map((s, i) => (
-            <text
-              key={i}
-              x={points[i].x}
-              y={sparkHeight + 10}
-              textAnchor="middle"
-              fontSize="8"
-              fill="#c8c5d0"
-              fontWeight={i === scores.length - 1 ? 700 : 400}
-            >
-              {s}
-            </text>
-          ))}
-          <defs>
-            <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6c63ff" />
-              <stop offset="100%" stopColor="#6c63ff" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* Next review */}
-      <div className="text-[10px] text-[#9e99ae]">
-        Próxima revisão: <span className="text-[#d97706] font-medium">{nextReview}</span>
+      {/* Detail + next review */}
+      <div className="flex items-center justify-between mt-3 text-[10px] text-[#9e99ae]">
+        <span>Última · 15/01 · 12/15 questões · 23min</span>
+        <span>Próxima: <span className="text-[#d97706] font-medium">{nextReview}</span></span>
       </div>
     </div>
   );
