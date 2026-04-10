@@ -226,8 +226,7 @@ function CompactRevisionsChart() {
       {/* Next review */}
       <div className="text-[10px] text-[#9e99ae]">
         Próxima revisão: <span className="text-[#d97706] font-medium">{nextReview}</span>
-        </button>
-      )}
+      </div>
     </div>
   );
 }
