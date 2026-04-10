@@ -137,85 +137,95 @@ function getScoreLabel(score: number): { text: string; color: string } {
 }
 
 function CompactRevisionsChart() {
-  const revisions = [
-    { date: '15/01', score: 85, questoes: '12/15', tempo: '23min', status: 'done' as const },
-    { date: '12/01', score: 78, questoes: '8/12', tempo: '18min', status: 'done' as const },
-    { date: '18/01', score: null, questoes: null, tempo: null, status: 'pending' as const },
-    { date: '22/01', score: null, questoes: null, tempo: null, status: 'future' as const },
-    { date: '29/01', score: null, questoes: null, tempo: null, status: 'future' as const },
-  ];
+  // Mock data — will be connected to real questoes_log + schedule_items
+  const scores = [72, 68, 78, 85];
+  const latest = scores[scores.length - 1];
+  const previous = scores.length >= 2 ? scores[scores.length - 2] : null;
+  const trend = previous !== null ? latest - previous : 0;
+  const label = getScoreLabel(latest);
+  const nextReview = '18/01';
 
-  const maxVisible = 5;
-  const visible = revisions.slice(0, maxVisible);
-  const hasMore = revisions.length > maxVisible;
+  // Build SVG sparkline path
+  const sparkWidth = 200;
+  const sparkHeight = 36;
+  const padding = 4;
+  const points = scores.map((s, i) => {
+    const x = padding + (i / (scores.length - 1)) * (sparkWidth - padding * 2);
+    const y = sparkHeight - padding - ((s - 50) / 50) * (sparkHeight - padding * 2);
+    return { x, y };
+  });
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const areaD = `${pathD} L ${points[points.length - 1].x.toFixed(1)} ${sparkHeight} L ${points[0].x.toFixed(1)} ${sparkHeight} Z`;
 
   return (
     <div>
-      <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-2">Desempenho prático</div>
-      <div className="space-y-[5px]">
-        {visible.map((rev, i) => {
-          const label = rev.score ? getScoreLabel(rev.score) : null;
-          return (
-            <div key={i} className="group cursor-pointer">
-              {/* Row: dot + date + bar + score + details */}
-              <div className="flex items-center gap-2">
-                <div className={`w-[5px] h-[5px] rounded-full flex-shrink-0 ${
-                  rev.status === 'done' ? 'bg-[#6c63ff]' :
-                  rev.status === 'pending' ? 'bg-[#d97706]' : 'bg-[#d4d0e0]'
-                }`} />
-                <span className={`text-[11px] font-medium w-[38px] flex-shrink-0 ${
-                  rev.status === 'done' ? 'text-[#1a1625]' : 'text-[#c8c5d0]'
-                }`}>
-                  {rev.date}
-                </span>
+      <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho prático</div>
 
-                {rev.score !== null ? (
-                  <>
-                    {/* Inline bar */}
-                    <div className="flex-1 h-[4px] bg-[#eeecfb] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-[#6c63ff] transition-all duration-500"
-                        style={{ width: `${rev.score}%` }}
-                      />
-                    </div>
-                    <span className="text-[11px] font-bold text-[#6c63ff] w-[32px] text-right flex-shrink-0">{rev.score}%</span>
-                  </>
-                ) : rev.status === 'pending' ? (
-                  <>
-                    <div className="flex-1 h-[4px] bg-[#eeecfb] rounded-full overflow-hidden">
-                      <div className="h-full w-0 rounded-full" />
-                    </div>
-                    <span className="text-[10px] text-[#d97706] font-medium flex-shrink-0">agendada</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex-1 h-[4px] bg-[#eeecfb] rounded-full" />
-                    <span className="text-[10px] text-[#c8c5d0] flex-shrink-0">—</span>
-                  </>
-                )}
-              </div>
-
-              {/* Details line (only for done) */}
-              {rev.status === 'done' && rev.questoes && (
-                <div className="flex items-center gap-1 ml-[13px] mt-[1px]">
-                  <span className="text-[9px] text-[#9e99ae]">{rev.questoes} questões</span>
-                  <span className="text-[9px] text-[#d4d0e0]">·</span>
-                  <span className="text-[9px] text-[#9e99ae]">{rev.tempo}</span>
-                  {label && (
-                    <>
-                      <span className="text-[9px] text-[#d4d0e0]">·</span>
-                      <span className={`text-[9px] font-semibold ${label.color}`}>{label.text}</span>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+      {/* Big score + trend + label */}
+      <div className="flex items-baseline gap-2 mb-1">
+        <span className="text-[28px] font-extrabold leading-none bg-gradient-to-r from-[#4f46e5] to-[#9b8afb] bg-clip-text text-transparent">
+          {latest}%
+        </span>
+        {trend !== 0 && (
+          <span className={`text-[12px] font-bold ${trend > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+            {trend > 0 ? '▲' : '▼'}{Math.abs(trend)}
+          </span>
+        )}
+        <span className={`text-[11px] font-semibold ${label.color}`}>
+          {label.text}
+        </span>
       </div>
-      {hasMore && (
-        <button className="text-[9px] text-[#9b8afb] hover:text-[#6c63ff] mt-2 font-medium ml-[13px]">
-          Ver todas ({revisions.length})
+
+      {/* Detail line */}
+      <div className="flex items-center gap-1 text-[10px] text-[#9e99ae] mb-3">
+        <span>Última revisão · 15/01 · 12/15 questões · 23min</span>
+      </div>
+
+      {/* Sparkline SVG */}
+      <div className="mb-2">
+        <svg width="100%" height={sparkHeight} viewBox={`0 0 ${sparkWidth} ${sparkHeight}`} preserveAspectRatio="none" className="overflow-visible">
+          {/* Area fill */}
+          <path d={areaD} fill="url(#sparkGradient)" opacity="0.15" />
+          {/* Line */}
+          <path d={pathD} fill="none" stroke="#6c63ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Dots */}
+          {points.map((p, i) => (
+            <circle
+              key={i}
+              cx={p.x}
+              cy={p.y}
+              r={i === points.length - 1 ? 4 : 2.5}
+              fill={i === points.length - 1 ? '#6c63ff' : '#fff'}
+              stroke="#6c63ff"
+              strokeWidth={i === points.length - 1 ? 0 : 1.5}
+            />
+          ))}
+          {/* Score labels under dots */}
+          {scores.map((s, i) => (
+            <text
+              key={i}
+              x={points[i].x}
+              y={sparkHeight + 10}
+              textAnchor="middle"
+              fontSize="8"
+              fill="#c8c5d0"
+              fontWeight={i === scores.length - 1 ? 700 : 400}
+            >
+              {s}
+            </text>
+          ))}
+          <defs>
+            <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6c63ff" />
+              <stop offset="100%" stopColor="#6c63ff" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Next review */}
+      <div className="text-[10px] text-[#9e99ae]">
+        Próxima revisão: <span className="text-[#d97706] font-medium">{nextReview}</span>
         </button>
       )}
     </div>
