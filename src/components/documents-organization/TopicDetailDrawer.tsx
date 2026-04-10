@@ -150,21 +150,33 @@ function getScoreLabel(score: number): { text: string; color: string } {
   return { text: 'Ruim', color: 'text-red-500' };
 }
 
-function CompactRevisionsChart() {
-  // Mock data — will be connected to real questoes_log + schedule_items
-  const chartData = [
-    { revisao: 'Rev 1', acertos: 9, erros: 3 },
-    { revisao: 'Rev 2', acertos: 7, erros: 5 },
-    { revisao: 'Rev 3', acertos: 10, erros: 2 },
-    { revisao: 'Rev 4', acertos: 12, erros: 3 },
-    { revisao: 'Rev 5', acertos: 13, erros: 2 },
-    { revisao: 'Rev 6', acertos: 11, erros: 2 },
-  ];
-  const totalAcertos = chartData.reduce((a, d) => a + d.acertos, 0);
-  const totalErros = chartData.reduce((a, d) => a + d.erros, 0);
-  const avg = Math.round((totalAcertos / (totalAcertos + totalErros)) * 100);
+function getAIInsight(mastery: number): string {
+  if (mastery === 0) return 'Comece a estudar este tópico para receber insights personalizados.';
+  if (mastery < 30) return 'Tópico em fase inicial. Foque na teoria e questões básicas para construir uma base sólida.';
+  if (mastery < 50) return 'Progresso inicial. Continue praticando com questões de dificuldade média para consolidar.';
+  if (mastery < 75) return 'Bom progresso! Aumente a dificuldade das questões e pratique discriminação entre conceitos similares.';
+  if (mastery < 90) return 'Próximo de dominar. Revise os pontos que mais erra e faça questões de nível avançado.';
+  return 'Tópico dominado! Mantenha revisões periódicas para preservar a retenção.';
+}
+
+function CompactRevisionsChart({ acertos, erros }: { acertos: number; erros: number }) {
+  // Empty state when no data recorded yet
+  if (acertos === 0 && erros === 0) {
+    return (
+      <div className="py-4 text-center">
+        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho prático</div>
+        <div className="text-[11px] text-[#9e99ae]">Registre seu primeiro estudo para ver o desempenho</div>
+      </div>
+    );
+  }
+
+  const avg = Math.round((acertos / (acertos + erros)) * 100);
   const label = getScoreLabel(avg);
-  const nextReview = '18/01';
+
+  // For v1 with aggregate data only, show a single bar group
+  const chartData = [
+    { revisao: 'Total', acertos, erros },
+  ];
 
   const chartConfig = {
     acertos: {
@@ -190,7 +202,7 @@ function CompactRevisionsChart() {
           {label.text}
         </span>
         <span className="text-[9px] text-[#9e99ae]">
-          · {totalAcertos} acertos · {totalErros} erros · {chartData.length} revisões
+          · {acertos} acertos · {erros} erros
         </span>
       </div>
 
@@ -224,10 +236,9 @@ function CompactRevisionsChart() {
         </ChartContainerLocal>
       </div>
 
-      {/* Detail + next review */}
+      {/* Detail summary */}
       <div className="flex items-center justify-between mt-3 text-[10px] text-[#9e99ae]">
-        <span>Última · 15/01 · 12/15 questões · 23min</span>
-        <span>Próxima: <span className="text-[#d97706] font-medium">{nextReview}</span></span>
+        <span>{acertos + erros} questões respondidas</span>
       </div>
     </div>
   );
@@ -438,8 +449,8 @@ function DrawerInnerContent({
       {/* Mastery + Progress */}
       <div className="flex items-center gap-2 mt-1">
         <MasteryBadge
-          stage={(item as any).learning_stage || 'new'}
-          score={(item as any).mastery_score || 0}
+          stage={localProgress?.learning_stage || (item as any).learning_stage || 'new'}
+          score={localProgress?.mastery_score || (item as any).mastery_score || 0}
         />
         <ProgressDots {...dots} size="md" />
       </div>
@@ -448,7 +459,7 @@ function DrawerInnerContent({
       <div className="flex items-center gap-4 mt-3">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Clock className="w-3.5 h-3.5" />
-          <span>{formatLastAccess(lastAccess)}</span>
+          <span>{formatLastAccess(localProgress?.last_access || lastAccess)}</span>
         </div>
         {estimatedMinutes > 0 && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -470,7 +481,10 @@ function DrawerInnerContent({
       <div className="h-px bg-border my-5" />
 
       {/* Revisões + Desempenho compacto */}
-      <CompactRevisionsChart />
+      <CompactRevisionsChart
+        acertos={localProgress?.questoes_acertos || 0}
+        erros={localProgress?.questoes_erros || 0}
+      />
 
       {/* Divider */}
       <div className="h-px bg-border my-5" />
@@ -533,7 +547,7 @@ function DrawerInnerContent({
           <div className="min-w-0">
             <div className="text-[9px] text-muted-foreground uppercase">Ultimo acesso</div>
             <div className="text-xs font-semibold text-foreground truncate">
-              {formatLastAccess(lastAccess)}
+              {formatLastAccess(localProgress?.last_access || lastAccess)}
             </div>
           </div>
         </div>
@@ -544,7 +558,7 @@ function DrawerInnerContent({
           <div className="min-w-0">
             <div className="text-[9px] text-muted-foreground uppercase">Tempo investido</div>
             <div className="text-xs font-semibold text-foreground">
-              {formatTimeInvested(tempoInvestido)}
+              {formatTimeInvested(localProgress?.tempo_investido || tempoInvestido)}
             </div>
           </div>
         </div>
@@ -576,7 +590,7 @@ function DrawerInnerContent({
         </div>
 
         <p className="text-[12px] text-zinc-400 leading-relaxed mb-4">
-          Seu desempenho em revisoes esta crescendo. Foque nos detalhes de excecoes e qualificadoras para alcancar 90%.
+          {getAIInsight(localProgress?.mastery_score || 0)}
         </p>
 
         <div className="space-y-2">
