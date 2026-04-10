@@ -1,7 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   X, Clock, Sparkles, FileText, CreditCard, HelpCircle, Scale, NotebookPen,
 } from 'lucide-react';
+import {
+  Drawer,
+  DrawerContent as ShadcnDrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from '@/components/ui/drawer';
 import { Bar as BarLocal, BarChart as BarChartLocal, CartesianGrid as CartesianGridLocal, XAxis as XAxisLocal } from 'recharts';
 import {
   ChartContainer as ChartContainerLocal,
@@ -300,56 +307,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   onOpenAI,
   onPlaySubtopico,
 }) => {
-  const [mobileSheet, setMobileSheet] = useState<'half' | 'full'>('half');
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const sheetRef = useRef<HTMLDivElement>(null);
-  const dragStartY = useRef<number | null>(null);
   const isOpen = detail !== null;
-
-  // Close on overlay click (desktop)
-  const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) {
-      onClose();
-    }
-  }, [onClose]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [isOpen, onClose]);
-
-  // Mobile drag handle
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    dragStartY.current = e.touches[0].clientY;
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (dragStartY.current === null) return;
-    const diff = e.changedTouches[0].clientY - dragStartY.current;
-    dragStartY.current = null;
-
-    if (diff > 80) {
-      // Drag down
-      if (mobileSheet === 'full') {
-        setMobileSheet('half');
-      } else {
-        onClose();
-      }
-    } else if (diff < -80) {
-      // Drag up
-      setMobileSheet('full');
-    }
-  }, [mobileSheet, onClose]);
-
-  // Reset mobile sheet on open
-  useEffect(() => {
-    if (isOpen) setMobileSheet('half');
-  }, [isOpen, detail?.item]);
 
   const item = detail?.item;
   const isTopico = detail?.type === 'topico';
@@ -360,7 +318,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const level = item ? getLevel(item) : 'Estudante';
   const moduleLabel = isTopico ? (detail?.disciplinaNome || '') : (detail?.topicoNome || detail?.disciplinaNome || '');
 
-  // Priority heuristic
   const priority = (() => {
     if (!item) return 50;
     if ((item as Subtopico).status === 'completed') return 25;
@@ -372,35 +329,27 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const itemTitle = item?.nome || '';
 
   return (
-    <>
-      {/* ===== DESKTOP DRAWER ===== */}
-      <div className="hidden lg:contents">
-        {/* Overlay */}
-        <div
-          ref={overlayRef}
-          onClick={handleOverlayClick}
-          className={`absolute inset-0 bg-black/20 backdrop-blur-[2px] z-40 transition-opacity duration-300 ${
-            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-        />
+    <Drawer direction="right" open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <ShadcnDrawerContent direction="right" className="h-full w-[35%] max-w-[480px] min-w-[360px] rounded-none">
+        <DrawerHeader className="px-6 pb-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.1em]">
+                {moduleLabel}
+              </span>
+              <DrawerTitle className="text-[15px] font-semibold text-[#6b667a] leading-tight mt-1">
+                {title}
+              </DrawerTitle>
+            </div>
+            <DrawerClose className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </DrawerClose>
+          </div>
+        </DrawerHeader>
 
-        {/* Drawer panel */}
-        <div
-          className={`absolute top-0 right-0 h-full w-[35%] max-w-[480px] min-w-[360px] bg-background border-l border-border shadow-2xl z-50 transition-transform duration-300 ease-out flex flex-col ${
-            isOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors z-10"
-          >
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto">
-            {detail && <DrawerContent
+        <div className="no-scrollbar overflow-y-auto flex-1 px-0">
+          {detail && (
+            <DrawerInnerContent
               detail={detail}
               title={title}
               moduleLabel={moduleLabel}
@@ -412,75 +361,21 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               materialCounts={materialCounts}
               itemId={itemId}
               itemTitle={itemTitle}
-              isTopico={isTopico}
+              isTopico={!!isTopico}
               onOpenNotes={onOpenNotes}
               onOpenAI={onOpenAI}
               onPlaySubtopico={onPlaySubtopico}
-            />}
-          </div>
+            />
+          )}
         </div>
-      </div>
-
-      {/* ===== MOBILE BOTTOM SHEET ===== */}
-      <div className="lg:hidden">
-        {/* Overlay */}
-        <div
-          onClick={onClose}
-          className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 ${
-            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-        />
-
-        {/* Sheet */}
-        <div
-          ref={sheetRef}
-          className={`fixed inset-x-0 bottom-0 z-50 bg-background rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out ${
-            isOpen
-              ? mobileSheet === 'full'
-                ? 'translate-y-0'
-                : 'translate-y-[15%]'
-              : 'translate-y-full'
-          }`}
-          style={{ height: '85vh' }}
-        >
-          {/* Drag handle */}
-          <div
-            className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="w-10 h-1 rounded-full bg-gray-300" />
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto h-[calc(85vh-28px)]">
-            {detail && <DrawerContent
-              detail={detail}
-              title={title}
-              moduleLabel={moduleLabel}
-              lastAccess={lastAccess}
-              tempoInvestido={tempoInvestido}
-              estimatedMinutes={estimatedMinutes}
-              level={level}
-              priority={priority}
-              materialCounts={materialCounts}
-              itemId={itemId}
-              itemTitle={itemTitle}
-              isTopico={isTopico}
-              onOpenNotes={onOpenNotes}
-              onOpenAI={onOpenAI}
-              onPlaySubtopico={onPlaySubtopico}
-            />}
-          </div>
-        </div>
-      </div>
-    </>
+      </ShadcnDrawerContent>
+    </Drawer>
   );
 };
 
 // ============ Shared Drawer Content ============
 
-interface DrawerContentProps {
+interface DrawerInnerContentProps {
   detail: DetailData;
   title: string;
   moduleLabel: string;
@@ -498,7 +393,7 @@ interface DrawerContentProps {
   onPlaySubtopico: (id: string, title: string) => void;
 }
 
-function DrawerContent({
+function DrawerInnerContent({
   detail,
   title,
   moduleLabel,
@@ -514,7 +409,7 @@ function DrawerContent({
   onOpenNotes,
   onOpenAI,
   onPlaySubtopico,
-}: DrawerContentProps) {
+}: DrawerInnerContentProps) {
   const [showCompletionForm, setShowCompletionForm] = useState(false);
   const { completeStudy } = useStudyCompletion();
   const { data: intelligence, isLoading: intelligenceLoading } = useTopicoIntelligence(
@@ -537,18 +432,6 @@ function DrawerContent({
 
   return (
     <div className="px-6 pb-8">
-      {/* Module label */}
-      <div className="mt-4 mb-1">
-        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.1em]">
-          {moduleLabel}
-        </span>
-      </div>
-
-      {/* Title */}
-      <h2 className="text-[15px] font-semibold text-[#6b667a] leading-tight pr-8">
-        {title}
-      </h2>
-
       {/* Mastery + Progress */}
       <div className="flex items-center gap-2 mt-1">
         <MasteryBadge
