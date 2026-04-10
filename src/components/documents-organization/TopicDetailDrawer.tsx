@@ -332,7 +332,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
   return (
     <Drawer direction="right" open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }} container={container || undefined}>
-      <ShadcnDrawerContent direction="right" className="h-full w-[35%] max-w-[480px] min-w-[360px] rounded-none">
+      <ShadcnDrawerContent direction="right" contained={!!container} className="h-full w-[35%] max-w-[480px] min-w-[360px] rounded-none">
         <DrawerHeader className="px-6 pb-0">
           <div className="flex items-center justify-between">
             <div>

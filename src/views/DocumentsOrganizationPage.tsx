@@ -166,7 +166,7 @@ const DocumentsOrganizationPage = () => {
   }, []);
 
   return (
-    <div ref={pageContainerRef} className="h-full relative">
+    <div ref={pageContainerRef} className="h-full relative overflow-hidden">
       <div className="h-full overflow-y-auto">
       {/* ===== EDITAL / CRONOGRAMA TOGGLE ===== */}
       <div className="max-w-5xl mx-auto px-8 pt-5 pb-0">
