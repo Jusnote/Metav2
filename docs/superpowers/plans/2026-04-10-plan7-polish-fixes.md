@@ -183,9 +183,86 @@ CompactRevisionsChart currently receives aggregate acertos/erros. Change to quer
 ### Task 12: Verify Everything
 
 - [ ] **Step 1:** `npm run lint && npm run build`
-- [ ] **Step 2:** Test: plan cards show real progress bars
-- [ ] **Step 3:** Test: edital loads faster (parallel fetch)
-- [ ] **Step 4:** Test: register study → toast → drawer updates → list updates (React Query)
-- [ ] **Step 5:** Test: plan edit/delete works
-- [ ] **Step 6:** Test: cronograma shows correct empty state per scenario
-- [ ] **Step 7:** Commit any fixes.
+- [ ] **Step 2:** Test all flows end-to-end
+- [ ] **Step 3:** Commit any fixes.
+
+---
+
+### Task 13: "Criar Plano" — Input Opcional de Data da Prova
+
+**Files:**
+- Modify: `src/views/DocumentsOrganizationPage.tsx`
+
+O dialog de criação de plano atualmente cria direto com `data_prova: null`. Adicionar input de data opcional:
+
+- [ ] **Step 1:** Trocar o `onClick` direto por um dialog/popover simples com:
+  - Nome do plano (pré-preenchido, editável)
+  - Data da prova (input date, opcional, label "Quando é a prova? (opcional)")
+  - Botões "Criar" e "Cancelar"
+- [ ] **Step 2:** Passar `data_prova` ao `createPlano` quando preenchido.
+- [ ] **Step 3:** O card do plano mostra "X dias" quando `data_prova` existe.
+- [ ] **Step 4:** Commit.
+
+---
+
+### Task 14: Tipos Próprios para Disciplina/Topico com Origin
+
+**Files:**
+- Modify: `src/hooks/useEditaisData.ts` (tipos)
+- Modify: `src/views/DocumentsOrganizationPage.tsx`
+- Modify: `src/components/documents-organization/TopicDetailDrawer.tsx`
+
+Os `_originRef` e `_originDisciplinaRef` são acessados via `as any` em todo o código. Criar tipos próprios:
+
+- [ ] **Step 1:** Em `useEditaisData.ts` ou novo arquivo de tipos, criar:
+```typescript
+export interface DisciplinaWithOrigin extends Disciplina {
+  _originRef: number | null;
+}
+
+export interface TopicoWithOrigin extends Topico {
+  _originRef: number | null;
+  _originDisciplinaRef: number | null;
+}
+```
+- [ ] **Step 2:** No DocumentsOrganizationPage, ao converter dados da API, usar esses tipos em vez de `as any`.
+- [ ] **Step 3:** No drawer, acessar `_originRef` sem `as any`.
+- [ ] **Step 4:** Commit.
+
+---
+
+### Task 15: Sheet Abaixo da Navbar (solução definitiva)
+
+**Files:**
+- Modify: `src/components/ui/sheet.tsx`
+
+O Sheet usa `fixed inset-y-0 right-0` que cobre a navbar. Solução sem container prop:
+
+- [ ] **Step 1:** Medir a navbar height via CSS custom property. No layout principal (AppTopNav ou similar), setar:
+```css
+:root { --navbar-height: 0px; }
+```
+E com um `useEffect` + `ResizeObserver` no componente do nav, atualizar:
+```typescript
+document.documentElement.style.setProperty('--navbar-height', `${navRef.current.offsetHeight}px`);
+```
+- [ ] **Step 2:** No `sheet.tsx`, para `side="right"`, trocar:
+```
+inset-y-0 right-0 → top-[var(--navbar-height)] right-0 h-[calc(100vh-var(--navbar-height))]
+```
+E o overlay:
+```
+fixed inset-0 → fixed inset-0 top-[var(--navbar-height)]
+```
+- [ ] **Step 3:** Isso funciona com qualquer altura de navbar e se adapta em resize.
+- [ ] **Step 4:** Commit.
+
+---
+
+### Task 16: Verify Final
+
+- [ ] **Step 1:** `npm run lint && npm run build`
+- [ ] **Step 2:** Test: plan creation with optional date
+- [ ] **Step 3:** Test: sheet starts below navbar
+- [ ] **Step 4:** Test: no `as any` for origin refs
+- [ ] **Step 5:** Commit.
