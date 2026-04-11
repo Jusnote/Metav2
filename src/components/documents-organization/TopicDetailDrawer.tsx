@@ -22,6 +22,8 @@ import { ProgressDots, calculateProgressDots } from './ProgressDots';
 import { MasteryBadge } from './MasteryBadge';
 import { useTopicoIntelligence } from '@/hooks/useTopicoIntelligence';
 import { useLocalProgress } from '@/hooks/useLocalProgress';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Topico, Subtopico } from '@/hooks/useDisciplinasManager';
 
@@ -115,24 +117,54 @@ function getAIInsight(mastery: number): string {
   return 'Tópico dominado! Mantenha revisões periódicas para preservar a retenção.';
 }
 
-function CompactRevisionsChart({ acertos, erros }: { acertos: number; erros: number }) {
+function CompactRevisionsChart({ acertos, erros, localTopicoId }: { acertos: number; erros: number; localTopicoId: string | null }) {
+  // Query recent sessions from questoes_log
+  const { data: sessions } = useQuery({
+    queryKey: ['topic-sessions', localTopicoId],
+    queryFn: async () => {
+      if (!localTopicoId) return [];
+      const { data } = await supabase
+        .from('questoes_log' as any)
+        .select('correto, created_at')
+        .eq('topico_id', localTopicoId)
+        .order('created_at', { ascending: true })
+        .limit(6);
+      return (data || []) as Array<{ correto: boolean; created_at: string }>;
+    },
+    enabled: !!localTopicoId,
+    staleTime: 30_000,
+  });
+
+  // Build chart data from sessions, fallback to aggregate
+  const chartData = sessions && sessions.length > 0
+    ? sessions.map((s, i) => ({
+        revisao: `S${i + 1}`,
+        acertos: s.correto ? 1 : 0,
+        erros: s.correto ? 0 : 1,
+      }))
+    : acertos + erros > 0
+      ? [{ revisao: 'Total', acertos, erros }]
+      : [];
+
   // Empty state when no data recorded yet
-  if (acertos === 0 && erros === 0) {
+  if (acertos === 0 && erros === 0 && (!sessions || sessions.length === 0)) {
     return (
       <div className="py-4 text-center">
-        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho prático</div>
+        <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho pratico</div>
         <div className="text-[11px] text-[#9e99ae]">Registre seu primeiro estudo para ver o desempenho</div>
       </div>
     );
   }
 
-  const avg = Math.round((acertos / (acertos + erros)) * 100);
+  const totalAcertos = sessions && sessions.length > 0
+    ? sessions.filter(s => s.correto).length
+    : acertos;
+  const totalErros = sessions && sessions.length > 0
+    ? sessions.filter(s => !s.correto).length
+    : erros;
+  const totalQuestions = totalAcertos + totalErros;
+  const avg = totalQuestions > 0 ? Math.round((totalAcertos / totalQuestions) * 100) : 0;
   const label = getScoreLabel(avg);
-
-  // For v1 with aggregate data only, show a single bar group
-  const chartData = [
-    { revisao: 'Total', acertos, erros },
-  ];
 
   const chartConfig = {
     acertos: {
@@ -147,7 +179,7 @@ function CompactRevisionsChart({ acertos, erros }: { acertos: number; erros: num
 
   return (
     <div>
-      <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho prático</div>
+      <div className="text-[9px] font-semibold text-[#9e99ae] uppercase tracking-wide mb-3">Desempenho pratico</div>
 
       {/* Score + label */}
       <div className="flex items-baseline gap-2 mb-2">
@@ -158,7 +190,7 @@ function CompactRevisionsChart({ acertos, erros }: { acertos: number; erros: num
           {label.text}
         </span>
         <span className="text-[9px] text-[#9e99ae]">
-          · {acertos} acertos · {erros} erros
+          · {totalAcertos} acertos · {totalErros} erros
         </span>
       </div>
 
@@ -194,7 +226,7 @@ function CompactRevisionsChart({ acertos, erros }: { acertos: number; erros: num
 
       {/* Detail summary */}
       <div className="flex items-center justify-between mt-3 text-[10px] text-[#9e99ae]">
-        <span>{acertos + erros} questões respondidas</span>
+        <span>{totalQuestions} questoes respondidas</span>
       </div>
     </div>
   );
@@ -318,7 +350,7 @@ function DrawerInnerContent({
 
   // Query local progress from Supabase by origin_topico_ref
   const originRef = (item as any)._originRef as number | undefined;
-  const { progress: localProgress } = useLocalProgress(originRef || null);
+  const { progress: localProgress, isLoading } = useLocalProgress(originRef || null);
 
   const hasProgress = localProgress !== null && (
     (localProgress.tempo_investido || 0) > 0 ||
@@ -375,6 +407,7 @@ function DrawerInnerContent({
       <CompactRevisionsChart
         acertos={localProgress?.questoes_acertos || 0}
         erros={localProgress?.questoes_erros || 0}
+        localTopicoId={localProgress?.id || null}
       />
 
       {/* Divider */}
@@ -420,7 +453,14 @@ function DrawerInnerContent({
       {/* Divider */}
       <div className="h-px bg-border my-5" />
 
-      {/* Blur overlay for stats when no progress */}
+      {/* Loading skeleton or blur overlay for stats */}
+      {isLoading ? (
+        <div className="space-y-3 py-4">
+          <div className="h-4 bg-[#f0eef5] rounded animate-pulse w-2/3" />
+          <div className="h-20 bg-[#f0eef5] rounded animate-pulse" />
+          <div className="h-4 bg-[#f0eef5] rounded animate-pulse w-1/2" />
+        </div>
+      ) : (
       <div className={`relative ${!hasProgress ? 'select-none' : ''}`}>
         {!hasProgress && (
           <div className="absolute inset-0 z-10 backdrop-blur-[3px] bg-white/50 rounded-xl flex items-center justify-center cursor-default">
@@ -500,6 +540,7 @@ function DrawerInnerContent({
 
       </div>{/* End pointer-events wrapper */}
       </div>{/* End blur overlay wrapper */}
+      )}{/* End isLoading ternary */}
 
       {/* Divider */}
       <div className="h-px bg-border my-5" />

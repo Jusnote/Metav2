@@ -292,20 +292,44 @@ export function CronogramaWeekView() {
   const { planos } = usePlanosEstudo();
   const hasActivePlan = planos.length > 0;
 
+  // TODO: check if schedule_items exist for the active plan
+  // For now, assume: plan exists but no schedule = show different message
+  const hasSchedule = false; // Will be connected to real schedule_items in v2
+
   if (!hasActivePlan) {
     return (
       <div className="max-w-5xl mx-auto px-8 py-6">
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="text-4xl mb-4">📅</div>
-          <h3 className="text-sm font-semibold text-[#1a1625] mb-1">Cronograma não ativo</h3>
+          <h3 className="text-sm font-semibold text-[#1a1625] mb-1">Cronograma nao ativo</h3>
           <p className="text-xs text-[#9e99ae] max-w-[300px] mb-5 leading-relaxed">
-            Crie um plano de estudo vinculado a um edital para ativar o cronograma semanal com atividades, anéis e acompanhamento.
+            Crie um plano de estudo vinculado a um edital para ativar o cronograma semanal com atividades, aneis e acompanhamento.
           </p>
           <button
             onClick={() => { /* TODO: navigate to editais or open plan dialog */ }}
             className="px-5 py-2.5 bg-[#6c63ff] hover:bg-[#5b54e0] text-white text-xs font-semibold rounded-lg transition-colors"
           >
             Explorar Editais
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasSchedule) {
+    return (
+      <div className="max-w-5xl mx-auto px-8 py-6">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="text-4xl mb-4">📋</div>
+          <h3 className="text-sm font-semibold text-[#1a1625] mb-1">Plano criado!</h3>
+          <p className="text-xs text-[#9e99ae] max-w-[300px] mb-5 leading-relaxed">
+            Configure seu cronograma para distribuir atividades ao longo da semana.
+          </p>
+          <button
+            onClick={() => { /* TODO: open schedule configuration */ }}
+            className="px-5 py-2.5 bg-[#6c63ff] hover:bg-[#5b54e0] text-white text-xs font-semibold rounded-lg transition-colors"
+          >
+            Configurar Cronograma
           </button>
         </div>
       </div>

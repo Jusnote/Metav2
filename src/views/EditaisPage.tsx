@@ -1,12 +1,13 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { IconSearch, IconChevronRight, IconLoader2 } from "@tabler/icons-react"
 import { motion, AnimatePresence } from "motion/react"
 import { cn } from "@/lib/utils"
 import { supabase } from "@/integrations/supabase/client"
+import { toast } from "sonner"
 import { useEditais } from "@/hooks/useEditais"
 import { usePlanosEstudo } from "@/hooks/usePlanosEstudo"
 import type { EditalResumo, EsferaFilter } from "@/types/editais"
@@ -46,7 +47,8 @@ export default function EditaisPage() {
     editais, paginacao, isLoading, error, expandedEdital,
     setBusca, setEsfera, setPagina, toggleEdital,
   } = useEditais()
-  const { planos, findPlanoByEdital } = usePlanosEstudo()
+  const { planos, findPlanoByEdital, deletePlano } = usePlanosEstudo()
+  const [openPlanMenu, setOpenPlanMenu] = useState<string | null>(null)
 
   const handleGoToCargo = useCallback((editalId: number, cargoId: number) => {
     navigate(`/documents-organization?editalId=${editalId}&cargoId=${cargoId}`)
@@ -123,6 +125,37 @@ export default function EditaisPage() {
                       </div>
                       <div className="text-[11px] font-semibold text-[#6c63ff] shrink-0">
                         Continuar →
+                      </div>
+                      <div className="relative">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setOpenPlanMenu(openPlanMenu === plano.id ? null : plano.id); }}
+                          className="w-6 h-6 rounded-md flex items-center justify-center text-[#9e99ae] hover:bg-[#f0eef5] transition-colors"
+                        >
+                          ···
+                        </button>
+                        {openPlanMenu === plano.id && (
+                          <div className="absolute right-0 top-7 bg-white border border-[#eae8ee] rounded-lg shadow-lg py-1 z-50 min-w-[140px]">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); /* TODO: edit name */ setOpenPlanMenu(null); }}
+                              className="w-full text-left px-3 py-1.5 text-xs text-[#1a1625] hover:bg-[#f8f7fd]"
+                            >
+                              Editar nome
+                            </button>
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (confirm('Excluir este plano de estudo?')) {
+                                  await deletePlano(plano.id);
+                                  toast.success('Plano excluido');
+                                }
+                                setOpenPlanMenu(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                            >
+                              Excluir plano
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
