@@ -114,26 +114,16 @@ export function useStudyCompletion() {
         .eq('id', params.scheduleItemId);
     }
 
-    // 6. Log questions if provided (detailed mode)
-    if (params.data.questoesAcertos !== undefined && params.data.questoesAcertos > 0) {
-      for (let i = 0; i < params.data.questoesAcertos; i++) {
-        await supabase.from('questoes_log' as any).insert({
-          user_id: user.id,
-          topico_id: topicoId,
-          correto: true,
-          created_at: new Date().toISOString(),
-        });
-      }
-    }
-    if (params.data.questoesErros !== undefined && params.data.questoesErros > 0) {
-      for (let i = 0; i < params.data.questoesErros; i++) {
-        await supabase.from('questoes_log' as any).insert({
-          user_id: user.id,
-          topico_id: topicoId,
-          correto: false,
-          created_at: new Date().toISOString(),
-        });
-      }
+    // 6. Log questions — single row per session (totals already stored in topicos table)
+    const totalQ = (params.data.questoesAcertos || 0) + (params.data.questoesErros || 0);
+    if (totalQ > 0) {
+      await supabase.from('questoes_log' as any).insert({
+        user_id: user.id,
+        topico_id: topicoId,
+        correto: (params.data.questoesAcertos || 0) >= (params.data.questoesErros || 0),
+        tempo_resposta: params.data.tempoReal || null,
+        created_at: new Date().toISOString(),
+      });
     }
 
     // 7. Create score snapshot

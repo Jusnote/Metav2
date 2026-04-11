@@ -56,16 +56,17 @@ const DocumentsOrganizationPage = () => {
     setLoadingApiTopicos(true);
 
     (async () => {
-      const converted: Disciplina[] = [];
-      for (const disc of apiDisciplinas) {
-        const { data } = await editaisQuery<{ topicos: ApiTopico[] }>(
-          TOPICOS_QUERY,
-          { disciplinaId: disc.id },
-        );
+      const topicosResults = await Promise.all(
+        apiDisciplinas.map(disc =>
+          editaisQuery<{ topicos: ApiTopico[] }>(TOPICOS_QUERY, { disciplinaId: disc.id })
+        )
+      );
 
-        if (cancelled) return;
+      if (cancelled) return;
 
-        const topicos: Topico[] = (data?.topicos || []).map(t => ({
+      const converted: Disciplina[] = apiDisciplinas.map((disc, index) => {
+        const result = topicosResults[index];
+        const topicos: Topico[] = (result.data?.topicos || []).map(t => ({
           id: `api-${t.id}`,
           nome: t.nome,
           date: '',
@@ -75,20 +76,18 @@ const DocumentsOrganizationPage = () => {
           _originDisciplinaRef: disc.fonteId || disc.id,
         } as any));
 
-        converted.push({
+        return {
           id: `api-${disc.id}`,
           nome: disc.nome,
           totalChapters: disc.totalTopicos,
           subject: '',
           topicos,
           _originRef: disc.fonteId || disc.id,
-        } as any);
-      }
+        } as any;
+      });
 
-      if (!cancelled) {
-        setApiConvertedDisciplinas(converted);
-        setLoadingApiTopicos(false);
-      }
+      setApiConvertedDisciplinas(converted);
+      setLoadingApiTopicos(false);
     })();
 
     return () => { cancelled = true; };

@@ -2,9 +2,11 @@
 
 import { useCallback } from "react"
 import { useNavigate } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 import { IconSearch, IconChevronRight, IconLoader2 } from "@tabler/icons-react"
 import { motion, AnimatePresence } from "motion/react"
 import { cn } from "@/lib/utils"
+import { supabase } from "@/integrations/supabase/client"
 import { useEditais } from "@/hooks/useEditais"
 import { usePlanosEstudo } from "@/hooks/usePlanosEstudo"
 import type { EditalResumo, EsferaFilter } from "@/types/editais"
@@ -125,12 +127,7 @@ export default function EditaisPage() {
                     </div>
 
                     {/* Progress bar */}
-                    <div className="h-[3px] bg-[#f0eef5] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#6c63ff] to-[#9b8afb] rounded-full transition-all duration-500"
-                        style={{ width: '0%' }}
-                      />
-                    </div>
+                    <PlanProgressBar planoId={plano.id} />
                   </div>
                 );
               })}
@@ -241,6 +238,55 @@ export default function EditaisPage() {
 }
 
 // --- Sub-components ---
+
+function PlanProgressBar({ planoId }: { planoId: string }) {
+  const { data } = useQuery({
+    queryKey: ['plan-progress', planoId],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data: discIds } = await supabase
+        .from('disciplinas')
+        .select('id')
+        .eq('plano_id', planoId);
+
+      if (!discIds || discIds.length === 0) return null;
+
+      const ids = discIds.map(d => d.id);
+
+      const { count: total } = await supabase
+        .from('topicos')
+        .select('id', { count: 'exact', head: true })
+        .in('disciplina_id', ids);
+
+      const { count: studied } = await supabase
+        .from('topicos')
+        .select('id', { count: 'exact', head: true })
+        .in('disciplina_id', ids)
+        .gt('mastery_score', 0);
+
+      return { studied: studied || 0, total: total || 0 };
+    },
+    staleTime: 60_000,
+  });
+
+  const pct = data && data.total > 0 ? Math.round((data.studied / data.total) * 100) : 0;
+
+  return (
+    <>
+      <div className="h-[3px] bg-[#f0eef5] rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-[#6c63ff] to-[#9b8afb] rounded-full transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      {data && data.total > 0 && (
+        <div className="text-[9px] text-[#9e99ae] mt-1">{data.studied}/{data.total} topicos estudados</div>
+      )}
+    </>
+  );
+}
 
 function HeroStat({ value, label }: { value: number; label: string }) {
   return (
