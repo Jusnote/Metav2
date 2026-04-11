@@ -84,7 +84,7 @@ export default function EditaisPage() {
             <div className="text-xs font-bold text-[#b0adb8] uppercase tracking-wider mb-3">
               Meus planos de estudo
             </div>
-            <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(planos.length, 3)}, 1fr)` }}>
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {planos.slice(0, 3).map((plano) => {
                 const editalLink = plano.editais[0];
                 const sigla = plano.nome.split(/[\s—–-]/)[0]?.substring(0, 3).toUpperCase() || 'PLN';

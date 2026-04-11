@@ -126,9 +126,10 @@ const DocumentsOrganizationPage = () => {
   // ---- Batch progress for all topics ----
   const allOriginRefs = useMemo(() => {
     return displayDisciplinas.flatMap(d =>
-      d.topicos.map(t => (t as any)._originRef).filter((ref: any): ref is number => typeof ref === 'number')
+      (d.topicos || []).map((t: any) => t._originRef).filter((ref: any): ref is number => typeof ref === 'number')
     );
-  }, [displayDisciplinas]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayDisciplinas.map(d => d.id).join(',')]);
 
   const { progressMap, refetch: refetchListProgress } = useLocalProgressBatch(allOriginRefs);
 

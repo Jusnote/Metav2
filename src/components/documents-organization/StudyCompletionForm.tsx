@@ -168,12 +168,16 @@ export const StudyCompletionForm: React.FC<StudyCompletionFormProps> = ({
         {/* ---- Header ---- */}
         <div className="flex items-start justify-between px-6 pt-6 pb-4">
           <div className="min-w-0 pr-4">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-[#9e99ae]">
-              {disciplinaNome}
-              {sessionType !== 'estudo' && (
-                <> &middot; {SESSION_LABELS[sessionType]}</>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-[#9e99ae]">
+                {disciplinaNome}
+              </span>
+              {sessionType && (
+                <span className="text-[9px] font-semibold text-[#6c63ff] bg-[#f5f3ff] px-2 py-0.5 rounded">
+                  {SESSION_LABELS[sessionType] || sessionType}
+                </span>
               )}
-            </span>
+            </div>
             <h2 className="text-base font-bold text-[#1a1625] leading-snug mt-0.5 truncate">
               {topicoNome}
             </h2>
@@ -220,6 +224,15 @@ export const StudyCompletionForm: React.FC<StudyCompletionFormProps> = ({
             })}
           </div>
         </div>
+
+        {/* ---- Estimated time (quick mode) ---- */}
+        {estimatedMinutes && estimatedMinutes > 0 && !showDetails && (
+          <div className="px-6 pb-2">
+            <div className="text-[10px] text-[#9e99ae]">
+              Tempo estimado: {estimatedMinutes}min
+            </div>
+          </div>
+        )}
 
         {/* ---- Expand toggle ---- */}
         {!showDetails && (
