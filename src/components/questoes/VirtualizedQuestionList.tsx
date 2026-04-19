@@ -4,7 +4,7 @@ import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { useQuestoesV2 } from "@/hooks/useQuestoesV2";
 import { QuestionCard } from "@/components/QuestionCard";
-import { Loader2, SearchX, ChevronLeft, ChevronRight, Sparkles, Quote } from "lucide-react";
+import { Loader2, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
 
 const LIMIT = 20;
 
@@ -93,12 +93,9 @@ export function VirtualizedQuestionList() {
   const {
     data,
     isLoading,
-    isFetching,
     isError,
     error,
     isPlaceholderData,
-    isSemantic,
-    isExactSearch,
   } = useQuestoesV2(committedFilters, {
     query: committedQuery || undefined,
     tab: statusTab,
@@ -235,40 +232,7 @@ export function VirtualizedQuestionList() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      {/* Results count + loading indicator */}
-      <div className="flex items-center justify-between px-1 py-1.5">
-        <p className="text-xs text-muted-foreground">
-          {total.toLocaleString('pt-BR')} questoes encontradas
-          {viewMode === 'individual' ? (
-            <span className="ml-1 text-muted-foreground/60">
-              · Questao {globalIndex + 1} de {total.toLocaleString('pt-BR')}
-            </span>
-          ) : totalPages > 1 ? (
-            <span className="ml-1 text-muted-foreground/60">
-              · Pagina {page} de {totalPages.toLocaleString('pt-BR')}
-            </span>
-          ) : null}
-        </p>
-        <div className="flex items-center gap-2">
-          {isSemantic && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-500">
-              <Sparkles className="h-3 w-3" />
-              Busca IA
-            </span>
-          )}
-          {isExactSearch && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600">
-              <Quote className="h-3 w-3" />
-              Busca exata
-            </span>
-          )}
-          {isFetching && isPlaceholderData && (
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-400" />
-          )}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex-1 min-h-0 overflow-hidden pt-4">
+      <div className="flex-1 min-h-0 pt-4">
         {viewMode === 'individual' ? (
           /* ── Individual mode: one question at a time ── */
           <div className={`h-full overflow-y-auto ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>

@@ -647,50 +647,39 @@ export const QuestionCard = React.memo(function QuestionCard({
       {/* ── BANNER / HEADER ── */}
       <header className="qc-banner px-4 py-2">
 
-        {/* Row 1: Materia / Assunto inside highlighted box */}
-        <div className="flex items-center gap-2 mb-1.5">
-          <div className="qc-prova-box flex items-center gap-3 min-w-0 flex-1 px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/30 rounded-md border-l-2 border-l-blue-400/40 dark:border-l-blue-500/30">
-            {/* Icon */}
-            <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-zinc-100 dark:bg-zinc-700/40 rounded-full">
-              <GraduationCap className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
-            </div>
+        {/* Row 1: Materia, Assunto (inline) */}
+        <div className="flex items-center gap-2 mb-1.5 min-w-0">
+          <GraduationCap className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
 
-            {/* Materia */}
-            <div className="flex-shrink-0">
-              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Materia</p>
-              <p className="text-[12px] font-semibold text-zinc-800 dark:text-zinc-200 leading-none">{subject}</p>
-            </div>
+          <p className="text-[12px] text-zinc-700 dark:text-zinc-300 truncate min-w-0 flex-1 leading-none">
+            <span className="font-semibold">{subject}</span>
+            <span className="text-zinc-300 dark:text-zinc-600 mx-2">›</span>
+            <span>{subtopic}</span>
+          </p>
 
-            {/* Separator */}
-            <div className="w-px self-stretch my-1 bg-zinc-200 dark:bg-zinc-700" />
-
-            {/* Assunto */}
-            <div className="min-w-0 flex-1">
-              <p className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Assunto</p>
-              <p className="text-[12px] font-medium text-zinc-800 dark:text-zinc-200 truncate leading-none" title={subtopic}>{subtopic}</p>
-            </div>
-
-            {caracteristicas?.anulada && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-red-300/40 text-red-500/70 shrink-0">
-                Anulada
-              </span>
-            )}
-            {caracteristicas?.desatualizada && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-blue-300/40 text-blue-500/70 shrink-0">
-                Desatualizada
-              </span>
-            )}
-          </div>
+          {caracteristicas?.anulada && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-red-300/40 text-red-500/70 shrink-0">
+              Anulada
+            </span>
+          )}
+          {caracteristicas?.desatualizada && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-blue-300/40 text-blue-500/70 shrink-0">
+              Desatualizada
+            </span>
+          )}
         </div>
 
         {/* Row 2: Banca · Ano · Prova (plain text) + counter + ID + bookmark + difficulty + tools */}
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">{institution}</span>
-            <span className="text-zinc-300 dark:text-zinc-600 text-[11px] shrink-0">·</span>
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 shrink-0">{year}</span>
-            <span className="text-zinc-300 dark:text-zinc-600 text-[11px] shrink-0">·</span>
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate" title={exam}>{exam}</span>
+          <div className="flex items-center gap-1.5 min-w-0 text-[11px]">
+            <span className="font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">Banca:</span>
+            <span className="font-semibold text-[#1D4ED8] dark:text-blue-400 shrink-0">{institution}</span>
+            <span className="text-zinc-300 dark:text-zinc-600 shrink-0">·</span>
+            <span className="font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">Ano:</span>
+            <span className="font-semibold text-[#1D4ED8] dark:text-blue-400 shrink-0">{year}</span>
+            <span className="text-zinc-300 dark:text-zinc-600 shrink-0">·</span>
+            <span className="font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">Prova:</span>
+            <span className="font-semibold text-[#1D4ED8] dark:text-blue-400 truncate" title={exam}>{exam}</span>
           </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -765,15 +754,15 @@ export const QuestionCard = React.memo(function QuestionCard({
           removeHighlightOnClick={true}
         >
           <div
-            className="prose prose-sm prose-zinc dark:prose-invert max-w-none text-[#374151] dark:text-zinc-100 leading-[1.8] text-[15.5px] [&_p]:text-[15.5px] [&_p]:leading-[1.8] [&_p]:my-1 text-left"
-            style={{ fontFamily: "'Nunito', sans-serif" }}
+            className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
+            style={{ fontFamily: "'Source Serif 4', Georgia, serif", color: '#1f1e1c' }}
             dangerouslySetInnerHTML={sanitizedQuestion}
           />
         </TextHighlighter>
       </div>
 
       {/* ── ALTERNATIVES ── */}
-      <div className="px-10 pb-4 space-y-px" role="radiogroup" aria-label="Alternativas">
+      <div className="px-5 pb-4 space-y-px" role="radiogroup" aria-label="Alternativas">
         {sanitizedAlternatives.map((alt, index) => {
           const classes = getAltClasses(alt.letter, index);
           const pct = altPercentages?.get(alt.letter);
@@ -839,8 +828,8 @@ export const QuestionCard = React.memo(function QuestionCard({
                     className="pt-px leading-[1.5] flex-1"
                   >
                     <div
-                      className={`prose prose-sm dark:prose-invert max-w-none text-[14px] [&_p]:text-[14px] [&_p]:my-0.5 leading-[1.7] [&_p]:leading-[1.7] transition-colors duration-200 ${classes.text}`}
-                      style={{ fontFamily: "'Nunito', sans-serif" }}
+                      className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
+                      style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}
                       dangerouslySetInnerHTML={alt.html}
                     />
                   </TextHighlighter>

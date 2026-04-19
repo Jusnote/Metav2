@@ -90,6 +90,9 @@ const AppContent = () => {
 
   // Detectar páginas full-width (sem padding no main)
   const isFullWidth = (location?.pathname?.startsWith('/lei-seca') || location?.pathname?.startsWith('/documents-organization') || location?.pathname?.startsWith('/cadernos') || location?.pathname?.startsWith('/editais')) ?? false;
+
+  // Páginas com fundo branco sólido
+  const hasWhiteBackground = location?.pathname?.startsWith('/questoes') ?? false;
   
   // Expor função para mostrar/esconder timer globalmente
   React.useEffect(() => {
@@ -128,7 +131,7 @@ const AppContent = () => {
     <LeiSecaProvider>
     <DocumentsOrganizationProvider>
     <AppTopNav>
-      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'px-4 py-5'}`} style={{
+      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'px-4 py-5'} ${hasWhiteBackground ? 'bg-white' : ''}`} style={{
         paddingBottom: isTimerVisible ? '80px' : isFullWidth ? '0' : '24px'
       }}>
         {!isFullWidth && <AppBreadcrumb />}

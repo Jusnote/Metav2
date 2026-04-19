@@ -125,7 +125,7 @@ export function QuestoesFilterBar({ onPopoverChange, onSearch }: QuestoesFilterB
           background: "linear-gradient(180deg, #f6f7f9, #eef0f3)",
           border: "1px solid #e2e5ea",
           borderTop: "1px solid #eaecf0",
-          borderRadius: "0 0 14px 14px",
+          borderRadius: "14px",
           boxShadow: "0 2px 6px rgba(0,0,0,0.03)",
           gap: "6px",
           padding: "8px 12px",

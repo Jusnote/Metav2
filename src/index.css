@@ -1546,21 +1546,32 @@ All colors MUST be HSL.
 /* Letter circle base */
 .qc-alt-circle {
   flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 700;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
   transition: background-color 0.2s ease-out, color 0.2s ease-out, transform 0.15s ease-out, box-shadow 0.2s ease-out;
   margin-top: 1px;
 }
 .qc-alt-row:not(:disabled):active .qc-alt-circle { transform: scale(1.15); }
 
 /* Circle states */
-.qc-circle-default { background-color: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+.qc-alt-circle.qc-circle-default {
+  background-color: transparent;
+  color: #3B82F6;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgba(59, 130, 246, 0.45);
+}
+.dark .qc-alt-circle.qc-circle-default {
+  color: #60A5FA;
+  border-color: rgba(96, 165, 250, 0.5);
+}
 .qc-circle-selected {
   background-color: hsl(240 6% 10%);
   color: white;
