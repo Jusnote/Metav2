@@ -86,13 +86,13 @@ async function fetchQuestoes(params: FetchParams): Promise<QuestoesPageResponse>
   sp.set('limit', String(params.limit));
   sp.set('include_html', 'true');
 
-  // Array filters
-  params.filters.materias.forEach(v => sp.append('materia', v));
-  params.filters.assuntos.forEach(v => sp.append('assunto', v));
-  params.filters.bancas.forEach(v => sp.append('banca', v));
-  params.filters.anos.forEach(v => sp.append('ano', String(v)));
-  params.filters.orgaos.forEach(v => sp.append('orgao', v));
-  params.filters.cargos.forEach(v => sp.append('cargo', v));
+  // Array filters — plural (API aceita multi-valor nativo)
+  params.filters.materias.forEach(v => sp.append('materias', v));
+  params.filters.assuntos.forEach(v => sp.append('assuntos', v));
+  params.filters.bancas.forEach(v => sp.append('bancas', v));
+  params.filters.anos.forEach(v => sp.append('anos', String(v)));
+  params.filters.orgaos.forEach(v => sp.append('orgaos', v));
+  params.filters.cargos.forEach(v => sp.append('cargos', v));
 
   // Boolean filters
   if (params.filters.excluirAnuladas) sp.set('excluir_anuladas', '1');
@@ -128,13 +128,13 @@ async function fetchSemanticQuestoes(params: FetchParams): Promise<QuestoesPageR
     limit: params.limit,
   };
 
-  // Mapeia filtros multi-select (arrays) para single values do BuscaSemanticaRequest
-  if (params.filters.bancas[0]) body.banca = params.filters.bancas[0];
-  if (params.filters.materias[0]) body.materia = params.filters.materias[0];
-  if (params.filters.assuntos[0]) body.assunto = params.filters.assuntos[0];
-  if (params.filters.orgaos[0]) body.orgao = params.filters.orgaos[0];
-  if (params.filters.cargos[0]) body.cargo = params.filters.cargos[0];
-  if (params.filters.anos[0]) body.ano = params.filters.anos[0];
+  // Filtros multi-valor — enviados como arrays completos (API aceita plural nativo)
+  if (params.filters.bancas.length)   body.bancas   = params.filters.bancas;
+  if (params.filters.materias.length) body.materias = params.filters.materias;
+  if (params.filters.assuntos.length) body.assuntos = params.filters.assuntos;
+  if (params.filters.orgaos.length)   body.orgaos   = params.filters.orgaos;
+  if (params.filters.cargos.length)   body.cargos   = params.filters.cargos;
+  if (params.filters.anos.length)     body.anos     = params.filters.anos;
 
   const res = await fetch(`${API_BASE}/api/v1/questoes/buscar-semantica`, {
     method: 'POST',
