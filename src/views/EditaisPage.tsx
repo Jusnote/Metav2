@@ -88,6 +88,7 @@ export default function EditaisPage() {
               {planos.slice(0, 3).map((plano) => {
                 const editalLink = plano.editais[0];
                 const sigla = plano.nome.split(/[\s—–-]/)[0]?.substring(0, 3).toUpperCase() || 'PLN';
+                const editalLogo = editalLink ? editais.find(e => e.id === editalLink.edital_id)?.logoUrl : null;
                 const diasProva = plano.data_prova
                   ? Math.max(0, Math.ceil((new Date(plano.data_prova).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
                   : null;
@@ -104,9 +105,15 @@ export default function EditaisPage() {
                   >
                     {/* Top: avatar + name + action */}
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-9 h-9 bg-gradient-to-br from-[#6c63ff] to-[#9b8afb] rounded-full flex items-center justify-center text-white text-[10px] font-bold tracking-wide shrink-0">
-                        {sigla}
-                      </div>
+                      {editalLogo ? (
+                        <div className="w-9 h-9 rounded-full overflow-hidden shrink-0">
+                          <img src={editalLogo} alt={sigla} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="w-9 h-9 bg-gradient-to-br from-[#6c63ff] to-[#9b8afb] rounded-full flex items-center justify-center text-white text-[10px] font-bold tracking-wide shrink-0">
+                          {sigla}
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="text-[13px] font-semibold text-[#1a1625] leading-tight truncate">
                           {plano.nome}
@@ -364,12 +371,18 @@ function EditalCard({ edital, isOpen, onToggle, expandedCargos, loadingCargos, d
         onKeyDown={e => e.key === "Enter" && onToggle()}
       >
         {/* Avatar */}
-        <div className={cn(
-          "w-[38px] h-[38px] rounded-[9px] flex items-center justify-center text-[11px] font-bold shrink-0",
-          esferaStyle.bg, esferaStyle.text
-        )}>
-          {edital.sigla ?? "?"}
-        </div>
+        {edital.logoUrl ? (
+          <div className="w-[38px] h-[38px] rounded-[9px] overflow-hidden shrink-0">
+            <img src={edital.logoUrl} alt={edital.sigla || edital.nome} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className={cn(
+            "w-[38px] h-[38px] rounded-[9px] flex items-center justify-center text-[11px] font-bold shrink-0",
+            esferaStyle.bg, esferaStyle.text
+          )}>
+            {edital.sigla ?? "?"}
+          </div>
+        )}
 
         {/* Info */}
         <div className="flex-1 min-w-0">

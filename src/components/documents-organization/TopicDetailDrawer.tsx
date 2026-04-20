@@ -127,24 +127,31 @@ function CompactRevisionsChart({ acertos, erros, localTopicoId }: { acertos: num
         .from('questoes_log' as any)
         .select('correto, created_at')
         .eq('topico_id', localTopicoId)
-        .order('created_at', { ascending: true })
-        .limit(6);
+        .order('created_at', { ascending: true });
       return (data || []) as Array<{ correto: boolean; created_at: string }>;
     },
     enabled: !!localTopicoId,
     staleTime: 30_000,
   });
 
-  // Build chart data from sessions, fallback to aggregate
-  const chartData = sessions && sessions.length > 0
-    ? sessions.map((s, i) => ({
-        revisao: `S${i + 1}`,
-        acertos: s.correto ? 1 : 0,
-        erros: s.correto ? 0 : 1,
-      }))
-    : acertos + erros > 0
-      ? [{ revisao: 'Total', acertos, erros }]
-      : [];
+  // Group sessions by date
+  const chartData = (() => {
+    if (!sessions || sessions.length === 0) {
+      return acertos + erros > 0 ? [{ revisao: 'Total', acertos, erros }] : [];
+    }
+    const byDate = new Map<string, { acertos: number; erros: number }>();
+    sessions.forEach(s => {
+      const dateKey = new Date(s.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const entry = byDate.get(dateKey) || { acertos: 0, erros: 0 };
+      if (s.correto) entry.acertos++;
+      else entry.erros++;
+      byDate.set(dateKey, entry);
+    });
+    return Array.from(byDate.entries()).map(([date, vals]) => ({
+      revisao: date,
+      ...vals,
+    }));
+  })();
 
   // Empty state when no data recorded yet
   if (acertos === 0 && erros === 0 && (!sessions || sessions.length === 0)) {
@@ -538,9 +545,11 @@ function DrawerInnerContent({
         </div>
       </div>
 
-      </div>{/* End pointer-events wrapper */}
+        </div>
+        {/* End pointer-events wrapper */}
       </div>
-      )}{/* End isLoading ternary */}
+      )}
+      {/* End isLoading ternary */}
 
       {/* Divider */}
       <div className="h-px bg-border my-5" />

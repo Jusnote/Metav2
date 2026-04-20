@@ -31,6 +31,7 @@ export interface ApiCargo {
     sigla: string;
     esfera: string;
     dataPublicacao: string;
+    logoUrl: string | null;
   };
 }
 
@@ -40,7 +41,7 @@ const CARGOS_QUERY = `
   query Cargos($editalId: Int!) {
     cargos(editalId: $editalId) {
       id nome vagas remuneracao qtdDisciplinas qtdTopicos
-      edital { id nome sigla esfera dataPublicacao }
+      edital { id nome sigla esfera dataPublicacao logoUrl }
     }
   }
 `;
@@ -68,8 +69,8 @@ export function useCargoData(editalId: number | null, cargoId: number | null) {
       return data?.cargos.find(c => c.id === cargoId) || null;
     },
     enabled: !!editalId && !!cargoId,
-    staleTime: 24 * 60 * 60 * 1000,
-    gcTime: 7 * 24 * 60 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 

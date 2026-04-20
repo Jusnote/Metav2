@@ -131,7 +131,8 @@ const DocumentsOrganizationPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayDisciplinas.map(d => d.id).join(',')]);
 
-  const { progressMap, refetch: refetchListProgress } = useLocalProgressBatch(allOriginRefs);
+  const { progressMap: _progressMap, refetch: refetchListProgress } = useLocalProgressBatch(allOriginRefs);
+  const progressMap = _progressMap instanceof Map ? _progressMap : new Map();
 
   // ---- Score engine ----
   const scoreData = useMemo(() => {
@@ -204,7 +205,7 @@ const DocumentsOrganizationPage = () => {
   }, []);
 
   return (
-    <div className="h-full relative">
+    <div className="h-full relative bg-white dark:bg-background">
       <div className="h-full overflow-y-auto">
       {/* ===== EDITAL / CRONOGRAMA TOGGLE ===== */}
       <div className="max-w-5xl mx-auto px-8 pt-5 pb-0">
@@ -282,25 +283,59 @@ const DocumentsOrganizationPage = () => {
         )}
 
         {isEditalMode && cargoData && (
-          <div className="mb-8 pb-6 border-b">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-[11px] font-semibold tracking-[0.15em] text-muted-foreground uppercase">
-                  {cargoData.edital.sigla || cargoData.edital.nome} · {cargoData.edital.esfera}
+          <div className="mb-8 pb-6 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="flex items-center gap-5">
+              {/* Cargo icon */}
+              {cargoData.edital.logoUrl ? (
+                <div className="w-14 h-14 rounded-2xl overflow-hidden shrink-0 shadow-lg">
+                  <img src={cargoData.edital.logoUrl} alt={cargoData.edital.sigla || cargoData.edital.nome} className="w-full h-full object-cover" />
                 </div>
-                <h1 className="text-[24px] font-bold text-foreground tracking-tight mt-1">
+              ) : (
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6c63ff] to-[#4f46e5] flex items-center justify-center shrink-0 shadow-lg shadow-[#6c63ff]/20">
+                  <span className="text-white font-bold text-[13px] tracking-wide leading-none">
+                    {(cargoData.edital.sigla || cargoData.edital.nome.substring(0, 3)).toUpperCase()}
+                  </span>
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-semibold tracking-[0.12em] text-[#6c63ff] uppercase">
+                    {cargoData.edital.sigla || cargoData.edital.nome}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground/50">·</span>
+                  <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                    {cargoData.edital.esfera}
+                  </span>
+                </div>
+                <h1 className="text-[22px] font-bold text-foreground tracking-tight mt-0.5 leading-tight">
                   {cargoData.nome}
                 </h1>
-                <div className="text-[13px] text-muted-foreground mt-1">
-                  {cargoData.qtdDisciplinas} disciplinas · {cargoData.qtdTopicos} topicos
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <span>{cargoData.qtdDisciplinas} disciplinas</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                    <span>{cargoData.qtdTopicos} topicos</span>
+                  </div>
                 </div>
               </div>
 
               {/* Plan CTA or Badge */}
-              <div>
+              <div className="shrink-0 mt-1">
                 {existingPlano ? (
-                  <span className="text-xs text-[#6c63ff] font-medium bg-[#f5f3ff] px-3 py-1.5 rounded-lg">
-                    Plano: {existingPlano.nome}
+                  <span className="text-[11px] text-[#6c63ff] font-medium bg-[#f5f3ff] px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {existingPlano.nome}
                   </span>
                 ) : (
                   <button
@@ -319,7 +354,7 @@ const DocumentsOrganizationPage = () => {
                         toast.error('Erro ao criar plano.');
                       }
                     }}
-                    className="px-4 py-2 bg-[#6c63ff] hover:bg-[#5b54e0] text-white text-xs font-semibold rounded-lg transition-colors"
+                    className="px-4 py-2 bg-[#6c63ff] hover:bg-[#5b54e0] text-white text-[11px] font-semibold rounded-lg transition-colors shadow-sm"
                   >
                     Criar Plano de Estudo
                   </button>
@@ -329,7 +364,7 @@ const DocumentsOrganizationPage = () => {
 
             {/* Nota estimada */}
             {scoreProjection.current > 0 && scoreData.length >= 2 && (
-              <div className="mt-3">
+              <div className="mt-4 ml-[76px]">
                 <BasicScoreDisplay score={scoreProjection.current} targetScore={80} />
               </div>
             )}
@@ -421,33 +456,29 @@ const DocumentsOrganizationPage = () => {
                               <div
                                 key={subtopico.id}
                                 onClick={() => handleSubtopicoClick(disciplina.id, topico.id, subtopico)}
-                                className={`flex items-center py-[9px] px-3.5 cursor-pointer transition-colors gap-3 group
+                                className={`flex items-start py-[9px] px-3.5 cursor-pointer transition-colors gap-3 group
                                   ${isSelected ? 'bg-[#f0edff]' : 'hover:bg-[#f8f7fd]'}`}
                               >
                                 {/* Status dot */}
-                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${subDotColor}`} />
+                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors mt-[7px] ${subDotColor}`} />
 
-                                {/* Name */}
-                                <div className="text-[13px] font-[550] text-[#1a1a1a] dark:text-foreground flex-1 truncate">
-                                  {subtopico.nome}
-                                </div>
-
-                                {/* Mastery % */}
-                                {subProgress && subProgress.mastery_score > 0 && (
-                                  <span className="text-[10px] font-semibold text-[#6c63ff] shrink-0">
-                                    {Math.round(subProgress.mastery_score)}%
-                                  </span>
-                                )}
-
-                                {/* Meta */}
-                                <div className="text-[11px] text-[#b0adb8] shrink-0">
-                                  {subtopico.resumosVinculados > 0 && `${subtopico.resumosVinculados} res`}
-                                  {subtopico.resumosVinculados > 0 && subtopico.questoesVinculadas > 0 && ' · '}
-                                  {subtopico.questoesVinculadas > 0 && `${subtopico.questoesVinculadas} quest`}
+                                {/* Name + progress bar */}
+                                <div className="flex-1">
+                                  <div className="text-[14px] font-medium text-[#1a1a1a] dark:text-foreground text-justify">
+                                    {subtopico.nome}
+                                  </div>
+                                  {subProgress && subProgress.mastery_score > 0 && (
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <div className="flex-1 max-w-[120px] h-[3px] bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#6c63ff] rounded-full transition-all duration-500" style={{ width: `${Math.round(subProgress.mastery_score)}%` }} />
+                                      </div>
+                                      <span className="text-[10px] font-medium text-[#6c63ff]">{Math.round(subProgress.mastery_score)}%</span>
+                                    </div>
+                                  )}
                                 </div>
 
                                 {/* Hover action */}
-                                <div className="text-[11px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                <div className="text-[11px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-[2px]">
                                   Estudar →
                                 </div>
                               </div>
@@ -471,27 +502,24 @@ const DocumentsOrganizationPage = () => {
                       <div
                         key={topico.id}
                         onClick={() => handleTopicoClick(disciplina.id, topico)}
-                        className={`flex items-center py-[9px] px-3.5 cursor-pointer transition-colors gap-3 group
+                        className={`flex items-start py-[9px] px-3.5 cursor-pointer transition-colors gap-3 group
                           ${isSelected ? 'bg-[#f0edff]' : 'hover:bg-[#f8f7fd]'}`}
                       >
-                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${dotColor}`} />
-                        <div className="text-[13px] font-[550] text-[#1a1a1a] dark:text-foreground flex-1 truncate">
-                          {topico.nome}
-                        </div>
-                        {topicProgress && topicProgress.mastery_score > 0 && (
-                          <span className="text-[10px] font-semibold text-[#6c63ff] shrink-0">
-                            {Math.round(topicProgress.mastery_score)}%
-                          </span>
-                        )}
-                        {topico.estimated_duration_minutes ? (
-                          <div className="text-[11px] text-[#b0adb8] shrink-0">
-                            {topico.estimated_duration_minutes >= 60
-                              ? `${Math.floor(topico.estimated_duration_minutes / 60)}h ${topico.estimated_duration_minutes % 60 > 0 ? `${topico.estimated_duration_minutes % 60}m` : ''}`
-                              : `${topico.estimated_duration_minutes}m`
-                            }
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors mt-[7px] ${dotColor}`} />
+                        <div className="flex-1">
+                          <div className="text-[14px] font-medium text-[#1a1a1a] dark:text-foreground text-justify">
+                            {topico.nome}
                           </div>
-                        ) : null}
-                        <div className="text-[11px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                          {topicProgress && topicProgress.mastery_score > 0 && (
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <div className="flex-1 max-w-[120px] h-[3px] bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                <div className="h-full bg-[#6c63ff] rounded-full transition-all duration-500" style={{ width: `${Math.round(topicProgress.mastery_score)}%` }} />
+                              </div>
+                              <span className="text-[10px] font-medium text-[#6c63ff]">{Math.round(topicProgress.mastery_score)}%</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-semibold text-[#6c63ff] opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-[2px]">
                           Estudar →
                         </div>
                       </div>

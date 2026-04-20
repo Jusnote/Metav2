@@ -14,6 +14,7 @@ const EDITAIS_LIST_QUERY = `
         totalCargos
         totalDisciplinas
         totalTopicos
+        logoUrl
       }
       paginacao {
         total

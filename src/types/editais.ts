@@ -7,6 +7,7 @@ export interface EditalResumo {
   totalCargos: number
   totalDisciplinas: number
   totalTopicos: number
+  logoUrl?: string | null
 }
 
 export interface PaginaInfo {
