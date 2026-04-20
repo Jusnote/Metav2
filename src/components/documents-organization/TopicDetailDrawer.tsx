@@ -539,7 +539,7 @@ function DrawerInnerContent({
       </div>
 
       </div>{/* End pointer-events wrapper */}
-      </div>{/* End blur overlay wrapper */}
+      </div>
       )}{/* End isLoading ternary */}
 
       {/* Divider */}
