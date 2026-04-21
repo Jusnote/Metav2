@@ -14,7 +14,47 @@ Concurseiros preparam há meses para um cargo específico. Hoje a experiência t
 
 Introduzir uma seção **OBJETIVO** no topo da página de questões que permita selecionar um (ou até três) cargos-alvo como delimitadores do universo de busca, e refinar o header existente com tipografia mais elegante. Não mexe em pills, chips, results header, status tabs, sort nem view mode.
 
-## Fora do escopo
+## Implementação em duas fases
+
+O design completo está descrito aqui, mas a entrega é **fracionada em duas fases** — a primeira enxuta (visual + admin pra popular fotos) sai agora; a segunda (integração real com dados de questões) entra em outro brainstorm onde a gente discute regras, matching, performance e edge cases a fundo.
+
+### Fase 1 — visual + admin mínimo (esta sessão)
+
+**Entregável:** seção OBJETIVO renderizada na página de questões, painel admin para cadastrar carreiras e subir fotos. Aluno vê a UI completa e bonita, mas **ativar foco não muda o que aparece na lista de questões**. É um catálogo visual — ainda não é um filtro funcional.
+
+Inclui:
+- Header refinado (título + tabs segmented control)
+- Seção OBJETIVO completa na UI: header da seção, tabs de área, carrossel de cards, seta, busca por nome
+- Estado local de focos ativos (React state) — card acende com ✓, TODAS deseleciona, limite de 3 via FIFO
+- Tabela `carreiras` (versão mínima: SEM FK `cargos.carreira_id`)
+- Bucket `carreira-images` + RLS
+- Painel admin `/moderacao/objetivos` enxuto: listagem + drawer CRUD (nome, área, slug, ordem, ativa, upload de foto). SEM picker de cargos vinculados.
+- Frontend lê carreiras reais da tabela (não mock)
+- `SemanticScopeToggle` renderizado mas apenas visual (sem lógica de contagem/ampliação)
+
+**Fora da Fase 1:**
+- Integração foco → query de questões (foco não afeta o que aparece)
+- Integração foco → pills (pills operam no universo completo como hoje)
+- Toggle semântico funcional
+- Auto-limpa de pills incompatíveis
+- Persistência de focos entre sessões
+
+### Fase 2 — backend e integração real (próximo brainstorm)
+
+Entregável: modo foco funcional de verdade. Inclui:
+- Coluna `cargos.carreira_id` + migração de dados
+- Picker "Cargos vinculados" no drawer admin
+- Integração na `useQuestoesV2`: escopar base de questões pelos cargos das carreiras ativas
+- Adaptação dos popovers de pill: opções limitadas ao universo escopado
+- Lógica real do `SemanticScopeToggle`: contagens `dentro_foco` / `fora_foco`, toggle ampliando escopo
+- Regra de auto-limpa: ativar foco remove seleções de pill fora do universo com toast
+- Persistência decidida (sessionStorage vs localStorage)
+- Indexação e validação de performance das queries escopadas
+- Regras de matching e edge cases de nomenclatura de cargos
+
+Essa fase vai ter seu próprio brainstorm + spec + plano.
+
+## Fora do escopo (das duas fases)
 
 - Setter global de objetivo (sidebar, onboarding, perfil) — sessão futura
 - Refinement strip de editais históricos — curadoria do admin + pills existentes cobrem
@@ -149,7 +189,7 @@ create table carreiras (
 create index idx_carreiras_area_ordem on carreiras(area, ordem) where ativa = true;
 ```
 
-### Coluna `carreira_id` em `cargos`
+### Coluna `carreira_id` em `cargos` _(Fase 2)_
 
 ```sql
 alter table cargos add column carreira_id uuid references carreiras(id) on delete set null;
@@ -157,6 +197,7 @@ create index idx_cargos_carreira on cargos(carreira_id) where carreira_id is not
 ```
 
 - FK opcional: admin vincula N cargos de editais a 1 carreira (muitos-para-um)
+- **Esta migração não entra na Fase 1** — carreiras existem sem vínculo com cargos até Fase 2 definir a integração com questões.
 - Cargo sem `carreira_id` = não aparece em nenhuma carreira mas continua acessível via filtros normais
 
 ### Storage
@@ -172,18 +213,25 @@ Bucket **`carreira-images`** no Supabase Storage:
 
 Nova aba **`Objetivos`** em `/moderacao` (shell existente: `ModerationShell`).
 
+### Fase 1 — CRUD básico + foto
+
 **Listagem:**
-- Tabela paginada de carreiras com colunas: Foto miniatura · Nome · Área · Cargos vinculados (count) · Ativa (toggle) · Ordem (drag-handle ou input numérico)
+- Tabela paginada de carreiras com colunas: Foto miniatura · Nome · Área · Ativa (toggle) · Ordem (input numérico)
 - Filtros no topo: por área, por status (ativa/inativa), busca por nome
 - Botão `+ Nova carreira`
 
 **Drawer de edição (ModerationDrawer existente):**
-- Upload de foto (drop zone com preview)
-- Nome, slug (auto-gerado do nome, editável)
-- Área (select entre as 9 iniciais — ver "Áreas iniciais" abaixo)
+- Upload de foto (drop zone com preview) — redimensiona client-side pra 400×400 antes de subir ao bucket
+- Nome (input)
+- Slug (auto-gerado do nome, editável)
+- Área (select entre as 9 iniciais)
 - Ordem (número)
 - Toggle: Ativa
-- **Cargos vinculados**: lista de cargos da tabela `cargos` com busca/filtro por edital, multi-select. Admin escolhe quais cargos específicos entram nessa carreira.
+
+### Fase 2 — cargos vinculados
+
+- **Cargos vinculados**: lista de cargos da tabela `cargos` com busca/filtro por edital, multi-select. Admin escolhe quais cargos específicos entram nessa carreira. _(Adicionado ao drawer da Fase 1)_
+- Coluna "Cargos vinculados (count)" adicionada à listagem
 
 ## Áreas iniciais
 
@@ -223,28 +271,43 @@ Para robustez mesmo assim (caso `foto_url` venha NULL por bug ou deleção): pla
 
 ## Arquivos afetados
 
+### Fase 1
+
 **Novos:**
 - `src/components/questoes/objetivo/ObjetivoSection.tsx` — container
 - `src/components/questoes/objetivo/ObjetivoHeader.tsx` — label + limpar + busca
 - `src/components/questoes/objetivo/AreaTabs.tsx` — tabs de área
 - `src/components/questoes/objetivo/CarreiraCarousel.tsx` — carrossel com seta
 - `src/components/questoes/objetivo/CarreiraCard.tsx` — card individual
-- `src/components/questoes/objetivo/SemanticScopeToggle.tsx` — toggle "Incluir fora do foco" na busca semântica
-- `src/hooks/useCarreiras.ts` — fetch + cache de carreiras ativas
-- `src/hooks/useFocoObjetivo.ts` — estado dos focos ativos (session-scoped)
+- `src/components/questoes/objetivo/SemanticScopeToggle.tsx` — toggle visual "Incluir fora do foco" (sem lógica real na Fase 1)
+- `src/hooks/useCarreiras.ts` — fetch + cache de carreiras ativas (read-only)
+- `src/hooks/useFocoObjetivo.ts` — estado dos focos ativos (React state, sem persistência ainda)
 - `src/types/carreira.ts` — tipos
-- Supabase migration: `carreiras` table + `cargos.carreira_id`
-- `src/app/moderacao/objetivos/page.tsx` — nova aba admin
+- Supabase migration: tabela `carreiras` (versão mínima sem FK) + bucket `carreira-images` + RLS
+- `src/app/moderacao/objetivos/page.tsx` — nova aba admin (CRUD básico + foto)
 - `src/components/moderacao/objetivos/ObjetivoTable.tsx`
 - `src/components/moderacao/objetivos/ObjetivoDrawer.tsx`
+- `src/components/moderacao/objetivos/ObjetivoFotoUpload.tsx` — drop zone + resize client-side
 
-**Modificados:**
-- `src/views/QuestoesPage.tsx` — substituir bloco do header atual + inserir `<ObjetivoSection />` entre header e pills + renderizar `<SemanticScopeToggle />` abaixo de `QuestoesSearchBar` quando aba Semântico está ativa
-- `src/contexts/QuestoesContext.tsx` — adicionar leitura de focos ativos + flag `ignorarFocoNaBuscaSemantica`, integrar ao query builder de pills para escopar opções
-- `src/hooks/useQuestoesV2.ts` — filtrar base de questões pelos cargos vinculados às carreiras ativas (parâmetro `carreira_ids`); respeitar flag da busca semântica
+**Modificados na Fase 1:**
+- `src/views/QuestoesPage.tsx` — substituir bloco do header atual + inserir `<ObjetivoSection />` entre header e pills + renderizar `<SemanticScopeToggle />` (versão visual) abaixo de `QuestoesSearchBar` quando aba Semântico está ativa
 - `src/components/moderacao/ModerationShell.tsx` — adicionar entrada "Objetivos" na sidebar
 
-**Não modificados:**
+### Fase 2
+
+**Novos:**
+- Migration adicional: `cargos.carreira_id`
+
+**Modificados:**
+- `src/contexts/QuestoesContext.tsx` — adicionar leitura de focos ativos + flag `ignorarFocoNaBuscaSemantica`, integrar ao query builder de pills para escopar opções
+- `src/hooks/useQuestoesV2.ts` — filtrar base de questões pelos cargos vinculados às carreiras ativas (parâmetro `carreira_ids`); respeitar flag da busca semântica
+- `src/hooks/useFocoObjetivo.ts` — adicionar persistência (session ou local)
+- `src/components/moderacao/objetivos/ObjetivoDrawer.tsx` — adicionar picker "Cargos vinculados"
+- `src/components/moderacao/objetivos/ObjetivoTable.tsx` — coluna "Cargos vinculados (count)"
+- `src/components/questoes/objetivo/SemanticScopeToggle.tsx` — implementar lógica real (contagens, ampliação de escopo)
+
+### Não modificados (nas duas fases)
+
 - `src/components/questoes/QuestoesFilterBar.tsx`, `FilterChipsBidirectional.tsx`, `QuestoesResultsHeader.tsx`, `QuestoesSearchBar.tsx`, `QuestoesFilterPopover.tsx`, `QuestoesFilterPill.tsx`, `QuestoesAdvancedPopover.tsx`, `VirtualizedQuestionList.tsx`, componentes de comentário.
 
 ## Mockups de referência
@@ -254,8 +317,17 @@ Para robustez mesmo assim (caso `foto_url` venha NULL por bug ou deleção): pla
 
 ## Decisões abertas pro plano de implementação
 
+### Fase 1
+
 1. **Ordem do carrossel**: `ordem ASC` manual pelo admin. Alternativas descartadas: alfabética (não capta prioridade), popularidade (ainda não tem dados).
-2. **Persistência dos focos ativos**: por sessão via `sessionStorage` (não persiste entre dias — aluno abre a página sempre com TODAS selecionado). Alternativa: `localStorage` (persiste entre dias) — decidir no plano.
-3. **Queries de escopo**: o escopo do universo de questões pelos cargos da carreira pode exigir índices dedicados. Validar impacto no plano.
-4. **Renderização do header da seção vs `QuestoesFilterOverlay` existente**: o overlay atual cobre a lista de questões quando popovers de pill estão abertos. Verificar se também cobre a seção OBJETIVO ou fica abaixo dela.
-5. **Contagem `fora_foco` no toggle da busca semântica**: implementar como segunda query paralela ou estimar via cache. Validar custo no plano.
+2. **Renderização do header da seção vs `QuestoesFilterOverlay` existente**: o overlay atual cobre a lista de questões quando popovers de pill estão abertos. Verificar se também cobre a seção OBJETIVO ou fica abaixo dela.
+3. **Resize de foto**: biblioteca cliente (`browser-image-compression` ou canvas nativo) — escolher no plano.
+4. **RLS do bucket `carreira-images`**: leitura pública, escrita só para role admin/moderator. Validar política exata.
+
+### Fase 2 (fora do escopo desta entrega)
+
+- Persistência dos focos ativos (sessionStorage vs localStorage)
+- Queries de escopo e indexação (`cargos.carreira_id`, índice parcial, performance)
+- Contagem `fora_foco` no toggle semântico (query paralela vs estimativa via cache)
+- Regras de matching e edge cases de nomenclatura de cargos
+- Regra de auto-limpa de pills incompatíveis na ativação de foco
