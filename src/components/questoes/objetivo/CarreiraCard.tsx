@@ -54,9 +54,9 @@ export function CarreiraCard({ carreira, active, onToggle }: CarreiraCardProps) 
         </span>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 px-2 pb-[6px] pt-[6px]">
+      <div className="absolute bottom-0 left-0 right-0 px-2 pb-[6px] pt-[6px] text-white">
         <div
-          className="text-[10px] font-bold uppercase tracking-[0.03em] leading-[1.5] text-white"
+          className="text-[10px] font-bold uppercase tracking-[0.03em] leading-[1.15]"
           style={{
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -65,19 +65,7 @@ export function CarreiraCard({ carreira, active, onToggle }: CarreiraCardProps) 
             textOverflow: 'ellipsis',
           }}
         >
-          <span
-            style={{
-              background: 'rgba(255,255,255,0.18)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
-              padding: '2px 5px',
-              borderRadius: '4px',
-              boxDecorationBreak: 'clone',
-              WebkitBoxDecorationBreak: 'clone',
-            }}
-          >
-            {carreira.nome}
-          </span>
+          {carreira.nome}
         </div>
       </div>
     </button>
