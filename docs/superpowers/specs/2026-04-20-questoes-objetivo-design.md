@@ -77,7 +77,6 @@ Linha horizontal scrollável com cards 112×112px, gap 10px:
    - Nome do cargo em **white 10px bold uppercase**, letter-spacing `0.03em`, line-clamp 2, na faixa inferior do card
    - Hover: lift 1px + shadow
    - **Ativo**: borda 2px `#1e3a8a` + ring externo `rgba(30,58,138,0.1)` + badge circular 18px `#1e3a8a` com ✓ no canto superior direito
-   - **Favorito**: estrela ★ 11px `#fbbf24` no canto superior esquerdo
    - Click = toggle foco (ativa/desativa)
 
 3. **Seta `›`** como botão separado 32px à direita do carrossel (NÃO sobrepõe cards)
@@ -90,7 +89,7 @@ Linha horizontal scrollável com cards 112×112px, gap 10px:
 ### (3) Modelo de foco (comportamento)
 
 - **Até 3 focos simultâneos.** Ao tentar ativar o 4º, o sistema desativa automaticamente o foco mais antigo (FIFO) e ativa o novo. Sem modal/alerta.
-- **Favorito**: UMA carreira pode ser marcada como favorita. Ela **inicia ativa** ao abrir a página. Marcação futura via painel admin (nesta spec, o favorito é hardcoded ou nulo — ver Data model).
+- **Ao abrir a página, nenhum foco inicia ativo.** Card `TODAS` aparece selecionado por padrão — universo aberto. (Mecânica de "favorita inicia ativa" está fora do escopo — pode ser adicionada em sessão futura se necessário.)
 - **Focos atravessam áreas**: ativar PF-Agente (área Policial) e AFRFB (área Fiscal) simultaneamente mantém ambos ativos mesmo ao trocar de aba de área.
 - **Ao ativar/desativar foco**, a seção de questões re-renderiza com o universo atualizado.
 
@@ -111,6 +110,25 @@ Regras:
 
 Consequência: não há estado "editado" nem botão "restaurar preset". O próprio escopo do pill é a indicação visual de que o foco está ativo. Zero tracking adicional.
 
+### (5) Busca semântica fora do foco
+
+Quando há foco ativo e o aluno está na aba `Filtro semântico` digitando uma query, o sistema detecta se existem questões relevantes **fora do universo do foco** e oferece um toggle discreto pra ampliar o escopo daquela busca.
+
+**Comportamento:**
+- Aba `Filtro semântico`, foco ativo, query digitada (ex: "tutela provisória")
+- Sistema faz duas contagens: `dentro_foco` e `fora_foco`
+- Se `fora_foco > 0`, aparece um chip/link abaixo da `QuestoesSearchBar`:
+  ```
+  [+ Incluir 230 resultados fora do foco]
+  ```
+- Click = toggle liga; busca re-roda ignorando o escopo do foco; chip passa a mostrar `[✓ incluindo fora do foco · remover]`
+- Desativar foco ou apagar a query → toggle reseta (default off)
+- Estado vive só na aba Semântico; ao voltar pra `Filtros`, o comportamento volta a ser "busca respeita o escopo"
+
+**Default:** off. Busca sempre respeita o escopo do foco até o aluno explicitamente ampliar.
+
+**Escopo desta spec:** toggle **só aparece na aba Filtro semântico**. Nas abas Filtros e Cadernos, a busca sempre respeita o escopo do foco (o aluno amplia desativando o foco manualmente).
+
 ## Modelo de dados
 
 ### Tabela `carreiras` (nova)
@@ -123,15 +141,12 @@ create table carreiras (
   slug text not null unique,             -- 'pf-agente', 'prf-policial'
   foto_url text,                         -- URL do bucket carreira-images
   ordem int not null default 0,          -- posição no carrossel da área
-  destaque boolean not null default false, -- aparece primeiro? (reservado)
-  favorita boolean not null default false, -- inicia ativa ao abrir
   ativa boolean not null default false,  -- admin decide quando lançar
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 create index idx_carreiras_area_ordem on carreiras(area, ordem) where ativa = true;
-create unique index idx_carreiras_favorita on carreiras(favorita) where favorita = true;
 ```
 
 ### Coluna `carreira_id` em `cargos`
@@ -158,7 +173,7 @@ Bucket **`carreira-images`** no Supabase Storage:
 Nova aba **`Objetivos`** em `/moderacao` (shell existente: `ModerationShell`).
 
 **Listagem:**
-- Tabela paginada de carreiras com colunas: Foto miniatura · Nome · Área · Cargos vinculados (count) · Ativa (toggle) · Destaque (toggle) · Favorita (radio) · Ordem (drag-handle ou input numérico)
+- Tabela paginada de carreiras com colunas: Foto miniatura · Nome · Área · Cargos vinculados (count) · Ativa (toggle) · Ordem (drag-handle ou input numérico)
 - Filtros no topo: por área, por status (ativa/inativa), busca por nome
 - Botão `+ Nova carreira`
 
@@ -167,10 +182,8 @@ Nova aba **`Objetivos`** em `/moderacao` (shell existente: `ModerationShell`).
 - Nome, slug (auto-gerado do nome, editável)
 - Área (select entre as 9 iniciais — ver "Áreas iniciais" abaixo)
 - Ordem (número)
-- Toggles: Ativa, Destaque, Favorita
+- Toggle: Ativa
 - **Cargos vinculados**: lista de cargos da tabela `cargos` com busca/filtro por edital, multi-select. Admin escolhe quais cargos específicos entram nessa carreira.
-
-**Regra de favorita**: só uma carreira pode ter `favorita=true` (constraint unique partial index). Setar favorita numa limpa a flag da anterior (trigger ou update no client com transação).
 
 ## Áreas iniciais
 
@@ -216,6 +229,7 @@ Para robustez mesmo assim (caso `foto_url` venha NULL por bug ou deleção): pla
 - `src/components/questoes/objetivo/AreaTabs.tsx` — tabs de área
 - `src/components/questoes/objetivo/CarreiraCarousel.tsx` — carrossel com seta
 - `src/components/questoes/objetivo/CarreiraCard.tsx` — card individual
+- `src/components/questoes/objetivo/SemanticScopeToggle.tsx` — toggle "Incluir fora do foco" na busca semântica
 - `src/hooks/useCarreiras.ts` — fetch + cache de carreiras ativas
 - `src/hooks/useFocoObjetivo.ts` — estado dos focos ativos (session-scoped)
 - `src/types/carreira.ts` — tipos
@@ -225,9 +239,9 @@ Para robustez mesmo assim (caso `foto_url` venha NULL por bug ou deleção): pla
 - `src/components/moderacao/objetivos/ObjetivoDrawer.tsx`
 
 **Modificados:**
-- `src/views/QuestoesPage.tsx` — substituir bloco do header atual + inserir `<ObjetivoSection />` entre header e pills
-- `src/contexts/QuestoesContext.tsx` — adicionar leitura de focos ativos, integrar ao query builder de pills para escopar opções
-- `src/hooks/useQuestoesV2.ts` — filtrar base de questões pelos cargos vinculados às carreiras ativas (parâmetro `carreira_ids`)
+- `src/views/QuestoesPage.tsx` — substituir bloco do header atual + inserir `<ObjetivoSection />` entre header e pills + renderizar `<SemanticScopeToggle />` abaixo de `QuestoesSearchBar` quando aba Semântico está ativa
+- `src/contexts/QuestoesContext.tsx` — adicionar leitura de focos ativos + flag `ignorarFocoNaBuscaSemantica`, integrar ao query builder de pills para escopar opções
+- `src/hooks/useQuestoesV2.ts` — filtrar base de questões pelos cargos vinculados às carreiras ativas (parâmetro `carreira_ids`); respeitar flag da busca semântica
 - `src/components/moderacao/ModerationShell.tsx` — adicionar entrada "Objetivos" na sidebar
 
 **Não modificados:**
@@ -241,7 +255,7 @@ Para robustez mesmo assim (caso `foto_url` venha NULL por bug ou deleção): pla
 ## Decisões abertas pro plano de implementação
 
 1. **Ordem do carrossel**: `ordem ASC` manual pelo admin. Alternativas descartadas: alfabética (não capta prioridade), popularidade (ainda não tem dados).
-2. **Favorito default**: NULL até admin definir. Se NULL ao abrir a página, nenhum foco inicia ativo (card TODAS selecionado).
-3. **Persistência dos focos ativos**: por sessão via `sessionStorage` (não persiste entre dias; favorita garante continuidade estável). Alternativa: localStorage (mais persistente) — decidir no plano.
-4. **Queries de escopo**: o escopo do universo de questões pelos cargos da carreira pode exigir índices dedicados. Validar impacto no plano.
-5. **Renderização do header da seção vs `QuestoesFilterOverlay` existente**: o overlay atual cobre a lista de questões quando popovers de pill estão abertos. Verificar se também cobre a seção OBJETIVO ou fica abaixo dela.
+2. **Persistência dos focos ativos**: por sessão via `sessionStorage` (não persiste entre dias — aluno abre a página sempre com TODAS selecionado). Alternativa: `localStorage` (persiste entre dias) — decidir no plano.
+3. **Queries de escopo**: o escopo do universo de questões pelos cargos da carreira pode exigir índices dedicados. Validar impacto no plano.
+4. **Renderização do header da seção vs `QuestoesFilterOverlay` existente**: o overlay atual cobre a lista de questões quando popovers de pill estão abertos. Verificar se também cobre a seção OBJETIVO ou fica abaixo dela.
+5. **Contagem `fora_foco` no toggle da busca semântica**: implementar como segunda query paralela ou estimar via cache. Validar custo no plano.
