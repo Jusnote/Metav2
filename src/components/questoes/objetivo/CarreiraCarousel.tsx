@@ -38,7 +38,7 @@ export function CarreiraCarousel({
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-[96px] w-[96px] flex-shrink-0 animate-pulse rounded-[10px] bg-slate-100"
+              className="h-[112px] w-[112px] flex-shrink-0 animate-pulse rounded-[10px] bg-slate-100"
             />
           ))}
         </div>
