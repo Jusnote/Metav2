@@ -18,7 +18,7 @@ export function CarreiraCard({ carreira, active, onToggle }: CarreiraCardProps) 
       type="button"
       onClick={onToggle}
       className={[
-        'relative flex-shrink-0 w-[112px] h-[112px] rounded-[10px] overflow-hidden',
+        'relative flex-shrink-0 w-[96px] h-[96px] rounded-[10px] overflow-hidden',
         'cursor-pointer transition-all duration-200 ease-out',
         'shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)]',
         'border-2',
@@ -78,7 +78,7 @@ export function TodasCard({ active, onClick }: { active: boolean; onClick: () =>
       type="button"
       onClick={onClick}
       className={[
-        'relative flex-shrink-0 w-[112px] h-[112px] rounded-[10px] overflow-hidden',
+        'relative flex-shrink-0 w-[96px] h-[96px] rounded-[10px] overflow-hidden',
         'flex flex-col items-center justify-center gap-[6px]',
         'cursor-pointer transition-colors',
         'border-[1.5px]',
