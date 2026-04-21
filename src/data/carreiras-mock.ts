@@ -19,7 +19,7 @@ export const MOCK_CARREIRAS: Carreira[] = [
   { id: 'mock-prf',           area: 'policial',    nome: 'PRF · Policial',     slug: 'prf-policial',  foto_url: 'https://dhg1h5j42swfq.cloudfront.net/2024/05/13132132/concurso-prf-foto-gov.webp', ordem: 4,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-pc-sp-invest',  area: 'policial',    nome: 'PC-SP · Investigador', slug: 'pc-sp-investigador', foto_url: 'https://www.sociedademilitar.com.br/wp-content/uploads/2023/10/pc-sp-concurso.jpg', ordem: 5,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-pc-rj-inspet',  area: 'policial',    nome: 'PC-RJ · Inspetor',   slug: 'pc-rj-inspetor', foto_url: 'https://jcconcursos.com.br/media/uploads/noticia/concurso-pc-rj-1.jpg', ordem: 6,  ativa: true, created_at: now, updated_at: now },
-  { id: 'mock-depen',         area: 'policial',    nome: 'DEPEN · Agente',     slug: 'depen-agente',  foto_url: null, ordem: 7,  ativa: true, created_at: now, updated_at: now },
+  { id: 'mock-depen',         area: 'policial',    nome: 'DEPEN · Agente',     slug: 'depen-agente',  foto_url: 'https://www.gov.br/senappen/pt-br/assuntos/noticias/depen-encerra-o-ano-com-participacoes-importantes-em-acoes-de-combate-ao-crime-organizado-e-apoio-as-unidades-federativas/spf-depen.jpeg', ordem: 7,  ativa: true, created_at: now, updated_at: now },
 
   // ─── Fiscal ─────────────────────────────────────────────────
   { id: 'mock-afrfb',         area: 'fiscal',      nome: 'RFB · Auditor',      slug: 'rfb-auditor',   foto_url: null, ordem: 1,  ativa: true, created_at: now, updated_at: now },
