@@ -18,7 +18,7 @@ export const MOCK_CARREIRAS: Carreira[] = [
   { id: 'mock-pf-delegado',   area: 'policial',    nome: 'PF · Delegado',      slug: 'pf-delegado',   foto_url: 'https://midias.diariodepernambuco.com.br/static/app/noticia_127983242361/2023/01/23/918946/20230123132158812447u.jpeg', ordem: 3,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-prf',           area: 'policial',    nome: 'PRF · Policial',     slug: 'prf-policial',  foto_url: 'https://dhg1h5j42swfq.cloudfront.net/2024/05/13132132/concurso-prf-foto-gov.webp', ordem: 4,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-pc-sp-invest',  area: 'policial',    nome: 'PC-SP · Investigador', slug: 'pc-sp-investigador', foto_url: 'https://www.sociedademilitar.com.br/wp-content/uploads/2023/10/pc-sp-concurso.jpg', ordem: 5,  ativa: true, created_at: now, updated_at: now },
-  { id: 'mock-pc-rj-inspet',  area: 'policial',    nome: 'PC-RJ · Inspetor',   slug: 'pc-rj-inspetor', foto_url: null, ordem: 6,  ativa: true, created_at: now, updated_at: now },
+  { id: 'mock-pc-rj-inspet',  area: 'policial',    nome: 'PC-RJ · Inspetor',   slug: 'pc-rj-inspetor', foto_url: 'https://jcconcursos.com.br/media/uploads/noticia/concurso-pc-rj-1.jpg', ordem: 6,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-depen',         area: 'policial',    nome: 'DEPEN · Agente',     slug: 'depen-agente',  foto_url: null, ordem: 7,  ativa: true, created_at: now, updated_at: now },
 
   // ─── Fiscal ─────────────────────────────────────────────────
