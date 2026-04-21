@@ -13,7 +13,7 @@ const now = new Date().toISOString();
 
 export const MOCK_CARREIRAS: Carreira[] = [
   // ─── Policial ───────────────────────────────────────────────
-  { id: 'mock-pf-agente',     area: 'policial',    nome: 'PF · Agente',        slug: 'pf-agente',     foto_url: null, ordem: 1,  ativa: true, created_at: now, updated_at: now },
+  { id: 'mock-pf-agente',     area: 'policial',    nome: 'PF · Agente',        slug: 'pf-agente',     foto_url: 'https://concursos.adv.br/wp-content/uploads/2022/05/Concurso-Agente-da-Policia-Federal.jpeg', ordem: 1,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-pf-escrivao',   area: 'policial',    nome: 'PF · Escrivão',      slug: 'pf-escrivao',   foto_url: null, ordem: 2,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-pf-delegado',   area: 'policial',    nome: 'PF · Delegado',      slug: 'pf-delegado',   foto_url: null, ordem: 3,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-prf',           area: 'policial',    nome: 'PRF · Policial',     slug: 'prf-policial',  foto_url: null, ordem: 4,  ativa: true, created_at: now, updated_at: now },
