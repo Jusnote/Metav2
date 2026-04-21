@@ -94,7 +94,7 @@ export default function QuestoesPage() {
   return (
     <div className="flex flex-col h-full w-full">
       {/* ─── Filters section (light blue background) ─── */}
-      <section className="bg-gradient-to-b from-[#EEF4FF] to-[#F5F9FF] border border-blue-100/60 rounded-2xl mx-4 mt-4 overflow-hidden">
+      <section className="bg-white mx-4 mt-4 overflow-hidden">
         <div className="max-w-5xl mx-auto w-full px-2">
           {/* Header refinado: título serifa + tabs como segmented control */}
           <div className="flex items-center justify-between gap-5 pt-[18px] pb-[14px] border-b border-[#f1f5f9]">
