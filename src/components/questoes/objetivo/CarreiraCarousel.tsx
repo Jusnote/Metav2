@@ -53,25 +53,21 @@ export function CarreiraCarousel({
         className="flex-1 min-w-0 flex gap-[10px] overflow-x-auto py-[2px] px-[2px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ scrollBehavior: 'smooth' }}
       >
-        <TodasCard active={!hasAnyFoco} dimmed={hasAnyFoco} onClick={onClearFocos} />
+        <TodasCard active={!hasAnyFoco} onClick={onClearFocos} />
 
         {carreiras.length === 0 ? (
           <div className="flex items-center px-4 text-xs text-slate-400">
             Nenhuma carreira ativa em {areaLabel} ainda.
           </div>
         ) : (
-          carreiras.map((c) => {
-            const active = focosAtivos.includes(c.id);
-            return (
-              <CarreiraCard
-                key={c.id}
-                carreira={c}
-                active={active}
-                dimmed={hasAnyFoco && !active}
-                onToggle={() => onToggleFoco(c.id)}
-              />
-            );
-          })
+          carreiras.map((c) => (
+            <CarreiraCard
+              key={c.id}
+              carreira={c}
+              active={focosAtivos.includes(c.id)}
+              onToggle={() => onToggleFoco(c.id)}
+            />
+          ))
         )}
       </div>
 

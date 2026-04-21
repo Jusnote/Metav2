@@ -7,11 +7,10 @@ import type { Carreira } from '@/types/carreira';
 interface CarreiraCardProps {
   carreira: Carreira;
   active: boolean;
-  dimmed?: boolean;
   onToggle: () => void;
 }
 
-export function CarreiraCard({ carreira, active, dimmed = false, onToggle }: CarreiraCardProps) {
+export function CarreiraCard({ carreira, active, onToggle }: CarreiraCardProps) {
   const hasFoto = Boolean(carreira.foto_url);
 
   return (
@@ -28,9 +27,9 @@ export function CarreiraCard({ carreira, active, dimmed = false, onToggle }: Car
           : 'border-transparent',
       ].join(' ')}
       style={
-        dimmed
-          ? { filter: 'grayscale(0.35) brightness(0.97)', opacity: 0.78 }
-          : undefined
+        active
+          ? undefined
+          : { filter: 'grayscale(0.35) brightness(0.97)', opacity: 0.78 }
       }
       aria-pressed={active}
       aria-label={`Foco: ${carreira.nome}`}
@@ -78,7 +77,7 @@ export function CarreiraCard({ carreira, active, dimmed = false, onToggle }: Car
   );
 }
 
-export function TodasCard({ active, dimmed = false, onClick }: { active: boolean; dimmed?: boolean; onClick: () => void }) {
+export function TodasCard({ active, onClick }: { active: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
@@ -93,9 +92,9 @@ export function TodasCard({ active, dimmed = false, onClick }: { active: boolean
           : 'border-[#e2e8f0] bg-[#f8fafc] hover:bg-[#f1f5f9]',
       ].join(' ')}
       style={
-        dimmed
-          ? { filter: 'grayscale(0.35) brightness(0.97)', opacity: 0.78 }
-          : undefined
+        active
+          ? undefined
+          : { filter: 'grayscale(0.35) brightness(0.97)', opacity: 0.78 }
       }
       aria-pressed={active}
       aria-label="Todas as carreiras"
