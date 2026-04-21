@@ -6,6 +6,8 @@ import { QuestoesFilterOverlay } from "@/components/questoes/QuestoesFilterOverl
 import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
 import { QuestoesResultsHeader } from "@/components/questoes/QuestoesResultsHeader";
 import { VirtualizedQuestionList } from "@/components/questoes/VirtualizedQuestionList";
+import { ObjetivoSection } from "@/components/questoes/objetivo/ObjetivoSection";
+import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -92,27 +94,41 @@ export default function QuestoesPage() {
   return (
     <div className="flex flex-col h-full w-full">
       {/* ─── Filters section (light blue background) ─── */}
-      <section className="bg-gradient-to-b from-[#EEF4FF] to-[#F5F9FF] border border-blue-100/60 rounded-2xl mx-4 mt-4 overflow-hidden">
+      <section className="bg-white mx-4 mt-4 overflow-hidden">
         <div className="max-w-5xl mx-auto w-full px-2">
-          {/* Page title + filter view tabs */}
-          <div className="flex items-end gap-4 pt-2 pb-1 border-b border-blue-100/60">
-            <h1 className="shrink-0">
-              <span className="text-[24px] font-semibold tracking-tight text-slate-600">Banco de Questões</span>
-              <span className="text-[24px] font-semibold tracking-tight text-[#3B82F6]">.</span>
+          {/* Header refinado: título serifa + tabs como segmented control */}
+          <div className="flex items-center justify-between gap-5 pt-[18px] pb-[14px] border-b border-[#f1f5f9]">
+            <h1
+              className="m-0 leading-none"
+              style={{
+                fontFamily: "'Source Serif 4', Georgia, serif",
+                fontSize: '26px',
+                fontWeight: 600,
+                letterSpacing: '-0.02em',
+                color: '#0f172a',
+              }}
+            >
+              Banco de Questões
+              <span style={{ color: '#2563eb' }}>.</span>
             </h1>
 
-            <nav className="flex items-center gap-1 -mb-[1px]" aria-label="Modo de filtro">
+            <nav
+              className="inline-flex items-center gap-[2px] rounded-full bg-[#f1f5f9] p-[3px]"
+              aria-label="Modo de filtro"
+            >
               {(Object.keys(FILTER_VIEW_LABELS) as FilterView[]).map((view) => {
                 const active = filterView === view;
                 return (
                   <button
                     key={view}
+                    type="button"
                     onClick={() => setFilterView(view)}
-                    className={`px-3 py-1.5 text-[13px] font-medium transition-colors border-b-2 ${
+                    className={[
+                      'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
                       active
-                        ? 'text-[#1D4ED8] border-[#1D4ED8]'
-                        : 'text-slate-500 border-transparent hover:text-slate-700'
-                    }`}
+                        ? 'bg-white text-[#0f172a] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)] font-semibold'
+                        : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
+                    ].join(' ')}
                   >
                     {FILTER_VIEW_LABELS[view]}
                   </button>
@@ -124,6 +140,8 @@ export default function QuestoesPage() {
           {/* View content */}
           {filterView === 'filtros' && (
             <>
+              {/* Seção OBJETIVO — só na aba Filtros */}
+              <ObjetivoSection />
               <div className="pt-2 pb-2">
                 <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
               </div>
@@ -134,6 +152,12 @@ export default function QuestoesPage() {
           {filterView === 'semantico' && (
             <div className="pt-2 pb-2">
               <QuestoesSearchBar />
+              {/* Fase 1A: visible=false → não renderiza. Fase 2 ativa baseado em foco+query. */}
+              <SemanticScopeToggle
+                visible={false}
+                incluirFora={false}
+                onToggle={() => { /* noop — Fase 2 */ }}
+              />
             </div>
           )}
 
