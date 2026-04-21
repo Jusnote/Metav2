@@ -137,12 +137,11 @@ export default function QuestoesPage() {
             </nav>
           </div>
 
-          {/* Seção OBJETIVO — Fase 1A: UI só, foco não afeta query ainda */}
-          <ObjetivoSection />
-
           {/* View content */}
           {filterView === 'filtros' && (
             <>
+              {/* Seção OBJETIVO — só na aba Filtros */}
+              <ObjetivoSection />
               <div className="pt-2 pb-2">
                 <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
               </div>
