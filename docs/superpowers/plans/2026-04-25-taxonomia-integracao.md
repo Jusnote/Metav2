@@ -18,19 +18,15 @@
 - `D:\tec-output\taxonomia\merged\taxonomia-direito-administrativo.json` presente (3.7MB, 499 nós).
 - Acesso a `verus_api` (`C:\Users\Home\Desktop\verus_api`) com Alembic configurado.
 
-**Decisão arquitetural pendente — mapping `materia_slug` ↔ `questoes.materia`:**
+**Mapping `materia_slug` ↔ `questoes.materia` (decidido):**
 
-`taxonomia_nodes.materia_slug` usa identificador slug curto (`dir-adm`), mas `questoes.materia` (no banco) é uma coluna `String(200)` que armazena nome humano completo (presumivelmente `"Direito Administrativo"`). Os JOINs nos endpoints precisam reconciliar os dois.
+`questoes.materia` armazena nome humano (`"Direito Administrativo"`), mas a taxonomia usa slugs curtos (`dir-adm`). Resolvido com **tabela `materias (slug PK, nome UNIQUE)`** criada na Task 1 e referenciada via FK por `taxonomia_nodes.materia_slug`. Todos os JOINs com `questoes` resolvem nome via `JOIN materias`. Antes de aplicar a migration, **confirmar o nome humano exato** com:
 
-Antes de executar Task 10+, decidir uma das três opções:
+```sql
+SELECT DISTINCT materia FROM questoes WHERE materia ILIKE '%admin%' LIMIT 5;
+```
 
-- **(A) Tabela `materias` (slug, nome) populada manualmente** — simples, mantém slug curto, JOIN explícito `JOIN materias mat ON mat.nome = q.materia AND mat.slug = n.materia_slug`. **Recomendado.**
-- **(B) Migrar `questoes.materia` pra slug** — invasivo, afeta resto do app, fora de escopo desta leva.
-- **(C) Slugificar `q.materia` em runtime via função SQL** — frágil, sem garantia de unicidade.
-
-Se (A): adicionar Task 1.5 que cria tabela `materias`, popula com `INSERT (slug='dir-adm', nome='Direito Administrativo')`, e ajustar todos os JOINs subsequentes (Tasks 10, 12, 13). Se essa tabela já existir no DB com outra estrutura, conferir e adaptar.
-
-**Confirmar com SQL `SELECT DISTINCT materia FROM questoes WHERE materia ILIKE '%admin%' LIMIT 5;` antes de prosseguir.**
+Se não for exatamente `"Direito Administrativo"`, ajustar o seed na Task 1 antes de aplicar.
 
 ---
 
@@ -47,10 +43,18 @@ Cria as 5 tabelas novas + trigger de audit em uma única migration Alembic.
 
 ```bash
 cd "C:/Users/Home/Desktop/verus_api"
-alembic revision -m "add taxonomia v2 tables (taxonomia_versions, taxonomia_nodes, questao_topico, questao_topico_log, taxonomia_counts, audit trigger)"
+alembic revision -m "add taxonomia v2 tables (materias, taxonomia_versions, taxonomia_nodes, questao_topico, questao_topico_log, taxonomia_counts, audit trigger)"
 ```
 
 Anota o path gerado em `alembic/versions/`.
+
+**Antes de continuar:** confirmar o nome humano da matéria no DB:
+
+```bash
+psql -h localhost -p 5432 -U <user> -d <db> -c "SELECT DISTINCT materia FROM questoes WHERE materia ILIKE '%admin%' LIMIT 5;"
+```
+
+Se o resultado não for exatamente `'Direito Administrativo'`, ajustar o INSERT do seed no Step 2 abaixo.
 
 - [ ] **Step 2: Implementar `upgrade()` na migration**
 
@@ -60,11 +64,21 @@ Substitui o corpo de `upgrade()` na migration gerada por:
 def upgrade() -> None:
     op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")  # gen_random_uuid()
 
+    # materias: mapping slug ↔ nome humano (questoes.materia armazena nome humano)
+    op.create_table(
+        "materias",
+        sa.Column("slug", sa.Text(), primary_key=True),
+        sa.Column("nome", sa.Text(), nullable=False, unique=True),
+        sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text("NOW()")),
+    )
+    # Seed inicial. Ajustar se o nome humano for diferente no DB.
+    op.execute("INSERT INTO materias (slug, nome) VALUES ('dir-adm', 'Direito Administrativo')")
+
     # taxonomia_versions
     op.create_table(
         "taxonomia_versions",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
-        sa.Column("materia_slug", sa.Text(), nullable=False),
+        sa.Column("materia_slug", sa.Text(), sa.ForeignKey("materias.slug"), nullable=False),
         sa.Column("applied_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text("NOW()")),
         sa.Column("source", sa.Text(), nullable=False),
         sa.Column("notes", sa.Text(), nullable=True),
@@ -75,7 +89,7 @@ def upgrade() -> None:
     op.create_table(
         "taxonomia_nodes",
         sa.Column("stable_id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
-        sa.Column("materia_slug", sa.Text(), nullable=False),
+        sa.Column("materia_slug", sa.Text(), sa.ForeignKey("materias.slug"), nullable=False),
         sa.Column("slug", sa.Text(), nullable=False, unique=True),
         sa.Column("titulo", sa.Text(), nullable=False),
         sa.Column("nivel", sa.SmallInteger(), nullable=False),
@@ -179,6 +193,7 @@ def downgrade() -> None:
     op.drop_table("taxonomia_counts")
     op.drop_table("taxonomia_nodes")
     op.drop_table("taxonomia_versions")
+    op.drop_table("materias")
 ```
 
 - [ ] **Step 4: Aplicar migration em ambiente de dev**
@@ -192,15 +207,17 @@ alembic upgrade head
 
 Esperado: `Running upgrade ... -> ..., add taxonomia v2 tables`. Sem erros.
 
-- [ ] **Step 5: Verificar schema criado**
+- [ ] **Step 5: Verificar schema criado e seed**
 
 ```bash
+psql -h localhost -p 5432 -U <user> -d <db> -c "\dt materias"
 psql -h localhost -p 5432 -U <user> -d <db> -c "\dt taxonomia_*"
 psql -h localhost -p 5432 -U <user> -d <db> -c "\dt questao_topico*"
 psql -h localhost -p 5432 -U <user> -d <db> -c "\df questao_topico_audit"
+psql -h localhost -p 5432 -U <user> -d <db> -c "SELECT slug, nome FROM materias;"
 ```
 
-Esperado: lista todas as 5 tabelas + a function.
+Esperado: lista todas as 6 tabelas + a function. `materias` deve conter 1 linha: `('dir-adm', 'Direito Administrativo')`.
 
 - [ ] **Step 6: Smoke test do trigger**
 
@@ -256,6 +273,14 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
+
+
+class Materia(Base):
+    __tablename__ = "materias"
+
+    slug = Column(Text, primary_key=True)
+    nome = Column(Text, nullable=False, unique=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
 
 
 class TaxonomiaVersion(Base):
@@ -345,7 +370,7 @@ Adiciona:
 
 ```python
 from app.models.taxonomia_v2 import (
-    TaxonomiaVersion, TaxonomiaNode, TaxonomiaCount, QuestaoTopico, QuestaoTopicoLog
+    Materia, TaxonomiaVersion, TaxonomiaNode, TaxonomiaCount, QuestaoTopico, QuestaoTopicoLog
 )
 ```
 
@@ -353,7 +378,7 @@ from app.models.taxonomia_v2 import (
 
 ```bash
 cd "C:/Users/Home/Desktop/verus_api"
-python -c "from app.models import TaxonomiaNode, QuestaoTopico, QuestaoTopicoLog, TaxonomiaCount, TaxonomiaVersion; print('OK')"
+python -c "from app.models import Materia, TaxonomiaNode, QuestaoTopico, QuestaoTopicoLog, TaxonomiaCount, TaxonomiaVersion; print('OK')"
 ```
 
 Esperado: `OK`.
@@ -1287,13 +1312,19 @@ def project_counts(json_path: Path, materia_slug: str) -> tuple[dict[str, int], 
     return counts, (int(total) if total is not None else None)
 
 
-def fetch_total_questoes_da_materia(conn, materia_nome_humano: str) -> int:
-    """Conta total de questões da matéria no DB. Usado pra cobertura real.
+def lookup_materia_nome(conn, materia_slug: str) -> str:
+    """Resolve slug → nome humano via tabela `materias`. Levanta se não existir."""
+    with conn.cursor() as cur:
+        cur.execute("SELECT nome FROM materias WHERE slug = %s", (materia_slug,))
+        row = cur.fetchone()
+    if not row:
+        raise SystemExit(f"Slug {materia_slug!r} não está cadastrado em `materias`. "
+                         f"Adicione com: INSERT INTO materias (slug, nome) VALUES ('{materia_slug}', '<nome humano>');")
+    return row[0]
 
-    Recebe o nome humano (ex: 'Direito Administrativo'), não o slug — porque
-    `questoes.materia` armazena o nome humano. Mapeamento slug↔nome vem
-    da tabela `materias` (ver pré-requisito arquitetural no topo do plano).
-    """
+
+def fetch_total_questoes_da_materia(conn, materia_nome_humano: str) -> int:
+    """Conta total de questões da matéria no DB. Usado pra cobertura real."""
     with conn.cursor() as cur:
         cur.execute("SELECT COUNT(*) FROM questoes WHERE materia = %s", (materia_nome_humano,))
         return int(cur.fetchone()[0])
@@ -1311,9 +1342,7 @@ def print_summary(diff, current_version_label: str, new_label: str) -> None:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--materia", required=True, help="Slug da matéria, ex: dir-adm")
-    ap.add_argument("--materia-nome", required=True,
-                    help="Nome humano da matéria como aparece em questoes.materia, ex: 'Direito Administrativo'")
+    ap.add_argument("--materia", required=True, help="Slug da matéria, ex: dir-adm. Deve existir em materias.")
     ap.add_argument("--json", required=True, type=Path, help="Path do JSON do pipeline")
     ap.add_argument("--dry-run", action="store_true", help="Só imprime diff e sanity, não aplica")
     ap.add_argument("--apply", action="store_true", help="Aplica sem prompt interativo")
@@ -1328,13 +1357,14 @@ def main():
     new_nodes = load_json(args.json, args.materia)
     counts_projected, total_classificadas_json = project_counts(args.json, args.materia)
 
-    # Conecta ao DB pra: (1) buscar total real de questões da matéria, (2) carregar old_nodes
+    # Conecta ao DB pra: (1) resolver slug→nome via materias, (2) buscar total real, (3) carregar old_nodes
     conn = psycopg2.connect(args.dsn)
     try:
-        total_db = fetch_total_questoes_da_materia(conn, args.materia_nome)
+        materia_nome = lookup_materia_nome(conn, args.materia)  # SystemExit se slug não cadastrado
+        total_db = fetch_total_questoes_da_materia(conn, materia_nome)
         if total_db == 0:
-            print(f"WARNING: nenhuma questão encontrada com materia = {args.materia_nome!r}. "
-                  f"Verificar mapping slug↔nome.", file=sys.stderr)
+            print(f"WARNING: nenhuma questão encontrada com materia = {materia_nome!r} "
+                  f"(slug {args.materia!r}). Verificar nome humano em `materias`.", file=sys.stderr)
         # Cobertura real: classificadas / total no DB
         # Usa total_classificadas_json se presente (mais preciso); senão soma own_qids dos nós.
         total_classificadas = total_classificadas_json if total_classificadas_json is not None else None
@@ -1393,19 +1423,17 @@ cd "D:/tec-output/taxonomia"
 export VERUS_DB_DSN="postgresql://user:pass@localhost:5432/dbname"
 python scripts/import_to_postgres.py \
   --materia dir-adm \
-  --materia-nome "Direito Administrativo" \
   --json merged/taxonomia-direito-administrativo.json \
   --dry-run
 ```
 
-Esperado: imprime "Sanity checks: OK", depois DIFF SUMMARY com 499 adds (DB vazio na primeira vez), 0 deletes/moves/renames. "no changes applied. Bye." Se aparecer `WARNING: nenhuma questão encontrada com materia = 'Direito Administrativo'`, conferir o nome humano exato em `SELECT DISTINCT materia FROM questoes WHERE materia ILIKE '%admin%' LIMIT 5`.
+Esperado: imprime "Sanity checks: OK", depois DIFF SUMMARY com 499 adds (DB vazio na primeira vez), 0 deletes/moves/renames. "no changes applied. Bye." Se aparecer `WARNING: nenhuma questão encontrada com materia = 'Direito Administrativo'`, atualizar o nome em `materias`: `UPDATE materias SET nome = '<nome real>' WHERE slug = 'dir-adm'`.
 
 - [ ] **Step 3: Aplicar de verdade**
 
 ```bash
 python scripts/import_to_postgres.py \
   --materia dir-adm \
-  --materia-nome "Direito Administrativo" \
   --json merged/taxonomia-direito-administrativo.json
 # Responde 'y' no prompt
 ```
@@ -1438,8 +1466,6 @@ git commit -m "feat(import): CLI import_to_postgres com dry-run e prompt confirm
 - Create: `D:\tec-output\taxonomia\scripts\load_classifications.py`
 
 - [ ] **Step 1: Implementar script que lê o JSON do pipeline e popula `questao_topico`**
-
-O JSON do pipeline deve ter, em cada nó, uma lista `questoes_atribuidas: [{questao_id, score}, ...]`. Caso esteja em arquivo separado (depende do pipeline), ajustar o script.
 
 ```python
 """load_classifications.py: popula questao_topico a partir do JSON da taxonomia.
@@ -1744,18 +1770,14 @@ router = APIRouter(prefix="/taxonomia", tags=["Taxonomia"])
 
 @router.get("/materias", response_model=list[MateriaListItem])
 def list_materias(db: Session = Depends(get_db)):
-    """Lista todas as matérias com flag has_taxonomia.
+    """Lista todas as matérias cadastradas na tabela `materias` com flag has_taxonomia.
 
-    Junta o conjunto de matérias da tabela `materias_prioridade` (se existir) com as
-    que têm pelo menos uma versão registrada em taxonomia_versions.
+    Fonte da verdade: `materias` (slug PK, nome UNIQUE). JOIN com `questoes`
+    pelo nome humano pra contar totais. JOIN com `taxonomia_versions` pra
+    detectar se a matéria tem taxonomia ativa.
     """
     rows = db.execute(text("""
-        WITH materia_set AS (
-            SELECT DISTINCT materia AS slug FROM questoes WHERE materia IS NOT NULL
-            UNION
-            SELECT DISTINCT materia_slug AS slug FROM taxonomia_versions
-        ),
-        latest_version AS (
+        WITH latest_version AS (
             SELECT DISTINCT ON (materia_slug)
                 materia_slug, applied_at
             FROM taxonomia_versions
@@ -1770,22 +1792,26 @@ def list_materias(db: Session = Depends(get_db)):
             GROUP BY n.materia_slug
         ),
         total_questoes AS (
-            SELECT materia AS materia_slug, COUNT(*) AS n FROM questoes GROUP BY materia
+            SELECT m.slug AS materia_slug, COUNT(q.id) AS n
+            FROM materias m LEFT JOIN questoes q ON q.materia = m.nome
+            GROUP BY m.slug
         )
         SELECT
-            ms.slug,
-            ms.slug AS nome,  -- TODO: substituir por nome humano se houver tabela materias separada
+            m.slug,
+            m.nome,
             (lv.applied_at IS NOT NULL) AS has_taxonomia,
             COALESCE(nc.n, 0) AS total_nodes,
             COALESCE(cc.n, 0) AS total_questoes_classificadas,
-            CASE WHEN tq.n > 0 THEN ROUND(100.0 * COALESCE(cc.n, 0) / tq.n, 2) ELSE 0 END AS cobertura_pct,
+            CASE WHEN COALESCE(tq.n, 0) > 0
+                 THEN ROUND(100.0 * COALESCE(cc.n, 0) / tq.n, 2)
+                 ELSE 0 END AS cobertura_pct,
             lv.applied_at AS updated_at
-        FROM materia_set ms
-        LEFT JOIN latest_version lv ON lv.materia_slug = ms.slug
-        LEFT JOIN nodes_count nc ON nc.materia_slug = ms.slug
-        LEFT JOIN classif_count cc ON cc.materia_slug = ms.slug
-        LEFT JOIN total_questoes tq ON tq.materia_slug = ms.slug
-        ORDER BY ms.slug
+        FROM materias m
+        LEFT JOIN latest_version lv ON lv.materia_slug = m.slug
+        LEFT JOIN nodes_count nc ON nc.materia_slug = m.slug
+        LEFT JOIN classif_count cc ON cc.materia_slug = m.slug
+        LEFT JOIN total_questoes tq ON tq.materia_slug = m.slug
+        ORDER BY m.slug
     """)).fetchall()
 
     return [
@@ -2218,12 +2244,21 @@ if topico:
         """), {"slugs": slugs}).fetchall()
         matched_questao_ids.update(r[0] for r in node_ids_rows)
 
-    # Agora monta cláusula final:
-    # WHERE (materia IN (materias_sem_topico) OR id IN (matched_questao_ids))
-    extra_topicos_clause = " AND ((q.materia = ANY(:materias_sem_topico) AND :materias_sem_topico_present) OR q.id = ANY(:matched_qids))"
+    # Resolve slugs sem tópico → nomes humanos via materias (q.materia armazena nome)
+    nomes_sem_topico: list[str] = []
+    if materias_sem_topico:
+        rows = db.execute(
+            text("SELECT nome FROM materias WHERE slug = ANY(:slugs)"),
+            {"slugs": materias_sem_topico},
+        ).fetchall()
+        nomes_sem_topico = [r[0] for r in rows]
+
+    # Cláusula final:
+    # WHERE (q.materia IN nomes_sem_topico) OR (q.id IN matched_questao_ids)
+    # Sempre passa as listas, mesmo que vazias — ANY(ARRAY[]) é seguro.
+    extra_topicos_clause = " AND (q.materia = ANY(:nomes_sem_topico) OR q.id = ANY(:matched_qids))"
     extra_params = {
-        "materias_sem_topico": materias_sem_topico,
-        "materias_sem_topico_present": bool(materias_sem_topico),
+        "nomes_sem_topico": nomes_sem_topico,
         "matched_qids": list(matched_questao_ids),
     }
 
