@@ -24,6 +24,24 @@ A taxonomia de Direito Adm está pronta como JSON local (`D:\tec-output\taxonomi
 
 Novas tabelas no Postgres Hetzner (mesmo DB que `questoes`).
 
+### `taxonomia_versions`
+
+Identidade estável de cada regeneração da taxonomia. UUID como `version` evita colisão de timestamp e sobrevive a backups/restore.
+
+```sql
+CREATE TABLE taxonomia_versions (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  materia_slug  TEXT NOT NULL,
+  applied_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  source        TEXT NOT NULL,                     -- 'gran_pipeline:regen_2026_04', 'manual', ...
+  notes         TEXT
+);
+
+CREATE INDEX idx_taxonomia_versions_materia ON taxonomia_versions (materia_slug, applied_at DESC);
+```
+
+A "versão ativa" de uma matéria é a mais recente (`MAX(applied_at) WHERE materia_slug = X`). Não há versionamento ativo de leitura — toda query lê a versão mais recente. A tabela existe pra ETag estável, audit, e (futuro) rollback ad-hoc.
+
 ### `taxonomia_nodes`
 
 Hot table com a árvore corrente.
@@ -40,10 +58,11 @@ CREATE TABLE taxonomia_nodes (
   aliases        TEXT[] NOT NULL DEFAULT '{}',     -- termos alternativos (alimentam fuse.js)
   absorbed       TEXT[] NOT NULL DEFAULT '{}',     -- títulos L4-L6 mesclados pra dentro
   subtopicos_visuais JSONB NOT NULL DEFAULT '[]',  -- [{titulo, n_questoes, nivel_original}]
-  count_propria  INT NOT NULL DEFAULT 0,           -- questões diretas
-  count_agregada INT NOT NULL DEFAULT 0,           -- inclui descendentes
-  path           TEXT[] NOT NULL,                  -- ['Direito Adm', 'Licitações', 'Princípios']
+  count_propria_snapshot  INT NOT NULL DEFAULT 0,  -- snapshot do último import (não é live)
+  count_agregada_snapshot INT NOT NULL DEFAULT 0,  -- snapshot do último import (não é live)
+  -- path NÃO está aqui: é derivado em runtime via recursive CTE pra evitar drift em renames
   imported_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  version_id     UUID NOT NULL REFERENCES taxonomia_versions(id),
 
   UNIQUE (slug)  -- slug é global e prefixado por matéria; materia_slug é redundância derivável
 );
@@ -66,6 +85,47 @@ CREATE TABLE questao_topico (
 CREATE INDEX idx_questao_topico_node ON questao_topico (node_id, questao_id);  -- filtro por nó
 CREATE INDEX idx_questao_topico_questao ON questao_topico (questao_id);         -- expansão por questão
 ```
+
+### View materializada `taxonomia_counts_live`
+
+Contagens reais (não snapshot) — usadas pelo endpoint `GET /v1/taxonomia/{materia_slug}` em `count_propria` e `count_agregada` retornados ao cliente.
+
+```sql
+CREATE MATERIALIZED VIEW taxonomia_counts_live AS
+WITH RECURSIVE descendants AS (
+  -- cada nó é descendente de si mesmo
+  SELECT stable_id AS root_id, stable_id AS desc_id FROM taxonomia_nodes
+  UNION ALL
+  SELECT d.root_id, n.stable_id
+  FROM descendants d
+  JOIN taxonomia_nodes n ON n.parent_id = d.desc_id
+),
+agregado AS (
+  SELECT d.root_id AS node_id, COUNT(DISTINCT qt.questao_id) AS count_agregada
+  FROM descendants d
+  LEFT JOIN questao_topico qt ON qt.node_id = d.desc_id
+  GROUP BY d.root_id
+),
+propria AS (
+  SELECT n.stable_id AS node_id, COUNT(qt.questao_id) AS count_propria
+  FROM taxonomia_nodes n
+  LEFT JOIN questao_topico qt ON qt.node_id = n.stable_id
+  GROUP BY n.stable_id
+)
+SELECT n.stable_id AS node_id, p.count_propria, a.count_agregada
+FROM taxonomia_nodes n
+JOIN propria p ON p.node_id = n.stable_id
+JOIN agregado a ON a.node_id = n.stable_id;
+
+CREATE UNIQUE INDEX ON taxonomia_counts_live (node_id);
+```
+
+**Refresh policy:**
+- Após cada `import_to_postgres.py` apply (no fim da transação): `REFRESH MATERIALIZED VIEW CONCURRENTLY taxonomia_counts_live`.
+- Job batch noturno (cron) faz o mesmo refresh (cobre escritas via curadoria manual ou matching de edital, quando entrarem).
+- Drift entre `*_snapshot` e a view é monitorado: se diferença média > 1% por matéria, alerta — significa que escritas estão acontecendo fora do pipeline e o snapshot está envelhecendo.
+
+Nesta leva, escrita só vem do import; drift deve ser zero.
 
 ### `questao_topico_log` (cold, imutável)
 
@@ -165,7 +225,8 @@ Cache: `Cache-Control: public, max-age=300, stale-while-revalidate=86400`. ETag.
 ```json
 {
   "materia_slug": "dir-adm",
-  "version": "2026-04-25T12:00:00Z",
+  "version_id": "uuid-da-versao-ativa",
+  "applied_at": "2026-04-25T12:00:00Z",
   "tree": [
     {
       "stable_id": "uuid-...",
@@ -173,15 +234,15 @@ Cache: `Cache-Control: public, max-age=300, stale-while-revalidate=86400`. ETag.
       "titulo": "Licitações",
       "nivel": 1,
       "parent_id": null,
-      "count_propria": 12,
-      "count_agregada": 4460,
+      "count_propria": 12,         // live, vindo de taxonomia_counts_live
+      "count_agregada": 4460,      // live, vindo de taxonomia_counts_live
       "aliases": ["lei 8666", "lei 14133", "modalidades"],
       "absorbed": [],
       "subtopicos_visuais": [
         {"titulo": "Pregão", "n_questoes": 380, "nivel_original": 4},
         {"titulo": "Leilão", "n_questoes": 142, "nivel_original": 4}
       ],
-      "path": ["Direito Administrativo", "Licitações"],
+      "path": ["Direito Administrativo", "Licitações"],   // derivado em runtime via recursive CTE
       "keywords": ["licitacoes", "lei 8666", "lei 14133", "modalidades"],
       "children": [
         { "stable_id": "...", "slug": "dir-adm.licitacoes.principios", ... }
@@ -193,15 +254,19 @@ Cache: `Cache-Control: public, max-age=300, stale-while-revalidate=86400`. ETag.
 
 `keywords` = título normalizado (lowercase, sem acentos) + aliases. Cliente passa direto pro fuse.js sem recalcular.
 
-Cache: ETag forte. Tamanho típico ~80KB gzipped por matéria.
+`path` é montado em runtime no servidor via recursive CTE — **não é coluna persistida** — pra evitar drift quando ancestrais são renomeados. Custo é barato (depth ≤ 3, total ≤ 500 nós por matéria).
 
-### `POST /v1/taxonomia/{materia_slug}/counts`
+`version_id` é o UUID da versão ativa, vindo de `taxonomia_versions`. Vira o ETag (`ETag: "uuid-da-versao-ativa"`).
 
-Contadores dinâmicos sob filtros ativos.
+Cache: ETag forte com `version_id`. `Cache-Control: public, max-age=86400, must-revalidate`. Tamanho típico ~80KB gzipped por matéria.
+
+### `GET /v1/taxonomia/{materia_slug}/counts`
+
+Contadores dinâmicos sob filtros ativos. **GET com querystring** (não POST) — filtros são idempotentes, payload sempre cabe (~200 chars típicos), e GET permite cache de browser/CDN além do Redis server-side.
 
 **Request:**
-```json
-{ "banca": ["CESPE"], "ano": [2024], "tipo": [], "anulada": false }
+```
+GET /v1/taxonomia/dir-adm/counts?banca=CESPE&ano=2024&tipo=multipla&excluir_anuladas=1
 ```
 
 **Response (mapa flat):**
@@ -214,9 +279,11 @@ Contadores dinâmicos sob filtros ativos.
 }
 ```
 
-Implementação: `SELECT node_id, COUNT(*) FROM questao_topico qt JOIN questoes q ON q.id = qt.questao_id WHERE q.materia = :m AND q.banca = ANY(:b) AND ... GROUP BY node_id`. Cache server-side: Redis, key = `counts:{materia}:{hash(filtros)}`, TTL 300s.
+Implementação: `SELECT node_id, COUNT(*) FROM questao_topico qt JOIN questoes q ON q.id = qt.questao_id WHERE q.materia = :m AND q.banca = ANY(:b) AND ... GROUP BY node_id`. Cache server-side: Redis, key = `counts:{materia}:{hash_canonico(filtros)}`, TTL 300s. Cache de browser via `Cache-Control: private, max-age=300`.
 
-Apenas chamado quando há ≥1 filtro além de `materia` (sem outros filtros, `count_agregada` estático = dinâmico).
+Fallback se a querystring crescer >2KB (cenário improvável, ex: dezenas de bancas selecionadas): cliente troca pra `POST /v1/taxonomia/{materia_slug}/counts` com mesmo payload em JSON. Server aceita ambos. **Default sempre GET.**
+
+Apenas chamado quando há ≥1 filtro além de `materia` (sem outros filtros, `count_agregada` da árvore = dinâmico).
 
 ### `GET /v1/questoes/search` (extensão do existente)
 
@@ -258,14 +325,21 @@ Permite ao aluno entender onde a questão está classificada e abrir report já 
 
 Toda a mudança visível ao aluno acontece dentro do popover existente da pill **"Assuntos"** (`src/components/questoes/QuestoesAdvancedPopover.tsx` ou `QuestoesFilterPopover.tsx`). A pill bar em si **não muda**.
 
-Componente novo: `src/components/questoes/TaxonomiaTreePicker.tsx`. Componente atual de assunto flat (`AssuntoFlatList`) é mantido. Switch é feito por código:
+Componente novo: `src/components/questoes/TaxonomiaTreePicker.tsx`. Componente atual de assunto flat (`AssuntoFlatList`) é mantido. Switch é feito por código.
+
+**Integração com a arquitetura existente:**
+- Estado de filtros vive em `src/contexts/QuestoesContext.tsx` (`QuestoesFilters` + draft/committed pattern).
+- Adicionar campo novo: `topicos: string[]` (array de slugs globais como `dir-adm.licitacoes.principios`) ao lado de `assuntos`. Persiste no querystring via `filtersToSearchParams` extendido (`params.append('topico', slug)`).
+- Counter `countActiveFilters` soma `filters.topicos.length`.
+- TreePicker lê/escreve via `useQuestoesContext()` — mesmo padrão dos outros pickers já existentes.
 
 ```tsx
+const { filters, setFilter } = useQuestoesContext();
 const { data: materias } = useMaterias();
 // materiaAtivaPicker = matéria selecionada no dropdown interno do picker
 // (default: primeira matéria com taxonomia entre as filtradas; se nenhuma tem,
 // renderiza FlatList da primeira matéria filtrada)
-const materiaAtivaPicker = pickActiveMateria(filtros.materia, materias);
+const materiaAtivaPicker = pickActiveMateria(filters.materias, materias);
 
 return materias.find(m => m.slug === materiaAtivaPicker)?.has_taxonomia
   ? <TaxonomiaTreePicker materia={materiaAtivaPicker} />
@@ -291,7 +365,7 @@ Estado do picker é por-matéria; estado dos chips é global.
 ├────────────────────────────────────────────┤
 │ 🔍 Buscar tópico ou alias…                 │  ← search client-side (fuse.js)
 ├────────────────────────────────────────────┤
-│ ⏱ Recentes                                 │  ← seção opcional, top 3-5
+│ ⏱ Recentes                                 │  ← localStorage, max 5 LRU
 │   • Licitações > Princípios                │
 │   • Atos administrativos                   │
 ├────────────────────────────────────────────┤
@@ -316,6 +390,10 @@ Estado do picker é por-matéria; estado dos chips é global.
 - Hover em qualquer nó → tooltip com `path` completo.
 - Hover em chip selecionado → mesmo tooltip.
 
+### Recentes
+
+Persistência **client-only** em `localStorage`, key `taxonomia.recentes.{materia_slug}`, valor = lista de até 5 `stable_id`s em ordem LRU. Atualizado quando aluno marca um nó. Hook dedicado: `useTopicosRecentes(materia_slug)`. Sem persistência server-side nesta leva (decisão pode ser revisitada se vier sync multi-device).
+
 ### Search (client-side com fuse.js)
 
 ```ts
@@ -332,15 +410,15 @@ Resultado da busca **destaca o ramo da árvore** (auto-expande os pais dos match
 
 ```ts
 useEffect(() => {
-  const filtrosExtra = filtrosSemMateria(filtros);
+  const filtrosExtra = filtrosSemMateria(filters);
   if (Object.keys(filtrosExtra).length > 0) {
-    queryClient.prefetchQuery(
-      ['taxonomia-counts', materiaAtiva, filtrosExtra],
-      () => fetchCounts(materiaAtiva, filtrosExtra),
-      { staleTime: 5 * 60 * 1000 }
-    );
+    queryClient.prefetchQuery({
+      queryKey: ['taxonomia-counts', materiaAtivaPicker, filtrosExtra],
+      queryFn: () => fetchCounts(materiaAtivaPicker, filtrosExtra),  // GET com querystring
+      staleTime: 5 * 60 * 1000,
+    });
   }
-}, [filtros]);
+}, [filters]);
 ```
 
 Quando aluno muda banca/ano/etc., counts pra matéria ativa são pre-fetchados antes dele abrir o picker. Aluno raramente vê loading.
@@ -455,8 +533,8 @@ with db.transaction():
 
 ## Migração / rollout
 
-1. Criar tabelas + trigger no Postgres (migration via Alembic, repo verus_api).
-2. Rodar import inicial de Direito Adm (não tem `stable_id` prévio, todos os nós são `AddNode`).
+1. Criar tabelas + trigger + view materializada no Postgres (migration via Alembic em `verus_api/alembic/versions/`, padrão já em uso no repo).
+2. Rodar import inicial de Direito Adm (não tem `stable_id` prévio, todos os nós são `AddNode`). Após import, `REFRESH MATERIALIZED VIEW CONCURRENTLY taxonomia_counts_live`.
 3. Subir endpoints novos em ambiente de dev.
 4. Subir TreePicker atrás de feature flag `taxonomia_picker_enabled` (default `false`).
 5. Smoke test interno.
@@ -473,16 +551,20 @@ with db.transaction():
 | Nó deletado tem questões e admin esquece de prover `reassign_to` | Sanity check bloqueia apply, mostra lista de questões afetadas. |
 | Pipeline regen produz cobertura abaixo de 95% silenciosamente | Sanity check bloqueia apply. |
 | App esquece de setar `app.source` antes de write | Trigger loga com `source = 'unknown'`. Audit grátis de "writes sem origem clara" via `WHERE source = 'unknown'`. |
+| Snapshot (`*_snapshot`) e view materializada divergem silenciosamente conforme escritas vão acontecendo fora do import (curadoria, matching) | Job de monitoring: query diária compara médias por matéria; alerta se drift > 1%. Refresh da view no fim de cada import + cron noturno. |
+| `path` recalculado por CTE pesa em árvores grandes | Limitar à profundidade declarada (≤ 3 nesta leva). Se virar gargalo no futuro, materializar `path` numa coluna gerada quando rename for raro. |
 
 ## Critérios de "pronto"
 
-- [ ] Tabelas + trigger criados no Hetzner.
-- [ ] Import de Direito Adm rodado, 137k+ classificações persistidas.
-- [ ] 4 endpoints novos no verus_api respondem com payload correto.
-- [ ] TreePicker renderiza árvore + search por alias funciona + counts estáticos batem com JSON.
-- [ ] Counts dinâmicos: aluno com banca=CESPE vê números corretos (validado manualmente em 3 nós).
-- [ ] Filtro de questões com `topicos=` retorna o conjunto certo (validado contra SQL manual).
-- [ ] Trigger registra todo write em `questao_topico_log` com source correto.
+- [ ] Tabelas (`taxonomia_versions`, `taxonomia_nodes`, `questao_topico`, `questao_topico_log`) + trigger + view materializada `taxonomia_counts_live` criadas no Hetzner via Alembic.
+- [ ] Import de Direito Adm rodado: 1 linha em `taxonomia_versions`, 499 nós em `taxonomia_nodes`, 137k+ linhas em `questao_topico`. View materializada refrescada.
+- [ ] 4 endpoints novos no verus_api respondem com payload correto, `path` derivado em runtime via recursive CTE, `version_id` no payload e no ETag.
+- [ ] TreePicker renderiza árvore + search por alias funciona + counts vindos da view materializada batem com `count_agregada_snapshot` no momento pós-import (drift = 0).
+- [ ] Counts dinâmicos: aluno com banca=CESPE vê números corretos (validado manualmente em 3 nós), endpoint via GET com querystring, browser cache hit em refresh.
+- [ ] Filtro de questões com `topicos=` retorna o conjunto certo (validado contra SQL manual), com per-matéria scoping respeitado.
+- [ ] Trigger registra todo write em `questao_topico_log` com source `gran_pipeline:regen_YYYY_MM`.
 - [ ] Dry-run do import imprime diff legível e bloqueia apply em sanity check failure.
-- [ ] Nenhum lugar visível ao aluno menciona "GRAN".
-- [ ] Cobertura de testes: import script + trigger + endpoint de counts.
+- [ ] Nenhum lugar visível ao aluno menciona "GRAN" (regex case-insensitive em `titulo` e `aliases` no import + grep no payload da API durante teste).
+- [ ] Recentes persistem em `localStorage` por matéria, max 5 LRU.
+- [ ] `topicos: string[]` integrado em `QuestoesContext`, contado em `countActiveFilters`, persistido na URL via `filtersToSearchParams`.
+- [ ] Cobertura de testes: import script (diff snapshot test), trigger (insert/update/delete em `questao_topico` com `app.source` setado), endpoint de counts (GET com filtros), recursive CTE de path (3 níveis).
