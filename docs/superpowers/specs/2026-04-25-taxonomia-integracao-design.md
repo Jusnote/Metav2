@@ -19,6 +19,7 @@ A taxonomia de Direito Adm está pronta como JSON local (`D:\tec-output\taxonomi
 3. **Identidade dos nós é `stable_id` UUID** persistido no primeiro import. Os IDs internos do parse (`gran.X`) **não são estáveis** entre regenerações; toda referência externa (`questao_topico`, URL, API) usa `stable_id` ou `slug`.
 4. **Audit é obrigatório.** Toda alteração em `questao_topico` é capturada por trigger Postgres em `questao_topico_log`, sem dependência de disciplina do app.
 5. **Coexistência híbrida.** Pill "Assuntos" detecta `materia.has_taxonomia` e renderiza `TreePicker` (taxonomia) ou `FlatList` (assunto livre). Mesma pill, sem duplicação.
+6. **Matéria tem identidade dupla.** `materias.slug` (ex: `dir-adm`) é o identificador interno usado em URLs, payloads de API, `taxonomia_nodes.materia_slug`, querystring e código frontend. `materias.nome` (ex: `Direito Administrativo`) é o display humano usado em `questoes.materia` e na UI mostrada ao aluno. **JOINs entre o mundo da taxonomia (slug) e o mundo das questões (nome) sempre passam pela tabela `materias`** — nunca slugificação ad-hoc, nunca hardcode em código de aplicação.
 
 ## Schema
 
