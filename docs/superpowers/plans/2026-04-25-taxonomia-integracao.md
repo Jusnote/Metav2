@@ -18,6 +18,20 @@
 - `D:\tec-output\taxonomia\merged\taxonomia-direito-administrativo.json` presente (3.7MB, 499 nós).
 - Acesso a `verus_api` (`C:\Users\Home\Desktop\verus_api`) com Alembic configurado.
 
+**Decisão arquitetural pendente — mapping `materia_slug` ↔ `questoes.materia`:**
+
+`taxonomia_nodes.materia_slug` usa identificador slug curto (`dir-adm`), mas `questoes.materia` (no banco) é uma coluna `String(200)` que armazena nome humano completo (presumivelmente `"Direito Administrativo"`). Os JOINs nos endpoints precisam reconciliar os dois.
+
+Antes de executar Task 10+, decidir uma das três opções:
+
+- **(A) Tabela `materias` (slug, nome) populada manualmente** — simples, mantém slug curto, JOIN explícito `JOIN materias mat ON mat.nome = q.materia AND mat.slug = n.materia_slug`. **Recomendado.**
+- **(B) Migrar `questoes.materia` pra slug** — invasivo, afeta resto do app, fora de escopo desta leva.
+- **(C) Slugificar `q.materia` em runtime via função SQL** — frágil, sem garantia de unicidade.
+
+Se (A): adicionar Task 1.5 que cria tabela `materias`, popula com `INSERT (slug='dir-adm', nome='Direito Administrativo')`, e ajustar todos os JOINs subsequentes (Tasks 10, 12, 13). Se essa tabela já existir no DB com outra estrutura, conferir e adaptar.
+
+**Confirmar com SQL `SELECT DISTINCT materia FROM questoes WHERE materia ILIKE '%admin%' LIMIT 5;` antes de prosseguir.**
+
 ---
 
 ## Phase 1 — Schema (verus_api)
@@ -394,7 +408,15 @@ class NodeData:
 
 def load_json(json_path: Path, materia_slug: str) -> list[NodeData]:
     """Carrega árvore do JSON do pipeline e retorna lista flat de NodeData.
-    Slugs são prefixados com `{materia_slug}.` se ainda não estiverem."""
+    Slugs são prefixados com `{materia_slug}.` se ainda não estiverem.
+
+    Estrutura real do JSON gerado pelo pipeline (verificado contra
+    taxonomia-direito-administrativo.json):
+      - top key da árvore: `arvore` (lista de roots)
+      - children key: `filhos`
+      - absorbed key: `descendentes_absorvidos`
+      - aliases, subtopicos_visuais, titulo, slug: nomes literais
+    """
     with open(json_path, encoding="utf-8") as f:
         raw = json.load(f)
 
@@ -404,21 +426,21 @@ def load_json(json_path: Path, materia_slug: str) -> list[NodeData]:
         slug = node["slug"]
         if not slug.startswith(f"{materia_slug}."):
             slug = f"{materia_slug}.{slug}"
-        parent = parent_slug
         flat.append(NodeData(
             slug=slug,
             titulo=node["titulo"],
             nivel=nivel,
-            parent_slug=parent,
+            parent_slug=parent_slug,
             ordem=ordem,
             aliases=node.get("aliases", []),
-            absorbed=node.get("absorbed", []),
+            absorbed=node.get("descendentes_absorvidos", []),
             subtopicos_visuais=node.get("subtopicos_visuais", []),
         ))
-        for i, child in enumerate(node.get("children", [])):
+        for i, child in enumerate(node.get("filhos", [])):
             walk(child, slug, nivel + 1, i)
 
-    for i, root in enumerate(raw.get("tree", raw if isinstance(raw, list) else [])):
+    roots = raw.get("arvore", raw if isinstance(raw, list) else [])
+    for i, root in enumerate(roots):
         walk(root, None, 1, i)
 
     return flat
@@ -472,15 +494,17 @@ from scripts.import_lib.loaders import load_json
 
 
 def test_load_json_flattens_tree_and_prefixes_slugs():
+    # Estrutura real do pipeline: 'arvore' + 'filhos' + 'descendentes_absorvidos'
     fixture = {
-        "tree": [
+        "arvore": [
             {
                 "slug": "licitacoes",
                 "titulo": "Licitações",
                 "aliases": ["lei 8666"],
+                "descendentes_absorvidos": [],
                 "subtopicos_visuais": [{"titulo": "Pregão", "n_questoes": 100, "nivel_original": 4}],
-                "children": [
-                    {"slug": "licitacoes.principios", "titulo": "Princípios", "children": []}
+                "filhos": [
+                    {"slug": "licitacoes.principios", "titulo": "Princípios", "filhos": []}
                 ],
             }
         ]
@@ -695,15 +719,14 @@ def compute_diff(old: list[NodeData], new: list[NodeData]) -> Diff:
             matched_old[best_match[0].slug] = new_node
             unmatched_old_slugs.discard(best_match[0].slug)
 
+    # Index reverso pra lookup O(1): new.slug → old NodeData (via matched_old)
+    new_slug_to_old: dict[str, NodeData] = {}
+    for old_slug, new_n in matched_old.items():
+        new_slug_to_old[new_n.slug] = old_by_slug[old_slug]
+
     # Gera operações
     for new_node in new:
-        old_node = next((o for o, n in zip(old, new) if n.slug == new_node.slug and o.slug in matched_old and matched_old[o.slug].slug == new_node.slug), None)
-        # Revisão: lookup direto por matched_old
-        old_match = None
-        for o_slug, n_node in matched_old.items():
-            if n_node.slug == new_node.slug:
-                old_match = old_by_slug[o_slug]
-                break
+        old_match = new_slug_to_old.get(new_node.slug)
 
         if old_match is None:
             diff.operations.append(AddNode(
@@ -792,57 +815,67 @@ def _node(slug, titulo="X", nivel=1, parent=None, aliases=None):
     return NodeData(slug=slug, titulo=titulo, nivel=nivel, parent_slug=parent, ordem=0, aliases=aliases or [])
 
 
+def _check(nodes, counts, *, total_db=200, total_json=None, min_cov=95.0):
+    run_sanity_checks(
+        nodes, counts,
+        materia_slug="dir-adm",
+        min_coverage_pct=min_cov,
+        total_questoes_db=total_db,
+        total_classificadas_json=total_json,
+    )
+
+
 def test_passes_clean_tree():
     nodes = [
         _node("dir-adm.a", nivel=1),
         _node("dir-adm.a.b", nivel=2, parent="dir-adm.a"),
     ]
     counts = {"dir-adm.a": 100, "dir-adm.a.b": 50}
-    # Não deve levantar
-    run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=158)
+    _check(nodes, counts, total_db=100, total_json=100)  # 100% cobertura
 
 
 def test_fails_on_gran_in_titulo():
     nodes = [_node("dir-adm.x", titulo="GRAN: Atos administrativos")]
     counts = {"dir-adm.x": 100}
     with pytest.raises(SanityFailure, match="GRAN"):
-        run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=100)
+        _check(nodes, counts, total_db=100, total_json=100)
 
 
 def test_fails_on_gran_in_alias_case_insensitive():
     nodes = [_node("dir-adm.x", aliases=["foo", "Material gran"])]
     counts = {"dir-adm.x": 100}
     with pytest.raises(SanityFailure, match="gran"):
-        run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=100)
+        _check(nodes, counts, total_db=100, total_json=100)
 
 
 def test_fails_on_duplicate_slug():
     nodes = [_node("dir-adm.x"), _node("dir-adm.x")]
     counts = {"dir-adm.x": 100}
     with pytest.raises(SanityFailure, match="duplicado"):
-        run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=100)
+        _check(nodes, counts, total_db=100, total_json=100)
 
 
 def test_fails_on_orphan():
     nodes = [_node("dir-adm.x.y", nivel=2, parent="dir-adm.does-not-exist")]
     counts = {"dir-adm.x.y": 100}
     with pytest.raises(SanityFailure, match="órfão"):
-        run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=100)
+        _check(nodes, counts, total_db=100, total_json=100)
 
 
 def test_fails_on_l1_with_zero_count():
     nodes = [_node("dir-adm.empty", nivel=1)]
     counts = {"dir-adm.empty": 0}
     with pytest.raises(SanityFailure, match="L1"):
-        run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=0)
+        _check(nodes, counts, total_db=10, total_json=0)
 
 
-def test_fails_on_low_coverage():
+def test_fails_on_low_coverage_real_total():
+    """Cobertura real (classificadas/total_db) abaixo do mínimo."""
     nodes = [_node("dir-adm.x", nivel=1)]
-    counts = {"dir-adm.x": 50}
-    # 50 / 100 = 50% < 95%
-    with pytest.raises(SanityFailure, match="cobertura"):
-        run_sanity_checks(nodes, counts, materia_slug="dir-adm", min_coverage_pct=95.0, total_questoes=100)
+    counts = {"dir-adm.x": 100}
+    # 50 classificadas / 100 totais = 50% < 95%
+    with pytest.raises(SanityFailure, match="[Cc]obertura"):
+        _check(nodes, counts, total_db=100, total_json=50)
 ```
 
 - [ ] **Step 2: Rodar e ver falhar**
@@ -871,10 +904,11 @@ GRAN_PATTERN = re.compile(r"\bgran\b", re.IGNORECASE)
 
 def run_sanity_checks(
     nodes: list[NodeData],
-    counts: dict[str, int],   # slug → count_agregada projetado
+    counts: dict[str, int],                  # slug → count_agregada projetado
     materia_slug: str,
     min_coverage_pct: float,
-    total_questoes: int,
+    total_questoes_db: int,                  # COUNT(*) FROM questoes WHERE materia = nome
+    total_classificadas_json: int | None,    # estatisticas.questoes_classificadas do JSON
 ) -> None:
     """Verifica todas as invariantes. Levanta SanityFailure no primeiro fail.
 
@@ -883,7 +917,10 @@ def run_sanity_checks(
       2. Slugs únicos.
       3. Sem órfãos estruturais (parent_slug que não existe).
       4. Todo nó L1 tem count_agregada > 0.
-      5. Cobertura ≥ min_coverage_pct (%).
+      5. Cobertura = classificadas/total_db ≥ min_coverage_pct (%).
+
+    Cobertura usa total_classificadas_json (real do pipeline) se disponível —
+    caso contrário, soma os L1 (sub-óptimo, pois questões em múltiplos L1 contam dupla).
     """
     # 1. GRAN check
     for n in nodes:
@@ -911,14 +948,20 @@ def run_sanity_checks(
         if n.nivel == 1 and counts.get(n.slug, 0) == 0:
             raise SanityFailure(f"Nó L1 {n.slug!r} tem 0 questões classificadas")
 
-    # 5. Cobertura
-    if total_questoes > 0:
-        # cobertura = (questões classificadas em qualquer nó) / total_questoes
-        # Como não temos contagem de "questões únicas classificadas" sem o DB, aproxima por L1 sum
-        l1_sum = sum(counts.get(n.slug, 0) for n in nodes if n.nivel == 1)
-        coverage = (l1_sum / total_questoes) * 100.0
-        if coverage < min_coverage_pct:
-            raise SanityFailure(f"Cobertura {coverage:.2f}% < mínimo {min_coverage_pct}%")
+    # 5. Cobertura — comparar classificadas (do JSON) com total real (do DB)
+    if total_questoes_db <= 0:
+        # Sem total real, pula check (evita divisão por zero e falso fail)
+        return
+    if total_classificadas_json is not None:
+        classificadas = total_classificadas_json
+    else:
+        # Fallback ruidoso: soma own_qids via L1 count_agregada (pode contar dupla)
+        classificadas = sum(counts.get(n.slug, 0) for n in nodes if n.nivel == 1)
+    coverage = (classificadas / total_questoes_db) * 100.0
+    if coverage < min_coverage_pct:
+        raise SanityFailure(
+            f"Cobertura {coverage:.2f}% ({classificadas}/{total_questoes_db}) < mínimo {min_coverage_pct}%"
+        )
 ```
 
 - [ ] **Step 4: Rodar testes**
@@ -1202,24 +1245,58 @@ from import_lib.sanity import run_sanity_checks, SanityFailure
 from import_lib.apply import apply_diff
 
 
-def project_counts(nodes, json_path: Path) -> dict[str, int]:
-    """Lê count_agregada já no JSON (gerado pelo finalize.py do pipeline)."""
+def project_counts(json_path: Path, materia_slug: str) -> tuple[dict[str, int], int | None]:
+    """Lê contagens projetadas do JSON do pipeline.
+
+    Retorna (counts_agregada_por_slug_prefixado, questoes_classificadas_total_do_json).
+
+    Estratégia:
+      1. Se o JSON tem `questoes_count_agregada` por nó (gerado pelo finalize.py),
+         usa direto. Verificado: existe em taxonomia-direito-administrativo.json.
+      2. Senão, calcula recursivamente via `questao_ids` por nó + filhos.
+
+    `questoes_classificadas_total_do_json` vem de `estatisticas.questoes_classificadas`
+    (presente no top do JSON do pipeline) ou None se ausente.
+    """
     import json
     with open(json_path, encoding="utf-8") as f:
         raw = json.load(f)
+
     counts: dict[str, int] = {}
 
-    def walk(n: dict, parent_slug: str | None):
+    def walk(n: dict) -> set[int]:
+        """Retorna o set de questao_ids cobertos por este nó + descendentes (pra fallback)."""
         slug = n["slug"]
-        # Reescreve pra prefixado se necessário (o load_json faz isso já)
-        full_slug = slug if "." in slug else slug
-        counts[full_slug] = n.get("count_agregada", n.get("questoes_count_agregada", 0))
-        for c in n.get("children", []):
-            walk(c, full_slug)
+        full_slug = slug if slug.startswith(f"{materia_slug}.") else f"{materia_slug}.{slug}"
+        own_qids = set(n.get("questao_ids", []))
+        descendant_qids = set(own_qids)
+        for c in n.get("filhos", []):
+            descendant_qids |= walk(c)
+        if "questoes_count_agregada" in n:
+            counts[full_slug] = n["questoes_count_agregada"]
+        else:
+            counts[full_slug] = len(descendant_qids)
+        return descendant_qids
 
-    for root in raw.get("tree", raw if isinstance(raw, list) else []):
-        walk(root, None)
-    return counts
+    roots = raw.get("arvore", raw if isinstance(raw, list) else [])
+    for root in roots:
+        walk(root)
+
+    estat = raw.get("estatisticas") or {}
+    total = estat.get("questoes_classificadas")
+    return counts, (int(total) if total is not None else None)
+
+
+def fetch_total_questoes_da_materia(conn, materia_nome_humano: str) -> int:
+    """Conta total de questões da matéria no DB. Usado pra cobertura real.
+
+    Recebe o nome humano (ex: 'Direito Administrativo'), não o slug — porque
+    `questoes.materia` armazena o nome humano. Mapeamento slug↔nome vem
+    da tabela `materias` (ver pré-requisito arquitetural no topo do plano).
+    """
+    with conn.cursor() as cur:
+        cur.execute("SELECT COUNT(*) FROM questoes WHERE materia = %s", (materia_nome_humano,))
+        return int(cur.fetchone()[0])
 
 
 def print_summary(diff, current_version_label: str, new_label: str) -> None:
@@ -1235,6 +1312,8 @@ def print_summary(diff, current_version_label: str, new_label: str) -> None:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--materia", required=True, help="Slug da matéria, ex: dir-adm")
+    ap.add_argument("--materia-nome", required=True,
+                    help="Nome humano da matéria como aparece em questoes.materia, ex: 'Direito Administrativo'")
     ap.add_argument("--json", required=True, type=Path, help="Path do JSON do pipeline")
     ap.add_argument("--dry-run", action="store_true", help="Só imprime diff e sanity, não aplica")
     ap.add_argument("--apply", action="store_true", help="Aplica sem prompt interativo")
@@ -1247,27 +1326,33 @@ def main():
         sys.exit(2)
 
     new_nodes = load_json(args.json, args.materia)
-    counts_projected = {}
-    # Reaproveita count_agregada do próprio JSON pra sanity (sem precisar do DB)
-    raw_counts = project_counts(new_nodes, args.json)
-    # Re-prefixa pra alinhar com slugs prefixados em new_nodes
-    counts_projected = {n.slug: raw_counts.get(n.slug.split(".", 1)[1], raw_counts.get(n.slug, 0)) for n in new_nodes}
+    counts_projected, total_classificadas_json = project_counts(args.json, args.materia)
 
-    # Total estimado pra cobertura: usa o que vem no JSON do root, ou soma dos L1
-    total_questoes_est = sum(counts_projected[n.slug] for n in new_nodes if n.nivel == 1)
-
-    try:
-        run_sanity_checks(new_nodes, counts_projected,
-                          materia_slug=args.materia,
-                          min_coverage_pct=args.min_coverage,
-                          total_questoes=total_questoes_est)
-    except SanityFailure as e:
-        print(f"SANITY FAIL: {e}", file=sys.stderr)
-        sys.exit(3)
-    print("Sanity checks: OK")
-
+    # Conecta ao DB pra: (1) buscar total real de questões da matéria, (2) carregar old_nodes
     conn = psycopg2.connect(args.dsn)
     try:
+        total_db = fetch_total_questoes_da_materia(conn, args.materia_nome)
+        if total_db == 0:
+            print(f"WARNING: nenhuma questão encontrada com materia = {args.materia_nome!r}. "
+                  f"Verificar mapping slug↔nome.", file=sys.stderr)
+        # Cobertura real: classificadas / total no DB
+        # Usa total_classificadas_json se presente (mais preciso); senão soma own_qids dos nós.
+        total_classificadas = total_classificadas_json if total_classificadas_json is not None else None
+
+        try:
+            run_sanity_checks(
+                new_nodes,
+                counts_projected,
+                materia_slug=args.materia,
+                min_coverage_pct=args.min_coverage,
+                total_questoes_db=total_db,
+                total_classificadas_json=total_classificadas,
+            )
+        except SanityFailure as e:
+            print(f"SANITY FAIL: {e}", file=sys.stderr)
+            sys.exit(3)
+        print("Sanity checks: OK")
+
         old_nodes = load_db(conn, args.materia)
         diff = compute_diff(old=old_nodes, new=new_nodes)
         current_label = f"DB ({len(old_nodes)} nodes)" if old_nodes else "EMPTY"
@@ -1308,17 +1393,19 @@ cd "D:/tec-output/taxonomia"
 export VERUS_DB_DSN="postgresql://user:pass@localhost:5432/dbname"
 python scripts/import_to_postgres.py \
   --materia dir-adm \
+  --materia-nome "Direito Administrativo" \
   --json merged/taxonomia-direito-administrativo.json \
   --dry-run
 ```
 
-Esperado: imprime "Sanity checks: OK", depois DIFF SUMMARY com 499 adds (DB vazio na primeira vez), 0 deletes/moves/renames. "no changes applied. Bye."
+Esperado: imprime "Sanity checks: OK", depois DIFF SUMMARY com 499 adds (DB vazio na primeira vez), 0 deletes/moves/renames. "no changes applied. Bye." Se aparecer `WARNING: nenhuma questão encontrada com materia = 'Direito Administrativo'`, conferir o nome humano exato em `SELECT DISTINCT materia FROM questoes WHERE materia ILIKE '%admin%' LIMIT 5`.
 
 - [ ] **Step 3: Aplicar de verdade**
 
 ```bash
 python scripts/import_to_postgres.py \
   --materia dir-adm \
+  --materia-nome "Direito Administrativo" \
   --json merged/taxonomia-direito-administrativo.json
 # Responde 'y' no prompt
 ```
@@ -1357,8 +1444,14 @@ O JSON do pipeline deve ter, em cada nó, uma lista `questoes_atribuidas: [{ques
 ```python
 """load_classifications.py: popula questao_topico a partir do JSON da taxonomia.
 
-Lê cada nó com sua lista de questoes_atribuidas, faz batched INSERT
+Lê cada nó com sua lista `questao_ids: [int, ...]`, faz batched INSERT
 com SET LOCAL app.source pra trigger registrar.
+
+Estrutura real do JSON (verificado contra taxonomia-direito-administrativo.json):
+  - top key da árvore: `arvore`
+  - children key: `filhos`
+  - questões classificadas no nó: `questao_ids` (lista de int)
+  - score por questão NÃO está no JSON; passa NULL no insert.
 """
 from __future__ import annotations
 import argparse
@@ -1372,19 +1465,20 @@ import psycopg2.extras
 
 
 def iter_classificacoes(json_path: Path, materia_slug: str):
-    """Yields (slug_full, questao_id, score) tuples."""
+    """Yields (slug_full, questao_id, score=None) tuples."""
     with open(json_path, encoding="utf-8") as f:
         raw = json.load(f)
 
     def walk(node: dict):
         slug = node["slug"]
         full_slug = slug if slug.startswith(f"{materia_slug}.") else f"{materia_slug}.{slug}"
-        for cl in node.get("questoes_atribuidas", []):
-            yield (full_slug, cl["questao_id"], cl.get("score"))
-        for c in node.get("children", []):
+        for qid in node.get("questao_ids", []):
+            yield (full_slug, int(qid), None)
+        for c in node.get("filhos", []):
             yield from walk(c)
 
-    for root in raw.get("tree", raw if isinstance(raw, list) else []):
+    roots = raw.get("arvore", raw if isinstance(raw, list) else [])
+    for root in roots:
         yield from walk(root)
 
 
@@ -2092,7 +2186,7 @@ def _topicos_por_materia(topicos_csv: list[str]) -> dict[str, list[str]]:
 Adiciona o param na assinatura de `search_questoes`:
 
 ```python
-topicos: Annotated[list[str] | None, Query(description="Slugs globais; ex: dir-adm.licitacoes,dir-const.x")] = None,
+topico: Annotated[list[str] | None, Query(alias="topico", description="Lista repetida de slugs globais; ex: ?topico=dir-adm.licitacoes&topico=dir-const.x")] = None,
 ```
 
 Quando `topicos` está presente, expande pros descendentes via recursive CTE:
@@ -2101,8 +2195,8 @@ Quando `topicos` está presente, expande pros descendentes via recursive CTE:
 # Dentro de search_questoes, após coletar materias e topicos:
 extra_topicos_clause = ""
 extra_params = {}
-if topicos:
-    by_materia = _topicos_por_materia(topicos)
+if topico:
+    by_materia = _topicos_por_materia(topico)
     # Se aluno selecionou matérias mas pra algumas não selecionou tópicos, "libera" essas
     materias_sem_topico = [m for m in (materia or []) if m not in by_materia]
     matched_questao_ids: set[int] = set()
@@ -2209,7 +2303,7 @@ def test_search_filtra_por_topico_l1_inclui_descendentes():
     assert licitacoes is not None
     slug_l1 = licitacoes["slug"]
 
-    r = client.get(f"/v1/questoes/search?materia=dir-adm&topicos={slug_l1}&page_size=5")
+    r = client.get(f"/v1/questoes/search?materia=dir-adm&topico={slug_l1}&page_size=5")
     assert r.status_code == 200
     body = r.json()
     assert body["total"] > 0

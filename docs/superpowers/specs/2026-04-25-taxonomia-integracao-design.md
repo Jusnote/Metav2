@@ -303,7 +303,7 @@ Apenas chamado quando há ≥1 filtro além de `materia` (sem outros filtros, `c
 
 ### `GET /v1/questoes/search` (extensão do existente)
 
-Novo param `topicos=` aceita lista CSV de slugs (formato `dir-adm.licitacoes,dir-const.direitos-fundamentais`).
+Novo param `topico=` aceita **lista repetida** de slugs (`?topico=dir-adm.licitacoes&topico=dir-const.direitos-fundamentais`), seguindo o padrão dos outros pills.
 
 **Semântica multi-matéria + multi-tópico:**
 ```sql
@@ -441,7 +441,13 @@ Quando aluno muda banca/ano/etc., counts pra matéria ativa são pre-fetchados a
 
 ### URL deep linking
 
-Param adicional na URL: `?topicos=dir-adm.licitacoes.principios,dir-const.direitos-fundamentais`. Slug global com prefixo já carrega a matéria implícita; pill bar pode reconstruir o estado completo a partir do querystring.
+Param adicional na URL, **lista repetida** (não CSV) seguindo o padrão dos outros pills (`?banca=A&banca=B`):
+
+```
+?topico=dir-adm.licitacoes.principios&topico=dir-const.direitos-fundamentais
+```
+
+`URLSearchParams.append('topico', slug)` no front, `getAll('topico')` na hidratação. Slug global com prefixo já carrega a matéria implícita; pill bar pode reconstruir o estado completo a partir do querystring.
 
 ### Mobile
 
@@ -577,7 +583,7 @@ with db.transaction():
 - [ ] 4 endpoints novos no verus_api respondem com payload correto, `path` derivado em runtime via recursive CTE, `version_id` resolvido por query em `taxonomia_versions` (cacheado em Redis 5min) no payload e no ETag.
 - [ ] TreePicker renderiza árvore + search por alias funciona + counts vindos de `taxonomia_counts` consistentes com `COUNT(*)` ad-hoc no momento pós-import (drift = 0).
 - [ ] Counts dinâmicos: aluno com banca=CESPE vê números corretos (validado manualmente em 3 nós), endpoint via GET com querystring, browser cache hit em refresh.
-- [ ] Filtro de questões com `topicos=` retorna o conjunto certo (validado contra SQL manual), com per-matéria scoping respeitado.
+- [ ] Filtro de questões com `?topico=...&topico=...` (lista repetida) retorna o conjunto certo (validado contra SQL manual), com per-matéria scoping respeitado.
 - [ ] Trigger registra todo write em `questao_topico_log` com source `gran_pipeline:regen_YYYY_MM`.
 - [ ] Dry-run do import imprime diff legível e bloqueia apply em sanity check failure.
 - [ ] Nenhum lugar visível ao aluno menciona "GRAN" (regex case-insensitive em `titulo` e `aliases` no import + grep no payload da API durante teste).
