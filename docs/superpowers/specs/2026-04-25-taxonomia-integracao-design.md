@@ -58,11 +58,10 @@ CREATE TABLE taxonomia_nodes (
   aliases        TEXT[] NOT NULL DEFAULT '{}',     -- termos alternativos (alimentam fuse.js)
   absorbed       TEXT[] NOT NULL DEFAULT '{}',     -- títulos L4-L6 mesclados pra dentro
   subtopicos_visuais JSONB NOT NULL DEFAULT '[]',  -- [{titulo, n_questoes, nivel_original}]
-  count_propria_snapshot  INT NOT NULL DEFAULT 0,  -- snapshot do último import (não é live)
-  count_agregada_snapshot INT NOT NULL DEFAULT 0,  -- snapshot do último import (não é live)
+  -- count_*: persistidos na tabela companheira `taxonomia_counts`, não aqui (ver abaixo)
   -- path NÃO está aqui: é derivado em runtime via recursive CTE pra evitar drift em renames
   imported_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  version_id     UUID NOT NULL REFERENCES taxonomia_versions(id),
+  created_in_version_id UUID NOT NULL REFERENCES taxonomia_versions(id),  -- só set em AddNode (não atualizado em regen) — pra debug
 
   UNIQUE (slug)  -- slug é global e prefixado por matéria; materia_slug é redundância derivável
 );
@@ -86,46 +85,61 @@ CREATE INDEX idx_questao_topico_node ON questao_topico (node_id, questao_id);  -
 CREATE INDEX idx_questao_topico_questao ON questao_topico (questao_id);         -- expansão por questão
 ```
 
-### View materializada `taxonomia_counts_live`
+### `taxonomia_counts` (tabela companheira mantida pelo import)
 
-Contagens reais (não snapshot) — usadas pelo endpoint `GET /v1/taxonomia/{materia_slug}` em `count_propria` e `count_agregada` retornados ao cliente.
+Contagens persistidas — usadas pelo endpoint `GET /v1/taxonomia/{materia_slug}` em `count_propria` e `count_agregada`. Tabela ao invés de view materializada porque refresh seletivo por matéria escala melhor (107 matérias futuras × ~100k questões cada inviabilizam REFRESH global a cada import).
 
 ```sql
-CREATE MATERIALIZED VIEW taxonomia_counts_live AS
-WITH RECURSIVE descendants AS (
-  -- cada nó é descendente de si mesmo
-  SELECT stable_id AS root_id, stable_id AS desc_id FROM taxonomia_nodes
-  UNION ALL
-  SELECT d.root_id, n.stable_id
-  FROM descendants d
-  JOIN taxonomia_nodes n ON n.parent_id = d.desc_id
-),
-agregado AS (
-  SELECT d.root_id AS node_id, COUNT(DISTINCT qt.questao_id) AS count_agregada
-  FROM descendants d
-  LEFT JOIN questao_topico qt ON qt.node_id = d.desc_id
-  GROUP BY d.root_id
-),
-propria AS (
-  SELECT n.stable_id AS node_id, COUNT(qt.questao_id) AS count_propria
-  FROM taxonomia_nodes n
-  LEFT JOIN questao_topico qt ON qt.node_id = n.stable_id
-  GROUP BY n.stable_id
-)
-SELECT n.stable_id AS node_id, p.count_propria, a.count_agregada
-FROM taxonomia_nodes n
-JOIN propria p ON p.node_id = n.stable_id
-JOIN agregado a ON a.node_id = n.stable_id;
+CREATE TABLE taxonomia_counts (
+  node_id         UUID PRIMARY KEY REFERENCES taxonomia_nodes(stable_id) ON DELETE CASCADE,
+  materia_slug    TEXT NOT NULL,                   -- denormalizado pra refresh por matéria
+  count_propria   INT NOT NULL DEFAULT 0,
+  count_agregada  INT NOT NULL DEFAULT 0,
+  refreshed_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
-CREATE UNIQUE INDEX ON taxonomia_counts_live (node_id);
+CREATE INDEX idx_taxonomia_counts_materia ON taxonomia_counts (materia_slug);
 ```
 
 **Refresh policy:**
-- Após cada `import_to_postgres.py` apply (no fim da transação): `REFRESH MATERIALIZED VIEW CONCURRENTLY taxonomia_counts_live`.
-- Job batch noturno (cron) faz o mesmo refresh (cobre escritas via curadoria manual ou matching de edital, quando entrarem).
-- Drift entre `*_snapshot` e a view é monitorado: se diferença média > 1% por matéria, alerta — significa que escritas estão acontecendo fora do pipeline e o snapshot está envelhecendo.
+- Após cada `import_to_postgres.py` apply, dentro da mesma transação: UPSERT escopado **apenas pros nós da matéria importada** via recursive CTE local. Custo é O(nós da matéria) — segundos, não minutos. Detalhe abaixo.
+- Job batch noturno (cron) refresca todas as matérias em paralelo, uma por uma. Cobre escritas via curadoria manual ou matching de edital quando entrarem.
+- Drift é monitorado por job separado: query ad-hoc compara `taxonomia_counts.count_*` com um cálculo recursivo recomputado on-the-fly por matéria (job mais leve, roda 1×/dia). Alerta se diferença média por matéria > 1%.
 
-Nesta leva, escrita só vem do import; drift deve ser zero.
+**Refresh seletivo (snippet de referência, dentro do import):**
+
+```sql
+WITH RECURSIVE descendants AS (
+  SELECT stable_id AS root_id, stable_id AS desc_id
+  FROM taxonomia_nodes WHERE materia_slug = :materia
+  UNION ALL
+  SELECT d.root_id, n.stable_id
+  FROM descendants d JOIN taxonomia_nodes n ON n.parent_id = d.desc_id
+),
+agregado AS (
+  SELECT d.root_id AS node_id, COUNT(DISTINCT qt.questao_id) AS c
+  FROM descendants d LEFT JOIN questao_topico qt ON qt.node_id = d.desc_id
+  GROUP BY d.root_id
+),
+propria AS (
+  SELECT n.stable_id AS node_id, COUNT(qt.questao_id) AS c
+  FROM taxonomia_nodes n LEFT JOIN questao_topico qt ON qt.node_id = n.stable_id
+  WHERE n.materia_slug = :materia
+  GROUP BY n.stable_id
+)
+INSERT INTO taxonomia_counts (node_id, materia_slug, count_propria, count_agregada, refreshed_at)
+SELECT n.stable_id, n.materia_slug, p.c, a.c, NOW()
+FROM taxonomia_nodes n
+JOIN propria p ON p.node_id = n.stable_id
+JOIN agregado a ON a.node_id = n.stable_id
+WHERE n.materia_slug = :materia
+ON CONFLICT (node_id) DO UPDATE SET
+  count_propria = EXCLUDED.count_propria,
+  count_agregada = EXCLUDED.count_agregada,
+  refreshed_at = EXCLUDED.refreshed_at;
+```
+
+Nesta leva, escrita em `questao_topico` só vem do import; drift esperado = zero.
 
 ### `questao_topico_log` (cold, imutável)
 
@@ -154,8 +168,10 @@ Garante que toda mudança em `questao_topico` seja logada — mesmo se o app esq
 ```sql
 CREATE OR REPLACE FUNCTION questao_topico_audit() RETURNS TRIGGER AS $$
 DECLARE
-  v_source TEXT := COALESCE(current_setting('app.source', TRUE), 'unknown');
-  v_reason TEXT := current_setting('app.reason', TRUE);
+  -- current_setting com missing_ok=TRUE retorna '' (não NULL) em algumas versões do Postgres.
+  -- NULLIF converte string vazia em NULL pra COALESCE funcionar como esperado.
+  v_source TEXT := COALESCE(NULLIF(current_setting('app.source', TRUE), ''), 'unknown');
+  v_reason TEXT := NULLIF(current_setting('app.reason', TRUE), '');
 BEGIN
   IF TG_OP = 'INSERT' THEN
     INSERT INTO questao_topico_log (questao_id, node_id, action, source, score, reason)
@@ -234,8 +250,8 @@ Cache: `Cache-Control: public, max-age=300, stale-while-revalidate=86400`. ETag.
       "titulo": "Licitações",
       "nivel": 1,
       "parent_id": null,
-      "count_propria": 12,         // live, vindo de taxonomia_counts_live
-      "count_agregada": 4460,      // live, vindo de taxonomia_counts_live
+      "count_propria": 12,         // vindo de taxonomia_counts (refrescada no import)
+      "count_agregada": 4460,      // vindo de taxonomia_counts (refrescada no import)
       "aliases": ["lei 8666", "lei 14133", "modalidades"],
       "absorbed": [],
       "subtopicos_visuais": [
@@ -256,7 +272,7 @@ Cache: `Cache-Control: public, max-age=300, stale-while-revalidate=86400`. ETag.
 
 `path` é montado em runtime no servidor via recursive CTE — **não é coluna persistida** — pra evitar drift quando ancestrais são renomeados. Custo é barato (depth ≤ 3, total ≤ 500 nós por matéria).
 
-`version_id` é o UUID da versão ativa, vindo de `taxonomia_versions`. Vira o ETag (`ETag: "uuid-da-versao-ativa"`).
+`version_id` é o UUID da versão ativa, derivado em runtime: `SELECT id FROM taxonomia_versions WHERE materia_slug = :m ORDER BY applied_at DESC LIMIT 1` (cacheado em Redis 5min — versão muda raramente). Vira o ETag (`ETag: "uuid-da-versao-ativa"`).
 
 Cache: ETag forte com `version_id`. `Cache-Control: public, max-age=86400, must-revalidate`. Tamanho típico ~80KB gzipped por matéria.
 
@@ -533,8 +549,8 @@ with db.transaction():
 
 ## Migração / rollout
 
-1. Criar tabelas + trigger + view materializada no Postgres (migration via Alembic em `verus_api/alembic/versions/`, padrão já em uso no repo).
-2. Rodar import inicial de Direito Adm (não tem `stable_id` prévio, todos os nós são `AddNode`). Após import, `REFRESH MATERIALIZED VIEW CONCURRENTLY taxonomia_counts_live`.
+1. Criar tabelas (`taxonomia_versions`, `taxonomia_nodes`, `taxonomia_counts`, `questao_topico`, `questao_topico_log`) + trigger no Postgres (migration via Alembic em `verus_api/alembic/versions/`, padrão já em uso no repo).
+2. Rodar import inicial de Direito Adm (não tem `stable_id` prévio, todos os nós são `AddNode`). UPSERT seletivo em `taxonomia_counts` acontece dentro da mesma transação do apply.
 3. Subir endpoints novos em ambiente de dev.
 4. Subir TreePicker atrás de feature flag `taxonomia_picker_enabled` (default `false`).
 5. Smoke test interno.
@@ -551,15 +567,15 @@ with db.transaction():
 | Nó deletado tem questões e admin esquece de prover `reassign_to` | Sanity check bloqueia apply, mostra lista de questões afetadas. |
 | Pipeline regen produz cobertura abaixo de 95% silenciosamente | Sanity check bloqueia apply. |
 | App esquece de setar `app.source` antes de write | Trigger loga com `source = 'unknown'`. Audit grátis de "writes sem origem clara" via `WHERE source = 'unknown'`. |
-| Snapshot (`*_snapshot`) e view materializada divergem silenciosamente conforme escritas vão acontecendo fora do import (curadoria, matching) | Job de monitoring: query diária compara médias por matéria; alerta se drift > 1%. Refresh da view no fim de cada import + cron noturno. |
+| `taxonomia_counts` divergem silenciosamente conforme escritas vão acontecendo fora do import (curadoria, matching) | Job diário recomputa via recursive CTE por matéria, compara com `taxonomia_counts` persistida; alerta se drift médio > 1%. Refresh seletivo no fim de cada import + cron noturno completo. |
 | `path` recalculado por CTE pesa em árvores grandes | Limitar à profundidade declarada (≤ 3 nesta leva). Se virar gargalo no futuro, materializar `path` numa coluna gerada quando rename for raro. |
 
 ## Critérios de "pronto"
 
-- [ ] Tabelas (`taxonomia_versions`, `taxonomia_nodes`, `questao_topico`, `questao_topico_log`) + trigger + view materializada `taxonomia_counts_live` criadas no Hetzner via Alembic.
-- [ ] Import de Direito Adm rodado: 1 linha em `taxonomia_versions`, 499 nós em `taxonomia_nodes`, 137k+ linhas em `questao_topico`. View materializada refrescada.
-- [ ] 4 endpoints novos no verus_api respondem com payload correto, `path` derivado em runtime via recursive CTE, `version_id` no payload e no ETag.
-- [ ] TreePicker renderiza árvore + search por alias funciona + counts vindos da view materializada batem com `count_agregada_snapshot` no momento pós-import (drift = 0).
+- [ ] Tabelas (`taxonomia_versions`, `taxonomia_nodes`, `taxonomia_counts`, `questao_topico`, `questao_topico_log`) + trigger criadas no Hetzner via Alembic. Trigger usa `NULLIF(current_setting(...), '')` pra tratar string vazia como NULL.
+- [ ] Import de Direito Adm rodado: 1 linha em `taxonomia_versions`, 499 nós em `taxonomia_nodes` (com `created_in_version_id` apontando pra a versão), 499 linhas em `taxonomia_counts`, 137k+ linhas em `questao_topico`.
+- [ ] 4 endpoints novos no verus_api respondem com payload correto, `path` derivado em runtime via recursive CTE, `version_id` resolvido por query em `taxonomia_versions` (cacheado em Redis 5min) no payload e no ETag.
+- [ ] TreePicker renderiza árvore + search por alias funciona + counts vindos de `taxonomia_counts` consistentes com `COUNT(*)` ad-hoc no momento pós-import (drift = 0).
 - [ ] Counts dinâmicos: aluno com banca=CESPE vê números corretos (validado manualmente em 3 nós), endpoint via GET com querystring, browser cache hit em refresh.
 - [ ] Filtro de questões com `topicos=` retorna o conjunto certo (validado contra SQL manual), com per-matéria scoping respeitado.
 - [ ] Trigger registra todo write em `questao_topico_log` com source `gran_pipeline:regen_YYYY_MM`.
