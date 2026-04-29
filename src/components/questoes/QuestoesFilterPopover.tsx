@@ -24,6 +24,8 @@ import {
 } from "./filter-config";
 import { useFilterKeyboardNav } from "./use-filter-keyboard-nav";
 import { useRecentFilters } from "./use-recent-filters";
+import { useMaterias } from "@/hooks/useMaterias";
+import { TaxonomiaTreePicker } from "./TaxonomiaTreePicker";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -261,6 +263,21 @@ export function QuestoesFilterPopover({
   const { dicionario } = useFiltrosDicionario();
   const { recents, addRecent } = useRecentFilters(category.key);
 
+  // --- Taxonomia detection (only relevant when category.key === 'assuntos') ---
+  const { data: materias } = useMaterias();
+  const materiaSelecionada = filters.materias[0] ?? null;
+  const materiaSlug = useMemo(
+    () => materias?.find(m => m.nome === materiaSelecionada)?.slug ?? null,
+    [materias, materiaSelecionada],
+  );
+  const hasTaxonomia = category.key === "assuntos" && !!materiaSlug;
+  const countsBody = useMemo(() => ({
+    banca: filters.bancas,
+    ano: filters.anos,
+    excluir_anuladas: filters.excluirAnuladas,
+    excluir_desatualizadas: filters.excluirDesatualizadas,
+  }), [filters.bancas, filters.anos, filters.excluirAnuladas, filters.excluirDesatualizadas]);
+
   // --- All items for this category ---
   const allItems = useMemo(
     () => getCategoryItems(category.key, dicionario),
@@ -483,8 +500,20 @@ export function QuestoesFilterPopover({
           )}
         </div>
 
-        {/* ---- Checkbox list ---- */}
-        {filteredItems.length === 0 ? (
+        {/* ---- Checkbox list OR Taxonomia tree picker ---- */}
+        {hasTaxonomia ? (
+          <TaxonomiaTreePicker
+            materiaSlug={materiaSlug!}
+            selectedIds={filters.nodeIds}
+            onToggle={(id) => {
+              const next = filters.nodeIds.includes(id)
+                ? filters.nodeIds.filter(x => x !== id)
+                : [...filters.nodeIds, id];
+              setFilter("nodeIds", next);
+            }}
+            countsBody={countsBody}
+          />
+        ) : filteredItems.length === 0 ? (
           <div className="px-3 py-6 text-center text-[12px] text-gray-400">
             Nenhum resultado encontrado
           </div>
