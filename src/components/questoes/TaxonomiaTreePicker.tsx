@@ -4,6 +4,7 @@ import { ChevronRight, ChevronDown, Search } from 'lucide-react';
 import Fuse from 'fuse.js';
 import { useTaxonomia, TaxonomiaNode, flattenTree } from '@/hooks/useTaxonomia';
 import { useTaxonomiaCounts, CountsBody } from '@/hooks/useTaxonomiaCounts';
+import { useTaxonomiaRecentes } from '@/hooks/useTaxonomiaRecentes';
 
 type Props = {
   materiaSlug: string;
@@ -20,6 +21,8 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
   );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
   const [query, setQuery] = useState('');
+  const { items: recentes, push: pushRecente } = useTaxonomiaRecentes();
+  const [hideZeros, setHideZeros] = useState(true);
 
   const fuse = useMemo(() => {
     if (!data) return null;
@@ -71,6 +74,21 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
     });
   };
 
+  const handleSelect = (id: number | 'outros') => {
+    onToggle(id);
+    if (data) {
+      const node = flattenTree(data.tree).find(n => n.id === id);
+      if (node) pushRecente({ nodeId: id, nome: node.nome });
+    }
+  };
+
+  const shouldShow = (node: TaxonomiaNode): boolean => {
+    if (!hideZeros || !counts) return true;
+    if (matchedIds && matchedIds.has(node.id)) return true;
+    const total = counts[String(node.id)] ?? 0;
+    return total > 0;
+  };
+
   return (
     <div className="max-h-[500px] overflow-y-auto p-2">
       <div className="px-2 pb-2">
@@ -85,7 +103,31 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
           />
         </div>
       </div>
-      {data.tree.map(node => (
+
+      {recentes.length > 0 && !query && (
+        <div className="px-2 pb-2 border-b">
+          <div className="text-xs text-muted-foreground mb-1">Recentes:</div>
+          {recentes.map(r => (
+            <div
+              key={String(r.nodeId)}
+              className="text-xs py-0.5 cursor-pointer hover:underline"
+              onClick={() => handleSelect(r.nodeId as number | 'outros')}
+            >
+              • {r.nome}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="px-2 pb-2 flex items-center justify-between text-xs">
+        <span>{data.tree.filter(shouldShow).length} grupos visíveis</span>
+        <label className="flex items-center gap-1 cursor-pointer">
+          <input type="checkbox" checked={hideZeros} onChange={e => setHideZeros(e.target.checked)} />
+          Esconder vazios
+        </label>
+      </div>
+
+      {data.tree.filter(shouldShow).map(node => (
         <NodeRow
           key={node.id}
           node={node}
@@ -93,9 +135,9 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
           expanded={effectiveExpanded}
           onToggleExpand={handleToggleExpand}
           selectedIds={selectedIds}
-          onSelect={onToggle}
+          onSelect={handleSelect}
           counts={counts}
-          shouldShow={() => true}
+          shouldShow={shouldShow}
         />
       ))}
     </div>
