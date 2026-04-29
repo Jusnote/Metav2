@@ -1,7 +1,8 @@
 "use client";
-import { useState } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
-import { useTaxonomia, TaxonomiaNode } from '@/hooks/useTaxonomia';
+import { useState, useMemo } from 'react';
+import { ChevronRight, ChevronDown, Search } from 'lucide-react';
+import Fuse from 'fuse.js';
+import { useTaxonomia, TaxonomiaNode, flattenTree } from '@/hooks/useTaxonomia';
 import { useTaxonomiaCounts, CountsBody } from '@/hooks/useTaxonomiaCounts';
 
 type Props = {
@@ -18,6 +19,45 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
     Object.keys(countsBody).length > 0
   );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
+  const [query, setQuery] = useState('');
+
+  const fuse = useMemo(() => {
+    if (!data) return null;
+    const items = flattenTree(data.tree).filter(n => !n.is_sintetico && !n.is_virtual);
+    return new Fuse(items, {
+      keys: ['nome', 'hierarquia'],
+      threshold: 0.3,
+      minMatchCharLength: 2,
+    });
+  }, [data]);
+
+  const matchedIds = useMemo(() => {
+    if (!fuse || !query.trim()) return null;
+    const results = fuse.search(query);
+    return new Set(results.map(r => r.item.id));
+  }, [fuse, query]);
+
+  const autoExpandedIds = useMemo(() => {
+    if (!matchedIds || !data) return new Set<string>();
+    const set = new Set<string>();
+    const findAncestors = (nodes: TaxonomiaNode[], targetId: number | string, ancestors: (number | string)[]): boolean => {
+      for (const n of nodes) {
+        if (n.id === targetId) {
+          ancestors.forEach(a => set.add(String(a)));
+          return true;
+        }
+        if (n.children && findAncestors(n.children, targetId, [...ancestors, n.id])) return true;
+      }
+      return false;
+    };
+    matchedIds.forEach(id => findAncestors(data.tree, id, []));
+    return set;
+  }, [matchedIds, data]);
+
+  const effectiveExpanded = useMemo(
+    () => new Set([...expandedIds, ...autoExpandedIds]),
+    [expandedIds, autoExpandedIds]
+  );
 
   if (isLoading) return <div className="p-4 text-sm text-muted-foreground">Carregando...</div>;
   if (!data) return null;
@@ -33,12 +73,24 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
 
   return (
     <div className="max-h-[500px] overflow-y-auto p-2">
+      <div className="px-2 pb-2">
+        <div className="relative">
+          <Search size={14} className="absolute left-2 top-2 text-muted-foreground" />
+          <input
+            type="search"
+            placeholder="Buscar tópico..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="w-full pl-7 pr-2 py-1.5 text-sm border rounded"
+          />
+        </div>
+      </div>
       {data.tree.map(node => (
         <NodeRow
           key={node.id}
           node={node}
           depth={0}
-          expanded={expandedIds}
+          expanded={effectiveExpanded}
           onToggleExpand={handleToggleExpand}
           selectedIds={selectedIds}
           onSelect={onToggle}
