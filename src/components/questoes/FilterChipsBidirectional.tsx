@@ -4,6 +4,8 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuestoesOptional } from "@/contexts/QuestoesContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useMaterias } from "@/hooks/useMaterias";
+import { useNodeChipResolver } from "@/hooks/useNodeChipResolver";
 
 const ARRAY_KEYS = ["materias", "assuntos", "bancas", "anos", "orgaos", "cargos"] as const;
 
@@ -28,12 +30,18 @@ export const FilterChipsBidirectional = React.memo(function FilterChipsBidirecti
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+  // Hooks must be called unconditionally before any early return
+  const { data: materias } = useMaterias();
+  const materiaNome = ctx?.filters.materias[0] ?? null;
+  const materiaSlug = materias?.find(m => m.nome === materiaNome)?.slug ?? null;
+  const resolveNodeChip = useNodeChipResolver(materiaSlug);
+
   if (!ctx) return null;
 
   const { filters, toggleFilter, clearFilters, searchQuery, setSearchQuery } = ctx;
 
   // Collect all active items
-  const items: { label: string; onRemove: () => void }[] = [];
+  const items: { label: string; tooltip?: string; onRemove: () => void }[] = [];
 
   if (searchQuery) {
     items.push({
@@ -49,6 +57,20 @@ export const FilterChipsBidirectional = React.memo(function FilterChipsBidirecti
         onRemove: () => toggleFilter(key, value),
       });
     }
+  }
+
+  // Node taxonomy chips
+  for (const id of filters.nodeIds) {
+    const info = resolveNodeChip(id);
+    if (!info) continue;
+    items.push({
+      label: info.nome,
+      tooltip: info.path.join(" › "),
+      onRemove: () => {
+        const next = filters.nodeIds.filter(x => x !== id);
+        ctx.setFilter("nodeIds", next);
+      },
+    });
   }
 
   for (const { key, label } of BOOLEAN_KEYS) {
@@ -152,6 +174,7 @@ export const FilterChipsBidirectional = React.memo(function FilterChipsBidirecti
           <React.Fragment key={`${item.label}-${i}`}>
             {/* Item */}
             <div
+              title={item.tooltip}
               style={{
                 fontSize: 11,
                 color: "#555",

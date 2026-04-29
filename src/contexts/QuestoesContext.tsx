@@ -15,6 +15,7 @@ export interface QuestoesFilters {
   excluirAnuladas: boolean;
   excluirDesatualizadas: boolean;
   excluirResolvidas: boolean;
+  nodeIds: (number | 'outros')[];
 }
 
 export type ViewMode = 'lista' | 'individual';
@@ -66,6 +67,7 @@ const defaultFilters: QuestoesFilters = {
   excluirAnuladas: false,
   excluirDesatualizadas: false,
   excluirResolvidas: false,
+  nodeIds: [],
 };
 
 // ============ URL SYNC HELPERS ============
@@ -83,6 +85,7 @@ function filtersToSearchParams(filters: QuestoesFilters, extra: {
   filters.anos.forEach(v => params.append('ano', String(v)));
   filters.orgaos.forEach(v => params.append('orgao', v));
   filters.cargos.forEach(v => params.append('cargo', v));
+  filters.nodeIds.forEach(v => params.append('node', String(v)));
 
   if (filters.excluirAnuladas) params.set('excluir_anuladas', '1');
   if (filters.excluirDesatualizadas) params.set('excluir_desatualizadas', '1');
@@ -112,6 +115,7 @@ function searchParamsToFilters(params: URLSearchParams): {
       excluirAnuladas: params.get('excluir_anuladas') === '1',
       excluirDesatualizadas: params.get('excluir_desatualizadas') === '1',
       excluirResolvidas: params.get('excluir_resolvidas') === '1',
+      nodeIds: params.getAll('node').map(v => v === 'outros' ? 'outros' : Number(v)) as (number | 'outros')[],
     },
     searchQuery: params.get('q') || '',
     statusTab: (params.get('tab') as StatusTab) || 'todas',
@@ -127,6 +131,7 @@ function countActiveFilters(filters: QuestoesFilters): number {
     filters.anos.length +
     filters.orgaos.length +
     filters.cargos.length +
+    filters.nodeIds.length +
     (filters.excluirAnuladas ? 1 : 0) +
     (filters.excluirDesatualizadas ? 1 : 0) +
     (filters.excluirResolvidas ? 1 : 0)
