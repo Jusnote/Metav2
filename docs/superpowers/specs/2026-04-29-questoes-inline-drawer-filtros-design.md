@@ -89,7 +89,7 @@ Quando `N = 0` (nenhum filtro pendente): grupos somem, painel mostra mensagem em
 
 ### (4) Contagem em tempo real
 
-Cada mudança nos filtros pendentes dispara `GET /api/v1/questoes/count?<params>` (ou flag `count_only=true` no endpoint de listagem existente — decisão de implementação).
+Cada mudança nos filtros pendentes dispara `GET /api/v1/questoes/count?<params>` — **endpoint dedicado novo** na verus-api (não flag `count_only` no endpoint de listagem). Razões: query mais rápida (só `COUNT`, não paginate dados), cache mais limpo, separation of concerns.
 
 - **Debounce 300ms** — margem suficiente pra usuário marcar 2-3 itens em sequência sem disparar 3 requests
 - **AbortController** — cancela request anterior quando novo começa, evita race condition
@@ -107,15 +107,24 @@ Cada mudança nos filtros pendentes dispara `GET /api/v1/questoes/count?<params>
 - **Painel direito** reflete sempre os **pendentes** (não aplicados) — usuário vê o que vai aplicar
 - **"Aplicar filtros"** → serializa pendentes pra URL + troca tab pra Questões
 - **"Editar filtros"** na tab Questões → pendentes herdam dos aplicados, troca tab pra Filtros (sem perder nada)
-- **Indicador de mudanças não aplicadas**: botão muda de "Aplicar filtros" para "Aplicar mudanças" quando pendentes ≠ aplicados; desabilitado quando iguais
+
+#### Estado dirty (mudanças não aplicadas)
+
+Quando `pendentes !== aplicados`:
+
+- Botão primário muda de **"Aplicar filtros"** para **"Aplicar mudanças"** (mesmo visual, label distinto)
+- Sutil dot indicador na chip da tab onde houver mudança vs aplicado (ex: chip Banca com dot quando o usuário mexeu em bancas pendentes mas ainda não aplicou)
+- Quando `pendentes === aplicados`: botão fica desabilitado (não há nada pra aplicar)
+
+Esse padrão dá feedback claro de "tem trabalho não salvo" e evita confusão entre "o que vejo" e "o que está aplicado".
 
 ### (6) Tab "Questões"
 
 Conteúdo (na ordem):
 
 - **Resumo dos filtros aplicados no topo**: chips compactos tipo "Banca: CESPE | Ano: 2023 | …" + botão "← Editar filtros" (volta `view=filtros`)
-- **Busca textual** ("Pesquisar enunciado") — refina sobre os filtros já aplicados
-- **Sort** (Mais relevantes / Mais recentes / etc.) + **view mode** (cards / lista) — controles atuais reposicionados aqui
+- **Busca textual** ("Pesquisar enunciado") — **refinamento separado** sobre a lista já filtrada; **não entra no count do drawer** nem vira chip no painel direito quando volta pra Filtros. Mantém comportamento atual.
+- **Sort** (Mais relevantes / Mais recentes / etc.) + **view mode** (cards / lista) — controles atuais reposicionados aqui. **Persistem em `localStorage`** entre sessões (default 1ª visita: "Mais relevantes" + cards).
 - **Lista virtualizada** de questões (`VirtualizedQuestionList`, sem mudança estrutural — só recebe filtros via URL params)
 
 ### (7) Mobile (bottom sheet)
@@ -129,6 +138,24 @@ Reusa `MobileSheet` (componente compartilhado já existente: `dvh`, `confirmClos
 - **Tap em "Ver filtros (N)"** → segundo sheet (ou troca de conteúdo no mesmo) com a coluna direita (grupos amber, ×, etc.)
 - **Aplicar** → fecha sheet + serializa URL + troca tab pra Questões
 - Bloco "Recentes" idêntico no topo do sheet do picker
+
+## Pré-requisitos e sequência de entrega
+
+A implementação **depende de backend pronto**. Sequência obrigatória:
+
+1. **Backend (verus-api)** — implementar `GET /api/v1/questoes/count` com cache Redis. Bloqueador frontend.
+2. **Frontend — refator do shell de tabs** — `QuestoesPage.tsx` vira shell com strip de tabs + view router. Sem ainda mudar a tab Filtros (mantém `QuestoesFilterBar` antigo nessa fase). Garante que tab Questões funciona como destino.
+3. **Frontend — card novo na tab Filtros** — implementar `QuestoesFilterCard` + chip strip + drawer 2 colunas + pickers + painel direito. Substitui `QuestoesFilterBar` apenas dentro da tab Filtros.
+4. **Frontend — mobile** — `QuestoesFilterMobileSheet` reusando `MobileSheet` existente.
+5. **Cleanup** — aposentar arquivos da lista "A aposentar" (após validar que nada mais consome).
+
+Os passos 2 e 3 podem ser PRs separados pra reduzir risco. O backend (passo 1) **não pode ser pulado** — sem o endpoint de count, a UX em tempo real não funciona.
+
+## Animação
+
+- Troca de chip ativa → **fade simples 150ms** (cross-fade do conteúdo da coluna esquerda)
+- Drawer abre/fecha (caso cenário futuro de colapso) → fora do escopo (drawer é sempre aberto)
+- Mobile sheet → transições padrão do `MobileSheet` existente
 
 ## Arquivos afetados
 
@@ -221,15 +248,21 @@ Eventos: `filter_chip_change`, `filter_apply`, `filter_clear_group`, `filter_rem
 - Editor de comentários, moderação, reactions — sem mudança
 - OBJETIVO section — mantida 1:1 (Leva 1 já mergeada)
 
+## Decisões resolvidas neste brainstorm
+
+- **Roteamento**: tabs com URL sync (`?view=...`) — não rotas separadas
+- **Endpoint de count**: dedicado novo `/api/v1/questoes/count`
+- **Animação de troca de chip**: fade simples 150ms
+- **Busca textual**: refinamento separado, não entra no count
+- **Sort/view persistência**: localStorage
+- **Migração de localStorage antigo**: sem migração (base pequena, custo > benefício)
+
 ## Decisões abertas pro plano de implementação
 
-1. **Comportamento de "Carregar ↑"** — definir antes de implementar ou deixar oculto até a próxima Leva
+1. **Comportamento de "Carregar ↑"** — deixar oculto até definir uma próxima Leva (provável "filter sets nomeados")
 2. **"Mais ⌄"** — overflow menu vs aba efêmera com close × ao escolher categoria de lá
-3. **Endpoint de count** — endpoint dedicado novo vs flag `count_only` no endpoint de listagem existente (decidir com base no que a verus-api já tem)
-4. **Cache Redis backend** — TTL e estratégia de invalidação ao ingerir novas questões
-5. **`Editar qtd.`** — comportamento exato (paginação? limite tipo caderno?) — alinhar com `filter-config.ts` atual
-6. **Animação de troca de chip** — fade simples (recomendado) vs slide horizontal vs nenhuma
-7. **Migração dos filtros aplicados ao primeiro deploy** — usuário com `localStorage` antigo ganha rascunho hidratado dessas chaves? (provavelmente não vale o esforço)
+3. **Cache Redis backend** — TTL e estratégia de invalidação ao ingerir novas questões
+4. **`Editar qtd.`** — comportamento exato (paginação? limite tipo caderno?) — alinhar com `filter-config.ts` atual
 
 ## Mockups de referência
 
