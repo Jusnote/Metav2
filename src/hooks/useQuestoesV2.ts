@@ -80,19 +80,25 @@ function parseSearchMode(query?: string): { mode: 'semantic' | 'textual' | 'exac
   return { mode: 'semantic', cleanQuery: trimmed };
 }
 
-async function fetchQuestoes(params: FetchParams): Promise<QuestoesPageResponse> {
+/** Builds the search URL from FetchParams. Exported for unit testing. */
+export function buildSearchURL(params: Pick<FetchParams, 'filters' | 'query' | 'tab' | 'sortBy' | 'page' | 'limit'>): string {
   const sp = new URLSearchParams();
   sp.set('page', String(params.page));
   sp.set('limit', String(params.limit));
   sp.set('include_html', 'true');
 
   // Array filters — plural (API aceita multi-valor nativo)
-  params.filters.materias.forEach(v => sp.append('materias', v));
-  params.filters.assuntos.forEach(v => sp.append('assuntos', v));
-  params.filters.bancas.forEach(v => sp.append('bancas', v));
-  params.filters.anos.forEach(v => sp.append('anos', String(v)));
-  params.filters.orgaos.forEach(v => sp.append('orgaos', v));
-  params.filters.cargos.forEach(v => sp.append('cargos', v));
+  params.filters.materias?.forEach(v => sp.append('materias', v));
+  params.filters.assuntos?.forEach(v => sp.append('assuntos', v));
+  params.filters.bancas?.forEach(v => sp.append('bancas', v));
+  params.filters.anos?.forEach(v => sp.append('anos', String(v)));
+  params.filters.orgaos?.forEach(v => sp.append('orgaos', v));
+  params.filters.cargos?.forEach(v => sp.append('cargos', v));
+
+  // Taxonomia node filter — multiple ?node= params
+  if (params.filters.nodeIds?.length) {
+    params.filters.nodeIds.forEach(v => sp.append('node', String(v)));
+  }
 
   // Boolean filters
   if (params.filters.excluirAnuladas) sp.set('excluir_anuladas', '1');
@@ -108,7 +114,12 @@ async function fetchQuestoes(params: FetchParams): Promise<QuestoesPageResponse>
   // Sort
   if (params.sortBy && params.sortBy !== 'recentes') sp.set('order_by', params.sortBy);
 
-  const res = await fetch(`${API_BASE}/api/v1/questoes/search?${sp.toString()}`, {
+  return `${API_BASE}/api/v1/questoes/search?${sp.toString()}`;
+}
+
+async function fetchQuestoes(params: FetchParams): Promise<QuestoesPageResponse> {
+  const url = buildSearchURL(params);
+  const res = await fetch(url, {
     headers: {
       'accept': 'application/json',
     },
