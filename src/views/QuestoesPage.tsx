@@ -1,39 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
-import { QuestoesFilterOverlay } from "@/components/questoes/QuestoesFilterOverlay";
 import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
-import { QuestoesResultsHeader } from "@/components/questoes/QuestoesResultsHeader";
-import { VirtualizedQuestionList } from "@/components/questoes/VirtualizedQuestionList";
 import { ObjetivoSection } from "@/components/questoes/objetivo/ObjetivoSection";
 import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, ArrowUpDown, List, Square } from "lucide-react";
-import type { StatusTab, SortOption, ViewMode } from "@/contexts/QuestoesContext";
-
-const SORT_LABELS: Record<SortOption, string> = {
-  recentes: "Mais recentes",
-  dificuldade: "Mais dificeis",
-  menos_resolvidas: "Menos resolvidas",
-  relevancia: "Relevancia IA",
-};
-
-const TAB_LABELS: Record<StatusTab, string> = {
-  todas: "Todas",
-  nao_resolvidas: "Nao resolvidas",
-  erradas: "Erradas",
-  marcadas: "Marcadas",
-};
+import { QuestoesListaView } from "@/components/questoes/lista/QuestoesListaView";
 
 type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
 
@@ -55,12 +28,6 @@ function parseViewParam(raw: string | null): FilterView {
 
 export default function QuestoesPage() {
   const {
-    statusTab,
-    setStatusTab,
-    sortBy,
-    setSortBy,
-    viewMode,
-    setViewMode,
     triggerSearch,
   } = useQuestoesContext();
 
@@ -96,6 +63,10 @@ export default function QuestoesPage() {
     triggerSearch();
   }, [triggerSearch]);
 
+  const editFilters = useCallback(() => {
+    setFilterView('filtros');
+  }, [setFilterView]);
+
   // Global Ctrl+K listener
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -111,9 +82,6 @@ export default function QuestoesPage() {
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [ctrlKOpen, closeCtrlK]);
-
-  // The bar is visible either when at top of page (normal flow) or via Ctrl+K overlay
-  const showOverlay = ctrlKOpen || hasOpenPopover;
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -209,78 +177,10 @@ export default function QuestoesPage() {
           )}
 
           {filterView === 'questoes' && (
-            <div className="py-8 text-center text-sm text-slate-500">
-              Questões em breve.
+            <div className="pt-2 pb-2">
+              <QuestoesListaView onEditFilters={editFilters} />
             </div>
           )}
-
-          {/* Results count + search indicators */}
-          <QuestoesResultsHeader />
-
-          {/* Tabs + Sort */}
-          <div className="flex items-center justify-between pb-4 pt-2 gap-2">
-            <Tabs
-              value={statusTab}
-              onValueChange={(v) => setStatusTab(v as StatusTab)}
-              className="w-auto"
-            >
-              <TabsList className="h-8">
-                {(Object.keys(TAB_LABELS) as StatusTab[]).map((tab) => (
-                  <TabsTrigger key={tab} value={tab} className="text-xs px-3 h-7">
-                    {TAB_LABELS[tab]}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-
-            <div className="flex items-center gap-1">
-              {/* View mode toggle */}
-              <div className="flex items-center rounded-md border border-border p-0.5 bg-white/60">
-                <button
-                  onClick={() => setViewMode('lista')}
-                  className={`inline-flex items-center justify-center h-7 w-7 rounded-sm transition-colors ${
-                    viewMode === 'lista'
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                  title="Lista"
-                >
-                  <List className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('individual')}
-                  className={`inline-flex items-center justify-center h-7 w-7 rounded-sm transition-colors ${
-                    viewMode === 'individual'
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                  title="Individual"
-                >
-                  <Square className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              {/* Sort dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-muted-foreground">
-                    <ArrowUpDown className="h-3 w-3" />
-                    {SORT_LABELS[sortBy]}
-                    <ChevronDown className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuRadioGroup value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-                    {(Object.keys(SORT_LABELS) as SortOption[]).map((opt) => (
-                      <DropdownMenuRadioItem key={opt} value={opt} className="text-sm">
-                        {SORT_LABELS[opt]}
-                      </DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -310,15 +210,6 @@ export default function QuestoesPage() {
           </div>
         </>
       )}
-
-      {/* ─── Questions section (white background) ─── */}
-      <section className="flex-1 min-h-0 bg-white">
-        <div className="max-w-5xl mx-auto w-full h-full px-2 pt-4">
-          <QuestoesFilterOverlay visible={hasOpenPopover && !ctrlKOpen}>
-            <VirtualizedQuestionList />
-          </QuestoesFilterOverlay>
-        </div>
-      </section>
     </div>
   );
 }
