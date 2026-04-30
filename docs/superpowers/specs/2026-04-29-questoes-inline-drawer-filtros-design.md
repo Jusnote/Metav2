@@ -252,10 +252,21 @@ Eventos: `filter_chip_change`, `filter_apply`, `filter_clear_group`, `filter_rem
 
 - **Roteamento**: tabs com URL sync (`?view=...`) — não rotas separadas
 - **Endpoint de count**: dedicado novo `/api/v1/questoes/count`
-- **Animação de troca de chip**: fade simples 150ms
+- **Animação de troca de chip**: fade 150ms via **Framer Motion** (`AnimatePresence mode="wait"` + `motion.div` com opacity 0→1) — já é dependência do app, dá cross-fade real (saída + entrada simultâneas), mais polido que CSS puro
 - **Busca textual**: refinamento separado, não entra no count
 - **Sort/view persistência**: localStorage
 - **Migração de localStorage antigo**: sem migração (base pequena, custo > benefício)
+
+## Decisões resolvidas no brainstorm de refinamento (2026-04-30)
+
+Após Plano 1 (backend) e Plano 2 (shell + tab Questões) mergeados, decisões de implementação do Plano 3:
+
+- **Rollout do card novo (Plano 3c)**: feature flag `NEXT_PUBLIC_FEATURE_NEW_FILTER_CARD`. Default `false` mantém `QuestoesFilterBar` legacy. Flip pra `true` no Coolify ativa o card novo, sem precisar deploy. Rollback rápido se algo bugar em prod.
+- **Mobile entry (Plano 3d)**: protótipo de 2 variantes atrás de `NEXT_PUBLIC_MOBILE_FILTER_VARIANT`:
+  - `strip` — chip strip horizontal scrollável visível na página, tap em chip abre bottom sheet fullscreen com picker
+  - `button` — botão único "Filtros (N)" abre sheet com chip strip interna + picker
+  - Aluno testa as duas em prod via flip da flag, decide vencedora; perdedora removida na próxima Leva
+- **Animação**: Framer Motion (já confirmado acima na seção principal)
 
 ## Decisões abertas pro plano de implementação
 
