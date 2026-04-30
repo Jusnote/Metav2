@@ -108,7 +108,7 @@ function FilterCheckboxItemWithCount({
       />
       <span className="flex-1 text-sm text-slate-800">{label}</span>
       {typeof count === 'number' && (
-        <span className="text-xs text-slate-400 tabular-nums">{count}</span>
+        <span className="text-xs text-slate-400 tabular-nums">{count.toLocaleString('pt-BR')}</span>
       )}
     </button>
   );

@@ -34,7 +34,7 @@ describe('BancaPicker', () => {
       />,
     );
     expect(screen.getByText('Cespe')).toBeInTheDocument();
-    expect(screen.getByText('1234')).toBeInTheDocument();
+    expect(screen.getByText('1.234')).toBeInTheDocument();
   });
 
   it('chama onChange ao marcar item', () => {
