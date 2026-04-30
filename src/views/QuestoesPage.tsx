@@ -1,60 +1,51 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
-import { QuestoesFilterOverlay } from "@/components/questoes/QuestoesFilterOverlay";
 import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
-import { QuestoesResultsHeader } from "@/components/questoes/QuestoesResultsHeader";
-import { VirtualizedQuestionList } from "@/components/questoes/VirtualizedQuestionList";
 import { ObjetivoSection } from "@/components/questoes/objetivo/ObjetivoSection";
 import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, ArrowUpDown, List, Square } from "lucide-react";
-import type { StatusTab, SortOption, ViewMode } from "@/contexts/QuestoesContext";
+import { QuestoesListaView } from "@/components/questoes/lista/QuestoesListaView";
 
-const SORT_LABELS: Record<SortOption, string> = {
-  recentes: "Mais recentes",
-  dificuldade: "Mais dificeis",
-  menos_resolvidas: "Menos resolvidas",
-  relevancia: "Relevancia IA",
-};
-
-const TAB_LABELS: Record<StatusTab, string> = {
-  todas: "Todas",
-  nao_resolvidas: "Nao resolvidas",
-  erradas: "Erradas",
-  marcadas: "Marcadas",
-};
-
-type FilterView = 'filtros' | 'semantico' | 'cadernos';
+type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
 
 const FILTER_VIEW_LABELS: Record<FilterView, string> = {
   filtros: 'Filtros',
   semantico: 'Filtro semântico',
   cadernos: 'Cadernos',
+  questoes: 'Questões',
 };
+
+const VALID_VIEWS: readonly FilterView[] = ['filtros', 'semantico', 'cadernos', 'questoes'];
+
+function parseViewParam(raw: string | null): FilterView {
+  if (raw && (VALID_VIEWS as readonly string[]).includes(raw)) {
+    return raw as FilterView;
+  }
+  return 'filtros';
+}
 
 export default function QuestoesPage() {
   const {
-    statusTab,
-    setStatusTab,
-    sortBy,
-    setSortBy,
-    viewMode,
-    setViewMode,
     triggerSearch,
   } = useQuestoesContext();
 
-  // Track which filter view is active
-  const [filterView, setFilterView] = useState<FilterView>('filtros');
+  // Track which filter view is active (URL-synced)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filterView = parseViewParam(searchParams.get('view'));
+
+  const setFilterView = useCallback((view: FilterView) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (view === 'filtros') {
+        next.delete('view'); // default não polui URL
+      } else {
+        next.set('view', view);
+      }
+      return next;
+    });
+  }, [setSearchParams]);
 
   // Track if any popover is open (for overlay)
   const [hasOpenPopover, setHasOpenPopover] = useState(false);
@@ -70,7 +61,15 @@ export default function QuestoesPage() {
   // Buscar button → commits draft filters to query
   const handleSearch = useCallback(() => {
     triggerSearch();
-  }, [triggerSearch]);
+    setFilterView('questoes');
+    if (ctrlKOpen) {
+      closeCtrlK();
+    }
+  }, [triggerSearch, setFilterView, ctrlKOpen, closeCtrlK]);
+
+  const editFilters = useCallback(() => {
+    setFilterView('filtros');
+  }, [setFilterView]);
 
   // Global Ctrl+K listener
   useEffect(() => {
@@ -87,9 +86,6 @@ export default function QuestoesPage() {
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [ctrlKOpen, closeCtrlK]);
-
-  // The bar is visible either when at top of page (normal flow) or via Ctrl+K overlay
-  const showOverlay = ctrlKOpen || hasOpenPopover;
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -113,27 +109,44 @@ export default function QuestoesPage() {
             </h1>
 
             <nav
-              className="inline-flex items-center gap-[2px] rounded-full bg-[#f1f5f9] p-[3px]"
+              className="inline-flex items-center gap-[8px]"
               aria-label="Modo de filtro"
             >
-              {(Object.keys(FILTER_VIEW_LABELS) as FilterView[]).map((view) => {
-                const active = filterView === view;
-                return (
-                  <button
-                    key={view}
-                    type="button"
-                    onClick={() => setFilterView(view)}
-                    className={[
-                      'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
-                      active
-                        ? 'bg-white text-[#0f172a] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)] font-semibold'
-                        : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
-                    ].join(' ')}
-                  >
-                    {FILTER_VIEW_LABELS[view]}
-                  </button>
-                );
-              })}
+              <div className="inline-flex items-center gap-[2px] rounded-full bg-[#f1f5f9] p-[3px]">
+                {(['filtros', 'semantico', 'cadernos'] as FilterView[]).map((view) => {
+                  const active = filterView === view;
+                  return (
+                    <button
+                      key={view}
+                      type="button"
+                      onClick={() => setFilterView(view)}
+                      className={[
+                        'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
+                        active
+                          ? 'bg-white text-[#0f172a] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)] font-semibold'
+                          : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
+                      ].join(' ')}
+                    >
+                      {FILTER_VIEW_LABELS[view]}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="h-5 w-px bg-[#e2e8f0]" aria-hidden="true" />
+
+              <button
+                type="button"
+                onClick={() => setFilterView('questoes')}
+                className={[
+                  'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
+                  filterView === 'questoes'
+                    ? 'bg-[#0f172a] text-white font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.12)]'
+                    : 'bg-[#f1f5f9] text-[#64748b] font-medium hover:text-[#0f172a]',
+                ].join(' ')}
+              >
+                {FILTER_VIEW_LABELS.questoes}
+              </button>
             </nav>
           </div>
 
@@ -167,73 +180,11 @@ export default function QuestoesPage() {
             </div>
           )}
 
-          {/* Results count + search indicators */}
-          <QuestoesResultsHeader />
-
-          {/* Tabs + Sort */}
-          <div className="flex items-center justify-between pb-4 pt-2 gap-2">
-            <Tabs
-              value={statusTab}
-              onValueChange={(v) => setStatusTab(v as StatusTab)}
-              className="w-auto"
-            >
-              <TabsList className="h-8">
-                {(Object.keys(TAB_LABELS) as StatusTab[]).map((tab) => (
-                  <TabsTrigger key={tab} value={tab} className="text-xs px-3 h-7">
-                    {TAB_LABELS[tab]}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-
-            <div className="flex items-center gap-1">
-              {/* View mode toggle */}
-              <div className="flex items-center rounded-md border border-border p-0.5 bg-white/60">
-                <button
-                  onClick={() => setViewMode('lista')}
-                  className={`inline-flex items-center justify-center h-7 w-7 rounded-sm transition-colors ${
-                    viewMode === 'lista'
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                  title="Lista"
-                >
-                  <List className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('individual')}
-                  className={`inline-flex items-center justify-center h-7 w-7 rounded-sm transition-colors ${
-                    viewMode === 'individual'
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                  title="Individual"
-                >
-                  <Square className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              {/* Sort dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-muted-foreground">
-                    <ArrowUpDown className="h-3 w-3" />
-                    {SORT_LABELS[sortBy]}
-                    <ChevronDown className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuRadioGroup value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-                    {(Object.keys(SORT_LABELS) as SortOption[]).map((opt) => (
-                      <DropdownMenuRadioItem key={opt} value={opt} className="text-sm">
-                        {SORT_LABELS[opt]}
-                      </DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          {filterView === 'questoes' && (
+            <div className="pt-2 pb-2">
+              <QuestoesListaView onEditFilters={editFilters} />
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -263,15 +214,6 @@ export default function QuestoesPage() {
           </div>
         </>
       )}
-
-      {/* ─── Questions section (white background) ─── */}
-      <section className="flex-1 min-h-0 bg-white">
-        <div className="max-w-5xl mx-auto w-full h-full px-2 pt-4">
-          <QuestoesFilterOverlay visible={hasOpenPopover && !ctrlKOpen}>
-            <VirtualizedQuestionList />
-          </QuestoesFilterOverlay>
-        </div>
-      </section>
     </div>
   );
 }
