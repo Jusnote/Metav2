@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
@@ -34,13 +35,23 @@ const TAB_LABELS: Record<StatusTab, string> = {
   marcadas: "Marcadas",
 };
 
-type FilterView = 'filtros' | 'semantico' | 'cadernos';
+type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
 
 const FILTER_VIEW_LABELS: Record<FilterView, string> = {
   filtros: 'Filtros',
   semantico: 'Filtro semântico',
   cadernos: 'Cadernos',
+  questoes: 'Questões',
 };
+
+const VALID_VIEWS: readonly FilterView[] = ['filtros', 'semantico', 'cadernos', 'questoes'];
+
+function parseViewParam(raw: string | null): FilterView {
+  if (raw && (VALID_VIEWS as readonly string[]).includes(raw)) {
+    return raw as FilterView;
+  }
+  return 'filtros';
+}
 
 export default function QuestoesPage() {
   const {
@@ -53,8 +64,21 @@ export default function QuestoesPage() {
     triggerSearch,
   } = useQuestoesContext();
 
-  // Track which filter view is active
-  const [filterView, setFilterView] = useState<FilterView>('filtros');
+  // Track which filter view is active (URL-synced)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filterView = parseViewParam(searchParams.get('view'));
+
+  const setFilterView = useCallback((view: FilterView) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (view === 'filtros') {
+        next.delete('view'); // default não polui URL
+      } else {
+        next.set('view', view);
+      }
+      return next;
+    });
+  }, [setSearchParams]);
 
   // Track if any popover is open (for overlay)
   const [hasOpenPopover, setHasOpenPopover] = useState(false);
@@ -113,27 +137,44 @@ export default function QuestoesPage() {
             </h1>
 
             <nav
-              className="inline-flex items-center gap-[2px] rounded-full bg-[#f1f5f9] p-[3px]"
+              className="inline-flex items-center gap-[8px]"
               aria-label="Modo de filtro"
             >
-              {(Object.keys(FILTER_VIEW_LABELS) as FilterView[]).map((view) => {
-                const active = filterView === view;
-                return (
-                  <button
-                    key={view}
-                    type="button"
-                    onClick={() => setFilterView(view)}
-                    className={[
-                      'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
-                      active
-                        ? 'bg-white text-[#0f172a] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)] font-semibold'
-                        : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
-                    ].join(' ')}
-                  >
-                    {FILTER_VIEW_LABELS[view]}
-                  </button>
-                );
-              })}
+              <div className="inline-flex items-center gap-[2px] rounded-full bg-[#f1f5f9] p-[3px]">
+                {(['filtros', 'semantico', 'cadernos'] as FilterView[]).map((view) => {
+                  const active = filterView === view;
+                  return (
+                    <button
+                      key={view}
+                      type="button"
+                      onClick={() => setFilterView(view)}
+                      className={[
+                        'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
+                        active
+                          ? 'bg-white text-[#0f172a] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)] font-semibold'
+                          : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
+                      ].join(' ')}
+                    >
+                      {FILTER_VIEW_LABELS[view]}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="h-5 w-px bg-[#e2e8f0]" aria-hidden="true" />
+
+              <button
+                type="button"
+                onClick={() => setFilterView('questoes')}
+                className={[
+                  'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
+                  filterView === 'questoes'
+                    ? 'bg-[#0f172a] text-white font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.12)]'
+                    : 'bg-[#f1f5f9] text-[#64748b] font-medium hover:text-[#0f172a]',
+                ].join(' ')}
+              >
+                {FILTER_VIEW_LABELS.questoes}
+              </button>
             </nav>
           </div>
 
@@ -164,6 +205,12 @@ export default function QuestoesPage() {
           {filterView === 'cadernos' && (
             <div className="py-8 text-center text-sm text-slate-500">
               Cadernos em breve.
+            </div>
+          )}
+
+          {filterView === 'questoes' && (
+            <div className="py-8 text-center text-sm text-slate-500">
+              Questões em breve.
             </div>
           )}
 
