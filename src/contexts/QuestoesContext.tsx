@@ -219,6 +219,8 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
   const setPage = useCallback((p: number) => setPageRaw(p), []);
 
   // Sync committed state → URL (only when search is actually triggered)
+  // Preserva `view` (controlado pelo tab strip) — não pode ser apagado
+  // pelo replace.
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -227,11 +229,15 @@ function QuestoesProviderInner({ children }: { children: React.ReactNode }) {
 
     const timer = setTimeout(() => {
       const params = filtersToSearchParams(committedFilters, { searchQuery: committedQuery, statusTab, sortBy });
+      const currentView = searchParams.get('view');
+      if (currentView) {
+        params.set('view', currentView);
+      }
       setSearchParams(params, { replace: true });
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [committedFilters, committedQuery, statusTab, sortBy, setSearchParams]);
+  }, [committedFilters, committedQuery, statusTab, sortBy, setSearchParams, searchParams]);
 
   const setFilter = useCallback(<K extends keyof QuestoesFilters>(key: K, value: QuestoesFilters[K]) => {
     startTransition(() => {
