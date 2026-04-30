@@ -341,11 +341,18 @@ git -C "/d/meta novo/Metav2" commit -m "feat(questoes): filter-serialization (UR
 
 **Files:**
 - Create: `D:/meta novo/Metav2/src/hooks/useQuestoesCount.ts`
-- Test: `D:/meta novo/Metav2/src/hooks/__tests__/useQuestoesCount.test.ts` (skip se framework não estiver configurado — comentar nos steps)
 
 **Por que:** Hook consumido no Plano 3 pelo painel direito do drawer. Adicionado no Plano 2 pra:
 1. Validar end-to-end que o frontend conversa com `/questoes/count` corretamente
 2. Servir como referência pra outros hooks (debounce, AbortController, cache LRU)
+
+**Gap consciente — sem testes unitários neste plano:**
+
+O hook tem complexidade real (debounce 300ms + AbortController + LRU cache). O ideal seria 6-8 testes (cache hit, cache miss, abort em troca rápida, error handling, debounce timing, etc.). **Razão pra não escrever agora:** o repo Metav2 não tem framework de testes JS configurado pra hooks (sem vitest, sem `@testing-library/react`). Configurar do zero é trabalho fora do escopo desta Leva.
+
+**Mitigação:** validação manual via Step 2.4 + observação em produção quando o Plano 3 plugar o hook no drawer (cada seleção de filtro vai chamar o hook → fácil ver hit/miss e latência via DevTools Network). Se bug aparecer, escrevemos o teste do bug em separado.
+
+**Follow-up registrado:** "configurar vitest + @testing-library no Metav2" vai pra `docs/superpowers/specs/.../decisões abertas` da próxima Leva.
 
 - [ ] **Step 2.1: Implementar hook**
 
@@ -493,12 +500,46 @@ cd "/d/meta novo/Metav2" && npm run build 2>&1 | grep -i "useQuestoesCount\|erro
 ```
 Sem output relacionado ao novo arquivo = sucesso.
 
-- [ ] **Step 2.3: Commit**
+- [ ] **Step 2.3: Smoke manual via DevTools (sem teste unitário)**
+
+Como ainda não há consumidor do hook neste plano (Plano 3 vai plugar no drawer), o smoke é feito via uma página de teste descartável OU via console do DevTools. Opção mais leve: criar arquivo temporário `src/_dev/useQuestoesCount.smoke.tsx` (não commitar) que renderiza o hook com filtros mockados e loga o estado:
+
+```tsx
+// USO MANUAL — não commitar
+import { useQuestoesCount } from '@/hooks/useQuestoesCount';
+import { EMPTY_FILTERS } from '@/lib/questoes/filter-serialization';
+
+export default function SmokeUseQuestoesCount() {
+  const state1 = useQuestoesCount(EMPTY_FILTERS);
+  const state2 = useQuestoesCount({ ...EMPTY_FILTERS, bancas: ['CEBRASPE (CESPE)'] });
+  return (
+    <pre>{JSON.stringify({ semFiltros: state1, comBanca: state2 }, null, 2)}</pre>
+  );
+}
+```
+
+Plugar temporariamente em alguma rota (ex: `src/views/SmokeTestPage.tsx` registrada em `App.tsx`) e abrir no browser. Validar:
+
+- Após ~300ms, `state1.count` aparece com valor próximo de 3.291.175 e `state1.cached: false`
+- Após ~300ms, `state2.count` aparece menor + `state2.cached: false`
+- Refresh da página → ambas chamadas aparecem com `cached: true` no Network tab (resposta rápida do backend Redis), porém `state.cached` no JSON local pode ser `false` na 1ª render do app (LRU local começa vazia) e `true` em renders subsequentes da mesma sessão
+
+Após validar, **deletar o arquivo de smoke e desplugar da rota** antes do commit.
+
+- [ ] **Step 2.4: Commit**
 
 ```bash
 git -C "/d/meta novo/Metav2" add src/hooks/useQuestoesCount.ts
 git -C "/d/meta novo/Metav2" commit -m "feat(hook): useQuestoesCount com debounce 300ms + AbortController + LRU"
 ```
+
+Confirme que arquivos de smoke não estão no commit:
+
+```bash
+git -C "/d/meta novo/Metav2" status --short
+```
+
+Expected: working tree limpo após o commit.
 
 ---
 
@@ -960,36 +1001,33 @@ Localizar o bloco `{filterView === 'cadernos' && (...)` (linha ~164) e adicionar
 )}
 ```
 
-- [ ] **Step 6.4: Esconder QuestoesResultsHeader, status tabs, sort/view e lista quando não for tab Questões**
+- [ ] **Step 6.4: Remover blocos redundantes do shell**
 
-Localizar o bloco a partir de `<QuestoesResultsHeader />` (linha ~171) até o fechamento da `<section>` que envolve a `<VirtualizedQuestionList />` (linha ~274).
+Esses elementos hoje aparecem SEMPRE no shell de `QuestoesPage.tsx`, mas agora vivem dentro de `QuestoesListaView` (renderizado via Step 6.3 só na tab Questões). **Remover do shell.**
 
-Esses elementos hoje aparecem SEMPRE. Envolver tudo em condicional `filterView === 'questoes' ? null : ...` **NÃO** — o objetivo é mostrar SÓ na tab Questões. Como agora estão dentro de `QuestoesListaView` (que é renderizada via Step 6.3), os elementos antigos viram **redundantes** e devem ser **removidos** do shell.
+**Bloco 1 — `<QuestoesResultsHeader />` + status tabs + view mode + sort dropdown:**
 
-Substituir o bloco antigo por nada (deletar):
+Procure o bloco que começa com `<QuestoesResultsHeader />` e contém depois `<Tabs value={statusTab}>` + os botões `<button onClick={() => setViewMode('lista')}>` + `<DropdownMenu>` com `<DropdownMenuRadioGroup value={sortBy}>`. Esse bloco inteiro (do `<QuestoesResultsHeader />` até o `</div>` que fecha o `<div className="flex items-center justify-between pb-4 pt-2 gap-2">`) deve ser **removido**.
 
-```typescript
-// REMOVER ESSE BLOCO (linhas ~170-235 originais):
-//   <QuestoesResultsHeader />
-//   <div className="flex items-center justify-between pb-4 pt-2 gap-2">
-//     ...status tabs + view mode + sort dropdown...
-//   </div>
+**Bloco 2 — Seção branca com lista virtualizada:**
+
+Procure `<section className="flex-1 min-h-0 bg-white">` que envolve `<QuestoesFilterOverlay visible={hasOpenPopover && !ctrlKOpen}>` com `<VirtualizedQuestionList />` dentro. **Remover** essa `<section>` inteira.
+
+**Comando pra confirmar a localização antes de editar:**
+
+```bash
+grep -n "QuestoesResultsHeader\|QuestoesFilterOverlay\|VirtualizedQuestionList" "/d/meta novo/Metav2/src/views/QuestoesPage.tsx"
 ```
 
-E o bloco da seção branca:
+Antes da edição: deve haver 2 referências de cada (1 no import, 1 no JSX). Depois da edição: 0 referências de `QuestoesResultsHeader` e `VirtualizedQuestionList` no JSX (e o import some no Step 6.5). `QuestoesFilterOverlay` é o caso especial — ver nota abaixo.
 
-```typescript
-// REMOVER esse bloco (linhas ~267-274):
-//   <section className="flex-1 min-h-0 bg-white">
-//     <div className="max-w-5xl mx-auto w-full h-full px-2 pt-4">
-//       <QuestoesFilterOverlay visible={hasOpenPopover && !ctrlKOpen}>
-//         <VirtualizedQuestionList />
-//       </QuestoesFilterOverlay>
-//     </div>
-//   </section>
+**Sobre `QuestoesFilterOverlay`:** ele protegia a lista contra clicks quando popover de filtro estava aberto. Hoje a lista só aparece na tab Questões (onde popovers da tab Filtros não estão visíveis), então o overlay sai do shell — remover junto com o Bloco 2. Mas `<QuestoesFilterOverlay>` também é usado dentro do Ctrl+K overlay? Confira:
+
+```bash
+grep -n "QuestoesFilterOverlay" "/d/meta novo/Metav2/src/views/QuestoesPage.tsx"
 ```
 
-**Atenção ao `QuestoesFilterOverlay`** — ele protegia a lista contra clicks quando popover de filtro estava aberto. Como agora a lista só aparece em outra tab (`view=questoes`), e popovers só abrem na tab `filtros`, o overlay não é mais necessário no shell. Pode remover.
+Se aparece só dentro da `<section>` removida, pode remover o import também (Step 6.5). Se aparece em outro lugar (ex: Ctrl+K), manter o import.
 
 Resultado: o shell de `QuestoesPage` fica enxuto — só renderiza header (título + tabs), o conteúdo da tab ativa, e o Ctrl+K overlay. A lista vive dentro de `QuestoesListaView` (tab Questões).
 
@@ -1049,16 +1087,106 @@ git -C "/d/meta novo/Metav2" commit -m "refactor(questoes): mover lista virtuali
 
 ---
 
-## Task 7: "Buscar" da QuestoesFilterBar navega pra tab Questões
+## Task 7: Preservar `?view=` no QuestoesContext URL sync
+
+**Files:**
+- Modify: `D:/meta novo/Metav2/src/contexts/QuestoesContext.tsx`
+
+**Por que (CRÍTICO):** O `QuestoesContext` tem um `useEffect` (linhas ~221-234) que, quando `committedFilters/committedQuery/statusTab/sortBy` mudam, executa `setSearchParams(params, { replace: true })` com um `URLSearchParams` construído do zero via `filtersToSearchParams`. Isso **apaga qualquer search param que não esteja na lista** — incluindo o `?view=` que o tab strip controla. Sem esta task, clicar "Buscar" (Task 8) vai disparar `triggerSearch` → 150ms depois o useEffect roda → URL volta pra sem `view`. Resultado: o usuário fica em Filtros mesmo após clicar Buscar.
+
+A fix: antes de `setSearchParams(params, ...)`, ler o `view` atual da URL e preservar.
+
+- [ ] **Step 7.1: Localizar o useEffect de URL sync**
+
+```bash
+grep -n "Sync committed state" "/d/meta novo/Metav2/src/contexts/QuestoesContext.tsx"
+```
+
+Expected: linha ~221.
+
+- [ ] **Step 7.2: Editar o useEffect pra preservar `view`**
+
+Localizar:
+
+```typescript
+  // Sync committed state → URL (only when search is actually triggered)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const params = filtersToSearchParams(committedFilters, { searchQuery: committedQuery, statusTab, sortBy });
+      setSearchParams(params, { replace: true });
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [committedFilters, committedQuery, statusTab, sortBy, setSearchParams]);
+```
+
+Substituir por:
+
+```typescript
+  // Sync committed state → URL (only when search is actually triggered)
+  // Preserva `view` (controlado pelo tab strip) — não pode ser apagado
+  // pelo replace.
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const params = filtersToSearchParams(committedFilters, { searchQuery: committedQuery, statusTab, sortBy });
+      const currentView = searchParams.get('view');
+      if (currentView) {
+        params.set('view', currentView);
+      }
+      setSearchParams(params, { replace: true });
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [committedFilters, committedQuery, statusTab, sortBy, setSearchParams, searchParams]);
+```
+
+Mudanças:
+- Lê `searchParams.get('view')` antes do replace
+- Se existir, copia pro `params` novo
+- Adiciona `searchParams` ao deps array
+
+- [ ] **Step 7.3: Smoke manual**
+
+```bash
+cd "/d/meta novo/Metav2" && npm run dev
+```
+
+1. Abrir `/questoes?view=questoes` direto
+2. Marcar uma banca, clicar Buscar (na tab Filtros via Ctrl+K se necessário, ou esperar Task 8 pra fluxo completo)
+3. Aguardar 200ms (debounce do useEffect)
+4. URL deve continuar tendo `view=questoes` — NÃO pode virar URL sem view
+
+Se URL perder `view`, a fix não funcionou — debugar.
+
+- [ ] **Step 7.4: Commit**
+
+```bash
+git -C "/d/meta novo/Metav2" add src/contexts/QuestoesContext.tsx
+git -C "/d/meta novo/Metav2" commit -m "fix(questoes): preservar ?view= no URL sync do contexto"
+```
+
+---
+
+## Task 8: "Buscar" da QuestoesFilterBar navega pra tab Questões
 
 **Files:**
 - Modify: `D:/meta novo/Metav2/src/views/QuestoesPage.tsx`
 
-**Por que:** Hoje quando o aluno clica "Buscar" na QuestoesFilterBar, `triggerSearch()` commita o draft mas o usuário não vê resultado (lista agora tá em outra tab). Solução: handler navega `?view=questoes` AO MESMO TEMPO que dispara o `triggerSearch`.
+**Por que:** Hoje quando o aluno clica "Buscar" na QuestoesFilterBar, `triggerSearch()` commita o draft mas o usuário não vê resultado (lista agora tá em outra tab). Solução: handler navega `?view=questoes` AO MESMO TEMPO que dispara `triggerSearch`. Caso o handler seja chamado de dentro do **Ctrl+K overlay**, fechar o overlay também — senão o usuário fica olhando o overlay sobre a tab Questões.
 
-- [ ] **Step 7.1: Atualizar `handleSearch`**
+- [ ] **Step 8.1: Atualizar `handleSearch` pra navegar + fechar Ctrl+K**
 
-Localizar `handleSearch` (linha ~71):
+Localizar `handleSearch` (linha ~71 originalmente):
 
 ```typescript
 const handleSearch = useCallback(() => {
@@ -1072,10 +1200,17 @@ Substituir por:
 const handleSearch = useCallback(() => {
   triggerSearch();
   setFilterView('questoes');
-}, [triggerSearch, setFilterView]);
+  if (ctrlKOpen) {
+    closeCtrlK();
+  }
+}, [triggerSearch, setFilterView, ctrlKOpen, closeCtrlK]);
 ```
 
-- [ ] **Step 7.2: Smoke manual E2E**
+Comportamento esperado:
+- Clicar Buscar na tab Filtros normal → trigger search + navega pra Questões
+- Clicar Buscar dentro do Ctrl+K overlay → trigger search + navega pra Questões + **fecha o overlay**
+
+- [ ] **Step 8.2: Smoke manual E2E**
 
 ```bash
 cd "/d/meta novo/Metav2" && npm run dev
@@ -1090,18 +1225,18 @@ Cenário completo:
 
 Se algum desses falhar, debugar antes de commitar.
 
-- [ ] **Step 7.3: Commit**
+- [ ] **Step 8.3: Commit**
 
 ```bash
 git -C "/d/meta novo/Metav2" add src/views/QuestoesPage.tsx
-git -C "/d/meta novo/Metav2" commit -m "feat(questoes): Buscar na filter bar navega para tab Questões"
+git -C "/d/meta novo/Metav2" commit -m "feat(questoes): Buscar na filter bar navega para tab Questões + fecha Ctrl+K"
 ```
 
 ---
 
-## Task 8: Suíte completa de smoke tests + auditoria final
+## Task 9: Suíte completa de smoke tests + auditoria final
 
-- [ ] **Step 8.1: Build production**
+- [ ] **Step 9.1: Build production**
 
 ```bash
 cd "/d/meta novo/Metav2" && npm run build 2>&1 | tail -30
@@ -1109,7 +1244,7 @@ cd "/d/meta novo/Metav2" && npm run build 2>&1 | tail -30
 
 Expected: build sem erros nem warnings TypeScript críticos.
 
-- [ ] **Step 8.2: Lint**
+- [ ] **Step 9.2: Lint**
 
 ```bash
 cd "/d/meta novo/Metav2" && npm run lint 2>&1 | tail -20
@@ -1117,7 +1252,7 @@ cd "/d/meta novo/Metav2" && npm run lint 2>&1 | tail -20
 
 Expected: sem novos erros nos arquivos tocados.
 
-- [ ] **Step 8.3: Smoke E2E manual completo**
+- [ ] **Step 9.3: Smoke E2E manual completo**
 
 Subir dev server e validar:
 
@@ -1136,7 +1271,11 @@ Subir dev server e validar:
 
 Reportar qualquer cenário que falhar.
 
-- [ ] **Step 8.4: Auditoria de regressão de funcionalidades existentes**
+**Cenário extra (Fix do conflito de URL — Task 7):**
+| 11 | Cenário 5 com debounce: marcar Banca, clicar Buscar, **aguardar 300ms**, verificar URL | Continua tendo `view=questoes` (não foi apagado pelo URL sync do contexto) |
+| 12 | Buscar dentro do Ctrl+K overlay | Trigger search + navega Questões + **fecha overlay** |
+
+- [ ] **Step 9.4: Auditoria de regressão de funcionalidades existentes**
 
 | Funcionalidade | Como testar | Esperado |
 |---|---|---|
@@ -1148,9 +1287,9 @@ Reportar qualquer cenário que falhar.
 
 Se alguma regressão, parar e investigar.
 
-- [ ] **Step 8.5: Commit final (se houver ajustes)**
+- [ ] **Step 9.5: Commit final (se houver ajustes)**
 
-Se Steps 8.3 ou 8.4 revelarem problemas que precisaram correção, commitar:
+Se Steps 9.3 ou 9.4 revelarem problemas que precisaram correção, commitar:
 
 ```bash
 git -C "/d/meta novo/Metav2" add -A
@@ -1161,23 +1300,23 @@ Se não houve problemas, pular este step.
 
 ---
 
-## Task 9: Push e PR
+## Task 10: Push e PR
 
-- [ ] **Step 9.1: Verificar histórico do branch**
+- [ ] **Step 10.1: Verificar histórico do branch**
 
 ```bash
 git -C "/d/meta novo/Metav2" log --oneline main..HEAD
 ```
 
-Expected: ~7 commits (Tasks 1-7 + eventual fix da Task 8).
+Expected: ~9 commits (Tasks 1-8 + eventual fix da Task 9).
 
-- [ ] **Step 9.2: Push**
+- [ ] **Step 10.2: Push**
 
 ```bash
 git -C "/d/meta novo/Metav2" push -u origin feat/questoes-shell-tab-questoes
 ```
 
-- [ ] **Step 9.3: Abrir PR**
+- [ ] **Step 10.3: Abrir PR**
 
 Se `gh` CLI estiver disponível:
 
@@ -1200,7 +1339,7 @@ cd "/d/meta novo/Metav2" && gh pr create --title "feat(questoes): Plano 2 — sh
 ## Test plan
 - [x] Smoke build production
 - [x] Lint
-- [x] 10 cenários E2E manuais (URL sync, back button, link compartilhável, persistência localStorage)
+- [x] 12 cenários E2E manuais (URL sync, back button, link compartilhável, persistência localStorage, preservação de view durante URL sync, Ctrl+K)
 - [x] Auditoria de regressão (status tabs, slash autocomplete, Ctrl+K, OBJETIVO)
 - [ ] Validação visual em produção/staging após merge
 
@@ -1240,7 +1379,7 @@ Se `gh` não estiver disponível, push deve gerar a URL `https://github.com/<own
 
 ## Riscos conhecidos
 
-1. **`QuestoesContext` espera `useSearchParams` do react-router-dom em uma rota `/questoes/*`.** Tab strip usa o mesmo hook — confirmar que adicionar `?view=` ao search param não quebra a inicialização do contexto (que parsa filtros de search params). Mitigação: como `?view` não é uma chave de filtro reconhecida, o `searchParamsToFilters` interno do contexto vai ignorar (já testado por design).
+1. **Conflito de URL sync entre tab strip e QuestoesContext.** O `useEffect` em `QuestoesContext.tsx` linha ~228 faz `setSearchParams(params, { replace: true })` rebuilding TODOS os search params do zero — apaga `?view=` que o tab strip controla. **Fix obrigatório** na Task 7 (preservar `view` antes do replace). Sem essa fix, clicar Buscar trigga re-sync 150ms depois e usuário "volta" pra tab Filtros.
 
 2. **Persistência sort/view via localStorage pode brigar com o estado do contexto na 1ª montagem.** Mitigação: hidratação roda 1x via `useEffect` com `setSortBy`/`setViewMode` — se o contexto inicializar com defaults, esses defaults são imediatamente sobrescritos pelos valores salvos. Latência de 1 render — aceitável.
 
