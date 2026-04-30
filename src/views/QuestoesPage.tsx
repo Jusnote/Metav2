@@ -61,7 +61,11 @@ export default function QuestoesPage() {
   // Buscar button → commits draft filters to query
   const handleSearch = useCallback(() => {
     triggerSearch();
-  }, [triggerSearch]);
+    setFilterView('questoes');
+    if (ctrlKOpen) {
+      closeCtrlK();
+    }
+  }, [triggerSearch, setFilterView, ctrlKOpen, closeCtrlK]);
 
   const editFilters = useCallback(() => {
     setFilterView('filtros');
