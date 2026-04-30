@@ -268,6 +268,17 @@ Após Plano 1 (backend) e Plano 2 (shell + tab Questões) mergeados, decisões d
   - Aluno testa as duas em prod via flip da flag, decide vencedora; perdedora removida na próxima Leva
 - **Animação**: Framer Motion (já confirmado acima na seção principal)
 
+## Decisões resolvidas no brainstorm de Plan 3b (2026-04-30)
+
+Após Plano 3a (Foundation) mergeado, ao planejar os 6 pickers concretos:
+
+- **Counts em pickers Banca/Ano/Órgão/Cargo/Escolaridade/Carreira**: novo endpoint dedicado `POST /api/v1/questoes/facets` (Plano 3b-pre, verus-api). Espelha padrão do `/count`: mesma normalização de filtros, mesma key SHA256, Redis 30min. Retorna `{ banca, ano, orgao, cargo, area_concurso, especialidade, tipo, formato }` cada como `Record<string, number>`. **Não inclui `materia` nem `assunto`** — esses vêm do dicionário/taxonomia. Decisão: produto de filtro premium mostra counts (paridade com Algolia/Typesense), evita combinações que retornam 0 e guia o usuário.
+- **Counts contextuais (Algolia-style)**: facets refletem filtros já aplicados. Ex.: marquei "Cespe" → counts de Ano agora mostram "questões Cespe por ano", não totais absolutos. Backend aplica filtros recebidos antes de agregar. Trade-off: counts mudam dinamicamente (esperado), mais consultas, mas UX top de mercado.
+- **Fallback assuntos sem taxonomia**: para matérias com `total_nodes === 0`, `MateriaAssuntosPicker` mostra **lista plana de assuntos** via `useFiltrosDicionario.materia_assuntos[materia]` usando `FilterAlphabeticList` da Foundation. Mesmo visual da árvore, sem hierarquia. Cobre 100% das matérias.
+- **TreePicker integration**: matérias COM taxonomia usam **wrapper fino** dentro do drawer — header/breadcrumb consistente com outros pickers, mas árvore + counts delegados para `TreePicker` existente (zero re-implementação de lógica). Coesão visual sem reinventar.
+- **Recentes por picker**: hook genérico `useFiltroRecentes(field)` — localStorage por campo (`filtros_recentes_banca`, `_ano`, etc.), top 5 mais recentes, push quando filtro é aplicado. Paralelo ao `useTaxonomiaRecentes` existente, mesma UX.
+- **Source de Banca/Ano/Órgão/Cargo/Escolaridade**: `useFiltrosDicionario` (já existe, 24h cache). Source de Matéria: `useMaterias` (count nativo via `total_questoes_classificadas`, detecção de taxonomia via `total_nodes > 0`). Source de Área/Carreira: `useCarreiras` (mock Fase 1A, Supabase Fase 1B sem mudar API).
+
 ## Decisões abertas pro plano de implementação
 
 1. **Comportamento de "Carregar ↑"** — deixar oculto até definir uma próxima Leva (provável "filter sets nomeados")
