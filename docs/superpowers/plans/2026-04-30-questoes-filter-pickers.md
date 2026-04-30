@@ -380,7 +380,8 @@ class LRU<K, V> {
 const cache = new LRU<string, FacetsByField>(LOCAL_CACHE_MAX);
 
 function buildKey(filters: Partial<AppliedFilters>): string {
-  return filtersToSearchParams(filters as AppliedFilters, { plural: true }).toString();
+  // Pre-flight verificou: filtersToSearchParams aceita 1 arg só (sem options)
+  return filtersToSearchParams(filters as AppliedFilters).toString();
 }
 
 function isEmpty(filters: Partial<AppliedFilters>): boolean {
@@ -420,7 +421,7 @@ export function useQuestoesFacets(filters: Partial<AppliedFilters>): FacetsState
       abortRef.current = ctrl;
 
       try {
-        const params = filtersToSearchParams(filters as AppliedFilters, { plural: true });
+        const params = filtersToSearchParams(filters as AppliedFilters);
         const res = await fetch(`${API_BASE}/api/v1/questoes/facets?${params.toString()}`, {
           signal: ctrl.signal,
         });
@@ -1122,7 +1123,7 @@ vi.mock('@/hooks/useMaterias', () => ({
   }),
 }));
 vi.mock('@/components/questoes/TaxonomiaTreePicker', () => ({
-  TaxonomiaTreePicker: ({ materia }: { materia: string }) => <div data-testid="tree">tree:{materia}</div>,
+  TaxonomiaTreePicker: ({ materiaSlug }: { materiaSlug: string }) => <div data-testid="tree">tree:{materiaSlug}</div>,
 }));
 
 const dicionario = {
@@ -1187,10 +1188,10 @@ export interface MateriaAssuntosPickerProps {
   dicionario: FiltrosDicionario | null;
   materia: string | null;
   selectedAssuntos: string[];
-  selectedNodeIds: (number | string)[];
+  selectedNodeIds: (number | 'outros')[];
   onMateriaChange: (materia: string | null) => void;
   onAssuntosChange: (next: string[]) => void;
-  onNodeIdsChange: (next: (number | string)[]) => void;
+  onNodeIdsChange: (next: (number | 'outros')[]) => void;
 }
 
 export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
@@ -1271,9 +1272,18 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           </div>
         </header>
         <TaxonomiaTreePicker
-          materia={materiaInfo.slug}
-          selectedNodeIds={props.selectedNodeIds}
-          onChange={props.onNodeIdsChange}
+          materiaSlug={materiaInfo.slug}
+          selectedIds={props.selectedNodeIds}
+          onToggle={(id) => {
+            // Pre-flight: TreePicker usa onToggle(id) incremental, não onChange(array).
+            // Adapter: converte single-toggle para next-array via add/remove.
+            const has = props.selectedNodeIds.includes(id);
+            const next = has
+              ? props.selectedNodeIds.filter((x) => x !== id)
+              : [...props.selectedNodeIds, id];
+            props.onNodeIdsChange(next);
+          }}
+          countsBody={{}}
         />
       </div>
     );
@@ -1329,7 +1339,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
 }
 ```
 
-> **Nota:** assume que `TaxonomiaTreePicker` aceita props `{materia, selectedNodeIds, onChange}`. Se a API atual diferir, ajustar o wrapper aqui (ou abrir mini-PR no TreePicker pra alinhar interface). Verificar `src/components/questoes/TaxonomiaTreePicker.tsx` antes de implementar.
+> **Pre-flight verificou:** `TaxonomiaTreePicker` props reais = `{materiaSlug, selectedIds: (number|'outros')[], onToggle: (id) => void, countsBody: CountsBody}`. Wrapper acima já adapta `onToggle` (single-id incremental) para `onChange(array)` esperado pelo pai. `countsBody={{}}` por enquanto — Plano 3c pode passar filtros aplicados pra refinar counts dentro da árvore.
 
 - [ ] **Step 6.3: Rodar testes**
 
