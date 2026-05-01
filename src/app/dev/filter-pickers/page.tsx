@@ -1,4 +1,5 @@
 'use client';
+import '../../../index.css';
 import { useState } from 'react';
 import { BancaPicker } from '@/components/questoes/filtros/pickers/BancaPicker';
 import { AnoPicker } from '@/components/questoes/filtros/pickers/AnoPicker';
