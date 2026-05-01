@@ -16,6 +16,8 @@ export interface AppliedFilters {
   especialidades: string[];
   tipos: string[];
   formatos: string[];
+  /** Pares (orgao, cargo) — formato "ORGAO:CARGO". Adicionado no Plano 3b-bonus. */
+  org_cargo_pairs?: string[];
 }
 
 export const EMPTY_FILTERS: AppliedFilters = {
@@ -29,6 +31,7 @@ export const EMPTY_FILTERS: AppliedFilters = {
   especialidades: [],
   tipos: [],
   formatos: [],
+  org_cargo_pairs: [],
 };
 
 const STRING_KEYS = [
@@ -55,6 +58,11 @@ export function filtersToSearchParams(filters: AppliedFilters): URLSearchParams 
   for (const key of INT_KEYS) {
     for (const value of filters[key]) {
       params.append(key, String(value));
+    }
+  }
+  if (filters.org_cargo_pairs) {
+    for (const pair of filters.org_cargo_pairs) {
+      params.append('org_cargo_pairs', pair);
     }
   }
   return params;
