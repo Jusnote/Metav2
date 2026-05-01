@@ -10,6 +10,8 @@ export interface FilterAlphabeticListProps<T extends AlphabeticItem> {
   renderItem: (item: T) => React.ReactNode;
   /** Retorna a chave do grupo. Default: primeira letra maiúscula do label. */
   getGroupKey?: (item: T) => string;
+  /** Ordem dos grupos. Default: 'asc'. */
+  groupSortOrder?: 'asc' | 'desc';
   /** Mostrado quando items está vazio. Default: nada. */
   emptyState?: React.ReactNode;
 }
@@ -40,6 +42,7 @@ export function FilterAlphabeticList<T extends AlphabeticItem>({
   items,
   renderItem,
   getGroupKey,
+  groupSortOrder = 'asc',
   emptyState,
 }: FilterAlphabeticListProps<T>) {
   const groups = useMemo(() => {
@@ -54,8 +57,9 @@ export function FilterAlphabeticList<T extends AlphabeticItem>({
         map.set(key, [item]);
       }
     }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [items, getGroupKey]);
+    const sorted = Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+    return groupSortOrder === 'desc' ? sorted.reverse() : sorted;
+  }, [items, getGroupKey, groupSortOrder]);
 
   if (items.length === 0) {
     return <div className="py-4">{emptyState}</div>;
