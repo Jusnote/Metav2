@@ -1,4 +1,5 @@
 'use client';
+import '../../../index.css';
 import { useState } from 'react';
 import { OrgaoCargoPicker } from '@/components/questoes/filtros/pickers/OrgaoCargoPicker';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
