@@ -1,59 +1,38 @@
 'use client';
-import '../../../index.css';
-import { useEffect, useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BancaPicker } from '@/components/questoes/filtros/pickers/BancaPicker';
-import { AnoPicker } from '@/components/questoes/filtros/pickers/AnoPicker';
+import { useState } from 'react';
 import { OrgaoCargoPicker } from '@/components/questoes/filtros/pickers/OrgaoCargoPicker';
-import { MateriaAssuntosPicker } from '@/components/questoes/filtros/pickers/MateriaAssuntosPicker';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
+import { useOrgaoCargoState } from '@/hooks/useOrgaoCargoState';
+import { stateToBackendFilters } from '@/lib/questoes/orgao-cargo-serialization';
 
 type Tab = 'banca' | 'ano' | 'orgao_cargo' | 'materia';
 
-const queryClient = new QueryClient();
-
-export default function FilterPickersPreview() {
-  // Mounted guard pra evitar hydration mismatch — pickers consomem dicionário
-  // que muda do estado SSR (vazio) pro estado client (carregado).
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-slate-50 p-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Filter Pickers — Dev Preview</h1>
-        <p className="text-sm text-slate-500">Carregando…</p>
-      </div>
-    );
-  }
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <FilterPickersContent />
-    </QueryClientProvider>
-  );
-}
-
 function FilterPickersContent() {
-  const [tab, setTab] = useState<Tab>('banca');
+  const [tab, setTab] = useState<Tab>('orgao_cargo');
   const [bancas, setBancas] = useState<string[]>([]);
   const [anos, setAnos] = useState<number[]>([]);
-  const [orgaos, setOrgaos] = useState<string[]>([]);
-  const [cargos, setCargos] = useState<string[]>([]);
   const [materia, setMateria] = useState<string | null>(null);
   const [assuntos, setAssuntos] = useState<string[]>([]);
-  const [nodeIds, setNodeIds] = useState<(number | 'outros')[]>([]);
+  const [nodeIds, setNodeIds] = useState<(number | string)[]>([]);
+
+  const { state: orgaoCargoState, actions: orgaoCargoActions } = useOrgaoCargoState();
+  const orgaoCargoBackend = stateToBackendFilters(orgaoCargoState);
 
   const { dicionario } = useFiltrosDicionario();
-  const { facets, loading: facetsLoading } = useQuestoesFacets({ bancas, anos, orgaos, cargos });
+  const { facets } = useQuestoesFacets({
+    bancas,
+    anos,
+    orgaos: orgaoCargoBackend.orgaos,
+    cargos: orgaoCargoBackend.cargos,
+    org_cargo_pairs: orgaoCargoBackend.org_cargo_pairs,
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <h1 className="text-2xl font-bold text-slate-900 mb-2">Filter Pickers — Dev Preview</h1>
       <p className="text-sm text-slate-500 mb-6">
-        Validação visual dos 4 pickers do drawer (Plano 3b). Não acessível em produção.
-        {facetsLoading && <span className="ml-2 text-blue-600">· carregando counts…</span>}
+        Validação visual dos pickers do drawer (Plano 3b-bonus). Não acessível em produção.
       </p>
 
       <nav className="flex gap-2 mb-4">
@@ -62,7 +41,9 @@ function FilterPickersContent() {
             key={t}
             onClick={() => setTab(t)}
             className={`px-3 py-1.5 rounded text-sm ${
-              tab === t ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border border-slate-200'
+              tab === t
+                ? 'bg-slate-900 text-white'
+                : 'bg-white text-slate-700 border border-slate-200'
             }`}
           >
             {t}
@@ -73,25 +54,27 @@ function FilterPickersContent() {
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow border border-slate-200">
           {tab === 'banca' && (
-            <BancaPicker dicionario={dicionario ?? null} facets={facets.banca} selected={bancas} onChange={setBancas} />
+            <div className="p-4 text-sm text-slate-500">
+              BancaPicker — não implementado nesta branch
+            </div>
           )}
           {tab === 'ano' && (
-            <AnoPicker dicionario={dicionario ?? null} facets={facets.ano} selected={anos} onChange={setAnos} />
+            <div className="p-4 text-sm text-slate-500">
+              AnoPicker — não implementado nesta branch
+            </div>
           )}
           {tab === 'orgao_cargo' && (
             <OrgaoCargoPicker
               dicionario={dicionario ?? null}
-              facetsOrgao={facets.orgao} facetsCargo={facets.cargo}
-              selectedOrgaos={orgaos} selectedCargos={cargos}
-              onChangeOrgaos={setOrgaos} onChangeCargos={setCargos}
+              state={orgaoCargoState}
+              actions={orgaoCargoActions}
+              facetsCargo={facets.cargo ?? {}}
             />
           )}
           {tab === 'materia' && (
-            <MateriaAssuntosPicker
-              dicionario={dicionario ?? null}
-              materia={materia} selectedAssuntos={assuntos} selectedNodeIds={nodeIds}
-              onMateriaChange={setMateria} onAssuntosChange={setAssuntos} onNodeIdsChange={setNodeIds}
-            />
+            <div className="p-4 text-sm text-slate-500">
+              MateriaAssuntosPicker — não implementado nesta branch
+            </div>
           )}
         </div>
 
@@ -99,13 +82,29 @@ function FilterPickersContent() {
           <h2 className="text-sm font-semibold text-slate-900 mb-3">Estado atual</h2>
           <pre className="text-xs text-slate-700 overflow-auto">
             {JSON.stringify(
-              { bancas, anos, orgaos, cargos, materia, assuntos, nodeIds },
+              {
+                bancas,
+                anos,
+                orgaoCargoState: {
+                  orgaos: Object.fromEntries(orgaoCargoState.orgaos),
+                  flatCargos: orgaoCargoState.flatCargos,
+                },
+                backendQueryParams: orgaoCargoBackend,
+                materia,
+                assuntos,
+                nodeIds,
+              },
               null,
               2,
             )}
           </pre>
         </div>
       </div>
+
     </div>
   );
+}
+
+export default function FilterPickersPreview() {
+  return <FilterPickersContent />;
 }
