@@ -25,10 +25,15 @@ const fakeResponse = {
 };
 
 describe('useQuestoesFacets', () => {
-  it('retorna facets vazios e loading=false quando filtros vazios', () => {
+  it('faz fetch mesmo com filtros vazios (counts globais para estado inicial)', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => fakeResponse,
+    });
     const { result } = renderHook(() => useQuestoesFacets({}));
-    expect(result.current.loading).toBe(false);
-    expect(result.current.facets).toEqual({});
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 1000 });
+    expect(mockFetch).toHaveBeenCalled();
+    expect(result.current.facets.banca).toEqual({ Cespe: 100, FCC: 50 });
   });
 
   it('faz fetch após debounce e popula facets', async () => {
