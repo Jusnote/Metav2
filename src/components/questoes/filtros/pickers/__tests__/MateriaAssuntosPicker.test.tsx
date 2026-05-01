@@ -17,7 +17,9 @@ vi.mock('@/components/questoes/TaxonomiaTreePicker', () => ({
 
 const dicionario = {
   bancas: {}, orgaos: {}, cargos: {},
-  materias: [],
+  // Source de verdade da LISTA de matérias = dicionário (todas as matérias do app).
+  // useMaterias mock só retorna as que têm taxonomia (subset).
+  materias: ['Direito Administrativo', 'Direito Civil', 'Direito Penal'],
   assuntos: [],
   materia_assuntos: { 'Direito Civil': ['Pessoas', 'Obrigações', 'Contratos'] },
   anos: { min: 2010, max: 2024 },

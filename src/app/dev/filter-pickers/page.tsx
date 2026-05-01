@@ -1,5 +1,7 @@
 'use client';
-import { useState } from 'react';
+import '../../../index.css';
+import { useEffect, useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BancaPicker } from '@/components/questoes/filtros/pickers/BancaPicker';
 import { AnoPicker } from '@/components/questoes/filtros/pickers/AnoPicker';
 import { OrgaoCargoPicker } from '@/components/questoes/filtros/pickers/OrgaoCargoPicker';
@@ -9,7 +11,31 @@ import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
 
 type Tab = 'banca' | 'ano' | 'orgao_cargo' | 'materia';
 
+const queryClient = new QueryClient();
+
 export default function FilterPickersPreview() {
+  // Mounted guard pra evitar hydration mismatch — pickers consomem dicionário
+  // que muda do estado SSR (vazio) pro estado client (carregado).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Filter Pickers — Dev Preview</h1>
+        <p className="text-sm text-slate-500">Carregando…</p>
+      </div>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <FilterPickersContent />
+    </QueryClientProvider>
+  );
+}
+
+function FilterPickersContent() {
   const [tab, setTab] = useState<Tab>('banca');
   const [bancas, setBancas] = useState<string[]>([]);
   const [anos, setAnos] = useState<number[]>([]);
@@ -20,13 +46,14 @@ export default function FilterPickersPreview() {
   const [nodeIds, setNodeIds] = useState<(number | 'outros')[]>([]);
 
   const { dicionario } = useFiltrosDicionario();
-  const { facets } = useQuestoesFacets({ bancas, anos, orgaos, cargos });
+  const { facets, loading: facetsLoading } = useQuestoesFacets({ bancas, anos, orgaos, cargos });
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <h1 className="text-2xl font-bold text-slate-900 mb-2">Filter Pickers — Dev Preview</h1>
       <p className="text-sm text-slate-500 mb-6">
         Validação visual dos 4 pickers do drawer (Plano 3b). Não acessível em produção.
+        {facetsLoading && <span className="ml-2 text-blue-600">· carregando counts…</span>}
       </p>
 
       <nav className="flex gap-2 mb-4">

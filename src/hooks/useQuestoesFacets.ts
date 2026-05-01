@@ -57,12 +57,6 @@ function buildKey(filters: Partial<AppliedFilters>): string {
   return filtersToSearchParams(mergeWithEmpty(filters)).toString();
 }
 
-function isEmpty(filters: Partial<AppliedFilters>): boolean {
-  return Object.values(filters).every(
-    (v) => v === undefined || v === null || (Array.isArray(v) && v.length === 0),
-  );
-}
-
 export function useQuestoesFacets(filters: Partial<AppliedFilters>): FacetsState {
   const [state, setState] = useState<FacetsState>({
     facets: {},
@@ -74,11 +68,8 @@ export function useQuestoesFacets(filters: Partial<AppliedFilters>): FacetsState
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    if (isEmpty(filters)) {
-      setState({ facets: {}, loading: false, error: null, cached: false, tookMs: null });
-      return;
-    }
-
+    // Sempre busca facets — mesmo com filtros vazios, backend retorna counts globais
+    // (Algolia-style: counts visíveis no estado inicial pra usuário ver o que tem)
     const key = buildKey(filters);
     const hit = cache.get(key);
     if (hit) {

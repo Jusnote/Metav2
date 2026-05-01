@@ -17,21 +17,33 @@ export interface MateriaAssuntosPickerProps {
 }
 
 export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
-  const { data: materias, isLoading } = useMaterias();
+  // useMaterias retorna apenas matérias com taxonomia (hoje só Direito Adm).
+  // Usamos como source de verdade pra detectar taxonomia + counts, mas a LISTA
+  // completa de matérias vem do dicionário (todas as ~107 matérias do app).
+  const { data: materiasComTaxonomia } = useMaterias();
   const [q, setQ] = useState('');
 
   const materiaInfo = useMemo(
-    () => materias?.find((m) => m.nome === props.materia),
-    [materias, props.materia],
+    () => materiasComTaxonomia?.find((m) => m.nome === props.materia),
+    [materiasComTaxonomia, props.materia],
   );
 
-  // Modo 1: sem matéria → lista de matérias
+  // Modo 1: sem matéria → lista completa de matérias do dicionário
   if (!props.materia) {
-    const items = (materias || []).map((m) => ({
-      id: m.nome,
-      label: m.nome,
-      count: m.total_questoes_classificadas,
-    }));
+    const todasMaterias = props.dicionario?.materias ?? [];
+    // Map de matérias com taxonomia pra lookup rápido de count
+    const taxonomiaMap = new Map(
+      (materiasComTaxonomia ?? []).map((m) => [m.nome, m]),
+    );
+    const items = todasMaterias.map((nome) => {
+      const tax = taxonomiaMap.get(nome);
+      return {
+        id: nome,
+        label: nome,
+        count: tax?.total_questoes_classificadas,
+        hasTaxonomia: tax ? tax.total_nodes > 0 : false,
+      };
+    });
     const filtered = !q.trim()
       ? items
       : items.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase()));
@@ -51,7 +63,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           placeholder="Buscar matéria…"
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
-        {isLoading ? (
+        {todasMaterias.length === 0 ? (
           <div className="text-sm text-slate-400 px-2 py-4">Carregando matérias…</div>
         ) : (
           <FilterAlphabeticList
@@ -60,12 +72,19 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
               <button
                 type="button"
                 onClick={() => props.onMateriaChange(item.id)}
-                className="flex w-full items-center justify-between px-2 py-1.5 hover:bg-slate-50 rounded text-left"
+                className="flex w-full items-center justify-between gap-2 px-2 py-1.5 hover:bg-slate-50 rounded text-left"
               >
-                <span className="text-sm text-blue-700">{item.label}</span>
-                <span className="text-xs text-slate-400 tabular-nums">
-                  {item.count?.toLocaleString('pt-BR') ?? ''}
-                </span>
+                <span className="flex-1 text-sm text-blue-700 truncate">{item.label}</span>
+                {item.hasTaxonomia && (
+                  <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
+                    taxonomia
+                  </span>
+                )}
+                {typeof item.count === 'number' && (
+                  <span className="text-xs text-slate-400 tabular-nums shrink-0">
+                    {item.count.toLocaleString('pt-BR')}
+                  </span>
+                )}
               </button>
             )}
           />
