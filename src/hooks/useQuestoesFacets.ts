@@ -25,6 +25,11 @@ export interface FacetsState {
   tookMs: number | null;
 }
 
+export interface UseQuestoesFacetsOptions {
+  /** Quando false, não dispara fetch e retorna facets vazios. Default true. */
+  enabled?: boolean;
+}
+
 class LRU<K, V> {
   private map = new Map<K, V>();
   constructor(private max: number) {}
@@ -57,7 +62,11 @@ function buildKey(filters: Partial<AppliedFilters>): string {
   return filtersToSearchParams(mergeWithEmpty(filters)).toString();
 }
 
-export function useQuestoesFacets(filters: Partial<AppliedFilters>): FacetsState {
+export function useQuestoesFacets(
+  filters: Partial<AppliedFilters>,
+  options: UseQuestoesFacetsOptions = {},
+): FacetsState {
+  const { enabled = true } = options;
   const [state, setState] = useState<FacetsState>({
     facets: {},
     loading: false,
@@ -68,6 +77,19 @@ export function useQuestoesFacets(filters: Partial<AppliedFilters>): FacetsState
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    // Se disabled, retorna estado neutro e aborta qualquer fetch pendente
+    if (!enabled) {
+      setState({
+        facets: {},
+        loading: false,
+        error: null,
+        cached: false,
+        tookMs: null,
+      });
+      abortRef.current?.abort();
+      return;
+    }
+
     // Sempre busca facets — mesmo com filtros vazios, backend retorna counts globais
     // (Algolia-style: counts visíveis no estado inicial pra usuário ver o que tem)
     const key = buildKey(filters);
@@ -116,7 +138,7 @@ export function useQuestoesFacets(filters: Partial<AppliedFilters>): FacetsState
       abortRef.current?.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(filters)]);
+  }, [JSON.stringify(filters), enabled]);
 
   return state;
 }
