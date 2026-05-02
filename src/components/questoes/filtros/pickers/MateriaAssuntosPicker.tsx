@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
@@ -23,7 +23,12 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // completa de matérias vem do dicionário (todas as ~107 matérias do app).
   const { data: materiasComTaxonomia } = useMaterias();
   const [q, setQ] = useState('');
+  const [hydrated, setHydrated] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const materiaInfo = useMemo(
     () => materiasComTaxonomia?.find((m) => m.nome === props.materia),
@@ -56,7 +61,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Matérias e assuntos</h2>
             <p className="text-xs text-slate-500">
-              {props.dicionario
+              {hydrated && props.dicionario
                 ? `${items.length} matérias · clique nas pastas para abrir os assuntos`
                 : 'Carregando matérias…'}
             </p>
@@ -77,7 +82,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           placeholder="Pesquisar matéria ou assunto…"
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
-        {todasMaterias.length === 0 ? (
+        {!hydrated || todasMaterias.length === 0 ? (
           <div className="text-sm text-slate-400 px-2 py-4">Carregando matérias…</div>
         ) : (
           <FilterAlphabeticList
