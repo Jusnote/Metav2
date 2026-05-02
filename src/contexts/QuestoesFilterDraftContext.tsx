@@ -62,13 +62,17 @@ export function QuestoesFilterDraftProvider({
     setSearchParams(next, { replace: true });
   }, [pendentes, searchParams, setSearchParams]);
 
+  const reset = useCallback(() => {
+    setPendentesState(aplicados);
+  }, [aplicados]);
+
   const value: QuestoesFilterDraftValue = {
     pendentes,
     aplicados,
     isDirty,
     setPendentes,
     apply,
-    reset: () => {},
+    reset,
   };
   return (
     <QuestoesFilterDraftContext.Provider value={value}>

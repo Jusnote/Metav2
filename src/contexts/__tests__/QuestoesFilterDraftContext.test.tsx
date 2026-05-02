@@ -170,3 +170,26 @@ describe('apply()', () => {
     expect(result.current.location.search).toContain('bancas=cespe');
   });
 });
+
+describe('reset()', () => {
+  it('reverte pendentes pra aplicados', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes?bancas=cespe']),
+    });
+
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['fgv'],
+      });
+    });
+    expect(result.current.pendentes.bancas).toEqual(['fgv']);
+    expect(result.current.isDirty).toBe(true);
+
+    act(() => {
+      result.current.reset();
+    });
+    expect(result.current.pendentes.bancas).toEqual(['cespe']);
+    expect(result.current.isDirty).toBe(false);
+  });
+});
