@@ -126,10 +126,10 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                     </span>
                   </button>
                   {isSelected && (
-                    <span className="text-xs text-emerald-600 shrink-0 px-2">
+                    <span className="text-xs text-blue-600 shrink-0 px-2">
                       {totalSpecific === 0
                         ? '✓ Todo o conteúdo'
-                        : `✓ ${totalSpecific} ${totalSpecific === 1 ? 'assunto' : 'assuntos'}`}
+                        : `✓ ${totalSpecific} ${totalSpecific === 1 ? 'assunto selecionado' : 'assuntos selecionados'}`}
                     </span>
                   )}
                   {item.hasTaxonomia && (
