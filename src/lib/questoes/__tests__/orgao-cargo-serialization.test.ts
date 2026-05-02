@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stateToBackendFilters } from '../orgao-cargo-serialization';
+import { stateToBackendFilters, backendToState } from '../orgao-cargo-serialization';
 import { EMPTY_STATE } from '@/hooks/useOrgaoCargoState';
 
 describe('stateToBackendFilters', () => {
@@ -69,5 +69,70 @@ describe('stateToBackendFilters', () => {
       'AGU:Consultor',
       'PGF:Procurador',
     ]);
+  });
+});
+
+describe('backendToState', () => {
+  it('input vazio retorna EMPTY_STATE deep-equal', () => {
+    const result = backendToState({});
+    expect(result.orgaos.size).toBe(0);
+    expect(result.flatCargos).toEqual([]);
+    expect(result).toEqual({ orgaos: new Map(), flatCargos: [] });
+    // sanity: não compartilha referência com EMPTY_STATE
+    expect(result.orgaos).not.toBe(EMPTY_STATE.orgaos);
+  });
+
+  it('orgao isolado vira selection "all"', () => {
+    const result = backendToState({ orgaos: ['STJ'] });
+    expect(result.orgaos.get('STJ')).toBe('all');
+    expect(result.flatCargos).toEqual([]);
+  });
+
+  it('par único vira array de cargos', () => {
+    const result = backendToState({ org_cargo_pairs: ['STJ:Analista'] });
+    expect(result.orgaos.get('STJ')).toEqual(['Analista']);
+  });
+
+  it('múltiplos pares + flatCargos', () => {
+    const result = backendToState({
+      org_cargo_pairs: ['STJ:A', 'STJ:B'],
+      cargos: ['Foo'],
+    });
+    expect(result.orgaos.get('STJ')).toEqual(['A', 'B']);
+    expect(result.flatCargos).toEqual(['Foo']);
+  });
+
+  it('par com cargo contendo ":" preserva o resto após o primeiro ":"', () => {
+    const result = backendToState({ org_cargo_pairs: ['STJ:Analista:Judiciário'] });
+    expect(result.orgaos.get('STJ')).toEqual(['Analista:Judiciário']);
+  });
+
+  it('par mal formado (sem ":") é ignorado', () => {
+    const result = backendToState({ org_cargo_pairs: ['STJ-Analista'] });
+    expect(result.orgaos.size).toBe(0);
+  });
+
+  it('regra defensiva: par vence sobre "all" pro mesmo órgão', () => {
+    const result = backendToState({
+      orgaos: ['STJ'],
+      org_cargo_pairs: ['STJ:Analista'],
+    });
+    expect(result.orgaos.get('STJ')).toEqual(['Analista']);
+  });
+
+  it('round-trip: state → backend → state é deep-equal (mix all/pairs/flatCargos)', () => {
+    const original = {
+      orgaos: new Map<string, 'all' | string[]>([
+        ['STJ', 'all'],
+        ['TRF2', ['Juiz', 'Assessor']],
+      ]),
+      flatCargos: ['Procurador'],
+    };
+    const backend = stateToBackendFilters(original);
+    const roundTrip = backendToState(backend);
+    expect(roundTrip.flatCargos).toEqual(original.flatCargos);
+    expect(roundTrip.orgaos.get('STJ')).toBe('all');
+    expect(roundTrip.orgaos.get('TRF2')).toEqual(['Juiz', 'Assessor']);
+    expect(roundTrip.orgaos.size).toBe(original.orgaos.size);
   });
 });

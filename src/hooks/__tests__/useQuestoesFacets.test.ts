@@ -54,3 +54,32 @@ describe('useQuestoesFacets', () => {
     expect(result.current.facets).toEqual({});
   });
 });
+
+describe('useQuestoesFacets — enabled prop', () => {
+  it('enabled: false → não dispara fetch', async () => {
+    mockFetch.mockClear();
+    renderHook(() => useQuestoesFacets({}, { enabled: false }));
+    await new Promise((r) => setTimeout(r, 400));
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('enabled: false → retorna estado neutro', () => {
+    const { result } = renderHook(() =>
+      useQuestoesFacets({}, { enabled: false }),
+    );
+    expect(result.current.facets).toEqual({});
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('default (sem options) → enabled implícito true', async () => {
+    mockFetch.mockClear();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => fakeResponse,
+    });
+    // usar filtro diferente para não bater no cache
+    renderHook(() => useQuestoesFacets({ orgaos: ['TEST_ORG'] }));
+    await waitFor(() => expect(mockFetch).toHaveBeenCalled(), { timeout: 1000 });
+  });
+});

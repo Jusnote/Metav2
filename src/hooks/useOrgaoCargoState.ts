@@ -87,8 +87,8 @@ export interface OrgaoCargoActions {
   reset: () => void;
 }
 
-export function useOrgaoCargoState() {
-  const [state, dispatch] = useReducer(reducer, EMPTY_STATE);
+export function useOrgaoCargoState(initialState?: OrgaoCargoState) {
+  const [state, dispatch] = useReducer(reducer, initialState ?? EMPTY_STATE);
 
   const actions = useMemo<OrgaoCargoActions>(
     () => ({
