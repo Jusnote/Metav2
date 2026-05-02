@@ -13,7 +13,7 @@ export function QuestoesFilterDrawer({
   return (
     <div
       data-testid="drawer-grid"
-      className="grid gap-4 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
+      className="grid"
       style={{ gridTemplateColumns: '3fr 2fr' }}
     >
       <div className="border-r border-slate-200">{left}</div>
