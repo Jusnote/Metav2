@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
@@ -12,9 +12,17 @@ export interface MateriaAssuntosPickerProps {
   materia: string | null;
   selectedAssuntos: string[];
   selectedNodeIds: (number | 'outros')[];
+  /** Lista de matérias atualmente no filtro (qualquer estado: B umbrella ou C específico). */
+  selectedMaterias?: string[];
+  /** A matéria atualmente em vista está em estado umbrella ("todo o conteúdo")? */
+  isUmbrella?: boolean;
   onMateriaChange: (materia: string | null) => void;
   onAssuntosChange: (next: string[]) => void;
   onNodeIdsChange: (next: (number | 'outros')[]) => void;
+  /** Toggle umbrella da matéria atualmente em vista. */
+  onUmbrellaToggle?: () => void;
+  /** Adiciona uma matéria como umbrella diretamente da lista (sem entrar na vista). */
+  onUmbrellaAdd?: (materia: string) => void;
 }
 
 export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
@@ -23,12 +31,19 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // completa de matérias vem do dicionário (todas as ~107 matérias do app).
   const { data: materiasComTaxonomia } = useMaterias();
   const [q, setQ] = useState('');
+  const [hydrated, setHydrated] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const materiaInfo = useMemo(
     () => materiasComTaxonomia?.find((m) => m.nome === props.materia),
     [materiasComTaxonomia, props.materia],
   );
+
+  const selectedMaterias = props.selectedMaterias ?? [];
 
   // Modo 1: sem matéria → lista completa de matérias do dicionário
   if (!props.materia) {
@@ -54,9 +69,19 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       <div className="flex flex-col gap-3 p-4">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Matérias e assuntos</h2>
+            <h2
+              className="text-lg font-semibold text-slate-900"
+              style={{
+                fontFamily: "'Source Serif 4', Georgia, serif",
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Matérias e assuntos
+            </h2>
             <p className="text-xs text-slate-500">
-              {items.length} matérias · clique nas pastas para abrir os assuntos
+              {hydrated && props.dicionario
+                ? `${items.length} matérias · clique nas pastas para abrir os assuntos`
+                : 'Carregando matérias…'}
             </p>
           </div>
           <button
@@ -75,38 +100,93 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           placeholder="Pesquisar matéria ou assunto…"
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
-        {todasMaterias.length === 0 ? (
+        {!hydrated || todasMaterias.length === 0 ? (
           <div className="text-sm text-slate-400 px-2 py-4">Carregando matérias…</div>
         ) : (
           <FilterAlphabeticList
             items={filtered}
-            renderItem={(item) => (
-              <button
-                type="button"
-                onClick={() => props.onMateriaChange(item.id)}
-                className="flex w-full items-center justify-between gap-2 px-2 py-1.5 hover:bg-slate-50 rounded text-left"
-              >
-                <span className="flex flex-1 items-center gap-2 min-w-0">
-                  <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
-                  <span className="text-sm text-blue-700 truncate">{item.label}</span>
-                </span>
-                {item.hasTaxonomia && (
-                  <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
-                    taxonomia
-                  </span>
-                )}
-                {typeof item.count === 'number' && (
-                  <span className="text-xs text-slate-400 tabular-nums shrink-0">
-                    {item.count.toLocaleString('pt-BR')}
-                  </span>
-                )}
-              </button>
-            )}
+            renderItem={(item) => {
+              const isSelected = selectedMaterias.includes(item.id);
+              const assuntosDestaMateria =
+                props.dicionario?.materia_assuntos[item.id] ?? [];
+              const specificAssuntos = props.selectedAssuntos.filter((a) =>
+                assuntosDestaMateria.includes(a),
+              ).length;
+              const specificNodes = item.hasTaxonomia
+                ? props.selectedNodeIds.length
+                : 0;
+              const totalSpecific = specificAssuntos + specificNodes;
+              return (
+                <div className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
+                  <button
+                    type="button"
+                    onClick={() => props.onMateriaChange(item.id)}
+                    className="flex flex-1 items-center gap-2 min-w-0 text-left"
+                  >
+                    <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
+                    <span
+                      className={[
+                        'text-sm truncate',
+                        isSelected ? 'text-slate-900 font-medium' : 'text-slate-700',
+                      ].join(' ')}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                  {isSelected && (
+                    <span className="text-xs text-emerald-600 shrink-0 px-2">
+                      {totalSpecific === 0
+                        ? '✓ Todo o conteúdo'
+                        : `✓ ${totalSpecific} ${totalSpecific === 1 ? 'assunto selecionado' : 'assuntos selecionados'}`}
+                    </span>
+                  )}
+                  {item.hasTaxonomia && (
+                    <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
+                      taxonomia
+                    </span>
+                  )}
+                  {typeof item.count === 'number' && (
+                    <span className="text-xs text-slate-400 tabular-nums shrink-0">
+                      {item.count.toLocaleString('pt-BR')}
+                    </span>
+                  )}
+                </div>
+              );
+            }}
           />
         )}
       </div>
     );
   }
+
+  // Toggle umbrella — azul (clicável) → verde (ativo/marcado), sem caixa,
+  // alinhado com os checks dos assuntos abaixo (px-2 + gap-3, igual ao
+  // FilterCheckboxItem).
+  const renderUmbrellaToggle = () => (
+    <button
+      type="button"
+      onClick={props.onUmbrellaToggle}
+      aria-pressed={!!props.isUmbrella}
+      className={[
+        'flex items-center gap-3 w-full px-2 py-1.5 rounded-md text-sm text-left transition-colors',
+        props.isUmbrella
+          ? 'text-emerald-700 font-medium'
+          : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50/40',
+      ].join(' ')}
+    >
+      <span
+        className={[
+          'inline-flex items-center justify-center w-4 h-4 rounded border text-[10px] leading-none transition-colors shrink-0',
+          props.isUmbrella
+            ? 'bg-emerald-600 border-emerald-600 text-white'
+            : 'border-blue-300',
+        ].join(' ')}
+      >
+        {props.isUmbrella && '✓'}
+      </span>
+      Todo conteúdo desta matéria
+    </button>
+  );
 
   // Modo 2: matéria com taxonomia → wrapper TreePicker
   if (materiaInfo && materiaInfo.total_nodes > 0) {
@@ -127,20 +207,28 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             </p>
           </div>
         </header>
-        <TaxonomiaTreePicker
-          materiaSlug={materiaInfo.slug}
-          selectedIds={props.selectedNodeIds}
-          onToggle={(id) => {
-            // Pre-flight: TreePicker usa onToggle(id) incremental, não onChange(array).
-            // Adapter: converte single-toggle para next-array via add/remove.
-            const has = props.selectedNodeIds.includes(id);
-            const next = has
-              ? props.selectedNodeIds.filter((x) => x !== id)
-              : [...props.selectedNodeIds, id];
-            props.onNodeIdsChange(next);
-          }}
-          countsBody={{}}
-        />
+        {renderUmbrellaToggle()}
+        {props.isUmbrella && (
+          <p className="text-xs text-slate-400 italic">
+            Todos os assuntos selecionados pela opção acima
+          </p>
+        )}
+        <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
+          <TaxonomiaTreePicker
+            materiaSlug={materiaInfo.slug}
+            selectedIds={props.selectedNodeIds}
+            onToggle={(id) => {
+              // Pre-flight: TreePicker usa onToggle(id) incremental, não onChange(array).
+              // Adapter: converte single-toggle para next-array via add/remove.
+              const has = props.selectedNodeIds.includes(id);
+              const next = has
+                ? props.selectedNodeIds.filter((x) => x !== id)
+                : [...props.selectedNodeIds, id];
+              props.onNodeIdsChange(next);
+            }}
+            countsBody={{}}
+          />
+        </div>
       </div>
     );
   }
@@ -180,16 +268,24 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         placeholder="Buscar assunto…"
         className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
       />
-      <FilterAlphabeticList
-        items={filtered}
-        renderItem={(item) => (
-          <FilterCheckboxItemWithCount
-            label={item.label}
-            checked={props.selectedAssuntos.includes(item.id)}
-            onToggle={() => toggle(item.id)}
-          />
-        )}
-      />
+      {renderUmbrellaToggle()}
+      {props.isUmbrella && (
+        <p className="text-xs text-slate-400 italic -mt-1">
+          Todos os assuntos selecionados pela opção acima
+        </p>
+      )}
+      <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
+        <FilterAlphabeticList
+          items={filtered}
+          renderItem={(item) => (
+            <FilterCheckboxItemWithCount
+              label={item.label}
+              checked={props.selectedAssuntos.includes(item.id)}
+              onToggle={() => toggle(item.id)}
+            />
+          )}
+        />
+      </div>
     </div>
   );
 }

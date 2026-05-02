@@ -5,11 +5,13 @@ import { QuestoesFilterDrawer } from './QuestoesFilterDrawer';
 import { QuestoesFilterPicker } from './QuestoesFilterPicker';
 import { QuestoesActiveFiltersPanel } from './QuestoesActiveFiltersPanel';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
+import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesCount } from '@/hooks/useQuestoesCount';
 
 export function QuestoesFilterCard() {
   const [activeChip, setActiveChip] = useState<ChipKey>('materia_assuntos');
   const { pendentes, aplicados, isDirty, setPendentes, apply } = useFiltrosPendentes();
+  const { dicionario } = useFiltrosDicionario();
   const { count } = useQuestoesCount(pendentes);
 
   return (
@@ -25,6 +27,7 @@ export function QuestoesFilterCard() {
             count={count}
             onApply={apply}
             onChange={(patch) => setPendentes({ ...pendentes, ...patch })}
+            dicionario={dicionario ?? null}
           />
         }
       />

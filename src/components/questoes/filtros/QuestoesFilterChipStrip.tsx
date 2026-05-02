@@ -45,11 +45,10 @@ export function QuestoesFilterChipStrip({
               onClick={() => onChange(chip.key)}
               aria-pressed={isActive}
               className={[
-                'flex items-center gap-2 px-4 py-2.5 text-sm transition-colors',
-                'border-b-2',
+                'relative flex items-center gap-2 px-4 py-2.5 text-sm transition-colors',
                 isActive
-                  ? 'border-slate-900 text-slate-900 font-semibold'
-                  : 'border-transparent text-slate-500 hover:text-slate-700',
+                  ? "text-slate-900 font-semibold after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-blue-600 after:rounded-full"
+                  : 'text-slate-500 hover:text-slate-700',
               ].join(' ')}
             >
               <Icon size={14} strokeWidth={2} aria-hidden />
