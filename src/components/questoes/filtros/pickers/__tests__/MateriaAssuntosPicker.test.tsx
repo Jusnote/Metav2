@@ -74,37 +74,31 @@ describe('MateriaAssuntosPicker', () => {
 });
 
 describe('MateriaAssuntosPicker — Mode 1 (lista) lazy-add', () => {
-  it('mostra "✓ Selecionado" para matéria já no filtro e "Todo o conteúdo →" para outras', () => {
+  it('matéria em umbrella mostra "✓ Todo o conteúdo"; matéria não selecionada não mostra badge', () => {
     render(
       <MateriaAssuntosPicker
         {...defaultProps}
         materia={null}
         selectedMaterias={['Direito Administrativo']}
+        selectedAssuntos={[]}
+        selectedNodeIds={[]}
       />,
     );
-    expect(screen.getByText(/✓ Selecionado/i)).toBeInTheDocument();
-    // Existe pelo menos um link "Todo o conteúdo →" (para matérias não selecionadas)
-    const links = screen.getAllByText(/Todo o conteúdo →/i);
-    expect(links.length).toBeGreaterThan(0);
+    expect(screen.getByText(/✓ Todo o conteúdo/i)).toBeInTheDocument();
+    // Não deve haver mais o link "Todo o conteúdo →"
+    expect(screen.queryByText(/Todo o conteúdo →/i)).not.toBeInTheDocument();
   });
 
-  it('clicar em "Todo o conteúdo →" chama onUmbrellaAdd com a matéria', () => {
-    const onUmbrellaAdd = vi.fn();
+  it('matéria com N assuntos específicos mostra "✓ N assuntos"', () => {
     render(
       <MateriaAssuntosPicker
         {...defaultProps}
         materia={null}
-        selectedMaterias={[]}
-        onUmbrellaAdd={onUmbrellaAdd}
+        selectedMaterias={['Direito Civil']}
+        selectedAssuntos={['Pessoas', 'Contratos']}
       />,
     );
-    const links = screen.getAllByText(/Todo o conteúdo →/i);
-    fireEvent.click(links[0]);
-    expect(onUmbrellaAdd).toHaveBeenCalledTimes(1);
-    // O primeiro item da lista alfabética entre Civil/Penal/Adm... deve ser passado como string
-    const arg = onUmbrellaAdd.mock.calls[0][0];
-    expect(typeof arg).toBe('string');
-    expect(['Direito Administrativo', 'Direito Civil', 'Direito Penal']).toContain(arg);
+    expect(screen.getByText(/✓ 2 assuntos/i)).toBeInTheDocument();
   });
 
   it('clicar no nome da matéria chama onMateriaChange (sem onUmbrellaAdd)', () => {

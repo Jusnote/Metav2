@@ -206,24 +206,6 @@ describe('MateriaAssuntosPickerAdapter — lazy-add + umbrella', () => {
     expect(probe.getAttribute('data-materias')).toBe(JSON.stringify([]));
   });
 
-  it('clicar em "Todo o conteúdo →" adiciona matéria ao filtro como umbrella', () => {
-    render(
-      withProviders(
-        <>
-          <QuestoesFilterPicker activeChip="materia_assuntos" />
-          <PendentesProbe />
-        </>,
-      ),
-    );
-
-    const links = screen.getAllByText(/Todo o conteúdo →/i);
-    // Clica no primeiro link (alguma das matérias da lista alfabética)
-    fireEvent.click(links[0]);
-
-    const probe = screen.getByTestId('pendentes-probe');
-    const materias = JSON.parse(probe.getAttribute('data-materias') ?? '[]');
-    expect(materias.length).toBe(1);
-  });
 
   it('marcar assunto adiciona automaticamente a matéria ao filtro', () => {
     render(

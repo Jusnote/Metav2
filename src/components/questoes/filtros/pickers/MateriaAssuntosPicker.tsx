@@ -99,6 +99,15 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             items={filtered}
             renderItem={(item) => {
               const isSelected = selectedMaterias.includes(item.id);
+              const assuntosDestaMateria =
+                props.dicionario?.materia_assuntos[item.id] ?? [];
+              const specificAssuntos = props.selectedAssuntos.filter((a) =>
+                assuntosDestaMateria.includes(a),
+              ).length;
+              const specificNodes = item.hasTaxonomia
+                ? props.selectedNodeIds.length
+                : 0;
+              const totalSpecific = specificAssuntos + specificNodes;
               return (
                 <div className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
                   <button
@@ -109,18 +118,12 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                     <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
                     <span className="text-sm text-blue-700 truncate">{item.label}</span>
                   </button>
-                  {isSelected ? (
+                  {isSelected && (
                     <span className="text-xs text-emerald-600 shrink-0 px-2">
-                      ✓ Selecionado
+                      {totalSpecific === 0
+                        ? '✓ Todo o conteúdo'
+                        : `✓ ${totalSpecific} ${totalSpecific === 1 ? 'assunto' : 'assuntos'}`}
                     </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => props.onUmbrellaAdd?.(item.id)}
-                      className="text-xs text-blue-600 hover:text-blue-700 hover:underline shrink-0 px-2"
-                    >
-                      Todo o conteúdo →
-                    </button>
                   )}
                   {item.hasTaxonomia && (
                     <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
