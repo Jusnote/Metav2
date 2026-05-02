@@ -275,3 +275,22 @@ describe('countActiveFilters — visibility toggles', () => {
     expect(countActiveFilters(filters)).toBe(0);
   });
 });
+
+describe('integração: query string pro backend', () => {
+  it('com bancas + ano + visibility produz query no formato backend', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      bancas: ['cespe'],
+      anos: [2023],
+      visibility_anuladas: 'esconder',
+      visibility_desatualizadas: 'esconder',
+    };
+    const query = filtersToSearchParams(filters).toString();
+    expect(query).toContain('bancas=cespe');
+    expect(query).toContain('anos=2023');
+    expect(query).toContain('anulada=false');
+    expect(query).toContain('desatualizada=false');
+    // E NÃO deve conter o nome interno
+    expect(query).not.toContain('visibility_anuladas');
+  });
+});
