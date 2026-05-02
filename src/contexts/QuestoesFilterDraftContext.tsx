@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { AppliedFilters } from '@/lib/questoes/filter-serialization';
-import { EMPTY_FILTERS, searchParamsToFilters } from '@/lib/questoes/filter-serialization';
+import { EMPTY_FILTERS, searchParamsToFilters, filtersToSearchParams } from '@/lib/questoes/filter-serialization';
 
 export interface QuestoesFilterDraftValue {
   pendentes: AppliedFilters;
@@ -45,10 +45,18 @@ export function QuestoesFilterDraftProvider({
     setPendentesState(next);
   }, []);
 
+  const isDirty = useMemo(() => {
+    const a = filtersToSearchParams(pendentes).toString();
+    const b = filtersToSearchParams(aplicados).toString();
+    const sortedA = a.split('&').sort().join('&');
+    const sortedB = b.split('&').sort().join('&');
+    return sortedA !== sortedB;
+  }, [pendentes, aplicados]);
+
   const value: QuestoesFilterDraftValue = {
     pendentes,
     aplicados,
-    isDirty: false,
+    isDirty,
     setPendentes,
     apply: () => {},
     reset: () => {},

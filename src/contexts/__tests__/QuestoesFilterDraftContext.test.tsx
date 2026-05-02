@@ -76,3 +76,45 @@ describe('setPendentes', () => {
     expect(result.current.aplicados.bancas).toEqual(['cespe']);
   });
 });
+
+describe('isDirty', () => {
+  it('false quando pendentes = aplicados na montagem', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes?bancas=cespe']),
+    });
+    expect(result.current.isDirty).toBe(false);
+  });
+
+  it('true após setPendentes que muda valor', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes']),
+    });
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+    expect(result.current.isDirty).toBe(true);
+  });
+
+  it('false quando pendentes volta a ser igual a aplicados', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes?bancas=cespe']),
+    });
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['fgv'],
+      });
+    });
+    expect(result.current.isDirty).toBe(true);
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+    expect(result.current.isDirty).toBe(false);
+  });
+});
