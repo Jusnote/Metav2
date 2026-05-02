@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { QuestoesFilterChipStrip, type ChipKey } from './QuestoesFilterChipStrip';
 import { QuestoesFilterDrawer } from './QuestoesFilterDrawer';
 import { QuestoesFilterPicker } from './QuestoesFilterPicker';
@@ -8,11 +8,22 @@ import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesCount } from '@/hooks/useQuestoesCount';
 
-export function QuestoesFilterCard() {
+export interface QuestoesFilterCardProps {
+  /** Disparado depois que `apply()` rodou — usado pela página para
+   * sincronizar `triggerSearch()` e trocar para a aba de resultados. */
+  onApplied?: () => void;
+}
+
+export function QuestoesFilterCard({ onApplied }: QuestoesFilterCardProps = {}) {
   const [activeChip, setActiveChip] = useState<ChipKey>('materia_assuntos');
   const { pendentes, aplicados, isDirty, setPendentes, apply } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
   const { count } = useQuestoesCount(pendentes);
+
+  const handleApply = useCallback(() => {
+    apply();
+    onApplied?.();
+  }, [apply, onApplied]);
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
@@ -25,7 +36,7 @@ export function QuestoesFilterCard() {
             aplicados={aplicados}
             isDirty={isDirty}
             count={count}
-            onApply={apply}
+            onApply={handleApply}
             onChange={(patch) => setPendentes({ ...pendentes, ...patch })}
             dicionario={dicionario ?? null}
           />

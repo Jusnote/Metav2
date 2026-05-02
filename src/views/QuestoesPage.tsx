@@ -162,7 +162,7 @@ export default function QuestoesPage() {
               <ObjetivoSection />
               {USE_NEW_FILTER_CARD ? (
                 <div className="pt-2 pb-2">
-                  <QuestoesFilterCard />
+                  <QuestoesFilterCard onApplied={handleSearch} />
                 </div>
               ) : (
                 <>
