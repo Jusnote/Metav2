@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
@@ -18,6 +18,10 @@ function useProbeWithLocation() {
   const location = useLocation();
   return { draft, location };
 }
+
+beforeEach(() => {
+  sessionStorage.clear();
+});
 
 describe('useFiltrosPendentes — fora do provider', () => {
   it('lança erro descritivo', () => {
@@ -191,5 +195,72 @@ describe('reset()', () => {
     });
     expect(result.current.pendentes.bancas).toEqual(['cespe']);
     expect(result.current.isDirty).toBe(false);
+  });
+});
+
+describe('sessionStorage persistence', () => {
+  const STORAGE_KEY = 'questoes_filter_draft';
+
+  it('persiste pendentes em setPendentes', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes']),
+    });
+
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    expect(stored).not.toBeNull();
+    const parsed = JSON.parse(stored!);
+    expect(parsed.bancas).toEqual(['cespe']);
+  });
+
+  it('hidrata pendentes do sessionStorage na montagem (URL ainda vazia)', () => {
+    const stored = { ...EMPTY_FILTERS, bancas: ['fgv'] };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes']),
+    });
+
+    expect(result.current.pendentes.bancas).toEqual(['fgv']);
+    expect(result.current.aplicados.bancas).toEqual([]);
+    expect(result.current.isDirty).toBe(true);
+  });
+
+  it('URL params têm prioridade sobre sessionStorage (deep link)', () => {
+    const stored = { ...EMPTY_FILTERS, bancas: ['fgv'] };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes?bancas=cespe']),
+    });
+
+    expect(result.current.pendentes.bancas).toEqual(['cespe']);
+    expect(result.current.aplicados.bancas).toEqual(['cespe']);
+    expect(result.current.isDirty).toBe(false);
+  });
+
+  it('limpa sessionStorage após apply()', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes']),
+    });
+
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+    expect(sessionStorage.getItem(STORAGE_KEY)).not.toBeNull();
+
+    act(() => {
+      result.current.apply();
+    });
+    expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 });

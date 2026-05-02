@@ -4,6 +4,37 @@ import { useSearchParams } from 'react-router-dom';
 import type { AppliedFilters } from '@/lib/questoes/filter-serialization';
 import { EMPTY_FILTERS, searchParamsToFilters, filtersToSearchParams } from '@/lib/questoes/filter-serialization';
 
+const STORAGE_KEY = 'questoes_filter_draft';
+
+function loadDraft(): AppliedFilters | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as AppliedFilters;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(filters: AppliedFilters): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
+  } catch {
+    // sessionStorage cheio — ignora
+  }
+}
+
+function clearDraft(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignora
+  }
+}
+
 export interface QuestoesFilterDraftValue {
   pendentes: AppliedFilters;
   aplicados: AppliedFilters;
@@ -39,10 +70,22 @@ export function QuestoesFilterDraftProvider({
     [searchParams],
   );
 
-  const [pendentes, setPendentesState] = useState<AppliedFilters>(aplicados);
+  const [pendentes, setPendentesState] = useState<AppliedFilters>(() => {
+    // Se URL tem filtros (deep link), aplicados venceu → pendentes = aplicados, descarta draft
+    // Senão tenta sessionStorage; senão fallback aplicados (= EMPTY_FILTERS)
+    const aplicadosInicial = searchParamsToFilters(searchParams);
+    const hasUrlFilters = filtersToSearchParams(aplicadosInicial).toString() !== '';
+    if (hasUrlFilters) {
+      clearDraft();
+      return aplicadosInicial;
+    }
+    const stored = loadDraft();
+    return stored ?? aplicadosInicial;
+  });
 
   const setPendentes = useCallback((next: AppliedFilters) => {
     setPendentesState(next);
+    saveDraft(next);
   }, []);
 
   const isDirty = useMemo(() => {
@@ -60,6 +103,7 @@ export function QuestoesFilterDraftProvider({
       next.set('view', currentView);
     }
     setSearchParams(next, { replace: true });
+    clearDraft();
   }, [pendentes, searchParams, setSearchParams]);
 
   const reset = useCallback(() => {
