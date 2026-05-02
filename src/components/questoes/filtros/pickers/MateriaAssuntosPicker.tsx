@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useRef, useState } from 'react';
+import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
 import { TaxonomiaTreePicker } from '@/components/questoes/TaxonomiaTreePicker';
@@ -85,7 +86,10 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                 onClick={() => props.onMateriaChange(item.id)}
                 className="flex w-full items-center justify-between gap-2 px-2 py-1.5 hover:bg-slate-50 rounded text-left"
               >
-                <span className="flex-1 text-sm text-blue-700 truncate">{item.label}</span>
+                <span className="flex flex-1 items-center gap-2 min-w-0">
+                  <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
+                  <span className="text-sm text-blue-700 truncate">{item.label}</span>
+                </span>
                 {item.hasTaxonomia && (
                   <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
                     taxonomia
