@@ -19,7 +19,7 @@ export function QuestoesFilterDrawer({
       <div className="border-r border-slate-200 overflow-y-auto min-h-0">
         {left}
       </div>
-      <div className="overflow-y-auto min-h-0">{right}</div>
+      <div className="overflow-y-auto min-h-0 bg-slate-50/70">{right}</div>
     </div>
   );
 }
