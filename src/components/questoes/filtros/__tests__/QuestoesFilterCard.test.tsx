@@ -27,6 +27,16 @@ vi.mock('@/hooks/useQuestoesFacets', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useQuestoesCount', () => ({
+  useQuestoesCount: () => ({
+    count: 0,
+    loading: false,
+    error: null,
+    cached: false,
+    tookMs: null,
+  }),
+}));
+
 function withProviders(node: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return (
@@ -52,8 +62,19 @@ describe('QuestoesFilterCard', () => {
     expect(await screen.findByTestId('picker-banca')).toBeInTheDocument();
   });
 
-  it('renderiza placeholder na coluna direita (painel vem em 3c-3)', () => {
+  it('renderiza painel direito real (header FILTROS ATIVOS)', () => {
     render(withProviders(<QuestoesFilterCard />));
-    expect(screen.getByTestId('painel-direito-placeholder')).toBeInTheDocument();
+    expect(screen.getByText(/FILTROS ATIVOS · 0/i)).toBeInTheDocument();
+  });
+
+  it('renderiza empty state quando sem filtros', () => {
+    render(withProviders(<QuestoesFilterCard />));
+    expect(screen.getByText('Nenhum filtro selecionado.')).toBeInTheDocument();
+  });
+
+  it('renderiza botão Aplicar filtros desabilitado quando vazio', () => {
+    render(withProviders(<QuestoesFilterCard />));
+    const btn = screen.getByRole('button', { name: /Aplicar filtros/ });
+    expect(btn).toBeDisabled();
   });
 });
