@@ -144,25 +144,25 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
     );
   }
 
-  // Botão umbrella reutilizado em mode 2 e mode 3
+  // Toggle umbrella — texto azul elegante, sem caixa.
   const renderUmbrellaToggle = () => (
     <button
       type="button"
       onClick={props.onUmbrellaToggle}
       aria-pressed={!!props.isUmbrella}
       className={[
-        'w-full flex items-center gap-2 px-3 py-2 rounded border text-sm text-left transition-colors',
+        'flex items-center gap-2 text-sm text-left transition-colors py-1 px-1 -mx-1 rounded',
         props.isUmbrella
-          ? 'bg-amber-50 border-amber-200 text-amber-900 font-medium'
-          : 'border-slate-200 text-slate-700 hover:bg-slate-50',
+          ? 'text-blue-700 font-medium'
+          : 'text-blue-600 hover:text-blue-700',
       ].join(' ')}
     >
       <span
         className={[
-          'inline-flex items-center justify-center w-4 h-4 rounded border',
+          'inline-flex items-center justify-center w-4 h-4 rounded border text-[10px] leading-none transition-colors',
           props.isUmbrella
-            ? 'bg-amber-500 border-amber-500 text-white'
-            : 'border-slate-300',
+            ? 'bg-blue-600 border-blue-600 text-white'
+            : 'border-blue-300',
         ].join(' ')}
       >
         {props.isUmbrella && '✓'}
@@ -244,12 +244,6 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         <h2 className="text-lg font-semibold text-slate-900 mt-1">{props.materia}</h2>
         <p className="text-xs text-slate-500">{items.length} assuntos · lista plana</p>
       </header>
-      {renderUmbrellaToggle()}
-      {props.isUmbrella && (
-        <p className="text-xs text-slate-400 italic">
-          Todos os assuntos selecionados pela opção acima
-        </p>
-      )}
       <input
         type="search"
         value={q}
@@ -257,6 +251,12 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         placeholder="Buscar assunto…"
         className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
       />
+      {renderUmbrellaToggle()}
+      {props.isUmbrella && (
+        <p className="text-xs text-slate-400 italic -mt-1">
+          Todos os assuntos selecionados pela opção acima
+        </p>
+      )}
       <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
         <FilterAlphabeticList
           items={filtered}
