@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { AppliedFilters } from '@/lib/questoes/filter-serialization';
 import { EMPTY_FILTERS, searchParamsToFilters, filtersToSearchParams } from '@/lib/questoes/filter-serialization';
@@ -108,6 +108,22 @@ export function QuestoesFilterDraftProvider({
 
   const reset = useCallback(() => {
     setPendentesState(aplicados);
+  }, [aplicados]);
+
+  const aplicadosRef = useRef(aplicados);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    // Quando URL muda externamente (back/forward), aplicados recomputa.
+    // Sincroniza pendentes E descarta draft (URL é fonte canônica).
+    const aChanged =
+      filtersToSearchParams(aplicadosRef.current).toString() !==
+      filtersToSearchParams(aplicados).toString();
+    if (aChanged) {
+      setPendentesState(aplicados);
+      clearDraft();
+      aplicadosRef.current = aplicados;
+    }
   }, [aplicados]);
 
   const value: QuestoesFilterDraftValue = {

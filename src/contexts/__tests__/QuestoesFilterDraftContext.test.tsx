@@ -264,3 +264,29 @@ describe('sessionStorage persistence', () => {
     expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 });
+
+import { useNavigate } from 'react-router-dom';
+
+function useProbeWithNav() {
+  const draft = useFiltrosPendentes();
+  const navigate = useNavigate();
+  return { draft, navigate };
+}
+
+describe('navegação externa (back/forward)', () => {
+  it('aplicados muda quando URL muda; pendentes acompanha se não estiver dirty', () => {
+    const { result } = renderHook(() => useProbeWithNav(), {
+      wrapper: wrapper(['/questoes']),
+    });
+
+    expect(result.current.draft.aplicados.bancas).toEqual([]);
+
+    act(() => {
+      result.current.navigate('/questoes?bancas=cespe');
+    });
+
+    expect(result.current.draft.aplicados.bancas).toEqual(['cespe']);
+    expect(result.current.draft.pendentes.bancas).toEqual(['cespe']);
+    expect(result.current.draft.isDirty).toBe(false);
+  });
+});
