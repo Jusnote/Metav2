@@ -1,4 +1,5 @@
 'use client';
+import '../../../index.css';
 import { useState } from 'react';
 import { OrgaoCargoPicker } from '@/components/questoes/filtros/pickers/OrgaoCargoPicker';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
@@ -19,11 +20,17 @@ function FilterPickersContent() {
   const { state: orgaoCargoState, actions: orgaoCargoActions } = useOrgaoCargoState();
   const orgaoCargoBackend = stateToBackendFilters(orgaoCargoState);
 
+  // Órgão atualmente sendo navegado (drilldown). Ephemeral, não afeta seleção real.
+  // Usado pra augmentar a request de facets, fazendo backend filtrar cargos pelo órgão drilled.
+  const [drilldownOrgao, setDrilldownOrgao] = useState<string | null>(null);
+
   const { dicionario } = useFiltrosDicionario();
   const { facets } = useQuestoesFacets({
     bancas,
     anos,
-    orgaos: orgaoCargoBackend.orgaos,
+    // Quando drilldown está ativo, override pra só o órgão drilled (cargo facet refletirá só esse contexto).
+    // Senão, usa as seleções committed do usuário.
+    orgaos: drilldownOrgao ? [drilldownOrgao] : orgaoCargoBackend.orgaos,
     cargos: orgaoCargoBackend.cargos,
     org_cargo_pairs: orgaoCargoBackend.org_cargo_pairs,
   });
@@ -69,6 +76,10 @@ function FilterPickersContent() {
               state={orgaoCargoState}
               actions={orgaoCargoActions}
               facetsCargo={facets.cargo ?? {}}
+              drilldownOrgaoTotalCount={
+                drilldownOrgao ? facets.orgao?.[drilldownOrgao] : undefined
+              }
+              onDrilldownChange={setDrilldownOrgao}
             />
           )}
           {tab === 'materia' && (
