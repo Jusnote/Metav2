@@ -1,5 +1,6 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
 import { TaxonomiaTreePicker } from '@/components/questoes/TaxonomiaTreePicker';
@@ -22,6 +23,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // completa de matérias vem do dicionário (todas as ~107 matérias do app).
   const { data: materiasComTaxonomia } = useMaterias();
   const [q, setQ] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const materiaInfo = useMemo(
     () => materiasComTaxonomia?.find((m) => m.nome === props.materia),
@@ -50,17 +52,27 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
 
     return (
       <div className="flex flex-col gap-3 p-4">
-        <header>
-          <h2 className="text-lg font-semibold text-slate-900">Matérias e assuntos</h2>
-          <p className="text-xs text-slate-500">
-            {items.length} matérias · clique para abrir
-          </p>
+        <header className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Matérias e assuntos</h2>
+            <p className="text-xs text-slate-500">
+              {items.length} matérias · clique nas pastas para abrir os assuntos
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => searchInputRef.current?.focus()}
+            className="text-xs text-blue-600 hover:text-blue-700 hover:underline shrink-0 mt-1"
+          >
+            Pesquisar por nome →
+          </button>
         </header>
         <input
+          ref={searchInputRef}
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar matéria…"
+          placeholder="Pesquisar matéria ou assunto…"
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
         {todasMaterias.length === 0 ? (
@@ -74,7 +86,10 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                 onClick={() => props.onMateriaChange(item.id)}
                 className="flex w-full items-center justify-between gap-2 px-2 py-1.5 hover:bg-slate-50 rounded text-left"
               >
-                <span className="flex-1 text-sm text-blue-700 truncate">{item.label}</span>
+                <span className="flex flex-1 items-center gap-2 min-w-0">
+                  <Folder size={13} strokeWidth={1.5} className="text-slate-400 shrink-0" aria-hidden />
+                  <span className="text-sm text-blue-700 truncate">{item.label}</span>
+                </span>
                 {item.hasTaxonomia && (
                   <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
                     taxonomia
