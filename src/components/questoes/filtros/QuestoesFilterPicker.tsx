@@ -7,13 +7,26 @@ import { AnoPicker } from './pickers/AnoPicker';
 import { MateriaAssuntosPicker } from './pickers/MateriaAssuntosPicker';
 import { OrgaoCargoPicker } from './pickers/OrgaoCargoPicker';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
-import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
+import { useFiltrosDicionario, type FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
+import { useMaterias } from '@/hooks/useMaterias';
 import { useOrgaoCargoState } from '@/hooks/useOrgaoCargoState';
 import {
   backendToState,
   stateToBackendFilters,
 } from '@/lib/questoes/orgao-cargo-serialization';
+
+/** Retorna a matéria à qual um assunto pertence (via dicionário), ou null. */
+function getMateriaForAssunto(
+  assunto: string,
+  dicionario: FiltrosDicionario | null,
+): string | null {
+  if (!dicionario) return null;
+  for (const [materia, assuntos] of Object.entries(dicionario.materia_assuntos)) {
+    if (assuntos.includes(assunto)) return materia;
+  }
+  return null;
+}
 
 export interface QuestoesFilterPickerProps {
   activeChip: ChipKey;
@@ -22,6 +35,7 @@ export interface QuestoesFilterPickerProps {
 function MateriaAssuntosPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
+  const { data: materiasComTaxonomia } = useMaterias();
 
   // Navegação local (qual matéria está aberta no picker) é separada do
   // filtro aplicado (pendentes.materias). "← Voltar" só fecha a vista,
@@ -30,6 +44,39 @@ function MateriaAssuntosPickerAdapter() {
   const [viewingMateria, setViewingMateria] = useState<string | null>(
     () => pendentes.materias[0] ?? null,
   );
+
+  // Set local que distingue B (umbrella) de C (específico).
+  // Init: matérias em pendentes.materias que não têm nenhum assunto
+  // específico nem nodeIds são umbrella.
+  const [umbrellaMaterias, setUmbrellaMaterias] = useState<Set<string>>(() => {
+    const set = new Set<string>();
+    for (const m of pendentes.materias) {
+      const assuntosDessaMateria = pendentes.assuntos.filter(
+        (a) => getMateriaForAssunto(a, dicionario) === m,
+      );
+      // Sem dicionário ainda, não dá pra mapear assuntos → matéria.
+      // Conservador: só marca umbrella se realmente não tem assuntos selecionados.
+      if (assuntosDessaMateria.length === 0) {
+        // Para taxonomia: nodeIds vazios → é umbrella
+        // (hoje só Direito Adm tem taxonomia)
+        const nodeIdsCount = pendentes.nodeIds?.length ?? 0;
+        if (nodeIdsCount === 0) {
+          set.add(m);
+        }
+      }
+    }
+    return set;
+  });
+
+  // Helper: matéria é a "dona" de taxonomia quando aparece em useMaterias com total_nodes > 0
+  const isMateriaWithTaxonomia = useMemo(() => {
+    const set = new Set(
+      (materiasComTaxonomia ?? [])
+        .filter((m) => m.total_nodes > 0)
+        .map((m) => m.nome),
+    );
+    return (nome: string) => set.has(nome);
+  }, [materiasComTaxonomia]);
 
   // Sincroniza com mudanças externas em pendentes.materias quando a
   // matéria atualmente em vista foi removida do filtro (× no painel direito).
@@ -40,6 +87,26 @@ function MateriaAssuntosPickerAdapter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendentes.materias]);
 
+  // Sincroniza umbrella set com mudanças externas em pendentes.materias.
+  // Se uma matéria saiu de pendentes.materias (× no painel direito),
+  // remove ela do umbrella set também.
+  useEffect(() => {
+    setUmbrellaMaterias((prev) => {
+      const next = new Set(prev);
+      let changed = false;
+      for (const m of prev) {
+        if (!pendentes.materias.includes(m)) {
+          next.delete(m);
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [pendentes.materias]);
+
+  const isUmbrella =
+    viewingMateria !== null && umbrellaMaterias.has(viewingMateria);
+
   return (
     <div data-testid="picker-materia-assuntos">
       <MateriaAssuntosPicker
@@ -47,29 +114,127 @@ function MateriaAssuntosPickerAdapter() {
         materia={viewingMateria}
         selectedAssuntos={pendentes.assuntos}
         selectedNodeIds={pendentes.nodeIds ?? []}
+        selectedMaterias={pendentes.materias}
+        isUmbrella={isUmbrella}
         onMateriaChange={(m) => {
-          if (m === null) {
-            // Voltar: só fecha a vista, mantém filtro
-            setViewingMateria(null);
-            return;
-          }
-          // Click em matéria: navega para detalhe; adiciona ao filtro
-          // se ainda não estiver lá. Multi-select: assuntos/nodeIds
-          // permanecem flat globalmente entre matérias.
+          // Lazy-add: clicar em matéria SÓ navega para detalhe.
+          // Não adiciona ao filtro — filtro só recebe matéria via
+          // assunto/nodeId específico ou via "Todo o conteúdo" explícito.
           setViewingMateria(m);
-          if (!pendentes.materias.includes(m)) {
+        }}
+        onUmbrellaToggle={() => {
+          if (!viewingMateria) return;
+          if (isUmbrella) {
+            // Toggle off: remove do umbrella set + remove da pendentes.materias
+            // (não tem itens específicos por definição).
+            const nextUmbrella = new Set(umbrellaMaterias);
+            nextUmbrella.delete(viewingMateria);
+            setUmbrellaMaterias(nextUmbrella);
             setPendentes({
               ...pendentes,
-              materias: [...pendentes.materias, m],
+              materias: pendentes.materias.filter((m) => m !== viewingMateria),
+            });
+          } else {
+            // Toggle on: limpa itens específicos da matéria + adiciona ao
+            // umbrella set + garante presença em pendentes.materias.
+            const assuntosFora = pendentes.assuntos.filter(
+              (a) => getMateriaForAssunto(a, dicionario) !== viewingMateria,
+            );
+            const nodeIdsFora = isMateriaWithTaxonomia(viewingMateria)
+              ? []
+              : (pendentes.nodeIds ?? []);
+            const nextUmbrella = new Set(umbrellaMaterias);
+            nextUmbrella.add(viewingMateria);
+            setUmbrellaMaterias(nextUmbrella);
+            setPendentes({
+              ...pendentes,
+              materias: pendentes.materias.includes(viewingMateria)
+                ? pendentes.materias
+                : [...pendentes.materias, viewingMateria],
+              assuntos: assuntosFora,
+              nodeIds: nodeIdsFora,
             });
           }
         }}
-        onAssuntosChange={(next) =>
-          setPendentes({ ...pendentes, assuntos: next })
-        }
-        onNodeIdsChange={(next) =>
-          setPendentes({ ...pendentes, nodeIds: next })
-        }
+        onUmbrellaAdd={(m) => {
+          // Adiciona matéria como umbrella direto da lista (sem entrar na vista).
+          if (pendentes.materias.includes(m)) return;
+          const nextUmbrella = new Set(umbrellaMaterias);
+          nextUmbrella.add(m);
+          setUmbrellaMaterias(nextUmbrella);
+          setPendentes({
+            ...pendentes,
+            materias: [...pendentes.materias, m],
+          });
+        }}
+        onAssuntosChange={(next) => {
+          // Recalcula pendentes.materias a partir do novo array de assuntos:
+          // - matérias com assunto em next → no filtro (não umbrella)
+          // - matérias com nodeIds → preservadas (taxonomia ainda picada)
+          // - matérias umbrella → preservadas
+          // - matérias que perderam todos os items → removidas
+          const newMaterias = new Set(pendentes.materias);
+          const newUmbrella = new Set(umbrellaMaterias);
+
+          // Adiciona matérias dos novos assuntos (saindo de umbrella se estavam)
+          for (const a of next) {
+            const m = getMateriaForAssunto(a, dicionario);
+            if (m) {
+              newMaterias.add(m);
+              newUmbrella.delete(m);
+            }
+          }
+
+          // Remove matérias que ficaram órfãs (sem assunto, sem nodeId, sem umbrella)
+          const nodeIds = pendentes.nodeIds ?? [];
+          for (const m of pendentes.materias) {
+            if (newUmbrella.has(m)) continue;
+            const temAssunto = next.some(
+              (a) => getMateriaForAssunto(a, dicionario) === m,
+            );
+            const temNodeIds =
+              isMateriaWithTaxonomia(m) && nodeIds.length > 0;
+            if (!temAssunto && !temNodeIds) {
+              newMaterias.delete(m);
+            }
+          }
+
+          setUmbrellaMaterias(newUmbrella);
+          setPendentes({
+            ...pendentes,
+            materias: Array.from(newMaterias),
+            assuntos: next,
+          });
+        }}
+        onNodeIdsChange={(next) => {
+          // Análogo a onAssuntosChange para taxonomia (viewingMateria é dona).
+          if (!viewingMateria) {
+            setPendentes({ ...pendentes, nodeIds: next });
+            return;
+          }
+          const newMaterias = new Set(pendentes.materias);
+          const newUmbrella = new Set(umbrellaMaterias);
+
+          if (next.length > 0) {
+            newMaterias.add(viewingMateria);
+            newUmbrella.delete(viewingMateria);
+          } else {
+            // Sem nodeIds: remove a matéria a menos que ela tenha assunto ou seja umbrella
+            const temAssunto = pendentes.assuntos.some(
+              (a) => getMateriaForAssunto(a, dicionario) === viewingMateria,
+            );
+            if (!temAssunto && !newUmbrella.has(viewingMateria)) {
+              newMaterias.delete(viewingMateria);
+            }
+          }
+
+          setUmbrellaMaterias(newUmbrella);
+          setPendentes({
+            ...pendentes,
+            materias: Array.from(newMaterias),
+            nodeIds: next,
+          });
+        }}
       />
     </div>
   );

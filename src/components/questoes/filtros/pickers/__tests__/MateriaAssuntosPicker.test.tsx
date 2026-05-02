@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MateriaAssuntosPicker } from '../MateriaAssuntosPicker';
 
 vi.mock('@/hooks/useMaterias', () => ({
@@ -25,13 +25,25 @@ const dicionario = {
   anos: { min: 2010, max: 2024 },
 };
 
+const defaultProps = {
+  dicionario,
+  selectedAssuntos: [],
+  selectedNodeIds: [],
+  selectedMaterias: [] as string[],
+  isUmbrella: false,
+  onMateriaChange: vi.fn(),
+  onAssuntosChange: vi.fn(),
+  onNodeIdsChange: vi.fn(),
+  onUmbrellaToggle: vi.fn(),
+  onUmbrellaAdd: vi.fn(),
+};
+
 describe('MateriaAssuntosPicker', () => {
   it('sem matéria → lista de matérias', () => {
     render(
       <MateriaAssuntosPicker
-        dicionario={dicionario}
-        materia={null} selectedAssuntos={[]} selectedNodeIds={[]}
-        onMateriaChange={vi.fn()} onAssuntosChange={vi.fn()} onNodeIdsChange={vi.fn()}
+        {...defaultProps}
+        materia={null}
       />,
     );
     expect(screen.getByText('Direito Administrativo')).toBeInTheDocument();
@@ -41,9 +53,8 @@ describe('MateriaAssuntosPicker', () => {
   it('matéria com taxonomia → renderiza TreePicker', () => {
     render(
       <MateriaAssuntosPicker
-        dicionario={dicionario}
-        materia="Direito Administrativo" selectedAssuntos={[]} selectedNodeIds={[]}
-        onMateriaChange={vi.fn()} onAssuntosChange={vi.fn()} onNodeIdsChange={vi.fn()}
+        {...defaultProps}
+        materia="Direito Administrativo"
       />,
     );
     expect(screen.getByTestId('tree')).toHaveTextContent('tree:direito-adm');
@@ -52,13 +63,128 @@ describe('MateriaAssuntosPicker', () => {
   it('matéria sem taxonomia → fallback flat de assuntos', () => {
     render(
       <MateriaAssuntosPicker
-        dicionario={dicionario}
-        materia="Direito Civil" selectedAssuntos={[]} selectedNodeIds={[]}
-        onMateriaChange={vi.fn()} onAssuntosChange={vi.fn()} onNodeIdsChange={vi.fn()}
+        {...defaultProps}
+        materia="Direito Civil"
       />,
     );
     expect(screen.getByText('Pessoas')).toBeInTheDocument();
     expect(screen.getByText('Contratos')).toBeInTheDocument();
     expect(screen.queryByTestId('tree')).not.toBeInTheDocument();
+  });
+});
+
+describe('MateriaAssuntosPicker — Mode 1 (lista) lazy-add', () => {
+  it('mostra "✓ Selecionado" para matéria já no filtro e "Todo o conteúdo →" para outras', () => {
+    render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia={null}
+        selectedMaterias={['Direito Administrativo']}
+      />,
+    );
+    expect(screen.getByText(/✓ Selecionado/i)).toBeInTheDocument();
+    // Existe pelo menos um link "Todo o conteúdo →" (para matérias não selecionadas)
+    const links = screen.getAllByText(/Todo o conteúdo →/i);
+    expect(links.length).toBeGreaterThan(0);
+  });
+
+  it('clicar em "Todo o conteúdo →" chama onUmbrellaAdd com a matéria', () => {
+    const onUmbrellaAdd = vi.fn();
+    render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia={null}
+        selectedMaterias={[]}
+        onUmbrellaAdd={onUmbrellaAdd}
+      />,
+    );
+    const links = screen.getAllByText(/Todo o conteúdo →/i);
+    fireEvent.click(links[0]);
+    expect(onUmbrellaAdd).toHaveBeenCalledTimes(1);
+    // O primeiro item da lista alfabética entre Civil/Penal/Adm... deve ser passado como string
+    const arg = onUmbrellaAdd.mock.calls[0][0];
+    expect(typeof arg).toBe('string');
+    expect(['Direito Administrativo', 'Direito Civil', 'Direito Penal']).toContain(arg);
+  });
+
+  it('clicar no nome da matéria chama onMateriaChange (sem onUmbrellaAdd)', () => {
+    const onMateriaChange = vi.fn();
+    const onUmbrellaAdd = vi.fn();
+    render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia={null}
+        selectedMaterias={[]}
+        onMateriaChange={onMateriaChange}
+        onUmbrellaAdd={onUmbrellaAdd}
+      />,
+    );
+    fireEvent.click(screen.getByText('Direito Administrativo'));
+    expect(onMateriaChange).toHaveBeenCalledWith('Direito Administrativo');
+    expect(onUmbrellaAdd).not.toHaveBeenCalled();
+  });
+});
+
+describe('MateriaAssuntosPicker — Mode 2 (taxonomia) umbrella', () => {
+  it('mostra botão "Todo o conteúdo de [matéria]"', () => {
+    render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia="Direito Administrativo"
+      />,
+    );
+    expect(
+      screen.getByText(/Todo o conteúdo de Direito Administrativo/i),
+    ).toBeInTheDocument();
+  });
+
+  it('com isUmbrella=true, botão tem aria-pressed=true e tree fica desabilitada', () => {
+    const { container } = render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia="Direito Administrativo"
+        isUmbrella={true}
+      />,
+    );
+    const btn = screen.getByRole('button', {
+      name: /Todo o conteúdo de Direito Administrativo/i,
+    });
+    expect(btn.getAttribute('aria-pressed')).toBe('true');
+    // Tree fica em wrapper com pointer-events-none
+    const disabled = container.querySelector('.pointer-events-none');
+    expect(disabled).not.toBeNull();
+  });
+
+  it('clicar no botão dispara onUmbrellaToggle', () => {
+    const onUmbrellaToggle = vi.fn();
+    render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia="Direito Administrativo"
+        onUmbrellaToggle={onUmbrellaToggle}
+      />,
+    );
+    const btn = screen.getByRole('button', {
+      name: /Todo o conteúdo de Direito Administrativo/i,
+    });
+    fireEvent.click(btn);
+    expect(onUmbrellaToggle).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('MateriaAssuntosPicker — Mode 3 (flat) umbrella', () => {
+  it('mostra botão umbrella e desabilita lista quando isUmbrella=true', () => {
+    const { container } = render(
+      <MateriaAssuntosPicker
+        {...defaultProps}
+        materia="Direito Civil"
+        isUmbrella={true}
+      />,
+    );
+    expect(
+      screen.getByText(/Todo o conteúdo de Direito Civil/i),
+    ).toBeInTheDocument();
+    const disabled = container.querySelector('.pointer-events-none');
+    expect(disabled).not.toBeNull();
   });
 });

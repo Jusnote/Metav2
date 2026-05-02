@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QuestoesFilterPicker } from '../QuestoesFilterPicker';
@@ -14,13 +14,45 @@ vi.mock('@/hooks/useFiltrosDicionario', () => ({
       bancas: {},
       orgaos: { stj: 'STJ', trf1: 'TRF1' },
       cargos: { analista: 'Analista' },
-      materias: [],
+      materias: ['Direito Administrativo', 'Direito Civil'],
       assuntos: [],
-      materia_assuntos: {},
+      materia_assuntos: {
+        'Direito Civil': ['Pessoas', 'Contratos'],
+      },
       anos: { min: 2010, max: 2024 },
     },
     loading: false,
   }),
+}));
+
+vi.mock('@/hooks/useMaterias', () => ({
+  useMaterias: () => ({
+    data: [
+      {
+        slug: 'direito-adm',
+        nome: 'Direito Administrativo',
+        total_nodes: 499,
+        total_questoes_classificadas: 12345,
+        fontes: ['gran'],
+        last_updated: null,
+      },
+      {
+        slug: 'direito-civil',
+        nome: 'Direito Civil',
+        total_nodes: 0,
+        total_questoes_classificadas: 5000,
+        fontes: [],
+        last_updated: null,
+      },
+    ],
+    isLoading: false,
+  }),
+}));
+
+vi.mock('@/components/questoes/TaxonomiaTreePicker', () => ({
+  TaxonomiaTreePicker: ({ materiaSlug }: { materiaSlug: string }) => (
+    <div data-testid="tree">tree:{materiaSlug}</div>
+  ),
 }));
 
 vi.mock('@/hooks/useQuestoesFacets', () => ({
@@ -50,6 +82,8 @@ function PendentesProbe() {
       data-orgaos={JSON.stringify(pendentes.orgaos)}
       data-cargos={JSON.stringify(pendentes.cargos)}
       data-pairs={JSON.stringify(pendentes.org_cargo_pairs ?? [])}
+      data-materias={JSON.stringify(pendentes.materias)}
+      data-assuntos={JSON.stringify(pendentes.assuntos)}
     />
   );
 }
@@ -143,5 +177,147 @@ describe('OrgaoCargoPickerAdapter — hidratação de pendentes (B1)', () => {
     const orgaos = JSON.parse(probe.getAttribute('data-orgaos') ?? '[]');
     expect(orgaos).toEqual(expect.arrayContaining(['STJ', 'TRF1']));
     expect(orgaos).toHaveLength(2);
+  });
+});
+
+describe('MateriaAssuntosPickerAdapter — lazy-add + umbrella', () => {
+  beforeEach(() => {
+    // sessionStorage persiste entre tests; o draft provider lê dele no init.
+    if (typeof window !== 'undefined') {
+      sessionStorage.clear();
+    }
+  });
+
+  it('clicar em matéria na lista NÃO adiciona ao filtro (apenas navega)', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="materia_assuntos" />
+          <PendentesProbe />
+        </>,
+      ),
+    );
+
+    // Lista de matérias renderizada — clicar no nome de uma matéria
+    fireEvent.click(screen.getByText('Direito Civil'));
+
+    const probe = screen.getByTestId('pendentes-probe');
+    // pendentes.materias deve continuar vazio (lazy-add)
+    expect(probe.getAttribute('data-materias')).toBe(JSON.stringify([]));
+  });
+
+  it('clicar em "Todo o conteúdo →" adiciona matéria ao filtro como umbrella', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="materia_assuntos" />
+          <PendentesProbe />
+        </>,
+      ),
+    );
+
+    const links = screen.getAllByText(/Todo o conteúdo →/i);
+    // Clica no primeiro link (alguma das matérias da lista alfabética)
+    fireEvent.click(links[0]);
+
+    const probe = screen.getByTestId('pendentes-probe');
+    const materias = JSON.parse(probe.getAttribute('data-materias') ?? '[]');
+    expect(materias.length).toBe(1);
+  });
+
+  it('marcar assunto adiciona automaticamente a matéria ao filtro', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="materia_assuntos" />
+          <PendentesProbe />
+        </>,
+      ),
+    );
+
+    // Entra na vista de Direito Civil
+    fireEvent.click(screen.getByText('Direito Civil'));
+    // Marca assunto "Pessoas" (renderizado como label do checkbox)
+    fireEvent.click(screen.getByText('Pessoas'));
+
+    const probe = screen.getByTestId('pendentes-probe');
+    const materias = JSON.parse(probe.getAttribute('data-materias') ?? '[]');
+    const assuntos = JSON.parse(probe.getAttribute('data-assuntos') ?? '[]');
+    expect(assuntos).toContain('Pessoas');
+    expect(materias).toContain('Direito Civil');
+  });
+
+  it('desmarcar último assunto remove matéria do filtro (estado A)', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="materia_assuntos" />
+          <PendentesProbe />
+        </>,
+      ),
+    );
+
+    fireEvent.click(screen.getByText('Direito Civil'));
+    fireEvent.click(screen.getByText('Pessoas')); // marca
+    fireEvent.click(screen.getByText('Pessoas')); // desmarca
+
+    const probe = screen.getByTestId('pendentes-probe');
+    const materias = JSON.parse(probe.getAttribute('data-materias') ?? '[]');
+    const assuntos = JSON.parse(probe.getAttribute('data-assuntos') ?? '[]');
+    expect(assuntos).toEqual([]);
+    expect(materias).toEqual([]);
+  });
+
+  it('umbrella toggle on (botão "Todo o conteúdo de X") adiciona matéria + limpa específicos', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="materia_assuntos" />
+          <PendentesProbe />
+        </>,
+      ),
+    );
+
+    // Entra em Civil, marca "Pessoas" → estado C (específico)
+    fireEvent.click(screen.getByText('Direito Civil'));
+    fireEvent.click(screen.getByText('Pessoas'));
+
+    let probe = screen.getByTestId('pendentes-probe');
+    expect(JSON.parse(probe.getAttribute('data-assuntos') ?? '[]')).toContain(
+      'Pessoas',
+    );
+
+    // Toggle umbrella on → assuntos limpos, matéria mantida
+    const umbrellaBtn = screen.getByRole('button', {
+      name: /Todo o conteúdo de Direito Civil/i,
+    });
+    fireEvent.click(umbrellaBtn);
+
+    probe = screen.getByTestId('pendentes-probe');
+    expect(JSON.parse(probe.getAttribute('data-materias') ?? '[]')).toContain(
+      'Direito Civil',
+    );
+    expect(JSON.parse(probe.getAttribute('data-assuntos') ?? '[]')).toEqual([]);
+  });
+
+  it('umbrella toggle off remove matéria do filtro', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="materia_assuntos" />
+          <PendentesProbe />
+        </>,
+      ),
+    );
+
+    fireEvent.click(screen.getByText('Direito Civil'));
+    const umbrellaBtn = screen.getByRole('button', {
+      name: /Todo o conteúdo de Direito Civil/i,
+    });
+    fireEvent.click(umbrellaBtn); // on
+    fireEvent.click(umbrellaBtn); // off
+
+    const probe = screen.getByTestId('pendentes-probe');
+    expect(JSON.parse(probe.getAttribute('data-materias') ?? '[]')).toEqual([]);
   });
 });
