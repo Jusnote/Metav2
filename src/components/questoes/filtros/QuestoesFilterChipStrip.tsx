@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { BookOpen, Building2, Landmark, Calendar } from 'lucide-react';
+import { Library, Building2, Landmark, Calendar } from 'lucide-react';
 
 export type ChipKey = 'materia_assuntos' | 'banca' | 'orgao_cargo' | 'ano';
 
@@ -12,7 +12,7 @@ export interface ChipDef {
 }
 
 export const CHIPS: ChipDef[] = [
-  { key: 'materia_assuntos', label: 'Matéria · Assuntos', icon: BookOpen },
+  { key: 'materia_assuntos', label: 'Matéria · Assuntos', icon: Library },
   { key: 'banca', label: 'Banca', icon: Building2 },
   { key: 'orgao_cargo', label: 'Órgão · Cargo', icon: Landmark },
   { key: 'ano', label: 'Ano', icon: Calendar },
