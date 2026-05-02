@@ -123,7 +123,7 @@ export function QuestoesActiveFiltersPanel({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+      <div className="flex items-center justify-between px-4 py-3">
         <span className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
           FILTROS ATIVOS · {aplicadosCount}
         </span>
