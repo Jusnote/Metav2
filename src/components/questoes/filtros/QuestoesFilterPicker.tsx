@@ -2,6 +2,10 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { ChipKey } from './QuestoesFilterChipStrip';
+import { BancaPicker } from './pickers/BancaPicker';
+import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
+import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
+import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
 
 export interface QuestoesFilterPickerProps {
   activeChip: ChipKey;
@@ -10,9 +14,24 @@ export interface QuestoesFilterPickerProps {
 function StubMateriaAssuntos() {
   return <div data-testid="picker-materia-assuntos" className="p-4">Matéria · Assuntos (stub)</div>;
 }
-function StubBanca() {
-  return <div data-testid="picker-banca" className="p-4">Banca (stub)</div>;
+
+function BancaPickerAdapter() {
+  const { pendentes, setPendentes } = useFiltrosPendentes();
+  const { dicionario } = useFiltrosDicionario();
+  const { facets } = useQuestoesFacets(pendentes);
+
+  return (
+    <div data-testid="picker-banca">
+      <BancaPicker
+        dicionario={dicionario ?? null}
+        facets={facets.banca}
+        selected={pendentes.bancas}
+        onChange={(next) => setPendentes({ ...pendentes, bancas: next })}
+      />
+    </div>
+  );
 }
+
 function StubOrgaoCargo() {
   return <div data-testid="picker-orgao-cargo" className="p-4">Órgão · Cargo (stub)</div>;
 }
@@ -27,7 +46,7 @@ export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) 
       content = <StubMateriaAssuntos />;
       break;
     case 'banca':
-      content = <StubBanca />;
+      content = <BancaPickerAdapter />;
       break;
     case 'orgao_cargo':
       content = <StubOrgaoCargo />;
