@@ -33,3 +33,13 @@ describe('QuestoesFilterPicker — dispatch por chip', () => {
     expect(screen.getByTestId('picker-ano')).toBeInTheDocument();
   });
 });
+
+describe('animação fade entre chips', () => {
+  it('renderiza sob AnimatePresence (motion wrapper presente)', () => {
+    const { container } = render(
+      withProviders(<QuestoesFilterPicker activeChip="banca" />),
+    );
+    const wrapper = container.querySelector('[data-testid="picker-fade-wrapper"]');
+    expect(wrapper).toBeInTheDocument();
+  });
+});

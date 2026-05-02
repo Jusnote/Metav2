@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { ChipKey } from './QuestoesFilterChipStrip';
 
 export interface QuestoesFilterPickerProps {
@@ -20,14 +21,34 @@ function StubAno() {
 }
 
 export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) {
+  let content: React.ReactNode;
   switch (activeChip) {
     case 'materia_assuntos':
-      return <StubMateriaAssuntos />;
+      content = <StubMateriaAssuntos />;
+      break;
     case 'banca':
-      return <StubBanca />;
+      content = <StubBanca />;
+      break;
     case 'orgao_cargo':
-      return <StubOrgaoCargo />;
+      content = <StubOrgaoCargo />;
+      break;
     case 'ano':
-      return <StubAno />;
+      content = <StubAno />;
+      break;
   }
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={activeChip}
+        data-testid="picker-fade-wrapper"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      >
+        {content}
+      </motion.div>
+    </AnimatePresence>
+  );
 }
