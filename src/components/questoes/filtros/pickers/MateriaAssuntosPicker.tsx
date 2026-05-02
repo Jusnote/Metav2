@@ -151,8 +151,9 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
     );
   }
 
-  // Toggle umbrella — texto azul elegante, sem caixa, alinhado com os checks
-  // dos assuntos abaixo (px-2 + gap-3, igual ao FilterCheckboxItem).
+  // Toggle umbrella — azul (clicável) → verde (ativo/marcado), sem caixa,
+  // alinhado com os checks dos assuntos abaixo (px-2 + gap-3, igual ao
+  // FilterCheckboxItem).
   const renderUmbrellaToggle = () => (
     <button
       type="button"
@@ -161,7 +162,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       className={[
         'flex items-center gap-3 w-full px-2 py-1.5 rounded-md text-sm text-left transition-colors',
         props.isUmbrella
-          ? 'text-blue-700 font-medium'
+          ? 'text-emerald-700 font-medium'
           : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50/40',
       ].join(' ')}
     >
@@ -169,7 +170,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         className={[
           'inline-flex items-center justify-center w-4 h-4 rounded border text-[10px] leading-none transition-colors shrink-0',
           props.isUmbrella
-            ? 'bg-blue-600 border-blue-600 text-white'
+            ? 'bg-emerald-600 border-emerald-600 text-white'
             : 'border-blue-300',
         ].join(' ')}
       >
