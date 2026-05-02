@@ -76,6 +76,7 @@ describe('filter-serialization', () => {
       especialidades: [],
       tipos: [],
       formatos: [],
+      nodeIds: [],
     };
 
     const params = filtersToSearchParams(original);
@@ -292,5 +293,60 @@ describe('integração: query string pro backend', () => {
     expect(query).toContain('desatualizada=false');
     // E NÃO deve conter o nome interno
     expect(query).not.toContain('visibility_anuladas');
+  });
+});
+
+describe('AppliedFilters — nodeIds', () => {
+  it('EMPTY_FILTERS tem nodeIds = []', () => {
+    expect(EMPTY_FILTERS.nodeIds).toEqual([]);
+  });
+
+  it('serializa nodeIds numéricos como ?node=123&node=456', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      nodeIds: [123, 456],
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.getAll('node')).toEqual(['123', '456']);
+  });
+
+  it('serializa "outros" como string', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      nodeIds: ['outros'],
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.getAll('node')).toEqual(['outros']);
+  });
+
+  it('mistura inteiros e "outros"', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      nodeIds: [123, 'outros', 456],
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.getAll('node')).toEqual(['123', 'outros', '456']);
+  });
+
+  it('parse de URL com node=123&node=outros → nodeIds [123, "outros"]', () => {
+    const params = new URLSearchParams('node=123&node=outros&node=456');
+    const filters = searchParamsToFilters(params);
+    expect(filters.nodeIds).toEqual([123, 'outros', 456]);
+  });
+
+  it('parse ignora valores inválidos (não-numéricos exceto "outros")', () => {
+    const params = new URLSearchParams('node=foo&node=123');
+    const filters = searchParamsToFilters(params);
+    expect(filters.nodeIds).toEqual([123]);
+  });
+
+  it('hasAnyFilter detecta nodeIds.length > 0', () => {
+    const filters: AppliedFilters = { ...EMPTY_FILTERS, nodeIds: [123] };
+    expect(hasAnyFilter(filters)).toBe(true);
+  });
+
+  it('countActiveFilters conta nodeIds.length', () => {
+    const filters: AppliedFilters = { ...EMPTY_FILTERS, nodeIds: [123, 456] };
+    expect(countActiveFilters(filters)).toBe(2);
   });
 });

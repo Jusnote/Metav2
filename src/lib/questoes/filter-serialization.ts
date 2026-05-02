@@ -18,6 +18,8 @@ export interface AppliedFilters {
   especialidades: string[];
   tipos: string[];
   formatos: string[];
+  /** Nós da taxonomia. Aceita 'outros' como sentinela pra questões sem classificação. */
+  nodeIds: (number | 'outros')[];
   /** Pares (orgao, cargo) — formato "ORGAO:CARGO". Adicionado no Plano 3b-bonus. */
   org_cargo_pairs?: string[];
   /** Visibilidade de questões anuladas. Default 'mostrar' (omitido na URL). */
@@ -37,6 +39,7 @@ export const EMPTY_FILTERS: AppliedFilters = {
   especialidades: [],
   tipos: [],
   formatos: [],
+  nodeIds: [],
   org_cargo_pairs: [],
 };
 
@@ -65,6 +68,9 @@ export function filtersToSearchParams(filters: AppliedFilters): URLSearchParams 
     for (const value of filters[key]) {
       params.append(key, String(value));
     }
+  }
+  for (const node of (filters.nodeIds ?? [])) {
+    params.append('node', String(node));
   }
   if (filters.org_cargo_pairs) {
     for (const pair of filters.org_cargo_pairs) {
@@ -95,6 +101,7 @@ export function searchParamsToFilters(params: URLSearchParams): AppliedFilters {
     especialidades: [],
     tipos: [],
     formatos: [],
+    nodeIds: [],
   };
   for (const key of STRING_KEYS) {
     out[key] = params.getAll(key);
@@ -105,6 +112,11 @@ export function searchParamsToFilters(params: URLSearchParams): AppliedFilters {
       .map((v) => Number(v))
       .filter((n) => Number.isFinite(n));
   }
+  out.nodeIds = params.getAll('node').map(v => {
+    if (v === 'outros') return 'outros' as const;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }).filter((v): v is number | 'outros' => v !== null);
   if (params.get('anulada') === 'false') {
     out.visibility_anuladas = 'esconder';
   }
@@ -126,6 +138,7 @@ export function hasAnyFilter(filters: AppliedFilters): boolean {
     filters.especialidades.length > 0 ||
     filters.tipos.length > 0 ||
     filters.formatos.length > 0 ||
+    (filters.nodeIds?.length ?? 0) > 0 ||
     filters.visibility_anuladas === 'esconder' ||
     filters.visibility_desatualizadas === 'esconder'
   );
@@ -143,6 +156,7 @@ export function countActiveFilters(filters: AppliedFilters): number {
     filters.especialidades.length +
     filters.tipos.length +
     filters.formatos.length +
+    (filters.nodeIds?.length ?? 0) +
     (filters.visibility_anuladas === 'esconder' ? 1 : 0) +
     (filters.visibility_desatualizadas === 'esconder' ? 1 : 0)
   );
