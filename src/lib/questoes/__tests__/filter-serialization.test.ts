@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   filtersToSearchParams,
   searchParamsToFilters,
+  hasAnyFilter,
+  countActiveFilters,
   EMPTY_FILTERS,
   type AppliedFilters,
   type VisibilityState,
@@ -225,5 +227,51 @@ describe('round-trip: filters → params → filters', () => {
     const params = filtersToSearchParams(original);
     const restored = searchParamsToFilters(params);
     expect(restored.visibility_desatualizadas).toBe('esconder');
+  });
+});
+
+describe('hasAnyFilter — visibility toggles', () => {
+  it('só visibility_anuladas=esconder conta como filtro', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    expect(hasAnyFilter(filters)).toBe(true);
+  });
+
+  it('visibility_anuladas=mostrar não conta', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+    };
+    expect(hasAnyFilter(filters)).toBe(false);
+  });
+});
+
+describe('countActiveFilters — visibility toggles', () => {
+  it('visibility_anuladas=esconder conta +1', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    expect(countActiveFilters(filters)).toBe(1);
+  });
+
+  it('ambos esconder conta +2', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+      visibility_desatualizadas: 'esconder',
+    };
+    expect(countActiveFilters(filters)).toBe(2);
+  });
+
+  it('mostrar não conta', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+      visibility_desatualizadas: 'mostrar',
+    };
+    expect(countActiveFilters(filters)).toBe(0);
   });
 });

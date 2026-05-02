@@ -125,7 +125,9 @@ export function hasAnyFilter(filters: AppliedFilters): boolean {
     filters.areas_concurso.length > 0 ||
     filters.especialidades.length > 0 ||
     filters.tipos.length > 0 ||
-    filters.formatos.length > 0
+    filters.formatos.length > 0 ||
+    filters.visibility_anuladas === 'esconder' ||
+    filters.visibility_desatualizadas === 'esconder'
   );
 }
 
@@ -140,6 +142,8 @@ export function countActiveFilters(filters: AppliedFilters): number {
     filters.areas_concurso.length +
     filters.especialidades.length +
     filters.tipos.length +
-    filters.formatos.length
+    filters.formatos.length +
+    (filters.visibility_anuladas === 'esconder' ? 1 : 0) +
+    (filters.visibility_desatualizadas === 'esconder' ? 1 : 0)
   );
 }
