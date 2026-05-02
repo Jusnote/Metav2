@@ -196,6 +196,25 @@ describe('reset()', () => {
     expect(result.current.pendentes.bancas).toEqual(['cespe']);
     expect(result.current.isDirty).toBe(false);
   });
+
+  it('limpa sessionStorage após reset()', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes']),
+    });
+
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+    expect(sessionStorage.getItem('questoes_filter_draft')).not.toBeNull();
+
+    act(() => {
+      result.current.reset();
+    });
+    expect(sessionStorage.getItem('questoes_filter_draft')).toBeNull();
+  });
 });
 
 describe('sessionStorage persistence', () => {

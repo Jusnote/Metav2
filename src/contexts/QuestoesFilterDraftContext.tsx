@@ -108,6 +108,7 @@ export function QuestoesFilterDraftProvider({
 
   const reset = useCallback(() => {
     setPendentesState(aplicados);
+    clearDraft();
   }, [aplicados]);
 
   const aplicadosRef = useRef(aplicados);
