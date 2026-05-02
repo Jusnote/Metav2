@@ -118,3 +118,44 @@ describe('AppliedFilters — visibility toggles', () => {
     expect(EMPTY_FILTERS.visibility_desatualizadas).toBeUndefined();
   });
 });
+
+describe('filtersToSearchParams — visibility toggles', () => {
+  it('default "mostrar" não aparece na URL', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+      visibility_desatualizadas: 'mostrar',
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.has('anulada')).toBe(false);
+    expect(params.has('desatualizada')).toBe(false);
+  });
+
+  it('undefined não aparece na URL', () => {
+    const filters: AppliedFilters = { ...EMPTY_FILTERS };
+    const params = filtersToSearchParams(filters);
+    expect(params.has('anulada')).toBe(false);
+    expect(params.has('desatualizada')).toBe(false);
+  });
+
+  it('"esconder" vira ?anulada=false', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.get('anulada')).toBe('false');
+    expect(params.has('desatualizada')).toBe(false);
+  });
+
+  it('ambos "esconder" produzem anulada=false e desatualizada=false', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+      visibility_desatualizadas: 'esconder',
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.get('anulada')).toBe('false');
+    expect(params.get('desatualizada')).toBe('false');
+  });
+});

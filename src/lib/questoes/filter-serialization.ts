@@ -71,6 +71,15 @@ export function filtersToSearchParams(filters: AppliedFilters): URLSearchParams 
       params.append('org_cargo_pairs', pair);
     }
   }
+  // visibility toggles → params do backend (anulada / desatualizada bool)
+  // 'esconder' = "filtrar fora" → anulada=false / desatualizada=false
+  // 'mostrar' / undefined = sem filtro (omitido)
+  if (filters.visibility_anuladas === 'esconder') {
+    params.set('anulada', 'false');
+  }
+  if (filters.visibility_desatualizadas === 'esconder') {
+    params.set('desatualizada', 'false');
+  }
   return params;
 }
 
