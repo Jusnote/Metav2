@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { QuestoesFilterDraftProvider } from '@/contexts/QuestoesFilterDraftContext';
 import { EMPTY_FILTERS } from '@/lib/questoes/filter-serialization';
@@ -11,6 +11,12 @@ function wrapper(initialEntries: string[] = ['/']) {
       <QuestoesFilterDraftProvider>{children}</QuestoesFilterDraftProvider>
     </MemoryRouter>
   );
+}
+
+function useProbeWithLocation() {
+  const draft = useFiltrosPendentes();
+  const location = useLocation();
+  return { draft, location };
 }
 
 describe('useFiltrosPendentes — fora do provider', () => {
@@ -116,5 +122,51 @@ describe('isDirty', () => {
       });
     });
     expect(result.current.isDirty).toBe(false);
+  });
+});
+
+describe('apply()', () => {
+  it('escreve pendentes na URL e zera isDirty', () => {
+    const { result } = renderHook(() => useProbeWithLocation(), {
+      wrapper: wrapper(['/questoes']),
+    });
+
+    act(() => {
+      result.current.draft.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+    expect(result.current.draft.isDirty).toBe(true);
+
+    act(() => {
+      result.current.draft.apply();
+    });
+
+    expect(result.current.location.search).toContain('bancas=cespe');
+    expect(result.current.draft.isDirty).toBe(false);
+    expect(result.current.draft.aplicados.bancas).toEqual(['cespe']);
+  });
+
+  it('apply preserva search param `view` se existir', () => {
+    const { result, rerender } = renderHook(() => useProbeWithLocation(), {
+      wrapper: wrapper(['/questoes?view=filtros']),
+    });
+
+    act(() => {
+      result.current.draft.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+
+    act(() => {
+      result.current.draft.apply();
+    });
+
+    rerender();
+
+    expect(result.current.location.search).toContain('view=filtros');
+    expect(result.current.location.search).toContain('bancas=cespe');
   });
 });
