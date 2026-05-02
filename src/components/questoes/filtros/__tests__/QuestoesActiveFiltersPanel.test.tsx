@@ -1,8 +1,26 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { QuestoesActiveFiltersPanel } from '../QuestoesActiveFiltersPanel';
 import { EMPTY_FILTERS } from '@/lib/questoes/filter-serialization';
 import type { FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
+
+// Mock dos hooks de taxonomia. Por padrão: sem matérias com taxonomia.
+// Testes específicos de Phase 2 sobrescrevem com vi.mocked(...).mockReturnValue.
+vi.mock('@/hooks/useMaterias', () => ({
+  useMaterias: vi.fn(() => ({ data: [], isLoading: false })),
+}));
+vi.mock('@/hooks/useTaxonomia', async () => {
+  const actual = await vi.importActual<typeof import('@/hooks/useTaxonomia')>(
+    '@/hooks/useTaxonomia',
+  );
+  return {
+    ...actual,
+    useTaxonomia: vi.fn(() => ({ data: undefined, isLoading: false })),
+  };
+});
+
+import { QuestoesActiveFiltersPanel } from '../QuestoesActiveFiltersPanel';
+import { useMaterias } from '@/hooks/useMaterias';
+import { useTaxonomia } from '@/hooks/useTaxonomia';
 
 const mockDicionario: FiltrosDicionario = {
   bancas: {},
@@ -328,5 +346,211 @@ describe('QuestoesActiveFiltersPanel — grupos por matéria', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /remover Atos administrativos/i }));
     expect(onChange).toHaveBeenCalledWith({ assuntos: ['Licitações'] });
+  });
+});
+
+describe('QuestoesActiveFiltersPanel — taxonomia (nodeIds)', () => {
+  const mockMateria = {
+    slug: 'direito-administrativo',
+    nome: 'Direito Administrativo',
+    fontes: ['gran'],
+    total_nodes: 499,
+    total_questoes_classificadas: 100000,
+    last_updated: null,
+  };
+
+  const mockTree = [
+    {
+      id: 1,
+      nome: 'Atos administrativos',
+      hierarquia: null,
+      is_sintetico: false,
+      is_virtual: false,
+      fonte: null,
+      children: [
+        {
+          id: 2,
+          nome: 'Discricionários',
+          hierarquia: null,
+          is_sintetico: false,
+          is_virtual: false,
+          fonte: null,
+          children: [],
+        },
+      ],
+    },
+  ];
+
+  it('renderiza nodeIds com labels da taxonomia', () => {
+    vi.mocked(useMaterias).mockReturnValue({
+      data: [mockMateria],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useMaterias>);
+    vi.mocked(useTaxonomia).mockReturnValue({
+      data: {
+        materia: 'Direito Administrativo',
+        fontes: ['gran'],
+        tree: mockTree,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTaxonomia>);
+
+    render(
+      <QuestoesActiveFiltersPanel
+        pendentes={{
+          ...EMPTY_FILTERS,
+          materias: ['Direito Administrativo'],
+          nodeIds: [2],
+        }}
+        aplicados={EMPTY_FILTERS}
+        isDirty={true}
+        count={500}
+        onApply={() => {}}
+        onChange={() => {}}
+        dicionario={mockDicionario}
+      />,
+    );
+
+    expect(screen.getByText('Discricionários')).toBeInTheDocument();
+  });
+
+  it("renderiza 'outros' como 'Não classificados'", () => {
+    vi.mocked(useMaterias).mockReturnValue({
+      data: [mockMateria],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useMaterias>);
+    vi.mocked(useTaxonomia).mockReturnValue({
+      data: {
+        materia: 'Direito Administrativo',
+        fontes: ['gran'],
+        tree: mockTree,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTaxonomia>);
+
+    render(
+      <QuestoesActiveFiltersPanel
+        pendentes={{
+          ...EMPTY_FILTERS,
+          materias: ['Direito Administrativo'],
+          nodeIds: ['outros'],
+        }}
+        aplicados={EMPTY_FILTERS}
+        isDirty={true}
+        count={500}
+        onApply={() => {}}
+        onChange={() => {}}
+        dicionario={mockDicionario}
+      />,
+    );
+
+    expect(screen.getByText('Não classificados')).toBeInTheDocument();
+  });
+
+  it('remover matéria com taxonomia limpa nodeIds órfãos', () => {
+    vi.mocked(useMaterias).mockReturnValue({
+      data: [mockMateria],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useMaterias>);
+    vi.mocked(useTaxonomia).mockReturnValue({
+      data: {
+        materia: 'Direito Administrativo',
+        fontes: ['gran'],
+        tree: mockTree,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTaxonomia>);
+
+    const onChange = vi.fn();
+    render(
+      <QuestoesActiveFiltersPanel
+        pendentes={{
+          ...EMPTY_FILTERS,
+          materias: ['Direito Administrativo'],
+          nodeIds: [2],
+        }}
+        aplicados={EMPTY_FILTERS}
+        isDirty={true}
+        count={500}
+        onApply={() => {}}
+        onChange={onChange}
+        dicionario={mockDicionario}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /limpar matéria Direito Administrativo/i }),
+    );
+    expect(onChange).toHaveBeenCalledWith({
+      materias: [],
+      assuntos: [],
+      nodeIds: [],
+    });
+  });
+
+  it('remover individual nodeId atualiza pendentes.nodeIds', () => {
+    vi.mocked(useMaterias).mockReturnValue({
+      data: [mockMateria],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useMaterias>);
+    vi.mocked(useTaxonomia).mockReturnValue({
+      data: {
+        materia: 'Direito Administrativo',
+        fontes: ['gran'],
+        tree: mockTree,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTaxonomia>);
+
+    const onChange = vi.fn();
+    render(
+      <QuestoesActiveFiltersPanel
+        pendentes={{
+          ...EMPTY_FILTERS,
+          materias: ['Direito Administrativo'],
+          nodeIds: [2, 'outros'],
+        }}
+        aplicados={EMPTY_FILTERS}
+        isDirty={true}
+        count={500}
+        onApply={() => {}}
+        onChange={onChange}
+        dicionario={mockDicionario}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /remover Discricionários/i }));
+    expect(onChange).toHaveBeenCalledWith({ nodeIds: ['outros'] });
+  });
+
+  it('não crasha quando dicionário=null', () => {
+    vi.mocked(useMaterias).mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useMaterias>);
+    vi.mocked(useTaxonomia).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTaxonomia>);
+
+    render(
+      <QuestoesActiveFiltersPanel
+        pendentes={{
+          ...EMPTY_FILTERS,
+          materias: ['Direito Administrativo'],
+          assuntos: ['Atos administrativos'],
+        }}
+        aplicados={EMPTY_FILTERS}
+        isDirty={true}
+        count={500}
+        onApply={() => {}}
+        onChange={() => {}}
+        dicionario={null}
+      />,
+    );
+
+    // Sem dicionário, getAssuntosForMateria retorna [] → mostra "todos os assuntos"
+    expect(screen.getByText('MATÉRIA: Direito Administrativo')).toBeInTheDocument();
+    expect(screen.getByText('todos os assuntos')).toBeInTheDocument();
   });
 });
