@@ -3,6 +3,7 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { ChipKey } from './QuestoesFilterChipStrip';
 import { BancaPicker } from './pickers/BancaPicker';
+import { AnoPicker } from './pickers/AnoPicker';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
@@ -35,8 +36,22 @@ function BancaPickerAdapter() {
 function StubOrgaoCargo() {
   return <div data-testid="picker-orgao-cargo" className="p-4">Órgão · Cargo (stub)</div>;
 }
-function StubAno() {
-  return <div data-testid="picker-ano" className="p-4">Ano (stub)</div>;
+
+function AnoPickerAdapter() {
+  const { pendentes, setPendentes } = useFiltrosPendentes();
+  const { dicionario } = useFiltrosDicionario();
+  const { facets } = useQuestoesFacets(pendentes);
+
+  return (
+    <div data-testid="picker-ano">
+      <AnoPicker
+        dicionario={dicionario ?? null}
+        facets={facets.ano}
+        selected={pendentes.anos}
+        onChange={(next) => setPendentes({ ...pendentes, anos: next })}
+      />
+    </div>
+  );
 }
 
 export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) {
@@ -52,7 +67,7 @@ export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) 
       content = <StubOrgaoCargo />;
       break;
     case 'ano':
-      content = <StubAno />;
+      content = <AnoPickerAdapter />;
       break;
   }
 
