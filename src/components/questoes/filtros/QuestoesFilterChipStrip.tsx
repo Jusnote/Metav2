@@ -12,9 +12,9 @@ export interface ChipDef {
 }
 
 export const CHIPS: ChipDef[] = [
-  { key: 'materia_assuntos', label: 'Matéria · Assuntos', icon: Library },
+  { key: 'materia_assuntos', label: 'Matéria → Assuntos', icon: Library },
   { key: 'banca', label: 'Banca', icon: Building2 },
-  { key: 'orgao_cargo', label: 'Órgão · Cargo', icon: Landmark },
+  { key: 'orgao_cargo', label: 'Órgão → Cargo', icon: Landmark },
   { key: 'ano', label: 'Ano', icon: Calendar },
 ];
 
