@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
+import { QuestoesFilterDraftProvider } from "@/contexts/QuestoesFilterDraftContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
 import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
@@ -152,14 +153,14 @@ export default function QuestoesPage() {
 
           {/* View content */}
           {filterView === 'filtros' && (
-            <>
+            <QuestoesFilterDraftProvider>
               {/* Seção OBJETIVO — só na aba Filtros */}
               <ObjetivoSection />
               <div className="pt-2 pb-2">
                 <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
               </div>
               <FilterChipsBidirectional onSearch={handleSearch} />
-            </>
+            </QuestoesFilterDraftProvider>
           )}
 
           {filterView === 'semantico' && (
