@@ -13,11 +13,11 @@ export function QuestoesFilterDrawer({
   return (
     <div
       data-testid="drawer-grid"
-      className="grid"
+      className="grid max-h-[70vh] min-h-[480px]"
       style={{ gridTemplateColumns: '3fr 2fr' }}
     >
-      <div className="border-r border-slate-200">{left}</div>
-      <div>{right}</div>
+      <div className="border-r border-slate-200 overflow-y-auto">{left}</div>
+      <div className="overflow-y-auto">{right}</div>
     </div>
   );
 }
