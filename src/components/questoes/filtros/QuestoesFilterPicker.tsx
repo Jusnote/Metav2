@@ -78,18 +78,15 @@ function MateriaAssuntosPickerAdapter() {
     return (nome: string) => set.has(nome);
   }, [materiasComTaxonomia]);
 
-  // Sincroniza com mudanças externas em pendentes.materias quando a
-  // matéria atualmente em vista foi removida do filtro (× no painel direito).
-  useEffect(() => {
-    if (viewingMateria !== null && !pendentes.materias.includes(viewingMateria)) {
-      setViewingMateria(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendentes.materias]);
+  // Navegação (viewingMateria) é ortogonal ao filtro (pendentes.materias):
+  // o usuário pode estar vendo assuntos de uma matéria mesmo sem ela no filtro.
+  // Ex: clica "Todo conteúdo desta matéria" → ON → OFF: deve permanecer no
+  // detalhe; antes fechava porque a matéria saía de pendentes.materias e um
+  // efeito de sincronia reseta viewingMateria. Saída só via "← Voltar".
 
   // Sincroniza umbrella set com mudanças externas em pendentes.materias.
-  // Se uma matéria saiu de pendentes.materias (× no painel direito),
-  // remove ela do umbrella set também.
+  // Se uma matéria saiu de pendentes.materias (× no painel direito ou
+  // qualquer outro caminho), remove do umbrella set pra não ficar inconsistente.
   useEffect(() => {
     setUmbrellaMaterias((prev) => {
       const next = new Set(prev);
