@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { OrgaoListView } from './orgao-cargo/OrgaoListView';
 import { OrgaoDrilldownView } from './orgao-cargo/OrgaoDrilldownView';
 import { CargoFlatSearchView } from './orgao-cargo/CargoFlatSearchView';
@@ -16,6 +16,12 @@ export interface OrgaoCargoPickerProps {
   facetsCargo: Record<string, number>;
   /** Total de questões do órgão drilled (vindo de facets.orgao[orgao_atual]) */
   drilldownOrgaoTotalCount?: number;
+  /**
+   * Notifica o pai sobre mudanças de modo. Pai usa o `orgao` recebido pra
+   * augmentar a request de facets (filtrando cargos pelo órgão drilled),
+   * sem afetar a seleção real do usuário. null = saiu do drilldown.
+   */
+  onDrilldownChange?: (orgao: string | null) => void;
 }
 
 export function OrgaoCargoPicker({
@@ -24,8 +30,17 @@ export function OrgaoCargoPicker({
   actions,
   facetsCargo,
   drilldownOrgaoTotalCount,
+  onDrilldownChange,
 }: OrgaoCargoPickerProps) {
   const [view, setView] = useState<ViewMode>('list');
+
+  useEffect(() => {
+    if (typeof view === 'object' && view.type === 'drilldown') {
+      onDrilldownChange?.(view.orgao);
+    } else {
+      onDrilldownChange?.(null);
+    }
+  }, [view, onDrilldownChange]);
 
   if (view === 'list') {
     return (
