@@ -120,7 +120,7 @@ describe('MateriaAssuntosPicker — Mode 1 (lista) lazy-add', () => {
 });
 
 describe('MateriaAssuntosPicker — Mode 2 (taxonomia) umbrella', () => {
-  it('mostra botão "Todo o conteúdo de [matéria]"', () => {
+  it('mostra botão "Todo conteúdo desta matéria"', () => {
     render(
       <MateriaAssuntosPicker
         {...defaultProps}
@@ -128,7 +128,7 @@ describe('MateriaAssuntosPicker — Mode 2 (taxonomia) umbrella', () => {
       />,
     );
     expect(
-      screen.getByText(/Todo o conteúdo de Direito Administrativo/i),
+      screen.getByText(/Todo conteúdo desta matéria/i),
     ).toBeInTheDocument();
   });
 
@@ -141,7 +141,7 @@ describe('MateriaAssuntosPicker — Mode 2 (taxonomia) umbrella', () => {
       />,
     );
     const btn = screen.getByRole('button', {
-      name: /Todo o conteúdo de Direito Administrativo/i,
+      name: /Todo conteúdo desta matéria/i,
     });
     expect(btn.getAttribute('aria-pressed')).toBe('true');
     // Tree fica em wrapper com pointer-events-none
@@ -159,7 +159,7 @@ describe('MateriaAssuntosPicker — Mode 2 (taxonomia) umbrella', () => {
       />,
     );
     const btn = screen.getByRole('button', {
-      name: /Todo o conteúdo de Direito Administrativo/i,
+      name: /Todo conteúdo desta matéria/i,
     });
     fireEvent.click(btn);
     expect(onUmbrellaToggle).toHaveBeenCalledTimes(1);
@@ -176,7 +176,7 @@ describe('MateriaAssuntosPicker — Mode 3 (flat) umbrella', () => {
       />,
     );
     expect(
-      screen.getByText(/Todo o conteúdo de Direito Civil/i),
+      screen.getByText(/Todo conteúdo desta matéria/i),
     ).toBeInTheDocument();
     const disabled = container.querySelector('.pointer-events-none');
     expect(disabled).not.toBeNull();

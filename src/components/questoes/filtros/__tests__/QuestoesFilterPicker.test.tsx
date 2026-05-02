@@ -250,7 +250,7 @@ describe('MateriaAssuntosPickerAdapter — lazy-add + umbrella', () => {
     expect(materias).toEqual([]);
   });
 
-  it('umbrella toggle on (botão "Todo o conteúdo de X") adiciona matéria + limpa específicos', () => {
+  it('umbrella toggle on (botão "Todo conteúdo desta matéria") adiciona matéria + limpa específicos', () => {
     render(
       withProviders(
         <>
@@ -271,7 +271,7 @@ describe('MateriaAssuntosPickerAdapter — lazy-add + umbrella', () => {
 
     // Toggle umbrella on → assuntos limpos, matéria mantida
     const umbrellaBtn = screen.getByRole('button', {
-      name: /Todo o conteúdo de Direito Civil/i,
+      name: /Todo conteúdo desta matéria/i,
     });
     fireEvent.click(umbrellaBtn);
 
@@ -294,7 +294,7 @@ describe('MateriaAssuntosPickerAdapter — lazy-add + umbrella', () => {
 
     fireEvent.click(screen.getByText('Direito Civil'));
     const umbrellaBtn = screen.getByRole('button', {
-      name: /Todo o conteúdo de Direito Civil/i,
+      name: /Todo conteúdo desta matéria/i,
     });
     fireEvent.click(umbrellaBtn); // on
     fireEvent.click(umbrellaBtn); // off

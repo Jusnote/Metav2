@@ -176,7 +176,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       >
         {props.isUmbrella && '✓'}
       </span>
-      Todo o conteúdo de {props.materia}
+      Todo conteúdo desta matéria
     </button>
   );
 
