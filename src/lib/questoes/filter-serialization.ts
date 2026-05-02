@@ -5,6 +5,8 @@
  * pra query da listagem. Hooks e componentes leem daqui e escrevem aqui.
  */
 
+export type VisibilityState = 'mostrar' | 'esconder';
+
 export interface AppliedFilters {
   bancas: string[];
   anos: number[];
@@ -18,6 +20,10 @@ export interface AppliedFilters {
   formatos: string[];
   /** Pares (orgao, cargo) — formato "ORGAO:CARGO". Adicionado no Plano 3b-bonus. */
   org_cargo_pairs?: string[];
+  /** Visibilidade de questões anuladas. Default 'mostrar' (omitido na URL). */
+  visibility_anuladas?: VisibilityState;
+  /** Visibilidade de questões desatualizadas. Default 'mostrar' (omitido na URL). */
+  visibility_desatualizadas?: VisibilityState;
 }
 
 export const EMPTY_FILTERS: AppliedFilters = {
