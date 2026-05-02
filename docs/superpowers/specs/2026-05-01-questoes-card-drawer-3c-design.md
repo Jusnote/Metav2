@@ -28,13 +28,17 @@ Cada sub-plano entrega valor visível e testável isolado:
 
 ## Decisões fechadas neste brainstorm (2026-05-01)
 
-### (1) Chip strip — 6 chips fixos
+### (1) Chip strip — 4 chips fixos
 
-Sem "Mais ⌄". Sequência:
+Sem "Mais ⌄", sem "Área (Carreira)", sem "Escolaridade". Sequência:
 
 ```
-📚 Matéria · Assuntos | 🏛 Banca | 🏢 Órgão · Cargo | 📅 Ano | 🎯 Área (Carreira) | 🎓 Escolaridade
+📚 Matéria · Assuntos | 🏛 Banca | 🏢 Órgão · Cargo | 📅 Ano
 ```
+
+**Por que 4 e não 6:**
+- "Área (Carreira)" foi removido por **redundância com OBJETIVO** — a seção OBJETIVO acima do card já é a UI canônica de carreira/área, com hierarquia visual (tabs = área, cards = cargo). Duplicar como chip textual é regressão de UX e ambíguo (filtra área macro ou cargo específico?). Quando aluno quer área sem foco, usa OBJETIVO=TODAS + tab da área.
+- "Escolaridade" foi removido porque **não existe nos dados** — sem coluna no banco, sem coluna na ingestão, sem dicionário. Implementar exigiria pipeline novo. Volta como spec separado quando virar prioridade real.
 
 - Chip ativa: **underline** de 2px abaixo do label na cor de texto primária do tema (`#1f2937`/cinza-escuro, igual ao texto de heading). Sem fundo branco, sem badge.
 - Chip inativa: ícone + label cinza, hover claro
@@ -220,31 +224,14 @@ src/components/questoes/filtros/
   QuestoesFilterChipStrip.tsx                       novo (6 chips + Framer Motion)
   QuestoesFilterDrawer.tsx                          novo (layout 60/40)
   QuestoesFilterPicker.tsx                          novo (wrapper que escolhe sub-picker)
-  pickers/
-    EscolaridadePicker.tsx                          novo (lista alfabética com FilterCheckboxItem + facet count)
-    AreaCarreiraPicker.tsx                          novo (lista de carreiras, fonte useCarreiras)
 src/hooks/
   useQuestoesFacets.ts                              extender (prop `enabled`)
 ```
 
-**Pickers existentes** (Banca, Ano, Órgão+Cargo, Matéria+Assuntos) — apenas wiring dentro do `QuestoesFilterPicker`, sem mudar internals.
+**Pickers existentes reutilizados** (zero novos componentes de picker neste plano):
+- BancaPicker, AnoPicker, OrgaoCargoPicker, MateriaAssuntosPicker — wiring dentro do `QuestoesFilterPicker`, sem mudar internals.
 
-**Pickers novos:**
-- `EscolaridadePicker`: lista alfabética simples + facet count via `useQuestoesFacets`. **⚠️ Depende de backend:** `escolaridades: string[]` precisa ser adicionado ao endpoint `GET /api/v1/filtros/dicionario`. Trabalho mínimo (1 query distinct + serializer); deve ser primeira task do 3c-2.
-- `AreaCarreiraPicker`: lista das áreas de carreira como filtro discreto. **⚠️ Decidir fonte de dados antes do 3c-2:**
-  - **Opção A:** usar `useCarreiras` (mesma fonte do OBJETIVO) — verificar se é Supabase ou mock; alinhar nome "carreira" vs filtro backend `areas_concurso`
-  - **Opção B:** adicionar `areas_concurso: string[]` ao dicionário (paralelo ao escolaridades), e `AreaCarreiraPicker` consome dele direto
-
-Ambas opções aceitam facet count via `useQuestoesFacets.facets.area_concurso`. Decidir no início do 3c-2 olhando o código de `useCarreiras`.
-
-### Pré-requisitos backend para 3c-2
-
-| Item | Trabalho | Bloqueador? |
-|---|---|---|
-| `escolaridades` no dicionário | 1 query distinct + serializer | ✅ sim |
-| Fonte "Área (Carreira)" | decidir A vs B + possível alteração de dicionário | ✅ sim |
-
-**Estratégia:** primeira task do 3c-2 = "Backend mini-update do dicionário" (Plano 3c-2-pre se virar grande, ou primeira sub-task se ficar pequeno).
+**Sem pré-requisitos backend para 3c-2.** Todo o backend necessário (count, facets, pair filtering, dicionário) já está mergeado.
 
 **Skeleton state:** todo picker que depende de `useQuestoesFacets` mostra skeleton (cinza claro + animação pulse) enquanto `loading && !facets`. Sem dados stale.
 
@@ -314,6 +301,8 @@ Eventos no 3c-3:
 - **Filter presets ("Carregar ↑" funcional)** — link existe disabled. Spec separado quando virar feature.
 - **"Editar qtd."** — feature deferida.
 - **`Mais ⌄` (overflow chip)** — removido do design.
+- **Chip "Área (Carreira)"** — removido por redundância com OBJETIVO.
+- **Chip "Escolaridade"** — removido por falta de dados (volta como spec separado quando virar prioridade).
 - **Tab Questões** — já implementada Plano 2.
 
 ## Critérios de pronto (Definition of Done)
