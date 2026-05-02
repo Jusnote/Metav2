@@ -1,7 +1,8 @@
 'use client';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { AppliedFilters } from '@/lib/questoes/filter-serialization';
-import { EMPTY_FILTERS } from '@/lib/questoes/filter-serialization';
+import { EMPTY_FILTERS, searchParamsToFilters } from '@/lib/questoes/filter-serialization';
 
 export interface QuestoesFilterDraftValue {
   pendentes: AppliedFilters;
@@ -31,10 +32,16 @@ export function QuestoesFilterDraftProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Stub mínimo. Implementação real virá nas próximas tasks (6-12).
+  const [searchParams] = useSearchParams();
+
+  const aplicados = useMemo(
+    () => searchParamsToFilters(searchParams),
+    [searchParams],
+  );
+
   const value: QuestoesFilterDraftValue = {
-    pendentes: EMPTY_FILTERS,
-    aplicados: EMPTY_FILTERS,
+    pendentes: aplicados, // por enquanto só aplicados; tasks 7+ adicionam state real
+    aplicados,
     isDirty: false,
     setPendentes: () => {},
     apply: () => {},
