@@ -857,7 +857,7 @@ Adiciona:
 ```tsx
 import { useLocation } from 'react-router-dom';
 
-function ProbeWithLocation() {
+function useProbeWithLocation() {
   const draft = useFiltrosPendentes();
   const location = useLocation();
   return { draft, location };
@@ -865,7 +865,7 @@ function ProbeWithLocation() {
 
 describe('apply()', () => {
   it('escreve pendentes na URL e zera isDirty', () => {
-    const { result } = renderHook(() => ProbeWithLocation(), {
+    const { result } = renderHook(() => useProbeWithLocation(), {
       wrapper: wrapper(['/questoes']),
     });
 
@@ -887,7 +887,7 @@ describe('apply()', () => {
   });
 
   it('apply preserva search param `view` se existir', () => {
-    const { result } = renderHook(() => ProbeWithLocation(), {
+    const { result } = renderHook(() => useProbeWithLocation(), {
       wrapper: wrapper(['/questoes?view=filtros']),
     });
 
@@ -1228,7 +1228,7 @@ Adiciona:
 ```tsx
 import { useNavigate } from 'react-router-dom';
 
-function ProbeWithNav() {
+function useProbeWithNav() {
   const draft = useFiltrosPendentes();
   const navigate = useNavigate();
   return { draft, navigate };
@@ -1236,7 +1236,7 @@ function ProbeWithNav() {
 
 describe('navegação externa (back/forward)', () => {
   it('aplicados muda quando URL muda; pendentes acompanha se não estiver dirty', () => {
-    const { result } = renderHook(() => ProbeWithNav(), {
+    const { result } = renderHook(() => useProbeWithNav(), {
       wrapper: wrapper(['/questoes']),
     });
 
@@ -1345,48 +1345,78 @@ git commit -m "test(questoes): smoke test integração URL → backend (visibili
 
 ---
 
-## Task 14: Adicionar `QuestoesFilterDraftProvider` ao `QuestoesPage` atrás da feature flag
+## Task 14: Montar `QuestoesFilterDraftProvider` em volta do bloco da tab Filtros
 
 **Files:**
-- Modify: `src/views/QuestoesPage.tsx` (provider mount, sem UI ainda)
-- Test: smoke manual
+- Modify: `src/views/QuestoesPage.tsx:154-163` (bloco `{filterView === 'filtros' && ...}`)
 
-> **Nota:** O 3c-3 vai ativar UI atrás da flag. Aqui só montamos o provider pra que `useFiltrosPendentes` esteja disponível em qualquer descendente.
+> **Nota:** O 3c-3 vai ativar UI atrás da flag. Aqui só montamos o provider pra que `useFiltrosPendentes` esteja disponível em qualquer descendente futuro. `QuestoesFilterBar` legacy não consome esse hook, então é zero-impacto visual.
 
-- [ ] **Step 14.1: Ler estrutura atual do QuestoesPage**
+> **Decisão:** o provider envolve **só** o bloco da tab Filtros principal (linhas 154-163). **NÃO** envolve a `QuestoesFilterBar` dentro do overlay Ctrl+K (linha ~212) — esse overlay continua usando o caminho legacy isoladamente, sem precisar de draft state.
 
-Run: `cat src/views/QuestoesPage.tsx | head -50`
+- [ ] **Step 14.1: Adicionar import**
 
-Identifica onde providers são montados e onde a tab Filtros é renderizada.
-
-- [ ] **Step 14.2: Envelopar a árvore de Filtros com o novo provider (sempre, sem flag — o provider em si é inerte sem consumidores)**
-
-Procurar bloco que renderiza a tab Filtros (geralmente um `if (view === 'filtros')` ou switch). Envolver:
+Em `src/views/QuestoesPage.tsx`, adicionar junto aos outros imports:
 
 ```tsx
 import { QuestoesFilterDraftProvider } from '@/contexts/QuestoesFilterDraftContext';
-
-// ... no JSX da tab Filtros:
-<QuestoesFilterDraftProvider>
-  <QuestoesFilterBar />  {/* legacy ainda — 3c-3 que troca pelo card novo */}
-</QuestoesFilterDraftProvider>
 ```
 
-> **Importante:** o provider sempre monta; só consumidor (UI nova) virá no 3c-3 atrás de flag. Não há risco de regressão porque `QuestoesFilterBar` legacy não chama `useFiltrosPendentes`.
+- [ ] **Step 14.2: Envolver o bloco `filterView === 'filtros'` com o provider**
 
-- [ ] **Step 14.3: Verificar que o app compila e roda**
+**Código atual** (linhas ~154-163):
 
-Run: `npm run build:dev` ou `npx tsc --noEmit`
-Expected: zero erros TypeScript.
+```tsx
+{filterView === 'filtros' && (
+  <>
+    {/* Seção OBJETIVO — só na aba Filtros */}
+    <ObjetivoSection />
+    <div className="pt-2 pb-2">
+      <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
+    </div>
+    <FilterChipsBidirectional onSearch={handleSearch} />
+  </>
+)}
+```
 
-Run: `npm run dev` em terminal separado, abrir `http://localhost:3000/questoes?view=filtros`
-Expected: página renderiza igual a antes (provider inerte).
+**Substituir por:**
 
-- [ ] **Step 14.4: Commit**
+```tsx
+{filterView === 'filtros' && (
+  <QuestoesFilterDraftProvider>
+    {/* Seção OBJETIVO — só na aba Filtros */}
+    <ObjetivoSection />
+    <div className="pt-2 pb-2">
+      <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
+    </div>
+    <FilterChipsBidirectional onSearch={handleSearch} />
+  </QuestoesFilterDraftProvider>
+)}
+```
+
+(Trocar `<>` `</>` por `<QuestoesFilterDraftProvider>` `</QuestoesFilterDraftProvider>` — Fragment não é mais necessário porque o provider já é o wrapper único.)
+
+- [ ] **Step 14.3: TypeCheck**
+
+Run: `npx tsc --noEmit`
+Expected: zero erros novos.
+
+- [ ] **Step 14.4: Smoke test no dev server**
+
+Em terminal separado: `npm run dev`
+Abrir: `http://localhost:3000/questoes?view=filtros`
+
+Expected:
+- Página renderiza idêntica à versão anterior
+- OBJETIVO + QuestoesFilterBar legacy funcionam normal
+- Console sem warnings novos
+- Trocar de tab pra Cadernos/Questões/Semântico e voltar funciona
+
+- [ ] **Step 14.5: Commit**
 
 ```bash
 git add src/views/QuestoesPage.tsx
-git commit -m "feat(questoes): montar QuestoesFilterDraftProvider em volta da tab Filtros (provider inerte sem consumidores)"
+git commit -m "feat(questoes): montar QuestoesFilterDraftProvider na tab Filtros (provider inerte; 3c-3 ativa UI)"
 ```
 
 ---
