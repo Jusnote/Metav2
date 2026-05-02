@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { ChipKey } from './QuestoesFilterChipStrip';
 import { BancaPicker } from './pickers/BancaPicker';
 import { AnoPicker } from './pickers/AnoPicker';
+import { MateriaAssuntosPicker } from './pickers/MateriaAssuntosPicker';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
@@ -12,8 +13,36 @@ export interface QuestoesFilterPickerProps {
   activeChip: ChipKey;
 }
 
-function StubMateriaAssuntos() {
-  return <div data-testid="picker-materia-assuntos" className="p-4">Matéria · Assuntos (stub)</div>;
+function MateriaAssuntosPickerAdapter() {
+  const { pendentes, setPendentes } = useFiltrosPendentes();
+  const { dicionario } = useFiltrosDicionario();
+
+  const materia = pendentes.materias[0] ?? null;
+
+  return (
+    <div data-testid="picker-materia-assuntos">
+      <MateriaAssuntosPicker
+        dicionario={dicionario ?? null}
+        materia={materia}
+        selectedAssuntos={pendentes.assuntos}
+        selectedNodeIds={pendentes.nodeIds ?? []}
+        onMateriaChange={(m) =>
+          setPendentes({
+            ...pendentes,
+            materias: m ? [m] : [],
+            assuntos: [],
+            nodeIds: [],
+          })
+        }
+        onAssuntosChange={(next) =>
+          setPendentes({ ...pendentes, assuntos: next })
+        }
+        onNodeIdsChange={(next) =>
+          setPendentes({ ...pendentes, nodeIds: next })
+        }
+      />
+    </div>
+  );
 }
 
 function BancaPickerAdapter() {
@@ -58,7 +87,7 @@ export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) 
   let content: React.ReactNode;
   switch (activeChip) {
     case 'materia_assuntos':
-      content = <StubMateriaAssuntos />;
+      content = <MateriaAssuntosPickerAdapter />;
       break;
     case 'banca':
       content = <BancaPickerAdapter />;

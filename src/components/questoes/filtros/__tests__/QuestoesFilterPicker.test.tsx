@@ -1,14 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QuestoesFilterPicker } from '../QuestoesFilterPicker';
 import { MemoryRouter } from 'react-router-dom';
 import { QuestoesFilterDraftProvider } from '@/contexts/QuestoesFilterDraftContext';
 
 function withProviders(node: React.ReactNode, route = '/questoes') {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return (
-    <MemoryRouter initialEntries={[route]}>
-      <QuestoesFilterDraftProvider>{node}</QuestoesFilterDraftProvider>
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[route]}>
+        <QuestoesFilterDraftProvider>{node}</QuestoesFilterDraftProvider>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 }
 
