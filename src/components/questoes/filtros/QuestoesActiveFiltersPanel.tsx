@@ -252,7 +252,7 @@ export function QuestoesActiveFiltersPanel({
       {/* Count grande */}
       <div className="px-4 py-3 border-t border-slate-100">
         <div
-          className="text-[36px] text-slate-900 leading-none"
+          className="text-[34px] text-slate-900 leading-none"
           style={{
             fontFamily: "'Literata', 'Source Serif 4', Georgia, serif",
             fontWeight: 700,
