@@ -56,7 +56,9 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Matérias e assuntos</h2>
             <p className="text-xs text-slate-500">
-              {items.length} matérias · clique nas pastas para abrir os assuntos
+              {props.dicionario
+                ? `${items.length} matérias · clique nas pastas para abrir os assuntos`
+                : 'Carregando matérias…'}
             </p>
           </div>
           <button
