@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { ChipKey } from './QuestoesFilterChipStrip';
 import { BancaPicker } from './pickers/BancaPicker';
@@ -10,7 +10,10 @@ import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { useFiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
 import { useOrgaoCargoState } from '@/hooks/useOrgaoCargoState';
-import { stateToBackendFilters } from '@/lib/questoes/orgao-cargo-serialization';
+import {
+  backendToState,
+  stateToBackendFilters,
+} from '@/lib/questoes/orgao-cargo-serialization';
 
 export interface QuestoesFilterPickerProps {
   activeChip: ChipKey;
@@ -65,38 +68,68 @@ function BancaPickerAdapter() {
   );
 }
 
+// LIMITATION: Once mounted, this adapter does not react to external mutations
+// of pendentes.orgaos/cargos/org_cargo_pairs (e.g., × from applied-filters
+// panel). Re-keying the adapter would cause a write-loop because the adapter
+// itself writes to pendentes. Re-hydration on external clear is deferred —
+// users who clear órgão/cargo from the chips list must close and reopen the
+// chip to see the reset reflected here.
 function OrgaoCargoPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
-  const { state, actions } = useOrgaoCargoState();
+
+  // Hidrata state local a partir de pendentes no mount (one-shot — useReducer
+  // ignora mudanças subsequentes deste initializer). Re-hidratação em mudanças
+  // externas é tratada pelo pai re-keyando o adapter (não implementado — ver
+  // bloco LIMITATION acima).
+  const initialState = useMemo(
+    () =>
+      backendToState({
+        orgaos: pendentes.orgaos,
+        cargos: pendentes.cargos,
+        org_cargo_pairs: pendentes.org_cargo_pairs,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [], // intencional: initializer capturado uma vez no mount
+  );
+
+  const { state, actions } = useOrgaoCargoState(initialState);
   const [drilldownOrgao, setDrilldownOrgao] = useState<string | null>(null);
 
   // Backend filters do estado local do picker
-  const orgaoCargoBackend = stateToBackendFilters(state);
+  const orgaoCargoBackend = useMemo(() => stateToBackendFilters(state), [state]);
 
   // Override durante drilldown: força orgaos pra só o órgão drilled
   // pra que facets de cargo venham filtrados àquele órgão
-  const filtersForFacets = {
-    ...pendentes,
-    orgaos: drilldownOrgao ? [drilldownOrgao] : orgaoCargoBackend.orgaos,
-    cargos: orgaoCargoBackend.cargos,
-    org_cargo_pairs: orgaoCargoBackend.org_cargo_pairs,
-  };
+  const filtersForFacets = useMemo(
+    () => ({
+      ...pendentes,
+      orgaos: drilldownOrgao ? [drilldownOrgao] : orgaoCargoBackend.orgaos,
+      cargos: orgaoCargoBackend.cargos,
+      org_cargo_pairs: orgaoCargoBackend.org_cargo_pairs,
+    }),
+    [pendentes, drilldownOrgao, orgaoCargoBackend],
+  );
 
   const { facets } = useQuestoesFacets(filtersForFacets);
 
-  // Sincroniza state local → pendentes (apenas saída — picker é dono do state)
+  // Skip first run (hydration já aconteceu via initializer). Em mudanças
+  // subsequentes do state, escreve em pendentes.
+  const isFirstRun = useRef(true);
   useEffect(() => {
-    const backend = stateToBackendFilters(state);
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
     setPendentes({
       ...pendentes,
-      orgaos: backend.orgaos,
-      cargos: backend.cargos,
-      org_cargo_pairs: backend.org_cargo_pairs,
+      orgaos: orgaoCargoBackend.orgaos,
+      cargos: orgaoCargoBackend.cargos,
+      org_cargo_pairs: orgaoCargoBackend.org_cargo_pairs,
     });
     // pendentes intencionalmente fora das deps — set baseado em state interno
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  }, [orgaoCargoBackend]);
 
   return (
     <div data-testid="picker-orgao-cargo">

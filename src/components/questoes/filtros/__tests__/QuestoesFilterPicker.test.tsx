@@ -3,7 +3,10 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QuestoesFilterPicker } from '../QuestoesFilterPicker';
 import { MemoryRouter } from 'react-router-dom';
-import { QuestoesFilterDraftProvider } from '@/contexts/QuestoesFilterDraftContext';
+import {
+  QuestoesFilterDraftProvider,
+  useQuestoesFilterDraft,
+} from '@/contexts/QuestoesFilterDraftContext';
 
 function withProviders(node: React.ReactNode, route = '/questoes') {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -13,6 +16,19 @@ function withProviders(node: React.ReactNode, route = '/questoes') {
         <QuestoesFilterDraftProvider>{node}</QuestoesFilterDraftProvider>
       </MemoryRouter>
     </QueryClientProvider>
+  );
+}
+
+/** Probe que expõe pendentes em data-attributes pra inspeção em testes. */
+function PendentesProbe() {
+  const { pendentes } = useQuestoesFilterDraft();
+  return (
+    <div
+      data-testid="pendentes-probe"
+      data-orgaos={JSON.stringify(pendentes.orgaos)}
+      data-cargos={JSON.stringify(pendentes.cargos)}
+      data-pairs={JSON.stringify(pendentes.org_cargo_pairs ?? [])}
+    />
   );
 }
 
@@ -45,5 +61,40 @@ describe('animação fade entre chips', () => {
     );
     const wrapper = container.querySelector('[data-testid="picker-fade-wrapper"]');
     expect(wrapper).toBeInTheDocument();
+  });
+});
+
+describe('OrgaoCargoPickerAdapter — hidratação de pendentes (B1)', () => {
+  it('NÃO sobrescreve pendentes.orgaos pré-existentes no mount', () => {
+    // Deep-link simulado: ?orgaos=STJ → pendentes.orgaos = ['STJ']
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="orgao_cargo" />
+          <PendentesProbe />
+        </>,
+        '/questoes?orgaos=STJ',
+      ),
+    );
+
+    const probe = screen.getByTestId('pendentes-probe');
+    // Após o primeiro paint, pendentes.orgaos deve continuar ['STJ'] —
+    // antes do fix B1, o useEffect de mount escrevia [] e zerava.
+    expect(probe.getAttribute('data-orgaos')).toBe(JSON.stringify(['STJ']));
+  });
+
+  it('preserva pendentes.cargos pré-existentes no mount', () => {
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="orgao_cargo" />
+          <PendentesProbe />
+        </>,
+        '/questoes?cargos=Analista',
+      ),
+    );
+
+    const probe = screen.getByTestId('pendentes-probe');
+    expect(probe.getAttribute('data-cargos')).toBe(JSON.stringify(['Analista']));
   });
 });
