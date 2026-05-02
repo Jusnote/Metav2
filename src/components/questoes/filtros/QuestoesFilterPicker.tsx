@@ -23,23 +23,48 @@ function MateriaAssuntosPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
 
-  const materia = pendentes.materias[0] ?? null;
+  // Navegação local (qual matéria está aberta no picker) é separada do
+  // filtro aplicado (pendentes.materias). "← Voltar" só fecha a vista,
+  // mantém o filtro intacto. × no painel direito limpa o filtro e
+  // a navegação acompanha via efeito abaixo.
+  const [viewingMateria, setViewingMateria] = useState<string | null>(
+    () => pendentes.materias[0] ?? null,
+  );
+
+  // Sincroniza com mudanças externas em pendentes.materias (ex: × no painel direito)
+  useEffect(() => {
+    const currentMateria = pendentes.materias[0] ?? null;
+    if (currentMateria === null && viewingMateria !== null) {
+      setViewingMateria(null);
+    } else if (currentMateria && currentMateria !== viewingMateria) {
+      setViewingMateria(currentMateria);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendentes.materias]);
 
   return (
     <div data-testid="picker-materia-assuntos">
       <MateriaAssuntosPicker
         dicionario={dicionario ?? null}
-        materia={materia}
+        materia={viewingMateria}
         selectedAssuntos={pendentes.assuntos}
         selectedNodeIds={pendentes.nodeIds ?? []}
-        onMateriaChange={(m) =>
+        onMateriaChange={(m) => {
+          if (m === null) {
+            // Voltar: só fecha a vista, mantém filtro
+            setViewingMateria(null);
+            return;
+          }
+          // Click em matéria: navega + adiciona ao filtro
+          setViewingMateria(m);
+          const isSameMateria = pendentes.materias[0] === m;
           setPendentes({
             ...pendentes,
-            materias: m ? [m] : [],
-            assuntos: [],
-            nodeIds: [],
-          })
-        }
+            materias: [m],
+            assuntos: isSameMateria ? pendentes.assuntos : [],
+            nodeIds: isSameMateria ? pendentes.nodeIds ?? [] : [],
+          });
+        }}
         onAssuntosChange={(next) =>
           setPendentes({ ...pendentes, assuntos: next })
         }
