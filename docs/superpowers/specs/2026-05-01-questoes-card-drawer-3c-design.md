@@ -222,11 +222,29 @@ src/components/questoes/filtros/
   QuestoesFilterPicker.tsx                          novo (wrapper que escolhe sub-picker)
   pickers/
     EscolaridadePicker.tsx                          novo (lista alfabética com FilterCheckboxItem + facet count)
+    AreaCarreiraPicker.tsx                          novo (lista de carreiras, fonte useCarreiras)
 src/hooks/
   useQuestoesFacets.ts                              extender (prop `enabled`)
 ```
 
-**Wiring dos pickers existentes** (Banca, Ano, Órgão+Cargo, Matéria+Assuntos, Carreira) dentro do `QuestoesFilterPicker` — sem mudar internals deles.
+**Pickers existentes** (Banca, Ano, Órgão+Cargo, Matéria+Assuntos) — apenas wiring dentro do `QuestoesFilterPicker`, sem mudar internals.
+
+**Pickers novos:**
+- `EscolaridadePicker`: lista alfabética simples + facet count via `useQuestoesFacets`. **⚠️ Depende de backend:** `escolaridades: string[]` precisa ser adicionado ao endpoint `GET /api/v1/filtros/dicionario`. Trabalho mínimo (1 query distinct + serializer); deve ser primeira task do 3c-2.
+- `AreaCarreiraPicker`: lista das áreas de carreira como filtro discreto. **⚠️ Decidir fonte de dados antes do 3c-2:**
+  - **Opção A:** usar `useCarreiras` (mesma fonte do OBJETIVO) — verificar se é Supabase ou mock; alinhar nome "carreira" vs filtro backend `areas_concurso`
+  - **Opção B:** adicionar `areas_concurso: string[]` ao dicionário (paralelo ao escolaridades), e `AreaCarreiraPicker` consome dele direto
+
+Ambas opções aceitam facet count via `useQuestoesFacets.facets.area_concurso`. Decidir no início do 3c-2 olhando o código de `useCarreiras`.
+
+### Pré-requisitos backend para 3c-2
+
+| Item | Trabalho | Bloqueador? |
+|---|---|---|
+| `escolaridades` no dicionário | 1 query distinct + serializer | ✅ sim |
+| Fonte "Área (Carreira)" | decidir A vs B + possível alteração de dicionário | ✅ sim |
+
+**Estratégia:** primeira task do 3c-2 = "Backend mini-update do dicionário" (Plano 3c-2-pre se virar grande, ou primeira sub-task se ficar pequeno).
 
 **Skeleton state:** todo picker que depende de `useQuestoesFacets` mostra skeleton (cinza claro + animação pulse) enquanto `loading && !facets`. Sem dados stale.
 
