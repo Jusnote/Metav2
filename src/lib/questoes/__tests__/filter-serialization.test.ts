@@ -216,4 +216,14 @@ describe('round-trip: filters → params → filters', () => {
     const restored = searchParamsToFilters(params);
     expect(restored.visibility_anuladas).toBeUndefined();
   });
+
+  it('preserva visibility_desatualizadas="esconder"', () => {
+    const original: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_desatualizadas: 'esconder',
+    };
+    const params = filtersToSearchParams(original);
+    const restored = searchParamsToFilters(params);
+    expect(restored.visibility_desatualizadas).toBe('esconder');
+  });
 });
