@@ -1,9 +1,13 @@
 'use client';
 import '../../../index.css';
+import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QuestoesFilterDraftProvider } from '@/contexts/QuestoesFilterDraftContext';
 import { QuestoesFilterCard } from '@/components/questoes/filtros/QuestoesFilterCard';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
+
+export const dynamic = 'force-dynamic';
 
 function DebugPanel() {
   const { pendentes, aplicados, isDirty } = useFiltrosPendentes();
@@ -33,21 +37,27 @@ function DebugPanel() {
 }
 
 export default function FilterPickersPreview() {
-  return (
-    <MemoryRouter initialEntries={['/dev/filter-pickers?view=filtros']}>
-      <QuestoesFilterDraftProvider>
-        <div className="min-h-screen bg-slate-50 p-8">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            QuestoesFilterCard — Dev Preview
-          </h1>
-          <p className="text-sm text-slate-500 mb-6">
-            Validação visual do card completo (3c-2). Painel direito vem no 3c-3.
-          </p>
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  }));
 
-          <QuestoesFilterCard />
-          <DebugPanel />
-        </div>
-      </QuestoesFilterDraftProvider>
-    </MemoryRouter>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/dev/filter-pickers?view=filtros']}>
+        <QuestoesFilterDraftProvider>
+          <div className="min-h-screen bg-slate-50 p-8">
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">
+              QuestoesFilterCard — Dev Preview
+            </h1>
+            <p className="text-sm text-slate-500 mb-6">
+              Validação visual do card completo (3c-2). Painel direito vem no 3c-3.
+            </p>
+
+            <QuestoesFilterCard />
+            <DebugPanel />
+          </div>
+        </QuestoesFilterDraftProvider>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 }
