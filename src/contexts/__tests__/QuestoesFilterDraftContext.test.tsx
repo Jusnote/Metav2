@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { QuestoesFilterDraftProvider } from '@/contexts/QuestoesFilterDraftContext';
@@ -50,5 +50,29 @@ describe('aplicados (hidratação da URL)', () => {
       wrapper: wrapper(['/questoes?anulada=false']),
     });
     expect(result.current.aplicados.visibility_anuladas).toBe('esconder');
+  });
+});
+
+describe('setPendentes', () => {
+  it('atualiza pendentes sem afetar aplicados', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes']),
+    });
+    act(() => {
+      result.current.setPendentes({
+        ...EMPTY_FILTERS,
+        bancas: ['cespe'],
+      });
+    });
+    expect(result.current.pendentes.bancas).toEqual(['cespe']);
+    expect(result.current.aplicados.bancas).toEqual([]);
+  });
+
+  it('pendentes inicia igual a aplicados na montagem', () => {
+    const { result } = renderHook(() => useFiltrosPendentes(), {
+      wrapper: wrapper(['/questoes?bancas=cespe']),
+    });
+    expect(result.current.pendentes.bancas).toEqual(['cespe']);
+    expect(result.current.aplicados.bancas).toEqual(['cespe']);
   });
 });

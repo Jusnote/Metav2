@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { AppliedFilters } from '@/lib/questoes/filter-serialization';
 import { EMPTY_FILTERS, searchParamsToFilters } from '@/lib/questoes/filter-serialization';
@@ -39,11 +39,17 @@ export function QuestoesFilterDraftProvider({
     [searchParams],
   );
 
+  const [pendentes, setPendentesState] = useState<AppliedFilters>(aplicados);
+
+  const setPendentes = useCallback((next: AppliedFilters) => {
+    setPendentesState(next);
+  }, []);
+
   const value: QuestoesFilterDraftValue = {
-    pendentes: aplicados, // por enquanto só aplicados; tasks 7+ adicionam state real
+    pendentes,
     aplicados,
     isDirty: false,
-    setPendentes: () => {},
+    setPendentes,
     apply: () => {},
     reset: () => {},
   };
