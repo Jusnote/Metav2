@@ -251,7 +251,13 @@ export function QuestoesActiveFiltersPanel({
 
       {/* Count grande */}
       <div className="px-4 py-3 border-t border-slate-100">
-        <div className="text-[36px] font-semibold text-slate-900 leading-none">
+        <div
+          className="text-[36px] font-semibold text-slate-900 leading-none"
+          style={{
+            fontFamily: "'Source Serif 4', Georgia, serif",
+            letterSpacing: '-0.02em',
+          }}
+        >
           {formatCount(count)}
         </div>
         <div className="text-xs text-slate-400 mt-1">{countLabel}</div>

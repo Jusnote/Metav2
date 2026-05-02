@@ -69,7 +69,15 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       <div className="flex flex-col gap-3 p-4">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Matérias e assuntos</h2>
+            <h2
+              className="text-lg font-semibold text-slate-900"
+              style={{
+                fontFamily: "'Source Serif 4', Georgia, serif",
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Matérias e assuntos
+            </h2>
             <p className="text-xs text-slate-500">
               {hydrated && props.dicionario
                 ? `${items.length} matérias · clique nas pastas para abrir os assuntos`
