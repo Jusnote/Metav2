@@ -119,14 +119,14 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                     <span
                       className={[
                         'text-sm truncate',
-                        totalSpecific > 0 ? 'text-blue-700' : 'text-slate-700',
+                        isSelected ? 'text-slate-900 font-medium' : 'text-slate-700',
                       ].join(' ')}
                     >
                       {item.label}
                     </span>
                   </button>
                   {isSelected && (
-                    <span className="text-xs text-blue-600 shrink-0 px-2">
+                    <span className="text-xs text-emerald-600 shrink-0 px-2">
                       {totalSpecific === 0
                         ? '✓ Todo o conteúdo'
                         : `✓ ${totalSpecific} ${totalSpecific === 1 ? 'assunto selecionado' : 'assuntos selecionados'}`}
