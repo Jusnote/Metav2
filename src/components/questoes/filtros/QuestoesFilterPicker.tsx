@@ -31,13 +31,11 @@ function MateriaAssuntosPickerAdapter() {
     () => pendentes.materias[0] ?? null,
   );
 
-  // Sincroniza com mudanças externas em pendentes.materias (ex: × no painel direito)
+  // Sincroniza com mudanças externas em pendentes.materias quando a
+  // matéria atualmente em vista foi removida do filtro (× no painel direito).
   useEffect(() => {
-    const currentMateria = pendentes.materias[0] ?? null;
-    if (currentMateria === null && viewingMateria !== null) {
+    if (viewingMateria !== null && !pendentes.materias.includes(viewingMateria)) {
       setViewingMateria(null);
-    } else if (currentMateria && currentMateria !== viewingMateria) {
-      setViewingMateria(currentMateria);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendentes.materias]);
@@ -55,15 +53,16 @@ function MateriaAssuntosPickerAdapter() {
             setViewingMateria(null);
             return;
           }
-          // Click em matéria: navega + adiciona ao filtro
+          // Click em matéria: navega para detalhe; adiciona ao filtro
+          // se ainda não estiver lá. Multi-select: assuntos/nodeIds
+          // permanecem flat globalmente entre matérias.
           setViewingMateria(m);
-          const isSameMateria = pendentes.materias[0] === m;
-          setPendentes({
-            ...pendentes,
-            materias: [m],
-            assuntos: isSameMateria ? pendentes.assuntos : [],
-            nodeIds: isSameMateria ? pendentes.nodeIds ?? [] : [],
-          });
+          if (!pendentes.materias.includes(m)) {
+            setPendentes({
+              ...pendentes,
+              materias: [...pendentes.materias, m],
+            });
+          }
         }}
         onAssuntosChange={(next) =>
           setPendentes({ ...pendentes, assuntos: next })
