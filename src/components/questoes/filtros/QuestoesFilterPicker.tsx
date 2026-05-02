@@ -68,20 +68,18 @@ function BancaPickerAdapter() {
   );
 }
 
-// LIMITATION: Once mounted, this adapter does not react to external mutations
-// of pendentes.orgaos/cargos/org_cargo_pairs (e.g., × from applied-filters
-// panel). Re-keying the adapter would cause a write-loop because the adapter
-// itself writes to pendentes. Re-hydration on external clear is deferred —
-// users who clear órgão/cargo from the chips list must close and reopen the
-// chip to see the reset reflected here.
+// External mutations to aplicados (× from applied-filters panel, URL nav,
+// back/forward) re-key this adapter from the parent, triggering a clean
+// remount + re-hydrate via backendToState. Internal selections write to
+// pendentes (not aplicados), so no write-loop.
 function OrgaoCargoPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
 
   // Hidrata state local a partir de pendentes no mount (one-shot — useReducer
   // ignora mudanças subsequentes deste initializer). Re-hidratação em mudanças
-  // externas é tratada pelo pai re-keyando o adapter (não implementado — ver
-  // bloco LIMITATION acima).
+  // externas é tratada pelo pai re-keyando o adapter na slice de aplicados
+  // (orgaos/cargos/org_cargo_pairs).
   const initialState = useMemo(
     () =>
       backendToState({
@@ -165,6 +163,8 @@ function AnoPickerAdapter() {
 }
 
 export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) {
+  const { aplicados } = useFiltrosPendentes();
+
   let content: React.ReactNode;
   switch (activeChip) {
     case 'materia_assuntos':
@@ -173,9 +173,17 @@ export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) 
     case 'banca':
       content = <BancaPickerAdapter />;
       break;
-    case 'orgao_cargo':
-      content = <OrgaoCargoPickerAdapter />;
+    case 'orgao_cargo': {
+      const ocKey = [
+        ...(aplicados.orgaos ?? []),
+        '|',
+        ...(aplicados.cargos ?? []),
+        '|',
+        ...(aplicados.org_cargo_pairs ?? []),
+      ].join(',');
+      content = <OrgaoCargoPickerAdapter key={ocKey} />;
       break;
+    }
     case 'ano':
       content = <AnoPickerAdapter />;
       break;

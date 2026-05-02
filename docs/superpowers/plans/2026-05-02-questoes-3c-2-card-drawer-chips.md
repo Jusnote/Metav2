@@ -968,7 +968,7 @@ git commit -m "feat(questoes): wiring de MateriaAssuntosPicker — lê/escreve m
 - Modify: `src/components/questoes/filtros/QuestoesFilterPicker.tsx`
 - Test: `src/components/questoes/filtros/__tests__/QuestoesFilterPicker.test.tsx`
 
-> **Note (post-review):** O adapter precisa hidratar o `state` local a partir de `pendentes` no mount via `backendToState`, senão o `useEffect` de mount sobrescreve seleções pré-existentes de órgão/cargo (B1). O `useEffect([orgaoCargoBackend])` pula a primeira execução via `useRef`. Mutações externas a `pendentes.orgaos/cargos/org_cargo_pairs` após o mount não são reativas — re-keying causa write-loop; deferido pra follow-up.
+> **Note (post-review):** O adapter precisa hidratar o `state` local a partir de `pendentes` no mount via `backendToState`, senão o `useEffect` de mount sobrescreve seleções pré-existentes de órgão/cargo (B1). O `useEffect([orgaoCargoBackend])` pula a primeira execução via `useRef`. Mutações externas (B2) são tratadas re-keyando o adapter na slice de `aplicados` (`orgaos / cargos / org_cargo_pairs`) — não há write-loop porque o adapter escreve em `pendentes`, não em `aplicados`. `aplicados` só muda em `apply()` ou navegação de URL (back/forward, × no painel de filtros aplicados); na remontagem o `backendToState` re-hidrata o state local.
 
 > Picker mais complexo. Já existe `useOrgaoCargoState` (interno) e `stateToBackendFilters`. Adapter mantém estado local do picker E sincroniza com `pendentes.orgaos / cargos / org_cargo_pairs`.
 

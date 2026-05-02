@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QuestoesFilterPicker } from '../QuestoesFilterPicker';
 import { MemoryRouter } from 'react-router-dom';
@@ -7,6 +7,28 @@ import {
   QuestoesFilterDraftProvider,
   useQuestoesFilterDraft,
 } from '@/contexts/QuestoesFilterDraftContext';
+
+vi.mock('@/hooks/useFiltrosDicionario', () => ({
+  useFiltrosDicionario: () => ({
+    dicionario: {
+      bancas: {},
+      orgaos: { stj: 'STJ', trf1: 'TRF1' },
+      cargos: { analista: 'Analista' },
+      materias: [],
+      assuntos: [],
+      materia_assuntos: {},
+      anos: { min: 2010, max: 2024 },
+    },
+    loading: false,
+  }),
+}));
+
+vi.mock('@/hooks/useQuestoesFacets', () => ({
+  useQuestoesFacets: () => ({
+    facets: { banca: {}, orgao: {}, cargo: {}, ano: {}, materia: {}, assunto: {} },
+    isLoading: false,
+  }),
+}));
 
 function withProviders(node: React.ReactNode, route = '/questoes') {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -96,5 +118,30 @@ describe('OrgaoCargoPickerAdapter — hidratação de pendentes (B1)', () => {
 
     const probe = screen.getByTestId('pendentes-probe');
     expect(probe.getAttribute('data-cargos')).toBe(JSON.stringify(['Analista']));
+  });
+
+  it('selecionar outro órgão preserva o anterior em pendentes.orgaos', () => {
+    // Deep-link com STJ já aplicado. Usuário entra no picker e marca TRF1 também
+    // (drilldown → "marcar todos"). Esperado: pendentes.orgaos === ['STJ', 'TRF1'].
+    // Antes do fix B1 isso falhava porque o adapter sobrescrevia STJ no mount.
+    render(
+      withProviders(
+        <>
+          <QuestoesFilterPicker activeChip="orgao_cargo" />
+          <PendentesProbe />
+        </>,
+        '/questoes?orgaos=STJ',
+      ),
+    );
+
+    // Drilldown em TRF1
+    fireEvent.click(screen.getByText('TRF1'));
+    // Marcar todos os cargos do TRF1 → addOrgaoAll('TRF1')
+    fireEvent.click(screen.getByText(/marcar todos/i));
+
+    const probe = screen.getByTestId('pendentes-probe');
+    const orgaos = JSON.parse(probe.getAttribute('data-orgaos') ?? '[]');
+    expect(orgaos).toEqual(expect.arrayContaining(['STJ', 'TRF1']));
+    expect(orgaos).toHaveLength(2);
   });
 });
