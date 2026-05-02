@@ -116,7 +116,14 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                     className="flex flex-1 items-center gap-2 min-w-0 text-left"
                   >
                     <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
-                    <span className="text-sm text-blue-700 truncate">{item.label}</span>
+                    <span
+                      className={[
+                        'text-sm truncate',
+                        totalSpecific > 0 ? 'text-blue-700' : 'text-slate-700',
+                      ].join(' ')}
+                    >
+                      {item.label}
+                    </span>
                   </button>
                   {isSelected && (
                     <span className="text-xs text-emerald-600 shrink-0 px-2">
