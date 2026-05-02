@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import {
   filtersToSearchParams,
   searchParamsToFilters,
+  hasAnyFilter,
+  countActiveFilters,
+  EMPTY_FILTERS,
   type AppliedFilters,
+  type VisibilityState,
 } from '../filter-serialization';
 
 describe('filter-serialization', () => {
@@ -100,5 +104,193 @@ describe('filter-serialization', () => {
     const filters = searchParamsToFilters(params);
 
     expect(filters.anos).toEqual([2024]);
+  });
+});
+
+describe('AppliedFilters — visibility toggles', () => {
+  it('VisibilityState aceita "mostrar" e "esconder"', () => {
+    const a: VisibilityState = 'mostrar';
+    const b: VisibilityState = 'esconder';
+    expect(a).toBe('mostrar');
+    expect(b).toBe('esconder');
+  });
+
+  it('EMPTY_FILTERS tem visibility_anuladas e visibility_desatualizadas como undefined', () => {
+    expect(EMPTY_FILTERS.visibility_anuladas).toBeUndefined();
+    expect(EMPTY_FILTERS.visibility_desatualizadas).toBeUndefined();
+  });
+});
+
+describe('filtersToSearchParams — visibility toggles', () => {
+  it('default "mostrar" não aparece na URL', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+      visibility_desatualizadas: 'mostrar',
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.has('anulada')).toBe(false);
+    expect(params.has('desatualizada')).toBe(false);
+  });
+
+  it('undefined não aparece na URL', () => {
+    const filters: AppliedFilters = { ...EMPTY_FILTERS };
+    const params = filtersToSearchParams(filters);
+    expect(params.has('anulada')).toBe(false);
+    expect(params.has('desatualizada')).toBe(false);
+  });
+
+  it('"esconder" vira ?anulada=false', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.get('anulada')).toBe('false');
+    expect(params.has('desatualizada')).toBe(false);
+  });
+
+  it('ambos "esconder" produzem anulada=false e desatualizada=false', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+      visibility_desatualizadas: 'esconder',
+    };
+    const params = filtersToSearchParams(filters);
+    expect(params.get('anulada')).toBe('false');
+    expect(params.get('desatualizada')).toBe('false');
+  });
+});
+
+describe('searchParamsToFilters — visibility toggles', () => {
+  it('URL sem params → undefined', () => {
+    const filters = searchParamsToFilters(new URLSearchParams());
+    expect(filters.visibility_anuladas).toBeUndefined();
+    expect(filters.visibility_desatualizadas).toBeUndefined();
+  });
+
+  it('URL com anulada=false → visibility_anuladas="esconder"', () => {
+    const params = new URLSearchParams('anulada=false');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_anuladas).toBe('esconder');
+    expect(filters.visibility_desatualizadas).toBeUndefined();
+  });
+
+  it('URL com desatualizada=false → visibility_desatualizadas="esconder"', () => {
+    const params = new URLSearchParams('desatualizada=false');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_desatualizadas).toBe('esconder');
+  });
+
+  it('URL com anulada=true → undefined (apenas false significa esconder)', () => {
+    // anulada=true semanticamente seria "somente anuladas" — fora do escopo do
+    // toggle binário Mostrar/Esconder. Tratado como sem filtro pra evitar
+    // estado intermediário desconhecido.
+    const params = new URLSearchParams('anulada=true');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_anuladas).toBeUndefined();
+  });
+
+  it('URL com valor inválido → undefined', () => {
+    const params = new URLSearchParams('anulada=foo');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_anuladas).toBeUndefined();
+  });
+});
+
+describe('round-trip: filters → params → filters', () => {
+  it('preserva visibility_anuladas="esconder"', () => {
+    const original: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    const params = filtersToSearchParams(original);
+    const restored = searchParamsToFilters(params);
+    expect(restored.visibility_anuladas).toBe('esconder');
+  });
+
+  it('default "mostrar" não survive round-trip (vira undefined)', () => {
+    const original: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+    };
+    const params = filtersToSearchParams(original);
+    const restored = searchParamsToFilters(params);
+    expect(restored.visibility_anuladas).toBeUndefined();
+  });
+
+  it('preserva visibility_desatualizadas="esconder"', () => {
+    const original: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_desatualizadas: 'esconder',
+    };
+    const params = filtersToSearchParams(original);
+    const restored = searchParamsToFilters(params);
+    expect(restored.visibility_desatualizadas).toBe('esconder');
+  });
+});
+
+describe('hasAnyFilter — visibility toggles', () => {
+  it('só visibility_anuladas=esconder conta como filtro', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    expect(hasAnyFilter(filters)).toBe(true);
+  });
+
+  it('visibility_anuladas=mostrar não conta', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+    };
+    expect(hasAnyFilter(filters)).toBe(false);
+  });
+});
+
+describe('countActiveFilters — visibility toggles', () => {
+  it('visibility_anuladas=esconder conta +1', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    expect(countActiveFilters(filters)).toBe(1);
+  });
+
+  it('ambos esconder conta +2', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+      visibility_desatualizadas: 'esconder',
+    };
+    expect(countActiveFilters(filters)).toBe(2);
+  });
+
+  it('mostrar não conta', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+      visibility_desatualizadas: 'mostrar',
+    };
+    expect(countActiveFilters(filters)).toBe(0);
+  });
+});
+
+describe('integração: query string pro backend', () => {
+  it('com bancas + ano + visibility produz query no formato backend', () => {
+    const filters: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      bancas: ['cespe'],
+      anos: [2023],
+      visibility_anuladas: 'esconder',
+      visibility_desatualizadas: 'esconder',
+    };
+    const query = filtersToSearchParams(filters).toString();
+    expect(query).toContain('bancas=cespe');
+    expect(query).toContain('anos=2023');
+    expect(query).toContain('anulada=false');
+    expect(query).toContain('desatualizada=false');
+    // E NÃO deve conter o nome interno
+    expect(query).not.toContain('visibility_anuladas');
   });
 });
