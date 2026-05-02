@@ -105,6 +105,12 @@ export function searchParamsToFilters(params: URLSearchParams): AppliedFilters {
       .map((v) => Number(v))
       .filter((n) => Number.isFinite(n));
   }
+  if (params.get('anulada') === 'false') {
+    out.visibility_anuladas = 'esconder';
+  }
+  if (params.get('desatualizada') === 'false') {
+    out.visibility_desatualizadas = 'esconder';
+  }
   return out;
 }
 

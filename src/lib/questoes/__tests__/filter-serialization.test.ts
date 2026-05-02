@@ -159,3 +159,61 @@ describe('filtersToSearchParams — visibility toggles', () => {
     expect(params.get('desatualizada')).toBe('false');
   });
 });
+
+describe('searchParamsToFilters — visibility toggles', () => {
+  it('URL sem params → undefined', () => {
+    const filters = searchParamsToFilters(new URLSearchParams());
+    expect(filters.visibility_anuladas).toBeUndefined();
+    expect(filters.visibility_desatualizadas).toBeUndefined();
+  });
+
+  it('URL com anulada=false → visibility_anuladas="esconder"', () => {
+    const params = new URLSearchParams('anulada=false');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_anuladas).toBe('esconder');
+    expect(filters.visibility_desatualizadas).toBeUndefined();
+  });
+
+  it('URL com desatualizada=false → visibility_desatualizadas="esconder"', () => {
+    const params = new URLSearchParams('desatualizada=false');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_desatualizadas).toBe('esconder');
+  });
+
+  it('URL com anulada=true → undefined (apenas false significa esconder)', () => {
+    // anulada=true semanticamente seria "somente anuladas" — fora do escopo do
+    // toggle binário Mostrar/Esconder. Tratado como sem filtro pra evitar
+    // estado intermediário desconhecido.
+    const params = new URLSearchParams('anulada=true');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_anuladas).toBeUndefined();
+  });
+
+  it('URL com valor inválido → undefined', () => {
+    const params = new URLSearchParams('anulada=foo');
+    const filters = searchParamsToFilters(params);
+    expect(filters.visibility_anuladas).toBeUndefined();
+  });
+});
+
+describe('round-trip: filters → params → filters', () => {
+  it('preserva visibility_anuladas="esconder"', () => {
+    const original: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'esconder',
+    };
+    const params = filtersToSearchParams(original);
+    const restored = searchParamsToFilters(params);
+    expect(restored.visibility_anuladas).toBe('esconder');
+  });
+
+  it('default "mostrar" não survive round-trip (vira undefined)', () => {
+    const original: AppliedFilters = {
+      ...EMPTY_FILTERS,
+      visibility_anuladas: 'mostrar',
+    };
+    const params = filtersToSearchParams(original);
+    const restored = searchParamsToFilters(params);
+    expect(restored.visibility_anuladas).toBeUndefined();
+  });
+});
