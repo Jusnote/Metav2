@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { AppliedFilters } from '@/lib/questoes/filter-serialization';
 import { EMPTY_FILTERS, searchParamsToFilters, filtersToSearchParams } from '@/lib/questoes/filter-serialization';
