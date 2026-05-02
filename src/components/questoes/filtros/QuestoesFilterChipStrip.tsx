@@ -9,14 +9,13 @@ export interface ChipDef {
   key: ChipKey;
   label: string;
   icon: LucideIcon;
-  iconStroke: string;
 }
 
 export const CHIPS: ChipDef[] = [
-  { key: 'materia_assuntos', label: 'Matéria · Assuntos', icon: BookOpen, iconStroke: '#D97706' },
-  { key: 'banca', label: 'Banca', icon: Building2, iconStroke: '#7C3AED' },
-  { key: 'orgao_cargo', label: 'Órgão · Cargo', icon: Landmark, iconStroke: '#16A34A' },
-  { key: 'ano', label: 'Ano', icon: Calendar, iconStroke: '#2563EB' },
+  { key: 'materia_assuntos', label: 'Matéria · Assuntos', icon: BookOpen },
+  { key: 'banca', label: 'Banca', icon: Building2 },
+  { key: 'orgao_cargo', label: 'Órgão · Cargo', icon: Landmark },
+  { key: 'ano', label: 'Ano', icon: Calendar },
 ];
 
 export interface QuestoesFilterChipStripProps {
@@ -47,7 +46,7 @@ export function QuestoesFilterChipStrip({
                 : 'border-transparent text-slate-500 hover:text-slate-700',
             ].join(' ')}
           >
-            <Icon size={16} strokeWidth={2} color={chip.iconStroke} aria-hidden />
+            <Icon size={14} strokeWidth={2} aria-hidden />
             <span>{chip.label}</span>
           </button>
         );
