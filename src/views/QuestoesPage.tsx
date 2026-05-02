@@ -5,9 +5,13 @@ import { QuestoesFilterDraftProvider } from "@/contexts/QuestoesFilterDraftConte
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
 import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
+import { QuestoesFilterCard } from "@/components/questoes/filtros/QuestoesFilterCard";
 import { ObjetivoSection } from "@/components/questoes/objetivo/ObjetivoSection";
 import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
 import { QuestoesListaView } from "@/components/questoes/lista/QuestoesListaView";
+
+const USE_NEW_FILTER_CARD =
+  process.env.NEXT_PUBLIC_FEATURE_NEW_FILTER_CARD === 'true';
 
 type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
 
@@ -156,10 +160,18 @@ export default function QuestoesPage() {
             <QuestoesFilterDraftProvider>
               {/* Seção OBJETIVO — só na aba Filtros */}
               <ObjetivoSection />
-              <div className="pt-2 pb-2">
-                <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
-              </div>
-              <FilterChipsBidirectional onSearch={handleSearch} />
+              {USE_NEW_FILTER_CARD ? (
+                <div className="pt-2 pb-2">
+                  <QuestoesFilterCard />
+                </div>
+              ) : (
+                <>
+                  <div className="pt-2 pb-2">
+                    <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
+                  </div>
+                  <FilterChipsBidirectional onSearch={handleSearch} />
+                </>
+              )}
             </QuestoesFilterDraftProvider>
           )}
 
