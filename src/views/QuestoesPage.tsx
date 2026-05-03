@@ -48,14 +48,14 @@ export default function QuestoesPage() {
     setCtrlKOpen(false);
   }, []);
 
-  // Após Aplicar no card de filtros, troca pra aba Questões
-  // (apply() do contexto já escreveu filtros na URL — basta navegar).
+  // Após Aplicar no card de filtros: a navegação pra `view=questoes` já
+  // foi feita dentro do mesmo setSearchParams do apply() (evita race com
+  // dois setSearchParams sequenciais). Aqui só cleanup do Ctrl+K.
   const handleApplied = useCallback(() => {
-    setFilterView('questoes');
     if (ctrlKOpen) {
       closeCtrlK();
     }
-  }, [setFilterView, ctrlKOpen, closeCtrlK]);
+  }, [ctrlKOpen, closeCtrlK]);
 
   const editFilters = useCallback(() => {
     setFilterView('filtros');

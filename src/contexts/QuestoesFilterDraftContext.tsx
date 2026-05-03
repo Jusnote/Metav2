@@ -35,12 +35,19 @@ function clearDraft(): void {
   }
 }
 
+export interface ApplyOptions {
+  /** View target a setar na URL no MESMO setSearchParams que escreve os filtros.
+   * Sem isso, setar view depois de apply() em um setSearchParams separado
+   * causa race condition (segundo overwrite sobrescreve filtros). */
+  view?: string;
+}
+
 export interface QuestoesFilterDraftValue {
   pendentes: AppliedFilters;
   aplicados: AppliedFilters;
   isDirty: boolean;
   setPendentes: (next: AppliedFilters) => void;
-  apply: () => void;
+  apply: (opts?: ApplyOptions) => void;
   reset: () => void;
 }
 
@@ -96,11 +103,12 @@ export function QuestoesFilterDraftProvider({
     return sortedA !== sortedB;
   }, [pendentes, aplicados]);
 
-  const apply = useCallback(() => {
+  const apply = useCallback((opts?: ApplyOptions) => {
     const next = filtersToSearchParams(pendentes);
-    const currentView = searchParams.get('view');
-    if (currentView) {
-      next.set('view', currentView);
+    // Se chamador especificou view explicitamente, usa essa; senão preserva atual.
+    const targetView = opts?.view !== undefined ? opts.view : searchParams.get('view');
+    if (targetView) {
+      next.set('view', targetView);
     }
     setSearchParams(next, { replace: true });
     clearDraft();

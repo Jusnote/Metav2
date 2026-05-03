@@ -21,7 +21,10 @@ export function QuestoesFilterCard({ onApplied }: QuestoesFilterCardProps = {}) 
   const { count } = useQuestoesCount(pendentes);
 
   const handleApply = useCallback(() => {
-    apply();
+    // Aplica filtros + navega pra aba de resultados em UM setSearchParams.
+    // Separar essas operações causa race condition (segundo setSearchParams
+    // pisa no primeiro com snapshot antigo).
+    apply({ view: 'questoes' });
     onApplied?.();
   }, [apply, onApplied]);
 
