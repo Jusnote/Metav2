@@ -13,7 +13,7 @@ export function QuestoesFilterDrawer({
   return (
     <div
       data-testid="drawer-grid"
-      className="grid max-h-[70vh] min-h-[480px]"
+      className="grid h-[70vh] min-h-[480px]"
       style={{ gridTemplateColumns: '3fr 2fr', gridTemplateRows: '1fr' }}
     >
       {/* Colunas NÃO têm overflow-y aqui — cada filho (picker / panel) faz
