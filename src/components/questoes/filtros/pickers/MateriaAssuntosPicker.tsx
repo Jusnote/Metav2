@@ -66,8 +66,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       : items.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase()));
 
     return (
-      <div className="flex flex-col gap-3 p-4">
-        <header className="flex items-start justify-between gap-4">
+      <div className="flex flex-col">
+        <header className="flex items-start justify-between gap-4 px-4 pt-4 pb-3 border-b border-slate-200">
           <div>
             <h2
               className="text-lg font-semibold text-slate-900"
@@ -92,6 +92,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             Pesquisar por nome →
           </button>
         </header>
+        <div className="flex flex-col gap-3 p-4">
         <input
           ref={searchInputRef}
           type="search"
@@ -155,6 +156,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             }}
           />
         )}
+        </div>
       </div>
     );
   }
