@@ -66,8 +66,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       : items.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase()));
 
     return (
-      <div className="flex flex-col">
-        <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[72px]">
+      <div className="flex flex-col h-full min-h-0">
+        <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[72px] shrink-0">
           <div className="flex flex-col justify-center">
             <h2
               className="text-lg font-semibold text-slate-900"
@@ -92,7 +92,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             Pesquisar por nome →
           </button>
         </header>
-        <div className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0">
         <input
           ref={searchInputRef}
           type="search"
@@ -193,8 +193,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // Modo 2: matéria com taxonomia → wrapper TreePicker
   if (materiaInfo && materiaInfo.total_nodes > 0) {
     return (
-      <div className="flex flex-col">
-        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center">
+      <div className="flex flex-col h-full min-h-0">
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
           <button
             type="button"
             onClick={() => props.onMateriaChange(null)}
@@ -207,7 +207,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             {materiaInfo.total_nodes} tópicos · taxonomia GRAN
           </p>
         </header>
-        <div className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0">
         {renderUmbrellaToggle()}
         {props.isUmbrella && (
           <p className="text-xs text-slate-400 italic">
@@ -251,8 +251,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   };
 
   return (
-    <div className="flex flex-col">
-      <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center">
+    <div className="flex flex-col h-full min-h-0">
+      <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
         <button
           type="button"
           onClick={() => props.onMateriaChange(null)}
@@ -263,7 +263,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         <h2 className="text-lg font-semibold text-slate-900 mt-0.5">{props.materia}</h2>
         <p className="text-xs text-slate-500">{items.length} assuntos · lista plana</p>
       </header>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0">
         <input
           type="search"
           value={q}

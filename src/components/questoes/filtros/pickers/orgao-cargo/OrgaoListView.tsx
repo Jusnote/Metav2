@@ -32,8 +32,8 @@ export function OrgaoListView({
   }, [allOrgaos, q]);
 
   return (
-    <div className="flex flex-col">
-      <header className="flex items-start justify-between gap-3 px-4 py-3 border-b border-slate-200 min-h-[72px]">
+    <div className="flex flex-col h-full min-h-0">
+      <header className="flex items-start justify-between gap-3 px-4 py-3 border-b border-slate-200 min-h-[72px] shrink-0">
         <div className="flex flex-col justify-center">
           <h2 className="text-lg font-semibold text-slate-900">Órgãos</h2>
           <p className="text-xs text-slate-500">
@@ -48,7 +48,7 @@ export function OrgaoListView({
           Buscar cargo direto →
         </button>
       </header>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0">
       <input
         type="search"
         value={q}
