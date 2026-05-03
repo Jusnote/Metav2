@@ -66,7 +66,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       : items.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase()));
 
     return (
-      <div className="flex flex-col h-full min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200">
         <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[72px] shrink-0">
           <div className="flex flex-col justify-center">
             <h2
@@ -193,7 +193,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // Modo 2: matéria com taxonomia → wrapper TreePicker
   if (materiaInfo && materiaInfo.total_nodes > 0) {
     return (
-      <div className="flex flex-col h-full min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200">
         <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
           <button
             type="button"
@@ -251,7 +251,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200">
       <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
         <button
           type="button"
