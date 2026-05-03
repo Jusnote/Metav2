@@ -46,8 +46,8 @@ export function OrgaoDrilldownView({
   const selectedCargos = Array.isArray(selection) ? new Set(selection) : new Set<string>();
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header className="flex flex-col gap-1">
+    <div className="flex flex-col">
+      <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[72px] justify-center">
         <button
           type="button"
           onClick={onBack}
@@ -58,6 +58,7 @@ export function OrgaoDrilldownView({
         <h2 className="text-lg font-semibold text-slate-900">{orgao}</h2>
         <p className="text-xs text-slate-500">{items.length} cargos disponíveis</p>
       </header>
+      <div className="flex flex-col gap-3 p-4">
 
       {/* Botão destacado "Marcar todos" ou estado ativo "all" */}
       {isAllSelected ? (
@@ -108,6 +109,7 @@ export function OrgaoDrilldownView({
           />
         </>
       )}
+      </div>
     </div>
   );
 }

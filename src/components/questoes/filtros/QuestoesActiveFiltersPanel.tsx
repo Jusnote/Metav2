@@ -122,8 +122,9 @@ export function QuestoesActiveFiltersPanel({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3">
+      {/* Header — min-h-[72px] alinhado com o header dos pickers (border-b
+          forma um divider visualmente contínuo entre as 2 colunas) */}
+      <div className="flex items-center justify-between px-4 py-3 min-h-[72px] border-b border-slate-200">
         <span className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
           FILTROS ATIVOS · {aplicadosCount}
         </span>
