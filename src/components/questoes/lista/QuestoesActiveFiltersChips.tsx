@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import { useQuestoesContext } from '@/contexts/QuestoesContext';
+import { useQuestoesFilterDraft } from '@/contexts/QuestoesFilterDraftContext';
 import { Button } from '@/components/ui/button';
 
 interface QuestoesActiveFiltersChipsProps {
@@ -12,15 +13,16 @@ interface ChipGroup {
 }
 
 export function QuestoesActiveFiltersChips({ onEditFilters }: QuestoesActiveFiltersChipsProps) {
-  const { committedFilters, committedQuery } = useQuestoesContext();
+  const { committedQuery } = useQuestoesContext();
+  const { aplicados } = useQuestoesFilterDraft();
 
   const groups: ChipGroup[] = [
-    { label: 'Banca', values: committedFilters.bancas ?? [] },
-    { label: 'Ano', values: (committedFilters.anos ?? []).map(String) },
-    { label: 'Matéria', values: committedFilters.materias ?? [] },
-    { label: 'Assunto', values: committedFilters.assuntos ?? [] },
-    { label: 'Órgão', values: committedFilters.orgaos ?? [] },
-    { label: 'Cargo', values: committedFilters.cargos ?? [] },
+    { label: 'Banca', values: aplicados.bancas ?? [] },
+    { label: 'Ano', values: (aplicados.anos ?? []).map(String) },
+    { label: 'Matéria', values: aplicados.materias ?? [] },
+    { label: 'Assunto', values: aplicados.assuntos ?? [] },
+    { label: 'Órgão', values: aplicados.orgaos ?? [] },
+    { label: 'Cargo', values: aplicados.cargos ?? [] },
   ].filter((g) => g.values.length > 0);
 
   const totalChips = groups.reduce((sum, g) => sum + g.values.length, 0);

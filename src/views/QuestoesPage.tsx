@@ -1,17 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useQuestoesContext } from "@/contexts/QuestoesContext";
 import { QuestoesFilterDraftProvider } from "@/contexts/QuestoesFilterDraftContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
-import { QuestoesFilterBar } from "@/components/questoes/QuestoesFilterBar";
-import { FilterChipsBidirectional } from "@/components/questoes/FilterChipsBidirectional";
 import { QuestoesFilterCard } from "@/components/questoes/filtros/QuestoesFilterCard";
 import { ObjetivoSection } from "@/components/questoes/objetivo/ObjetivoSection";
 import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
 import { QuestoesListaView } from "@/components/questoes/lista/QuestoesListaView";
-
-const USE_NEW_FILTER_CARD =
-  process.env.NEXT_PUBLIC_FEATURE_NEW_FILTER_CARD === 'true';
 
 type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
 
@@ -32,11 +26,6 @@ function parseViewParam(raw: string | null): FilterView {
 }
 
 export default function QuestoesPage() {
-  const {
-    triggerSearch,
-  } = useQuestoesContext();
-
-  // Track which filter view is active (URL-synced)
   const [searchParams, setSearchParams] = useSearchParams();
   const filterView = parseViewParam(searchParams.get('view'));
 
@@ -52,25 +41,21 @@ export default function QuestoesPage() {
     });
   }, [setSearchParams]);
 
-  // Track if any popover is open (for overlay)
-  const [hasOpenPopover, setHasOpenPopover] = useState(false);
-
-  // Ctrl+K overlay
+  // Ctrl+K overlay (versão simplificada — só busca semântica)
   const [ctrlKOpen, setCtrlKOpen] = useState(false);
 
   const closeCtrlK = useCallback(() => {
     setCtrlKOpen(false);
-    setHasOpenPopover(false);
   }, []);
 
-  // Buscar button → commits draft filters to query
-  const handleSearch = useCallback(() => {
-    triggerSearch();
+  // Após Aplicar no card de filtros, troca pra aba Questões
+  // (apply() do contexto já escreveu filtros na URL — basta navegar).
+  const handleApplied = useCallback(() => {
     setFilterView('questoes');
     if (ctrlKOpen) {
       closeCtrlK();
     }
-  }, [triggerSearch, setFilterView, ctrlKOpen, closeCtrlK]);
+  }, [setFilterView, ctrlKOpen, closeCtrlK]);
 
   const editFilters = useCallback(() => {
     setFilterView('filtros');
@@ -93,6 +78,7 @@ export default function QuestoesPage() {
   }, [ctrlKOpen, closeCtrlK]);
 
   return (
+    <QuestoesFilterDraftProvider>
     <div className="flex flex-col h-full w-full">
       {/* ─── Filters section (light blue background) ─── */}
       <section className="bg-white mx-4 mt-4 overflow-hidden">
@@ -157,22 +143,13 @@ export default function QuestoesPage() {
 
           {/* View content */}
           {filterView === 'filtros' && (
-            <QuestoesFilterDraftProvider>
+            <>
               {/* Seção OBJETIVO — só na aba Filtros */}
               <ObjetivoSection />
-              {USE_NEW_FILTER_CARD ? (
-                <div className="pt-2 pb-2">
-                  <QuestoesFilterCard onApplied={handleSearch} />
-                </div>
-              ) : (
-                <>
-                  <div className="pt-2 pb-2">
-                    <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
-                  </div>
-                  <FilterChipsBidirectional onSearch={handleSearch} />
-                </>
-              )}
-            </QuestoesFilterDraftProvider>
+              <div className="pt-2 pb-2">
+                <QuestoesFilterCard onApplied={handleApplied} />
+              </div>
+            </>
           )}
 
           {filterView === 'semantico' && (
@@ -201,7 +178,7 @@ export default function QuestoesPage() {
         </div>
       </section>
 
-      {/* Ctrl+K floating overlay */}
+      {/* Ctrl+K floating overlay (só busca semântica) */}
       {ctrlKOpen && (
         <>
           <div
@@ -219,14 +196,15 @@ export default function QuestoesPage() {
                 borderRadius: 16,
                 boxShadow: "0 20px 60px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1)",
                 overflow: "hidden",
+                padding: 16,
               }}
             >
               <QuestoesSearchBar autoFocus />
-              <QuestoesFilterBar onPopoverChange={setHasOpenPopover} onSearch={handleSearch} />
             </div>
           </div>
         </>
       )}
     </div>
+    </QuestoesFilterDraftProvider>
   );
 }

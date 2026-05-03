@@ -1,13 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
+import { useQuestoesFilterDraft } from "@/contexts/QuestoesFilterDraftContext";
+import { appliedToQuestoesFilters } from "@/lib/questoes/applied-to-questoes-filters";
 import { useQuestoesV2 } from "@/hooks/useQuestoesV2";
 import { Loader2, Sparkles, Quote } from "lucide-react";
 
 const LIMIT = 20;
 
 export function QuestoesResultsHeader() {
-  const { committedFilters, committedQuery, statusTab, sortBy, page } = useQuestoesContext();
+  const { committedQuery, statusTab, sortBy, page } = useQuestoesContext();
+  const { aplicados } = useQuestoesFilterDraft();
+  const filters = useMemo(() => appliedToQuestoesFilters(aplicados), [aplicados]);
 
   const {
     data,
@@ -15,7 +20,7 @@ export function QuestoesResultsHeader() {
     isPlaceholderData,
     isSemantic,
     isExactSearch,
-  } = useQuestoesV2(committedFilters, {
+  } = useQuestoesV2(filters, {
     query: committedQuery || undefined,
     tab: statusTab,
     sortBy,
