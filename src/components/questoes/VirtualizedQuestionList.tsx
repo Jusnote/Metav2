@@ -2,6 +2,8 @@
 
 import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useQuestoesContext } from "@/contexts/QuestoesContext";
+import { useQuestoesFilterDraft } from "@/contexts/QuestoesFilterDraftContext";
+import { appliedToQuestoesFilters } from "@/lib/questoes/applied-to-questoes-filters";
 import { useQuestoesV2 } from "@/hooks/useQuestoesV2";
 import { QuestionCard } from "@/components/QuestionCard";
 import { Loader2, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
@@ -87,8 +89,11 @@ function PaginationBar({
 }
 
 export function VirtualizedQuestionList() {
-  const { committedFilters, committedQuery, statusTab, sortBy, page, setPage, viewMode } = useQuestoesContext();
+  const { committedQuery, statusTab, sortBy, page, setPage, viewMode } = useQuestoesContext();
+  const { aplicados } = useQuestoesFilterDraft();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const filters = useMemo(() => appliedToQuestoesFilters(aplicados), [aplicados]);
 
   const {
     data,
@@ -96,7 +101,7 @@ export function VirtualizedQuestionList() {
     isError,
     error,
     isPlaceholderData,
-  } = useQuestoesV2(committedFilters, {
+  } = useQuestoesV2(filters, {
     query: committedQuery || undefined,
     tab: statusTab,
     sortBy,
