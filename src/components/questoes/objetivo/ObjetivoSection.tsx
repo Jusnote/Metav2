@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react';
 import { useCarreiras, useAreaCounts } from '@/hooks/useCarreiras';
 import { useFocoObjetivo } from '@/hooks/useFocoObjetivo';
 import { AREA_LABELS, type Area } from '@/types/carreira';
-import { ObjetivoHeader } from './ObjetivoHeader';
 import { AreaTabs } from './AreaTabs';
 import { CarreiraCarousel } from './CarreiraCarousel';
 
@@ -22,32 +21,18 @@ import { CarreiraCarousel } from './CarreiraCarousel';
  */
 export function ObjetivoSection() {
   const [area, setArea] = useState<Area>('policial');
-  const [filtro, setFiltro] = useState('');
 
-  const { focos, toggleFoco, clearFocos, hasAnyFoco } = useFocoObjetivo();
+  const { focos, toggleFoco, clearFocos } = useFocoObjetivo();
 
   const { data: carreiras = [], isLoading } = useCarreiras(area);
   const { data: counts = {} } = useAreaCounts();
 
-  const carreirasFiltradas = useMemo(() => {
-    if (!filtro.trim()) return carreiras;
-    const q = filtro.trim().toLowerCase();
-    return carreiras.filter((c) => c.nome.toLowerCase().includes(q));
-  }, [carreiras, filtro]);
-
   return (
     <section className="mt-5">
-      <ObjetivoHeader
-        filtro={filtro}
-        onFiltroChange={setFiltro}
-        hasAnyFoco={hasAnyFoco}
-        onClearFocos={clearFocos}
-      />
-
       <AreaTabs value={area} onChange={setArea} counts={counts} />
 
       <CarreiraCarousel
-        carreiras={carreirasFiltradas}
+        carreiras={carreiras}
         focosAtivos={focos}
         onToggleFoco={toggleFoco}
         onClearFocos={clearFocos}
