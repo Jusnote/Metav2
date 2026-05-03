@@ -46,8 +46,8 @@ export function CargoFlatSearchView({
   const selected = new Set(flatCargosSelecionados);
 
   return (
-    <div className="flex flex-col">
-      <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[72px] justify-center">
+    <div className="flex flex-col h-full min-h-0">
+      <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[72px] justify-center shrink-0">
         <button
           type="button"
           onClick={onBack}
@@ -62,7 +62,7 @@ export function CargoFlatSearchView({
             : `Top ${TOP_N_DEFAULT} mais comuns · ${allCargos.length} no total`}
         </p>
       </header>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0">
       <input
         type="search"
         value={q}

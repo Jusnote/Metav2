@@ -16,10 +16,12 @@ export function QuestoesFilterDrawer({
       className="grid max-h-[70vh] min-h-[480px]"
       style={{ gridTemplateColumns: '3fr 2fr', gridTemplateRows: '1fr' }}
     >
-      <div className="border-r border-slate-200 overflow-y-auto min-h-0">
+      {/* Colunas NÃO têm overflow-y aqui — cada filho (picker / panel) faz
+          seu próprio scroll só no body, deixando o header fixo. */}
+      <div className="border-r border-slate-200 min-h-0 flex flex-col">
         {left}
       </div>
-      <div className="overflow-y-auto min-h-0">{right}</div>
+      <div className="min-h-0 flex flex-col">{right}</div>
     </div>
   );
 }
