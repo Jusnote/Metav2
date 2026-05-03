@@ -38,7 +38,7 @@ export function AnoPicker({ dicionario, facets, selected, onChange }: AnoPickerP
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200">
       <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
         <h2 className="text-lg font-semibold text-slate-900">Anos</h2>
         <p className="text-xs text-slate-500">
