@@ -38,13 +38,14 @@ export function AnoPicker({ dicionario, facets, selected, onChange }: AnoPickerP
   };
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header>
+    <div className="flex flex-col">
+      <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center">
         <h2 className="text-lg font-semibold text-slate-900">Anos</h2>
         <p className="text-xs text-slate-500">
           {allItems.length} anos · agrupados por década
         </p>
       </header>
+      <div className="flex flex-col gap-3 p-4">
 
       <input
         type="search"
@@ -83,6 +84,7 @@ export function AnoPicker({ dicionario, facets, selected, onChange }: AnoPickerP
           />
         )}
       />
+      </div>
     </div>
   );
 }

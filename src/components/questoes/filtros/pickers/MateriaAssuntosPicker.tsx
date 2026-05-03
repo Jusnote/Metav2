@@ -67,8 +67,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
 
     return (
       <div className="flex flex-col">
-        <header className="flex items-start justify-between gap-4 px-4 pt-4 pb-3 border-b border-slate-200">
-          <div>
+        <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[72px]">
+          <div className="flex flex-col justify-center">
             <h2
               className="text-lg font-semibold text-slate-900"
               style={{
@@ -193,22 +193,21 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // Modo 2: matéria com taxonomia → wrapper TreePicker
   if (materiaInfo && materiaInfo.total_nodes > 0) {
     return (
-      <div className="flex flex-col gap-3 p-4">
-        <header className="flex items-center justify-between">
-          <div>
-            <button
-              type="button"
-              onClick={() => props.onMateriaChange(null)}
-              className="text-xs text-slate-500 hover:text-slate-700"
-            >
-              ← Voltar para matérias
-            </button>
-            <h2 className="text-lg font-semibold text-slate-900 mt-1">{materiaInfo.nome}</h2>
-            <p className="text-xs text-slate-500">
-              {materiaInfo.total_nodes} tópicos · taxonomia GRAN
-            </p>
-          </div>
+      <div className="flex flex-col">
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center">
+          <button
+            type="button"
+            onClick={() => props.onMateriaChange(null)}
+            className="text-xs text-slate-500 hover:text-slate-700 self-start"
+          >
+            ← Voltar para matérias
+          </button>
+          <h2 className="text-lg font-semibold text-slate-900 mt-0.5">{materiaInfo.nome}</h2>
+          <p className="text-xs text-slate-500">
+            {materiaInfo.total_nodes} tópicos · taxonomia GRAN
+          </p>
         </header>
+        <div className="flex flex-col gap-3 p-4">
         {renderUmbrellaToggle()}
         {props.isUmbrella && (
           <p className="text-xs text-slate-400 italic">
@@ -231,6 +230,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             countsBody={{}}
           />
         </div>
+        </div>
       </div>
     );
   }
@@ -251,42 +251,44 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header>
+    <div className="flex flex-col">
+      <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center">
         <button
           type="button"
           onClick={() => props.onMateriaChange(null)}
-          className="text-xs text-slate-500 hover:text-slate-700"
+          className="text-xs text-slate-500 hover:text-slate-700 self-start"
         >
           ← Voltar para matérias
         </button>
-        <h2 className="text-lg font-semibold text-slate-900 mt-1">{props.materia}</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mt-0.5">{props.materia}</h2>
         <p className="text-xs text-slate-500">{items.length} assuntos · lista plana</p>
       </header>
-      <input
-        type="search"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Buscar assunto…"
-        className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
-      />
-      {renderUmbrellaToggle()}
-      {props.isUmbrella && (
-        <p className="text-xs text-slate-400 italic -mt-1">
-          Todos os assuntos selecionados pela opção acima
-        </p>
-      )}
-      <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
-        <FilterAlphabeticList
-          items={filtered}
-          renderItem={(item) => (
-            <FilterCheckboxItemWithCount
-              label={item.label}
-              checked={props.selectedAssuntos.includes(item.id)}
-              onToggle={() => toggle(item.id)}
-            />
-          )}
+      <div className="flex flex-col gap-3 p-4">
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Buscar assunto…"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
+        {renderUmbrellaToggle()}
+        {props.isUmbrella && (
+          <p className="text-xs text-slate-400 italic -mt-1">
+            Todos os assuntos selecionados pela opção acima
+          </p>
+        )}
+        <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
+          <FilterAlphabeticList
+            items={filtered}
+            renderItem={(item) => (
+              <FilterCheckboxItemWithCount
+                label={item.label}
+                checked={props.selectedAssuntos.includes(item.id)}
+                onToggle={() => toggle(item.id)}
+              />
+            )}
+          />
+        </div>
       </div>
     </div>
   );
