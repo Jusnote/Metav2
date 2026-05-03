@@ -28,7 +28,7 @@ export function QuestoesFilterChipStrip({
   onChange,
 }: QuestoesFilterChipStripProps) {
   return (
-    <nav className="flex items-stretch border-b border-slate-200">
+    <nav className="flex items-stretch">
       {CHIPS.map((chip, i) => {
         const isActive = chip.key === activeChip;
         const Icon = chip.icon;
