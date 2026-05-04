@@ -14,12 +14,12 @@ describe('QuestoesFilterDrawer', () => {
     expect(screen.getByTestId('painel')).toBeInTheDocument();
   });
 
-  it('grid template-columns 7fr 3fr (70/30)', () => {
+  it('grid template-columns 3fr 2fr (60/40)', () => {
     const { container } = render(
       <QuestoesFilterDrawer left={<div>L</div>} right={<div>R</div>} />,
     );
     const grid = container.querySelector('[data-testid="drawer-grid"]') as HTMLElement;
     expect(grid).toBeInTheDocument();
-    expect(grid.style.gridTemplateColumns).toBe('7fr 3fr');
+    expect(grid.style.gridTemplateColumns).toBe('3fr 2fr');
   });
 });
