@@ -12,10 +12,10 @@ export interface ChipDef {
 }
 
 export const CHIPS: ChipDef[] = [
-  { key: 'materia_assuntos', label: 'Matéria → Assuntos', icon: Library },
-  { key: 'banca', label: 'Banca', icon: Building2 },
-  { key: 'orgao_cargo', label: 'Órgão → Cargo', icon: Landmark },
-  { key: 'ano', label: 'Ano', icon: Calendar },
+  { key: 'materia_assuntos', label: 'Disciplina → Assunto', icon: Library },
+  { key: 'banca', label: 'Banca aplicadora', icon: Building2 },
+  { key: 'orgao_cargo', label: 'Instituição → Cargos', icon: Landmark },
+  { key: 'ano', label: 'Ano(s)', icon: Calendar },
 ];
 
 export interface QuestoesFilterChipStripProps {

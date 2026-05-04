@@ -76,12 +76,12 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                 letterSpacing: '-0.01em',
               }}
             >
-              Matérias e assuntos
+              Disciplinas e assuntos
             </h2>
             <p className="text-xs text-slate-500">
               {hydrated && props.dicionario
-                ? `${items.length} matérias · clique nas pastas para abrir os assuntos`
-                : 'Carregando matérias…'}
+                ? `${items.length} disciplinas · clique nas pastas para abrir os assuntos`
+                : 'Carregando disciplinas…'}
             </p>
           </div>
           <button
@@ -98,11 +98,11 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Pesquisar matéria ou assunto…"
+          placeholder="Pesquisar disciplina ou assunto…"
           className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
         {!hydrated || todasMaterias.length === 0 ? (
-          <div className="text-sm text-slate-400 px-2 py-4">Carregando matérias…</div>
+          <div className="text-sm text-slate-400 px-2 py-4">Carregando disciplinas…</div>
         ) : (
           <FilterAlphabeticList
             items={filtered}
@@ -199,8 +199,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             <button
               type="button"
               onClick={() => props.onMateriaChange(null)}
-              aria-label="Voltar para matérias"
-              title="Voltar para matérias"
+              aria-label="Voltar para disciplinas"
+              title="Voltar para disciplinas"
               className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
             >
               ←
@@ -261,8 +261,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           <button
             type="button"
             onClick={() => props.onMateriaChange(null)}
-            aria-label="Voltar para matérias"
-            title="Voltar para matérias"
+            aria-label="Voltar para disciplinas"
+            title="Voltar para disciplinas"
             className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
           >
             ←

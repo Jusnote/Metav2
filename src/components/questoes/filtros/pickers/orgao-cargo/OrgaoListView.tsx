@@ -35,7 +35,7 @@ export function OrgaoListView({
     <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200 overflow-hidden">
       <header className="flex items-start justify-between gap-3 px-4 py-3 border-b border-slate-200 min-h-[72px] shrink-0">
         <div className="flex flex-col justify-center">
-          <h2 className="text-lg font-semibold text-slate-900">Órgãos</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Instituições</h2>
           <p className="text-xs text-slate-500">
             {allOrgaos.length} instituições · clique para escolher cargos
           </p>
@@ -53,7 +53,7 @@ export function OrgaoListView({
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Buscar órgão…"
+        placeholder="Buscar instituição…"
         className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
       />
 

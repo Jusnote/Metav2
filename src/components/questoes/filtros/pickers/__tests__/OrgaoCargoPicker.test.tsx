@@ -28,8 +28,8 @@ describe('OrgaoCargoPicker shell', () => {
         facetsCargo={{}}
       />,
     );
-    expect(screen.getByText(/Órgãos/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/buscar órgão/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Instituições/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/buscar instituição/i)).toBeInTheDocument();
   });
 
   it('clicar em órgão → drilldown', () => {
@@ -69,8 +69,8 @@ describe('OrgaoCargoPicker shell', () => {
       />,
     );
     fireEvent.click(screen.getByText('TRF1'));
-    fireEvent.click(screen.getByText(/voltar/i));
-    expect(screen.getByPlaceholderText(/buscar órgão/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText(/voltar/i));
+    expect(screen.getByPlaceholderText(/buscar instituição/i)).toBeInTheDocument();
   });
 
   it('marcar todos chama actions.addOrgaoAll', () => {

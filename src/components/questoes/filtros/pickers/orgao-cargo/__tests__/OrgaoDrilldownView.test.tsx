@@ -18,7 +18,7 @@ describe('OrgaoDrilldownView', () => {
   it('renderiza header com órgão + back button', () => {
     render(<OrgaoDrilldownView {...baseProps} />);
     expect(screen.getByText('TRF1')).toBeInTheDocument();
-    expect(screen.getByText(/voltar/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/voltar/i)).toBeInTheDocument();
   });
 
   it('botão "Marcar todos" com count', () => {
@@ -62,7 +62,7 @@ describe('OrgaoDrilldownView', () => {
   it('back button chama onBack', () => {
     const onBack = vi.fn();
     render(<OrgaoDrilldownView {...baseProps} onBack={onBack} />);
-    fireEvent.click(screen.getByText(/voltar/i));
+    fireEvent.click(screen.getByLabelText(/voltar/i));
     expect(onBack).toHaveBeenCalled();
   });
 });

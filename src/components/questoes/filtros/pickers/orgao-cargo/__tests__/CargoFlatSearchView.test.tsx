@@ -26,7 +26,7 @@ describe('CargoFlatSearchView', () => {
       />,
     );
     expect(screen.getByText(/buscar cargo/i)).toBeInTheDocument();
-    expect(screen.getByText(/voltar/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/voltar/i)).toBeInTheDocument();
   });
 
   it('search filtra cargos', () => {
