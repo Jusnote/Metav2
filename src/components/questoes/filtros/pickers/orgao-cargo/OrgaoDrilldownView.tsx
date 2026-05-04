@@ -47,15 +47,19 @@ export function OrgaoDrilldownView({
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200 overflow-hidden">
-      <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[96px] justify-center shrink-0">
-        <button
-          type="button"
-          onClick={onBack}
-          className="text-xs text-slate-500 hover:text-slate-700 self-start"
-        >
-          ← Voltar para órgãos
-        </button>
-        <h2 className="text-lg font-semibold text-slate-900">{orgao}</h2>
+      <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[72px] justify-center shrink-0">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Voltar para órgãos"
+            title="Voltar para órgãos"
+            className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
+          >
+            ←
+          </button>
+          <h2 className="text-lg font-semibold text-slate-900">{orgao}</h2>
+        </div>
         <p className="text-xs text-slate-500">{items.length} cargos disponíveis</p>
       </header>
       <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0">
