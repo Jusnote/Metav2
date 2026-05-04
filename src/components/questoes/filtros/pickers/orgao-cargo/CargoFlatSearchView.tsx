@@ -46,7 +46,7 @@ export function CargoFlatSearchView({
   const selected = new Set(flatCargosSelecionados);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200">
+    <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200 overflow-hidden">
       <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[72px] justify-center shrink-0">
         <button
           type="button"
