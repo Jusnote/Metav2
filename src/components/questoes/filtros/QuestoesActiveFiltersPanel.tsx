@@ -121,7 +121,7 @@ export function QuestoesActiveFiltersPanel({
   }, [materiasComTaxonomia]);
 
   return (
-    <div className="flex flex-col min-h-0 overflow-hidden">
+    <div className="flex flex-col min-h-0 overflow-hidden" style={{ backgroundColor: '#F7F5F3' }}>
       {/* Header vazio — só pra alinhar a borda inferior com o header dos
           pickers da esquerda (min-h-[72px] + border-b). */}
       <div className="min-h-[72px] border-b border-slate-200 shrink-0" />
