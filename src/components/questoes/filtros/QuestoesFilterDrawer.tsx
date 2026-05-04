@@ -14,7 +14,7 @@ export function QuestoesFilterDrawer({
     <div
       data-testid="drawer-grid"
       className="grid h-[70vh] min-h-[480px]"
-      style={{ gridTemplateColumns: '3fr 2fr', gridTemplateRows: '1fr' }}
+      style={{ gridTemplateColumns: '13fr 7fr', gridTemplateRows: '1fr' }}
     >
       {/* Picker e panel são filhos DIRETOS do grid — sem wrapper de flex
           intermediário, que estava quebrando a propagação de altura
