@@ -122,6 +122,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                   <button
                     type="button"
                     onClick={() => props.onMateriaChange(item.id)}
+                    title={item.label}
                     className="flex flex-1 items-center gap-2 min-w-0 text-left"
                   >
                     <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
