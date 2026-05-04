@@ -52,8 +52,8 @@ export function OrgaoDrilldownView({
           <button
             type="button"
             onClick={onBack}
-            aria-label="Voltar para órgãos"
-            title="Voltar para órgãos"
+            aria-label="Voltar para instituições"
+            title="Voltar para instituições"
             className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
           >
             ←

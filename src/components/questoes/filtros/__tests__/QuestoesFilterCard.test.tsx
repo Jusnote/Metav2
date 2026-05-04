@@ -51,7 +51,7 @@ function withProviders(node: React.ReactNode) {
 describe('QuestoesFilterCard', () => {
   it('renderiza chip strip + drawer + picker default (matéria)', () => {
     render(withProviders(<QuestoesFilterCard />));
-    expect(screen.getByRole('button', { name: /Matéria/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Disciplina/i })).toBeInTheDocument();
     expect(screen.getByTestId('drawer-grid')).toBeInTheDocument();
     expect(screen.getByTestId('picker-materia-assuntos')).toBeInTheDocument();
   });

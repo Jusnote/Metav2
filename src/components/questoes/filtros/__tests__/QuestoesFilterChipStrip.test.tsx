@@ -9,9 +9,9 @@ describe('QuestoesFilterChipStrip', () => {
     );
     const chips = screen.getAllByRole('button');
     expect(chips).toHaveLength(4);
-    expect(chips[0]).toHaveTextContent(/Matéria/i);
+    expect(chips[0]).toHaveTextContent(/Disciplina/i);
     expect(chips[1]).toHaveTextContent(/Banca/i);
-    expect(chips[2]).toHaveTextContent(/Órgão/i);
+    expect(chips[2]).toHaveTextContent(/Instituição/i);
     expect(chips[3]).toHaveTextContent(/Ano/i);
   });
 
