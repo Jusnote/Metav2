@@ -16,12 +16,15 @@ export function QuestoesFilterDrawer({
       className="grid h-[70vh] min-h-[480px]"
       style={{ gridTemplateColumns: '3fr 2fr', gridTemplateRows: '1fr' }}
     >
-      {/* Colunas NÃO têm overflow-y aqui — cada filho (picker / panel) faz
-          seu próprio scroll só no body, deixando o header fixo.
-          Border-r vive no body do picker (não na coluna) pra divider
-          vertical não cruzar a área do header. */}
-      <div className="min-h-0 flex flex-col">{left}</div>
-      <div className="min-h-0 flex flex-col">{right}</div>
+      {/* Picker e panel são filhos DIRETOS do grid — sem wrapper de flex
+          intermediário, que estava quebrando a propagação de altura
+          (grid cell → flex container → flex-1 child).
+          Cada um já é um flex column próprio e como grid item com
+          align-self: stretch padrão, herdam a altura da cell (70vh).
+          Border-r vive dentro do picker (não no wrapper) — divider
+          vertical começa no horizontal. */}
+      {left}
+      {right}
     </div>
   );
 }

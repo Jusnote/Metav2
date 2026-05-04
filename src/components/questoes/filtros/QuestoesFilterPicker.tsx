@@ -105,7 +105,7 @@ function MateriaAssuntosPickerAdapter() {
     viewingMateria !== null && umbrellaMaterias.has(viewingMateria);
 
   return (
-    <div data-testid="picker-materia-assuntos">
+    <div data-testid="picker-materia-assuntos" className="flex flex-col min-h-0 h-full">
       <MateriaAssuntosPicker
         dicionario={dicionario ?? null}
         materia={viewingMateria}
@@ -243,7 +243,7 @@ function BancaPickerAdapter() {
   const { facets } = useQuestoesFacets(pendentes);
 
   return (
-    <div data-testid="picker-banca">
+    <div data-testid="picker-banca" className="flex flex-col min-h-0 h-full">
       <BancaPicker
         dicionario={dicionario ?? null}
         facets={facets.banca}
@@ -316,7 +316,7 @@ function OrgaoCargoPickerAdapter() {
   }, [orgaoCargoBackend]);
 
   return (
-    <div data-testid="picker-orgao-cargo">
+    <div data-testid="picker-orgao-cargo" className="flex flex-col min-h-0 h-full">
       <OrgaoCargoPicker
         dicionario={dicionario ?? null}
         state={state}
@@ -337,7 +337,7 @@ function AnoPickerAdapter() {
   const { facets } = useQuestoesFacets(pendentes);
 
   return (
-    <div data-testid="picker-ano">
+    <div data-testid="picker-ano" className="flex flex-col min-h-0 h-full">
       <AnoPicker
         dicionario={dicionario ?? null}
         facets={facets.ano}
@@ -384,6 +384,7 @@ export function QuestoesFilterPicker({ activeChip }: QuestoesFilterPickerProps) 
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
+        className="flex flex-col min-h-0 h-full"
       >
         {content}
       </motion.div>

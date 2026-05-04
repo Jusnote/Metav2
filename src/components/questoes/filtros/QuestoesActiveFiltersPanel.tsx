@@ -121,7 +121,7 @@ export function QuestoesActiveFiltersPanel({
   }, [materiasComTaxonomia]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="flex flex-col min-h-0 overflow-hidden">
       {/* Header — fixo (shrink-0), min-h-[72px] alinhado com pickers.
           O divider forma uma linha contínua com a coluna esquerda. */}
       <div className="flex items-center justify-between px-4 py-3 min-h-[72px] border-b border-slate-200 shrink-0">
