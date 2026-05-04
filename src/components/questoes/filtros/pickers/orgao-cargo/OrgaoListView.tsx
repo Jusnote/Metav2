@@ -69,6 +69,7 @@ export function OrgaoListView({
             <button
               type="button"
               onClick={() => onSelectOrgao(item.id)}
+              title={item.label}
               className="flex w-full items-center justify-between gap-2 px-2 py-1.5 hover:bg-slate-50 rounded text-left"
             >
               <span className="flex-1 text-sm text-blue-700 truncate">{item.label}</span>

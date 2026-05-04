@@ -29,6 +29,7 @@ export function FilterCheckboxItem({
       onClick={onToggle}
       disabled={disabled}
       aria-pressed={checked}
+      title={label}
       className={[
         'group flex items-center gap-3 w-full px-2 py-1.5 rounded-md text-left transition-colors',
         disabled
