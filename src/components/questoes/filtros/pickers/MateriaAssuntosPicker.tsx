@@ -67,7 +67,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
 
     return (
       <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200 overflow-hidden">
-        <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[72px] shrink-0">
+        <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[96px] shrink-0">
           <div className="flex flex-col justify-center">
             <h2
               className="text-lg font-semibold text-slate-900"
@@ -194,7 +194,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   if (materiaInfo && materiaInfo.total_nodes > 0) {
     return (
       <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200 overflow-hidden">
-        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[96px] flex flex-col justify-center shrink-0">
           <button
             type="button"
             onClick={() => props.onMateriaChange(null)}
@@ -252,7 +252,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-slate-200 overflow-hidden">
-      <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+      <header className="px-4 py-3 border-b border-slate-200 min-h-[96px] flex flex-col justify-center shrink-0">
         <button
           type="button"
           onClick={() => props.onMateriaChange(null)}

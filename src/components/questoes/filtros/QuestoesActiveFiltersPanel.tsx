@@ -122,9 +122,9 @@ export function QuestoesActiveFiltersPanel({
 
   return (
     <div className="flex flex-col min-h-0 overflow-hidden">
-      {/* Header — fixo (shrink-0), min-h-[72px] alinhado com pickers.
+      {/* Header — fixo (shrink-0), min-h-[96px] alinhado com pickers.
           O divider forma uma linha contínua com a coluna esquerda. */}
-      <div className="flex items-center justify-between px-4 py-3 min-h-[72px] border-b border-slate-200 shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 min-h-[96px] border-b border-slate-200 shrink-0">
         <span className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
           FILTROS ATIVOS · {aplicadosCount}
         </span>
