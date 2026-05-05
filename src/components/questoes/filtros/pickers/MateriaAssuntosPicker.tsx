@@ -33,7 +33,6 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   const { data: materiasComTaxonomia } = useMaterias();
   const [q, setQ] = useState('');
   const [hydrated, setHydrated] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   // Refs por nome de área pra navegação via TOC do lado esquerdo (Modo 1).
   const areaHeadingRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -70,34 +69,24 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
 
     return (
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <header className="flex items-start justify-between gap-4 px-4 py-3 border-b border-slate-200 min-h-[72px] shrink-0">
-          <div className="flex flex-col justify-center">
-            <h2
-              className="text-lg font-semibold text-slate-900"
-              style={{
-                fontFamily: "'Source Serif 4', Georgia, serif",
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Disciplinas e assuntos
-            </h2>
-            <p className="text-xs text-slate-500">
-              {hydrated && props.dicionario
-                ? `${items.length} disciplinas · clique nas pastas para abrir os assuntos`
-                : 'Carregando disciplinas…'}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => searchInputRef.current?.focus()}
-            className="text-xs text-blue-600 hover:text-blue-700 hover:underline shrink-0 mt-1"
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+          <h2
+            className="text-lg font-semibold text-slate-900"
+            style={{
+              fontFamily: "'Source Serif 4', Georgia, serif",
+              letterSpacing: '-0.01em',
+            }}
           >
-            Pesquisar por nome →
-          </button>
+            Disciplinas e assuntos
+          </h2>
+          <p className="text-xs text-slate-500">
+            {hydrated && props.dicionario
+              ? `${items.length} disciplinas · clique nas pastas para abrir os assuntos`
+              : 'Carregando disciplinas…'}
+          </p>
         </header>
         <div className="flex flex-col gap-3 p-4 flex-1 min-h-0 border-r border-slate-200">
         <input
-          ref={searchInputRef}
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
