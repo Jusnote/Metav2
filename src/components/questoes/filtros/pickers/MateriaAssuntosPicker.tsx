@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
 import { TaxonomiaTreePicker } from '@/components/questoes/TaxonomiaTreePicker';
 import { useMaterias } from '@/hooks/useMaterias';
 import type { FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
+import { groupMateriasByArea } from '@/lib/questoes/materia-areas';
 
 export interface MateriaAssuntosPickerProps {
   dicionario: FiltrosDicionario | null;
@@ -104,9 +105,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         {!hydrated || todasMaterias.length === 0 ? (
           <div className="text-sm text-slate-400 px-2 py-4">Carregando disciplinas…</div>
         ) : (
-          <FilterAlphabeticList
-            items={filtered}
-            renderItem={(item) => {
+          (() => {
+            const renderItem = (item: typeof filtered[number]) => {
               const isSelected = selectedMaterias.includes(item.id);
               const assuntosDestaMateria =
                 props.dicionario?.materia_assuntos[item.id] ?? [];
@@ -118,7 +118,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                 : 0;
               const totalSpecific = specificAssuntos + specificNodes;
               return (
-                <div className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
+                <div key={item.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
                   <button
                     type="button"
                     onClick={() => props.onMateriaChange(item.id)}
@@ -154,8 +154,34 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                   )}
                 </div>
               );
-            }}
-          />
+            };
+
+            const groups = groupMateriasByArea(filtered);
+            let lastArea: string | null = null;
+            return (
+              <div className="flex flex-col">
+                {groups.map((g, i) => {
+                  const showAreaHeader = g.area !== lastArea;
+                  lastArea = g.area;
+                  return (
+                    <Fragment key={`${g.area}-${g.subgroup ?? ''}-${i}`}>
+                      {showAreaHeader && (
+                        <div className="px-2 pt-3 pb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                          {g.area}
+                        </div>
+                      )}
+                      {g.subgroup && (
+                        <div className="px-2 pt-1 pb-0.5 text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                          {g.subgroup}
+                        </div>
+                      )}
+                      {g.items.map(renderItem)}
+                    </Fragment>
+                  );
+                })}
+              </div>
+            );
+          })()
         )}
         </div>
       </div>
