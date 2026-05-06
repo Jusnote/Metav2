@@ -216,23 +216,27 @@ export function VirtualizedQuestionList() {
   }
 
   const renderQuestionCard = (questao: (typeof questoes)[number], index: number) => (
-    <QuestionCard
+    <div
       key={questao.id}
-      id={String(questao.id).padStart(8, '0').toUpperCase()}
-      questaoId={questao.id}
-      year={String(questao.metadata?.ano || '')}
-      institution={questao.metadata?.banca || ''}
-      exam={questao.metadata?.orgao || ''}
-      subject={questao.metadata?.materia || ''}
-      subtopic={questao.metadata?.assunto || ''}
-      questionNumber={(page - 1) * LIMIT + index + 1}
-      totalQuestions={total}
-      questionText={questao.enunciado_html || questao.enunciado}
-      alternatives={alternativesMap.get(questao.id) ?? []}
-      commentsCount={0}
-      caracteristicas={questao.caracteristicas}
-      taxaAcertoGlobal={questao.estatisticas?.taxa_acerto}
-    />
+      className="rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_2px_4px_rgba(15,23,42,0.06),0_8px_24px_rgba(15,23,42,0.06)] transition-shadow duration-200 overflow-hidden"
+    >
+      <QuestionCard
+        id={String(questao.id).padStart(8, '0').toUpperCase()}
+        questaoId={questao.id}
+        year={String(questao.metadata?.ano || '')}
+        institution={questao.metadata?.banca || ''}
+        exam={questao.metadata?.orgao || ''}
+        subject={questao.metadata?.materia || ''}
+        subtopic={questao.metadata?.assunto || ''}
+        questionNumber={(page - 1) * LIMIT + index + 1}
+        totalQuestions={total}
+        questionText={questao.enunciado_html || questao.enunciado}
+        alternatives={alternativesMap.get(questao.id) ?? []}
+        commentsCount={0}
+        caracteristicas={questao.caracteristicas}
+        taxaAcertoGlobal={questao.estatisticas?.taxa_acerto}
+      />
+    </div>
   );
 
   return (
@@ -270,7 +274,7 @@ export function VirtualizedQuestionList() {
           </div>
         ) : (
           /* ── List mode (default) ── */
-          <div className={`h-full overflow-y-auto space-y-12 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
+          <div className={`h-full overflow-y-auto space-y-6 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
             {questoes.map((questao, index) => renderQuestionCard(questao, index))}
 
             {/* Pagination */}
