@@ -82,7 +82,7 @@ export default function QuestoesPage() {
     <div className="flex flex-col h-full w-full">
       {/* ─── Filters section (light blue background) ─── */}
       <section className="bg-white mx-4 mt-4 overflow-hidden">
-        <div className="max-w-6xl mx-auto w-full px-2">
+        <div className={`${filterView === 'questoes' ? 'max-w-5xl' : 'max-w-6xl'} mx-auto w-full px-2`}>
           {/* Header refinado: título serifa + tabs como segmented control */}
           <div className="flex items-center justify-between gap-5 pt-[18px] pb-[14px] border-b border-[#f1f5f9]">
             <h1
