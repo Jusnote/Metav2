@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 @import '../src/styles/_variables.scss';
 @import '../src/styles/_keyframe-animations.scss';
-@import '../src/styles/v2-nordic.css';
 
 @plugin 'tailwindcss-animate';
 
