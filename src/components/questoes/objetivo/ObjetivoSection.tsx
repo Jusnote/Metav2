@@ -43,15 +43,15 @@ export function ObjetivoSection() {
       if (map) for (const o of map.orgaos) orgaosTarget.add(o);
     }
     const targetArr = Array.from(orgaosTarget).sort();
-    const currentArr = searchParams.getAll('orgao').sort();
+    const currentArr = searchParams.getAll('orgaos').sort();
     const same =
       targetArr.length === currentArr.length &&
       targetArr.every((v, i) => currentArr[i] === v);
     if (same) return;
 
     const next = new URLSearchParams(searchParams);
-    next.delete('orgao');
-    for (const o of targetArr) next.append('orgao', o);
+    next.delete('orgaos');
+    for (const o of targetArr) next.append('orgaos', o);
     setSearchParams(next, { replace: true });
   }, [focos, searchParams, setSearchParams]);
 
