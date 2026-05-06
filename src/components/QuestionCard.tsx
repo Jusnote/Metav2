@@ -645,7 +645,7 @@ export const QuestionCard = React.memo(function QuestionCard({
     <article ref={articleRef} className="qc-card-enter text-left">
 
       {/* ── BANNER / HEADER ── */}
-      <header className="qc-banner px-4 py-2">
+      <header className="qc-banner px-4 pt-3 pb-2">
 
         {/* Row 1: Materia, Assunto (inline) */}
         <div className="flex items-center gap-2 mb-1.5 min-w-0">
