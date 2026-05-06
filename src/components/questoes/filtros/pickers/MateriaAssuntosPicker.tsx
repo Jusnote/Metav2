@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
 import { TaxonomiaTreePicker } from '@/components/questoes/TaxonomiaTreePicker';
 import { useMaterias } from '@/hooks/useMaterias';
 import type { FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
+import { groupMateriasByArea } from '@/lib/questoes/materia-areas';
 
 export interface MateriaAssuntosPickerProps {
   dicionario: FiltrosDicionario | null;
@@ -32,7 +33,8 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   const { data: materiasComTaxonomia } = useMaterias();
   const [q, setQ] = useState('');
   const [hydrated, setHydrated] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  // Refs por nome de área pra navegação via TOC do lado esquerdo (Modo 1).
+  const areaHeadingRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     setHydrated(true);
@@ -66,46 +68,36 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       : items.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase()));
 
     return (
-      <div className="flex flex-col gap-3 p-4">
-        <header className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              className="text-lg font-semibold text-slate-900"
-              style={{
-                fontFamily: "'Source Serif 4', Georgia, serif",
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Matérias e assuntos
-            </h2>
-            <p className="text-xs text-slate-500">
-              {hydrated && props.dicionario
-                ? `${items.length} matérias · clique nas pastas para abrir os assuntos`
-                : 'Carregando matérias…'}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => searchInputRef.current?.focus()}
-            className="text-xs text-blue-600 hover:text-blue-700 hover:underline shrink-0 mt-1"
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+          <h2
+            className="text-lg font-semibold text-slate-900"
+            style={{
+              fontFamily: "'Source Serif 4', Georgia, serif",
+              letterSpacing: '-0.01em',
+            }}
           >
-            Pesquisar por nome →
-          </button>
+            Disciplinas e assuntos
+          </h2>
+          <p className="text-xs text-slate-500">
+            {hydrated && props.dicionario
+              ? `${items.length} disciplinas · clique nas pastas para abrir os assuntos`
+              : 'Carregando disciplinas…'}
+          </p>
         </header>
+        <div className="flex flex-col gap-3 p-4 flex-1 min-h-0 border-r border-slate-200">
         <input
-          ref={searchInputRef}
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Pesquisar matéria ou assunto…"
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
+          placeholder="Pesquisar disciplina ou assunto…"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400 shrink-0"
         />
         {!hydrated || todasMaterias.length === 0 ? (
-          <div className="text-sm text-slate-400 px-2 py-4">Carregando matérias…</div>
+          <div className="text-sm text-slate-400 px-2 py-4">Carregando disciplinas…</div>
         ) : (
-          <FilterAlphabeticList
-            items={filtered}
-            renderItem={(item) => {
+          (() => {
+            const renderItem = (item: typeof filtered[number]) => {
               const isSelected = selectedMaterias.includes(item.id);
               const assuntosDestaMateria =
                 props.dicionario?.materia_assuntos[item.id] ?? [];
@@ -117,10 +109,11 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                 : 0;
               const totalSpecific = specificAssuntos + specificNodes;
               return (
-                <div className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
+                <div key={item.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
                   <button
                     type="button"
                     onClick={() => props.onMateriaChange(item.id)}
+                    title={item.label}
                     className="flex flex-1 items-center gap-2 min-w-0 text-left"
                   >
                     <Folder size={14} strokeWidth={2} className="text-amber-600 shrink-0" aria-hidden />
@@ -152,9 +145,77 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
                   )}
                 </div>
               );
-            }}
-          />
+            };
+
+            const groups = groupMateriasByArea(filtered);
+            // Lista canônica de áreas presentes no resultado (sem subgroup) pro TOC.
+            const tocAreas: string[] = [];
+            for (const g of groups) {
+              if (!tocAreas.includes(g.area)) tocAreas.push(g.area);
+            }
+            const scrollToArea = (area: string) => {
+              areaHeadingRefs.current[area]?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+            };
+            let lastArea: string | null = null;
+            return (
+              <div className="flex gap-3 flex-1 min-h-0">
+                {/* TOC fixa à esquerda */}
+                <nav
+                  aria-label="Áreas"
+                  className="w-32 shrink-0 overflow-y-auto py-1 text-xs"
+                >
+                  <ul className="flex flex-col gap-0.5">
+                    {tocAreas.map((area) => (
+                      <li key={area}>
+                        <button
+                          type="button"
+                          onClick={() => scrollToArea(area)}
+                          title={area}
+                          className="w-full text-left px-2 py-1 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100 truncate transition-colors"
+                        >
+                          {area}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+                {/* Lista rolável */}
+                <div className="flex-1 overflow-y-auto min-w-0">
+                  <div className="flex flex-col">
+                    {groups.map((g, i) => {
+                      const showAreaHeader = g.area !== lastArea;
+                      lastArea = g.area;
+                      return (
+                        <Fragment key={`${g.area}-${g.subgroup ?? ''}-${i}`}>
+                          {showAreaHeader && (
+                            <div
+                              ref={(el) => {
+                                areaHeadingRefs.current[g.area] = el;
+                              }}
+                              className="px-2 pt-3 pb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide"
+                            >
+                              {g.area}
+                            </div>
+                          )}
+                          {g.subgroup && (
+                            <div className="px-2 pt-1 pb-0.5 text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                              {g.subgroup}
+                            </div>
+                          )}
+                          {g.items.map(renderItem)}
+                        </Fragment>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })()
         )}
+        </div>
       </div>
     );
   }
@@ -191,22 +252,25 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // Modo 2: matéria com taxonomia → wrapper TreePicker
   if (materiaInfo && materiaInfo.total_nodes > 0) {
     return (
-      <div className="flex flex-col gap-3 p-4">
-        <header className="flex items-center justify-between">
-          <div>
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => props.onMateriaChange(null)}
-              className="text-xs text-slate-500 hover:text-slate-700"
+              aria-label="Voltar para disciplinas"
+              title="Voltar para disciplinas"
+              className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
             >
-              ← Voltar para matérias
+              ←
             </button>
-            <h2 className="text-lg font-semibold text-slate-900 mt-1">{materiaInfo.nome}</h2>
-            <p className="text-xs text-slate-500">
-              {materiaInfo.total_nodes} tópicos · taxonomia GRAN
-            </p>
+            <h2 className="text-lg font-semibold text-slate-900">{materiaInfo.nome}</h2>
           </div>
+          <p className="text-xs text-slate-500">
+            {materiaInfo.total_nodes} tópicos · taxonomia GRAN
+          </p>
         </header>
+        <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0 border-r border-slate-200">
         {renderUmbrellaToggle()}
         {props.isUmbrella && (
           <p className="text-xs text-slate-400 italic">
@@ -229,6 +293,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
             countsBody={{}}
           />
         </div>
+        </div>
       </div>
     );
   }
@@ -249,42 +314,48 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header>
-        <button
-          type="button"
-          onClick={() => props.onMateriaChange(null)}
-          className="text-xs text-slate-500 hover:text-slate-700"
-        >
-          ← Voltar para matérias
-        </button>
-        <h2 className="text-lg font-semibold text-slate-900 mt-1">{props.materia}</h2>
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => props.onMateriaChange(null)}
+            aria-label="Voltar para disciplinas"
+            title="Voltar para disciplinas"
+            className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
+          >
+            ←
+          </button>
+          <h2 className="text-lg font-semibold text-slate-900">{props.materia}</h2>
+        </div>
         <p className="text-xs text-slate-500">{items.length} assuntos · lista plana</p>
       </header>
-      <input
-        type="search"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Buscar assunto…"
-        className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
-      />
-      {renderUmbrellaToggle()}
-      {props.isUmbrella && (
-        <p className="text-xs text-slate-400 italic -mt-1">
-          Todos os assuntos selecionados pela opção acima
-        </p>
-      )}
-      <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
-        <FilterAlphabeticList
-          items={filtered}
-          renderItem={(item) => (
-            <FilterCheckboxItemWithCount
-              label={item.label}
-              checked={props.selectedAssuntos.includes(item.id)}
-              onToggle={() => toggle(item.id)}
-            />
-          )}
+      <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0 border-r border-slate-200">
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Buscar assunto…"
+          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
         />
+        {renderUmbrellaToggle()}
+        {props.isUmbrella && (
+          <p className="text-xs text-slate-400 italic -mt-1">
+            Todos os assuntos selecionados pela opção acima
+          </p>
+        )}
+        <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
+          <FilterAlphabeticList
+            items={filtered}
+            renderItem={(item) => (
+              <FilterCheckboxItemWithCount
+                label={item.label}
+                checked={props.selectedAssuntos.includes(item.id)}
+                onToggle={() => toggle(item.id)}
+              />
+            )}
+          />
+        </div>
       </div>
     </div>
   );

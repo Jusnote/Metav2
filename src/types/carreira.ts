@@ -1,6 +1,7 @@
 // src/types/carreira.ts
 
 export const AREAS = [
+  'advocacia',
   'policial',
   'fiscal',
   'juridica',
@@ -15,6 +16,7 @@ export const AREAS = [
 export type Area = (typeof AREAS)[number];
 
 export const AREA_LABELS: Record<Area, string> = {
+  advocacia: 'Advocacia',
   policial: 'Policial',
   fiscal: 'Fiscal',
   juridica: 'Jurídica',

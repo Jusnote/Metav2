@@ -13,13 +13,18 @@ export function QuestoesFilterDrawer({
   return (
     <div
       data-testid="drawer-grid"
-      className="grid max-h-[70vh] min-h-[480px]"
-      style={{ gridTemplateColumns: '3fr 2fr', gridTemplateRows: '1fr' }}
+      className="grid h-[70vh] min-h-[480px]"
+      style={{ gridTemplateColumns: '13fr 7fr', gridTemplateRows: '1fr' }}
     >
-      <div className="border-r border-slate-200 overflow-y-auto min-h-0">
-        {left}
-      </div>
-      <div className="overflow-y-auto min-h-0">{right}</div>
+      {/* Picker e panel são filhos DIRETOS do grid — sem wrapper de flex
+          intermediário, que estava quebrando a propagação de altura
+          (grid cell → flex container → flex-1 child).
+          Cada um já é um flex column próprio e como grid item com
+          align-self: stretch padrão, herdam a altura da cell (70vh).
+          Border-r vive dentro do picker (não no wrapper) — divider
+          vertical começa no horizontal. */}
+      {left}
+      {right}
     </div>
   );
 }

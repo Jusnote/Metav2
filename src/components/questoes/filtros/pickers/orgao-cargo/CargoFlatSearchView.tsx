@@ -46,23 +46,27 @@ export function CargoFlatSearchView({
   const selected = new Set(flatCargosSelecionados);
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header className="flex flex-col gap-1">
-        <button
-          type="button"
-          onClick={onBack}
-          className="text-xs text-slate-500 hover:text-slate-700 self-start"
-        >
-          ← Voltar para órgãos
-        </button>
-        <h2 className="text-lg font-semibold text-slate-900">Buscar cargo direto</h2>
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <header className="flex flex-col px-4 py-3 border-b border-slate-200 min-h-[72px] justify-center shrink-0">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Voltar para instituições"
+            title="Voltar para instituições"
+            className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
+          >
+            ←
+          </button>
+          <h2 className="text-lg font-semibold text-slate-900">Buscar cargo direto</h2>
+        </div>
         <p className="text-xs text-slate-500">
           {q.trim() || showAll
             ? `${filtered.length} de ${allCargos.length} cargos`
             : `Top ${TOP_N_DEFAULT} mais comuns · ${allCargos.length} no total`}
         </p>
       </header>
-
+      <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0 border-r border-slate-200">
       <input
         type="search"
         value={q}
@@ -92,6 +96,7 @@ export function CargoFlatSearchView({
           Ver todos os {allCargos.length.toLocaleString('pt-BR')} cargos →
         </button>
       )}
+      </div>
     </div>
   );
 }

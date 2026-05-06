@@ -5,6 +5,7 @@ import Fuse from 'fuse.js';
 import { useTaxonomia, TaxonomiaNode, flattenTree } from '@/hooks/useTaxonomia';
 import { useTaxonomiaCounts, CountsBody } from '@/hooks/useTaxonomiaCounts';
 import { useTaxonomiaRecentes } from '@/hooks/useTaxonomiaRecentes';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type Props = {
   materiaSlug: string;
@@ -121,8 +122,11 @@ export function TaxonomiaTreePicker({ materiaSlug, selectedIds, onToggle, counts
 
       <div className="px-2 pb-2 flex items-center justify-between text-xs">
         <span>{data.tree.filter(shouldShow).length} grupos visíveis</span>
-        <label className="flex items-center gap-1 cursor-pointer">
-          <input type="checkbox" checked={hideZeros} onChange={e => setHideZeros(e.target.checked)} />
+        <label className="flex items-center gap-1.5 cursor-pointer">
+          <Checkbox
+            checked={hideZeros}
+            onCheckedChange={(v) => setHideZeros(v === true)}
+          />
           Esconder vazios
         </label>
       </div>
@@ -175,11 +179,10 @@ function NodeRow({ node, depth, expanded, onToggleExpand, selectedIds, onSelect,
         ) : (
           <span className="w-[14px]" />
         )}
-        <input
-          type="checkbox"
+        <Checkbox
           checked={isSelected}
-          onChange={() => onSelect(node.id as any)}
-          onClick={e => e.stopPropagation()}
+          onCheckedChange={() => onSelect(node.id as any)}
+          onClick={(e) => e.stopPropagation()}
         />
         <span
           className={`flex-1 truncate cursor-pointer ${node.is_sintetico ? 'font-medium' : ''}`}

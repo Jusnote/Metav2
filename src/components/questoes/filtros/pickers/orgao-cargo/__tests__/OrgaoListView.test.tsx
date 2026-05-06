@@ -21,8 +21,8 @@ describe('OrgaoListView', () => {
         onOpenFlatSearch={vi.fn()}
       />,
     );
-    expect(screen.getByText(/Órgãos/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/buscar órgão/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Instituições/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/buscar instituição/i)).toBeInTheDocument();
   });
 
   it('renderiza órgãos em ordem alfabética', () => {
@@ -99,7 +99,7 @@ describe('OrgaoListView', () => {
         onOpenFlatSearch={vi.fn()}
       />,
     );
-    fireEvent.change(screen.getByPlaceholderText(/buscar órgão/i), { target: { value: 'TRF' } });
+    fireEvent.change(screen.getByPlaceholderText(/buscar instituição/i), { target: { value: 'TRF' } });
     expect(screen.getByText('TRF1')).toBeInTheDocument();
     expect(screen.queryByText('STJ')).not.toBeInTheDocument();
   });

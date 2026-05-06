@@ -12,6 +12,9 @@ import type { Carreira } from '@/types/carreira';
 const now = new Date().toISOString();
 
 export const MOCK_CARREIRAS: Carreira[] = [
+  // ─── Advocacia ──────────────────────────────────────────────
+  { id: 'mock-oab',           area: 'advocacia',   nome: 'OAB · Exame de Ordem', slug: 'oab-exame',    foto_url: null, ordem: 1,  ativa: true, created_at: now, updated_at: now },
+
   // ─── Policial ───────────────────────────────────────────────
   { id: 'mock-pf-agente',     area: 'policial',    nome: 'PF · Agente',        slug: 'pf-agente',     foto_url: 'https://concursos.adv.br/wp-content/uploads/2022/05/Concurso-Agente-da-Policia-Federal.jpeg', ordem: 1,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-pf-escrivao',   area: 'policial',    nome: 'PF · Escrivão',      slug: 'pf-escrivao',   foto_url: 'https://www.sociedademilitar.com.br/wp-content/uploads/2024/06/escrivao-pf.jpeg', ordem: 2,  ativa: true, created_at: now, updated_at: now },
@@ -27,7 +30,6 @@ export const MOCK_CARREIRAS: Carreira[] = [
   { id: 'mock-icms-sp',       area: 'fiscal',      nome: 'ICMS-SP · AFT',      slug: 'icms-sp-aft',   foto_url: null, ordem: 3,  ativa: true, created_at: now, updated_at: now },
 
   // ─── Jurídica ───────────────────────────────────────────────
-  { id: 'mock-oab',           area: 'juridica',    nome: 'OAB · Exame',        slug: 'oab-exame',     foto_url: null, ordem: 1,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-mp-fed',        area: 'juridica',    nome: 'MPF · Procurador',   slug: 'mpf-procurador', foto_url: null, ordem: 2,  ativa: true, created_at: now, updated_at: now },
   { id: 'mock-def-pub',       area: 'juridica',    nome: 'Defensoria · Defensor', slug: 'def-defensor', foto_url: null, ordem: 3,  ativa: true, created_at: now, updated_at: now },
 

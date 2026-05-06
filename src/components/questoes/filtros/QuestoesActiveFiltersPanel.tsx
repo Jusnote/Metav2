@@ -121,17 +121,23 @@ export function QuestoesActiveFiltersPanel({
   }, [materiasComTaxonomia]);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <span className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
-          FILTROS ATIVOS · {aplicadosCount}
-        </span>
-        <CarregarLink />
-      </div>
+    <div className="flex flex-col min-h-0 overflow-hidden">
+      {/* Header vazio — só pra alinhar a borda inferior com o header dos
+          pickers da esquerda (min-h-[72px] + border-b). Fica sem o fundo
+          colorido pra borda inferior do header continuar limpa. */}
+      <div className="min-h-[72px] border-b border-slate-200 shrink-0" />
 
-      {/* Body: grupos OU empty state */}
+      {/* Wrapper colorido — só do divider pra baixo. */}
+      <div className="flex-1 flex flex-col min-h-0" style={{ backgroundColor: '#F7F5F3' }}>
+
+      {/* Body: label da seção + grupos OU empty state */}
       <div className="flex-1 overflow-auto px-4 py-2">
+        <div className="flex items-center justify-between pt-1 pb-2">
+          <span className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
+            FILTROS ATIVOS · {aplicadosCount}
+          </span>
+          <CarregarLink />
+        </div>
         {pendentesEmpty ? (
           <QuestoesFilterEmptyState />
         ) : (
@@ -271,6 +277,7 @@ export function QuestoesActiveFiltersPanel({
       {/* Aplicar */}
       <div className="px-4 pb-4">
         <ApplyFiltersButton isDirty={isDirty} count={count} onClick={onApply} />
+      </div>
       </div>
     </div>
   );

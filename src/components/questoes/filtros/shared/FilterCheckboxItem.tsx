@@ -29,6 +29,7 @@ export function FilterCheckboxItem({
       onClick={onToggle}
       disabled={disabled}
       aria-pressed={checked}
+      title={label}
       className={[
         'group flex items-center gap-3 w-full px-2 py-1.5 rounded-md text-left transition-colors',
         disabled
@@ -38,10 +39,10 @@ export function FilterCheckboxItem({
     >
       <span
         className={[
-          'inline-flex items-center justify-center w-4 h-4 rounded border transition-colors shrink-0',
+          'inline-flex items-center justify-center w-4 h-4 rounded-md border transition-colors shrink-0',
           checked
-            ? 'bg-[#1e3a8a] border-[#1e3a8a] text-white'
-            : 'bg-white border-slate-300 group-hover:border-slate-400',
+            ? 'bg-[#1e3a8a] border-[#1e3a8a] text-white shadow-none'
+            : 'bg-zinc-100 border-zinc-200/80 shadow-[inset_0_1px_2px_0_rgb(0_0_0/0.05)] group-hover:bg-zinc-200/70',
         ].join(' ')}
         aria-hidden="true"
       >

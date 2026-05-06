@@ -48,14 +48,14 @@ export default function QuestoesPage() {
     setCtrlKOpen(false);
   }, []);
 
-  // Após Aplicar no card de filtros, troca pra aba Questões
-  // (apply() do contexto já escreveu filtros na URL — basta navegar).
+  // Após Aplicar no card de filtros: a navegação pra `view=questoes` já
+  // foi feita dentro do mesmo setSearchParams do apply() (evita race com
+  // dois setSearchParams sequenciais). Aqui só cleanup do Ctrl+K.
   const handleApplied = useCallback(() => {
-    setFilterView('questoes');
     if (ctrlKOpen) {
       closeCtrlK();
     }
-  }, [setFilterView, ctrlKOpen, closeCtrlK]);
+  }, [ctrlKOpen, closeCtrlK]);
 
   const editFilters = useCallback(() => {
     setFilterView('filtros');
@@ -82,7 +82,7 @@ export default function QuestoesPage() {
     <div className="flex flex-col h-full w-full">
       {/* ─── Filters section (light blue background) ─── */}
       <section className="bg-white mx-4 mt-4 overflow-hidden">
-        <div className="max-w-5xl mx-auto w-full px-2">
+        <div className="max-w-6xl mx-auto w-full px-2">
           {/* Header refinado: título serifa + tabs como segmented control */}
           <div className="flex items-center justify-between gap-5 pt-[18px] pb-[14px] border-b border-[#f1f5f9]">
             <h1
@@ -187,7 +187,7 @@ export default function QuestoesPage() {
             onClick={closeCtrlK}
           />
           <div
-            className="fixed top-4 left-1/2 z-50 w-full max-w-5xl px-4"
+            className="fixed top-4 left-1/2 z-50 w-full max-w-6xl px-4"
             style={{ transform: "translateX(-50%)" }}
           >
             <div
