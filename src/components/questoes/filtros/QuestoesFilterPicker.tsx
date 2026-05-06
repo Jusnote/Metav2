@@ -11,7 +11,7 @@ import { useFiltrosDicionario, type FiltrosDicionario } from '@/hooks/useFiltros
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
 import { useMaterias } from '@/hooks/useMaterias';
 import { useOrgaoCargoState } from '@/hooks/useOrgaoCargoState';
-import { useQuestoesOptional } from '@/contexts/QuestoesContext';
+import { useSearchParams } from 'react-router-dom';
 import {
   backendToState,
   stateToBackendFilters,
@@ -37,9 +37,9 @@ function MateriaAssuntosPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
   const { data: materiasComTaxonomia } = useMaterias();
-  const ctx = useQuestoesOptional();
-  // OAB ativo = filtro orgaos contém 'OAB' (carreira "Exame de Ordem" selecionada)
-  const oabMode = !!ctx?.filters?.orgaos?.includes('OAB');
+  const [urlSearchParams] = useSearchParams();
+  // OAB ativo = URL contém ?orgaos=OAB (carreira "Exame de Ordem" selecionada)
+  const oabMode = urlSearchParams.getAll('orgaos').includes('OAB');
 
   // Navegação local (qual matéria está aberta no picker) é separada do
   // filtro aplicado (pendentes.materias). "← Voltar" só fecha a vista,
