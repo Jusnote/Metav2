@@ -8,6 +8,7 @@ import { AREA_LABELS, type Area } from '@/types/carreira';
 import { AreaTabs } from './AreaTabs';
 import { CarreiraCarousel } from './CarreiraCarousel';
 import { useSearchParams } from 'react-router-dom';
+import { useQuestoesFilterDraftOptional } from '@/contexts/QuestoesFilterDraftContext';
 
 // Mapping carreira → filtros aplicados quando o card é foco ativo.
 // Hoje só OAB tem mapeamento real; outras carreiras seguem visuais.
@@ -35,6 +36,7 @@ export function ObjetivoSection() {
   const { data: counts = {} } = useAreaCounts();
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const draftCtx = useQuestoesFilterDraftOptional();
 
   useEffect(() => {
     const orgaosTarget = new Set<string>();
@@ -47,13 +49,26 @@ export function ObjetivoSection() {
     const same =
       targetArr.length === currentArr.length &&
       targetArr.every((v, i) => currentArr[i] === v);
-    if (same) return;
 
-    const next = new URLSearchParams(searchParams);
-    next.delete('orgaos');
-    for (const o of targetArr) next.append('orgaos', o);
-    setSearchParams(next, { replace: true });
-  }, [focos, searchParams, setSearchParams]);
+    if (!same) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('orgaos');
+      for (const o of targetArr) next.append('orgaos', o);
+      setSearchParams(next, { replace: true });
+    }
+
+    // Também atualiza o draft (pendentes) — assim "Aplicar filtros" preserva
+    // os orgaos vindos da carreira em vez de sobrescrever URL com pendentes stale.
+    if (draftCtx) {
+      const currentDraftOrgaos = (draftCtx.pendentes.orgaos ?? []).slice().sort();
+      const sameDraft =
+        targetArr.length === currentDraftOrgaos.length &&
+        targetArr.every((v, i) => currentDraftOrgaos[i] === v);
+      if (!sameDraft) {
+        draftCtx.setPendentes({ ...draftCtx.pendentes, orgaos: targetArr });
+      }
+    }
+  }, [focos, searchParams, setSearchParams, draftCtx]);
 
   return (
     <section className="mt-5">

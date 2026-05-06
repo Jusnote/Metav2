@@ -65,6 +65,12 @@ export function useQuestoesFilterDraft(): QuestoesFilterDraftValue {
   return ctx;
 }
 
+/** Versão opcional — retorna null se fora do provider. Útil pra componentes
+ * que podem ou não estar dentro do provider (ex: ObjetivoSection). */
+export function useQuestoesFilterDraftOptional(): QuestoesFilterDraftValue | null {
+  return useContext(QuestoesFilterDraftContext);
+}
+
 export function QuestoesFilterDraftProvider({
   children,
 }: {
