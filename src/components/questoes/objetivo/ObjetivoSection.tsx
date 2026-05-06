@@ -1,12 +1,19 @@
 // src/components/questoes/objetivo/ObjetivoSection.tsx
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCarreiras, useAreaCounts } from '@/hooks/useCarreiras';
 import { useFocoObjetivo } from '@/hooks/useFocoObjetivo';
 import { AREA_LABELS, type Area } from '@/types/carreira';
 import { AreaTabs } from './AreaTabs';
 import { CarreiraCarousel } from './CarreiraCarousel';
+import { useQuestoesOptional } from '@/contexts/QuestoesContext';
+
+// Mapping carreira → filtros aplicados quando o card é foco ativo.
+// Hoje só OAB tem mapeamento real; outras carreiras seguem visuais.
+const CARREIRA_FILTROS: Record<string, { orgaos: string[] }> = {
+  'mock-oab': { orgaos: ['OAB', 'OAB DF'] },
+};
 
 /**
  * Container da seção OBJETIVO. Orquestra:
@@ -20,12 +27,31 @@ import { CarreiraCarousel } from './CarreiraCarousel';
  * só destacam os cards visualmente.
  */
 export function ObjetivoSection() {
-  const [area, setArea] = useState<Area>('policial');
+  const [area, setArea] = useState<Area>('advocacia');
 
   const { focos, toggleFoco, clearFocos } = useFocoObjetivo();
 
   const { data: carreiras = [], isLoading } = useCarreiras(area);
   const { data: counts = {} } = useAreaCounts();
+
+  const ctx = useQuestoesOptional();
+
+  useEffect(() => {
+    if (!ctx) return;
+    const orgaosTarget = new Set<string>();
+    for (const id of focos) {
+      const map = CARREIRA_FILTROS[id];
+      if (map) for (const o of map.orgaos) orgaosTarget.add(o);
+    }
+    const arr = Array.from(orgaosTarget);
+    const same =
+      arr.length === ctx.filters.orgaos.length &&
+      arr.every((v) => ctx.filters.orgaos.includes(v));
+    if (!same) {
+      ctx.setFilter('orgaos', arr);
+      ctx.triggerSearch();
+    }
+  }, [focos, ctx]);
 
   return (
     <section className="mt-5">
