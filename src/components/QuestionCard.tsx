@@ -754,15 +754,22 @@ export const QuestionCard = React.memo(function QuestionCard({
           removeHighlightOnClick={true}
         >
           <div
-            className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
-            style={{ fontFamily: "'Source Serif 4', Georgia, serif", color: '#1f1e1c' }}
+            className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[14px] [&_p]:text-[14px] [&_p]:my-1 text-left"
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontWeight: 100,
+              fontSize: '14px',
+              lineHeight: '21px',
+              letterSpacing: '0',
+              color: '#212529',
+            }}
             dangerouslySetInnerHTML={sanitizedQuestion}
           />
         </TextHighlighter>
       </div>
 
       {/* ── ALTERNATIVES ── */}
-      <div className="px-5 pb-4 space-y-px" role="radiogroup" aria-label="Alternativas">
+      <div className="pl-0 pr-5 pb-4 space-y-1.5" role="radiogroup" aria-label="Alternativas">
         {sanitizedAlternatives.map((alt, index) => {
           const classes = getAltClasses(alt.letter, index);
           const pct = altPercentages?.get(alt.letter);
@@ -800,16 +807,18 @@ export const QuestionCard = React.memo(function QuestionCard({
                   className={`${classes.row} flex-1 transition-opacity duration-200 ${isEliminated && !respondido ? 'opacity-40' : ''}`}
                   style={classes.stagger ? { animationDelay: classes.stagger } : undefined}
                 >
-                  {/* Letter circle */}
+                  {/* Letter tag — estilo "A)" */}
                   <span className={`${classes.circle} relative`}>
                     {classes.icon ? (
-                      classes.icon === 'check'
-                        ? <Check className="w-3 h-3 qc-icon-reveal" />
-                        : <X className="w-3 h-3 qc-icon-reveal" />
+                      <>
+                        <span className="opacity-60">{alt.letter})</span>
+                        {classes.icon === 'check'
+                          ? <Check className="w-3 h-3 qc-icon-reveal ml-1" />
+                          : <X className="w-3 h-3 qc-icon-reveal ml-1" />}
+                      </>
                     ) : (
                       <>
-                        {alt.letter}
-                        {/* Diagonal strike on eliminated circle */}
+                        {alt.letter})
                         {isEliminated && !respondido && (
                           <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <span className="block w-[120%] h-[1.5px] bg-zinc-400 dark:bg-zinc-500 rotate-[-45deg] rounded-full" />
@@ -828,8 +837,8 @@ export const QuestionCard = React.memo(function QuestionCard({
                     className="pt-px leading-[1.5] flex-1"
                   >
                     <div
-                      className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
-                      style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}
+                      className={`prose prose-sm dark:prose-invert max-w-none text-[14px] [&_p]:text-[14px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
+                      style={{ fontFamily: "'Montserrat', sans-serif" }}
                       dangerouslySetInnerHTML={alt.html}
                     />
                   </TextHighlighter>
