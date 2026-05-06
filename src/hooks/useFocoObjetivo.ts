@@ -1,19 +1,43 @@
 // src/hooks/useFocoObjetivo.ts
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const MAX_FOCOS = 3;
+const STORAGE_KEY = 'questoes_focos_v1';
+
+function loadFocos(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFocos(focos: string[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(focos));
+  } catch {
+    // sessionStorage cheio — ignora
+  }
+}
 
 /**
  * Estado dos focos ativos. Até 3 carreiras simultâneas; o 4º clique
  * desativa o foco mais antigo (FIFO) e ativa o novo.
  *
- * Fase 1A: estado em memória apenas (não persiste entre navegações).
- * Página abre sempre com nenhum foco ativo (card TODAS selecionado).
+ * Persiste em sessionStorage pra sobreviver a unmount/remount entre
+ * tabs Filtros↔Questões (ObjetivoSection só monta na aba Filtros).
  */
 export function useFocoObjetivo() {
-  const [focos, setFocos] = useState<string[]>([]);
+  const [focos, setFocos] = useState<string[]>(loadFocos);
+
+  useEffect(() => {
+    saveFocos(focos);
+  }, [focos]);
 
   const toggleFoco = useCallback((carreiraId: string) => {
     setFocos((prev) => {
