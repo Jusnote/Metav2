@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 
-import { google } from '@ai-sdk/google';
+import { anthropic } from '@ai-sdk/anthropic';
 import { streamText } from 'ai';
 import { NextResponse } from 'next/server';
 
@@ -27,11 +27,11 @@ Regras:
 export async function POST(req: NextRequest) {
   const { questionText, alternativeText, alternativeLetter, isCorrect, subject, subtopic } = await req.json();
 
-  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Missing GOOGLE_GENERATIVE_AI_API_KEY.' },
+      { error: 'Missing ANTHROPIC_API_KEY.' },
       { status: 401 }
     );
   }
@@ -49,20 +49,11 @@ Explique com fundamento legal.`;
 
   try {
     const result = streamText({
-      model: google('gemini-2.5-flash', {
-        useSearchGrounding: false,
-      }),
+      model: anthropic('claude-haiku-4-5-20251001'),
       system: SYSTEM_PROMPT,
       prompt,
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1024,
       temperature: 0.3,
-      providerOptions: {
-        google: {
-          thinkingConfig: {
-            thinkingBudget: 0,
-          },
-        },
-      },
     });
 
     const encoder = new TextEncoder();
