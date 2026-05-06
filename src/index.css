@@ -1453,7 +1453,7 @@ All colors MUST be HSL.
   display: flex;
   align-items: flex-start;
   gap: 0.625rem;
-  padding: 0.375rem 0;
+  padding: 0.375rem 0.75rem;
   border-radius: 0.5rem;
   text-align: left;
   border: 2px solid transparent;
@@ -1464,8 +1464,8 @@ All colors MUST be HSL.
 .qc-alt-row:disabled { cursor: default; }
 
 /* Default (unselected) */
-.qc-alt-default { background-color: hsl(var(--muted) / 0.22); }
-.qc-alt-default:not(:disabled):hover { background-color: hsl(var(--muted) / 0.22); }
+.qc-alt-default { background-color: transparent; }
+.qc-alt-default:not(:disabled):hover { background-color: hsl(var(--muted) / 0.4); }
 
 /* Selected (pre-answer) */
 .qc-alt-selected { background-color: hsl(240 6% 10% / 0.03); border-color: hsl(240 6% 10% / 0.08); }
@@ -1543,44 +1543,50 @@ All colors MUST be HSL.
   to { stroke-dashoffset: 0; }
 }
 
-/* Letter tag base — estilo "A)" sem fundo */
+/* Letter circle base */
 .qc-alt-circle {
   flex-shrink: 0;
-  min-width: 22px;
-  height: 24px;
-  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
+  border-radius: 9999px;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  transition: color 0.2s ease-out, transform 0.15s ease-out;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out, transform 0.15s ease-out, box-shadow 0.2s ease-out;
   margin-top: 1px;
 }
 .qc-alt-row:not(:disabled):active .qc-alt-circle { transform: scale(1.15); }
 
-/* Estados — só cor de texto (sem fundo) */
+/* Circle states */
 .qc-alt-circle.qc-circle-default {
-  color: #2563eb; /* blue-600 — azul royal elegante */
+  background-color: transparent;
+  color: #3B82F6;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgba(59, 130, 246, 0.45);
 }
 .dark .qc-alt-circle.qc-circle-default {
-  color: #60a5fa;
+  color: #60A5FA;
+  border-color: rgba(96, 165, 250, 0.5);
 }
 .qc-circle-selected {
-  color: #7c3aed; /* roxo quando selecionado */
+  background-color: hsl(240 6% 10%);
+  color: white;
+  box-shadow: 0 0 0 3px hsl(240 6% 10% / 0.08);
   animation: qcCircleBounce 0.25s ease-out;
 }
 .dark .qc-circle-selected {
-  color: #a78bfa;
+  background-color: hsl(0 0% 95%);
+  color: hsl(240 6% 10%);
+  box-shadow: 0 0 0 3px hsl(0 0% 100% / 0.1);
 }
 @keyframes qcCircleBounce { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
-.qc-circle-correct { color: hsl(142 76% 36%); }
-.dark .qc-circle-correct { color: hsl(142 70% 55%); }
-.qc-circle-wrong { color: hsl(0 84% 60%); }
-.dark .qc-circle-wrong { color: hsl(0 70% 65%); }
+.qc-circle-correct { background-color: hsl(142 76% 36%); color: white; box-shadow: 0 0 0 3px hsl(142 76% 36% / 0.15); }
+.qc-circle-wrong { background-color: hsl(0 84% 60%); color: white; box-shadow: 0 0 0 3px hsl(0 84% 60% / 0.15); }
 
 /* Icon reveal (check/close in circle) */
 .qc-icon-reveal { animation: qcIconFadeIn 0.3s ease-out 0.1s both; }
