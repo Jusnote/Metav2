@@ -7,7 +7,7 @@ import { useFocoObjetivo } from '@/hooks/useFocoObjetivo';
 import { AREA_LABELS, type Area } from '@/types/carreira';
 import { AreaTabs } from './AreaTabs';
 import { CarreiraCarousel } from './CarreiraCarousel';
-import { useQuestoesOptional } from '@/contexts/QuestoesContext';
+import { useSearchParams } from 'react-router-dom';
 
 // Mapping carreira → filtros aplicados quando o card é foco ativo.
 // Hoje só OAB tem mapeamento real; outras carreiras seguem visuais.
@@ -34,25 +34,26 @@ export function ObjetivoSection() {
   const { data: carreiras = [], isLoading } = useCarreiras(area);
   const { data: counts = {} } = useAreaCounts();
 
-  const ctx = useQuestoesOptional();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    if (!ctx?.filters || !ctx.setFilter || !ctx.triggerSearch) return;
     const orgaosTarget = new Set<string>();
     for (const id of focos) {
       const map = CARREIRA_FILTROS[id];
       if (map) for (const o of map.orgaos) orgaosTarget.add(o);
     }
-    const arr = Array.from(orgaosTarget);
-    const current = ctx.filters.orgaos ?? [];
+    const targetArr = Array.from(orgaosTarget).sort();
+    const currentArr = searchParams.getAll('orgao').sort();
     const same =
-      arr.length === current.length &&
-      arr.every((v) => current.includes(v));
-    if (!same) {
-      ctx.setFilter('orgaos', arr);
-      ctx.triggerSearch();
-    }
-  }, [focos, ctx]);
+      targetArr.length === currentArr.length &&
+      targetArr.every((v, i) => currentArr[i] === v);
+    if (same) return;
+
+    const next = new URLSearchParams(searchParams);
+    next.delete('orgao');
+    for (const o of targetArr) next.append('orgao', o);
+    setSearchParams(next, { replace: true });
+  }, [focos, searchParams, setSearchParams]);
 
   return (
     <section className="mt-5">
