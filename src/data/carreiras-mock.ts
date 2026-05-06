@@ -13,7 +13,7 @@ const now = new Date().toISOString();
 
 export const MOCK_CARREIRAS: Carreira[] = [
   // ─── Advocacia ──────────────────────────────────────────────
-  { id: 'mock-oab',           area: 'advocacia',   nome: 'OAB · Exame de Ordem', slug: 'oab-exame',    foto_url: 'https://oabcampinas.org.br/wp-content/uploads/2018/12/CFOAB.jpg', ordem: 1,  ativa: true, created_at: now, updated_at: now },
+  { id: 'mock-oab',           area: 'advocacia',   nome: 'OAB · Exame de Ordem', slug: 'oab-exame',    foto_url: 'https://static.vecteezy.com/ti/fotos-gratis/t2/79108606-masculino-advogado-dentro-preto-terno-falando-em-a-telefone-as-escrivaninha-com-computador-portatil-e-tabua-senhora-justica-estatua-dentro-primeiro-plano-moderno-escritorio-configuracao-com-de-madeira-acentos-gratis-foto.jpg', ordem: 1,  ativa: true, created_at: now, updated_at: now },
 
   // ─── Policial ───────────────────────────────────────────────
   { id: 'mock-pf-agente',     area: 'policial',    nome: 'PF · Agente',        slug: 'pf-agente',     foto_url: 'https://concursos.adv.br/wp-content/uploads/2022/05/Concurso-Agente-da-Policia-Federal.jpeg', ordem: 1,  ativa: true, created_at: now, updated_at: now },
