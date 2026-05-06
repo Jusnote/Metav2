@@ -11,6 +11,7 @@ import { useFiltrosDicionario, type FiltrosDicionario } from '@/hooks/useFiltros
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
 import { useMaterias } from '@/hooks/useMaterias';
 import { useOrgaoCargoState } from '@/hooks/useOrgaoCargoState';
+import { useQuestoesOptional } from '@/contexts/QuestoesContext';
 import {
   backendToState,
   stateToBackendFilters,
@@ -36,6 +37,9 @@ function MateriaAssuntosPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
   const { data: materiasComTaxonomia } = useMaterias();
+  const ctx = useQuestoesOptional();
+  // OAB ativo = filtro orgaos contém 'OAB' (carreira "Exame de Ordem" selecionada)
+  const oabMode = !!ctx?.filters?.orgaos?.includes('OAB');
 
   // Navegação local (qual matéria está aberta no picker) é separada do
   // filtro aplicado (pendentes.materias). "← Voltar" só fecha a vista,
@@ -113,6 +117,7 @@ function MateriaAssuntosPickerAdapter() {
         selectedNodeIds={pendentes.nodeIds ?? []}
         selectedMaterias={pendentes.materias}
         isUmbrella={isUmbrella}
+        oabMode={oabMode}
         onMateriaChange={(m) => {
           // Lazy-add: clicar em matéria SÓ navega para detalhe.
           // Não adiciona ao filtro — filtro só recebe matéria via

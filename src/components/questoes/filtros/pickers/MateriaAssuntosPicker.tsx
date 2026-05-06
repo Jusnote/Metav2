@@ -7,6 +7,7 @@ import { TaxonomiaTreePicker } from '@/components/questoes/TaxonomiaTreePicker';
 import { useMaterias } from '@/hooks/useMaterias';
 import type { FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { groupMateriasByArea } from '@/lib/questoes/materia-areas';
+import { groupMateriasByOABGrupo, isOABMateria } from '@/lib/questoes/oab-grupos';
 
 export interface MateriaAssuntosPickerProps {
   dicionario: FiltrosDicionario | null;
@@ -24,6 +25,8 @@ export interface MateriaAssuntosPickerProps {
   onUmbrellaToggle?: () => void;
   /** Adiciona uma matéria como umbrella diretamente da lista (sem entrar na vista). */
   onUmbrellaAdd?: (materia: string) => void;
+  /** Modo OAB: filtra lista pra só matérias do Exame de Ordem e agrupa em Grupo A/B/C. */
+  oabMode?: boolean;
 }
 
 export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
@@ -54,7 +57,7 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
     const taxonomiaMap = new Map(
       (materiasComTaxonomia ?? []).map((m) => [m.nome, m]),
     );
-    const items = todasMaterias.map((nome) => {
+    const allItems = todasMaterias.map((nome) => {
       const tax = taxonomiaMap.get(nome);
       return {
         id: nome,
@@ -63,6 +66,10 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
         hasTaxonomia: tax ? tax.total_nodes > 0 : false,
       };
     });
+    // Em modo OAB, filtra só matérias cobradas no Exame de Ordem
+    const items = props.oabMode
+      ? allItems.filter((i) => isOABMateria(i.id))
+      : allItems;
     const filtered = !q.trim()
       ? items
       : items.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase()));
@@ -81,7 +88,9 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
           </h2>
           <p className="text-xs text-slate-500">
             {hydrated && props.dicionario
-              ? `${items.length} disciplinas · clique nas pastas para abrir os assuntos`
+              ? props.oabMode
+                ? `${items.length} disciplinas do Exame de Ordem · agrupadas pelos Grupos A · B · C`
+                : `${items.length} disciplinas · clique nas pastas para abrir os assuntos`
               : 'Carregando disciplinas…'}
           </p>
         </header>
@@ -147,7 +156,9 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
               );
             };
 
-            const groups = groupMateriasByArea(filtered);
+            const groups = props.oabMode
+              ? groupMateriasByOABGrupo(filtered).map((g) => ({ area: g.area, subgroup: undefined, items: g.items }))
+              : groupMateriasByArea(filtered);
             // Lista canônica de áreas presentes no resultado (sem subgroup) pro TOC.
             const tocAreas: string[] = [];
             for (const g of groups) {
