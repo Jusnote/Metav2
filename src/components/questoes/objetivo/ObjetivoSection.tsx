@@ -37,16 +37,17 @@ export function ObjetivoSection() {
   const ctx = useQuestoesOptional();
 
   useEffect(() => {
-    if (!ctx) return;
+    if (!ctx?.filters || !ctx.setFilter || !ctx.triggerSearch) return;
     const orgaosTarget = new Set<string>();
     for (const id of focos) {
       const map = CARREIRA_FILTROS[id];
       if (map) for (const o of map.orgaos) orgaosTarget.add(o);
     }
     const arr = Array.from(orgaosTarget);
+    const current = ctx.filters.orgaos ?? [];
     const same =
-      arr.length === ctx.filters.orgaos.length &&
-      arr.every((v) => ctx.filters.orgaos.includes(v));
+      arr.length === current.length &&
+      arr.every((v) => current.includes(v));
     if (!same) {
       ctx.setFilter('orgaos', arr);
       ctx.triggerSearch();
