@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements_catalog: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          description: string
+          icon_name: string
+          id: string
+          ordem: number
+          slug: string
+          title: string
+          trigger_threshold: number
+          trigger_type: string
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          created_at?: string
+          description: string
+          icon_name: string
+          id?: string
+          ordem?: number
+          slug: string
+          title: string
+          trigger_threshold: number
+          trigger_type: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string
+          icon_name?: string
+          id?: string
+          ordem?: number
+          slug?: string
+          title?: string
+          trigger_threshold?: number
+          trigger_type?: string
+        }
+        Relationships: []
+      }
+      ai_quality_feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          subtopico_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          subtopico_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          subtopico_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       alternativas: {
         Row: {
           correta: boolean | null
@@ -48,6 +117,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      analytics_events: {
+        Row: {
+          event_name: string
+          id: string
+          occurred_at: string
+          properties: Json
+          user_id: string | null
+        }
+        Insert: {
+          event_name: string
+          id?: string
+          occurred_at?: string
+          properties?: Json
+          user_id?: string | null
+        }
+        Update: {
+          event_name?: string
+          id?: string
+          occurred_at?: string
+          properties?: Json
+          user_id?: string | null
+        }
+        Relationships: []
       }
       artigos: {
         Row: {
@@ -147,6 +240,141 @@ export type Database = {
           },
         ]
       }
+      behavioral_signals: {
+        Row: {
+          id: string
+          occurred_at: string
+          plano_id: string | null
+          schedule_item_id: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Update: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type?: string
+          user_id?: string
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavioral_signals_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavioral_signals_schedule_item_id_fkey"
+            columns: ["schedule_item_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      behavioral_signals_2026_05: {
+        Row: {
+          id: string
+          occurred_at: string
+          plano_id: string | null
+          schedule_item_id: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Update: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type?: string
+          user_id?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      behavioral_signals_2026_06: {
+        Row: {
+          id: string
+          occurred_at: string
+          plano_id: string | null
+          schedule_item_id: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Update: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type?: string
+          user_id?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      behavioral_signals_default: {
+        Row: {
+          id: string
+          occurred_at: string
+          plano_id: string | null
+          schedule_item_id: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type: string
+          user_id: string
+          value: Json
+        }
+        Update: {
+          id?: string
+          occurred_at?: string
+          plano_id?: string | null
+          schedule_item_id?: string | null
+          signal_type?: string
+          user_id?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       caderno_items: {
         Row: {
           artigo_contexto: string | null
@@ -244,6 +472,114 @@ export type Database = {
           id?: string
           title?: string
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dead_letters: {
+        Row: {
+          attempts: number
+          error_message: string
+          event_type: string
+          first_failed_at: string
+          id: string
+          last_failed_at: string
+          payload: Json
+          resolution_notes: string | null
+          resolved_at: string | null
+          source_event_id: string | null
+        }
+        Insert: {
+          attempts: number
+          error_message: string
+          event_type: string
+          first_failed_at: string
+          id?: string
+          last_failed_at: string
+          payload: Json
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          source_event_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          error_message?: string
+          event_type?: string
+          first_failed_at?: string
+          id?: string
+          last_failed_at?: string
+          payload?: Json
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          source_event_id?: string | null
+        }
+        Relationships: []
+      }
+      disciplinas: {
+        Row: {
+          created_at: string | null
+          id: string
+          nome: string
+          origin_disciplina_ref: number | null
+          peso_edital: number | null
+          plano_id: string | null
+          source_type: string | null
+          subject: string | null
+          total_chapters: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nome: string
+          origin_disciplina_ref?: number | null
+          peso_edital?: number | null
+          plano_id?: string | null
+          source_type?: string | null
+          subject?: string | null
+          total_chapters?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nome?: string
+          origin_disciplina_ref?: number | null
+          peso_edital?: number | null
+          plano_id?: string | null
+          source_type?: string | null
+          subject?: string | null
+          total_chapters?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      dispositivo_bookmarks: {
+        Row: {
+          created_at: string | null
+          dispositivo_id: string
+          id: string
+          lei_id: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dispositivo_id: string
+          id?: string
+          lei_id: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dispositivo_id?: string
+          id?: string
+          lei_id?: string
+          note?: string | null
           user_id?: string
         }
         Relationships: []
@@ -422,6 +758,7 @@ export type Database = {
           dispositivo_id: string
           id: string
           lei_id: string
+          tags: string[] | null
           updated_at: string | null
           user_id: string
         }
@@ -432,6 +769,7 @@ export type Database = {
           dispositivo_id: string
           id?: string
           lei_id: string
+          tags?: string[] | null
           updated_at?: string | null
           user_id: string
         }
@@ -442,6 +780,37 @@ export type Database = {
           dispositivo_id?: string
           id?: string
           lei_id?: string
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dispositivo_user_status: {
+        Row: {
+          created_at: string | null
+          dispositivo_id: string
+          id: string
+          lei_id: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dispositivo_id: string
+          id?: string
+          lei_id: string
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dispositivo_id?: string
+          id?: string
+          lei_id?: string
+          status?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -489,14 +858,151 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "documents_subtopico_id_fkey"
+            foreignKeyName: "documents_subtopic_id_fkey"
             columns: ["subtopico_id"]
             isOneToOne: false
             referencedRelation: "subtopicos"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "documents_topico_id_fkey"
+            foreignKeyName: "documents_topic_id_fkey"
+            columns: ["topico_id"]
+            isOneToOne: false
+            referencedRelation: "topicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      edital_cache: {
+        Row: {
+          ai_model: string
+          cargo_id: number
+          decomposicao: Json
+          edital_id: number
+          generated_at: string
+          last_validated_at: string
+          payload_hash: string
+        }
+        Insert: {
+          ai_model: string
+          cargo_id: number
+          decomposicao: Json
+          edital_id: number
+          generated_at?: string
+          last_validated_at?: string
+          payload_hash: string
+        }
+        Update: {
+          ai_model?: string
+          cargo_id?: number
+          decomposicao?: Json
+          edital_id?: number
+          generated_at?: string
+          last_validated_at?: string
+          payload_hash?: string
+        }
+        Relationships: []
+      }
+      feature_flags: {
+        Row: {
+          enabled: boolean
+          flag_name: string
+          rollout_pct: number
+          updated_at: string
+          user_allowlist: string[]
+          user_blocklist: string[]
+        }
+        Insert: {
+          enabled?: boolean
+          flag_name: string
+          rollout_pct?: number
+          updated_at?: string
+          user_allowlist?: string[]
+          user_blocklist?: string[]
+        }
+        Update: {
+          enabled?: boolean
+          flag_name?: string
+          rollout_pct?: number
+          updated_at?: string
+          user_allowlist?: string[]
+          user_blocklist?: string[]
+        }
+        Relationships: []
+      }
+      feriados_nacionais: {
+        Row: {
+          cidade: string | null
+          data: string
+          nome: string
+          tipo: string
+          uf: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          data: string
+          nome: string
+          tipo: string
+          uf?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          data?: string
+          nome?: string
+          tipo?: string
+          uf?: string | null
+        }
+        Relationships: []
+      }
+      flash_questoes: {
+        Row: {
+          alternativas: Json
+          created_at: string | null
+          dificuldade: number | null
+          fsrs_difficulty: number | null
+          fsrs_stability: number | null
+          id: string
+          next_review: string | null
+          questao_texto: string
+          resposta_correta: string
+          source: string | null
+          topico_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alternativas: Json
+          created_at?: string | null
+          dificuldade?: number | null
+          fsrs_difficulty?: number | null
+          fsrs_stability?: number | null
+          id?: string
+          next_review?: string | null
+          questao_texto: string
+          resposta_correta: string
+          source?: string | null
+          topico_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alternativas?: Json
+          created_at?: string | null
+          dificuldade?: number | null
+          fsrs_difficulty?: number | null
+          fsrs_stability?: number | null
+          id?: string
+          next_review?: string | null
+          questao_texto?: string
+          resposta_correta?: string
+          source?: string | null
+          topico_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_questoes_topico_id_fkey"
             columns: ["topico_id"]
             isOneToOne: false
             referencedRelation: "topicos"
@@ -555,61 +1061,23 @@ export type Database = {
         }
         Relationships: []
       }
-      flash_questoes: {
+      graphql_cache: {
         Row: {
-          alternativas: Json
-          created_at: string | null
-          dificuldade: number
-          fsrs_difficulty: number
-          fsrs_stability: number
-          id: string
-          next_review: string | null
-          questao_texto: string
-          resposta_correta: string
-          source: string
-          topico_id: string | null
-          updated_at: string | null
-          user_id: string
+          cache_key: string
+          expires_at: string
+          payload: Json
         }
         Insert: {
-          alternativas: Json
-          created_at?: string | null
-          dificuldade?: number
-          fsrs_difficulty?: number
-          fsrs_stability?: number
-          id?: string
-          next_review?: string | null
-          questao_texto: string
-          resposta_correta: string
-          source?: string
-          topico_id?: string | null
-          updated_at?: string | null
-          user_id: string
+          cache_key: string
+          expires_at: string
+          payload: Json
         }
         Update: {
-          alternativas?: Json
-          created_at?: string | null
-          dificuldade?: number
-          fsrs_difficulty?: number
-          fsrs_stability?: number
-          id?: string
-          next_review?: string | null
-          questao_texto?: string
-          resposta_correta?: string
-          source?: string
-          topico_id?: string | null
-          updated_at?: string | null
-          user_id?: string
+          cache_key?: string
+          expires_at?: string
+          payload?: Json
         }
-        Relationships: [
-          {
-            foreignKeyName: "flash_questoes_topico_id_fkey"
-            columns: ["topico_id"]
-            isOneToOne: false
-            referencedRelation: "topicos"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       grifos: {
         Row: {
@@ -815,17 +1283,629 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "notes_subtopico_id_fkey"
+            foreignKeyName: "notes_subtopic_id_fkey"
             columns: ["subtopico_id"]
             isOneToOne: false
             referencedRelation: "subtopicos"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "notes_topico_id_fkey"
+            foreignKeyName: "notes_topic_id_fkey"
             columns: ["topico_id"]
             isOneToOne: false
             referencedRelation: "topicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_decisions: {
+        Row: {
+          action: string
+          algorithm_variant: string
+          created_at: string
+          id: string
+          inputs_hash: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by: string | null
+          week_number: number | null
+        }
+        Insert: {
+          action: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Update: {
+          action?: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary?: Json
+          plano_id?: string
+          reason?: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_decisions_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_decisions_2026_05: {
+        Row: {
+          action: string
+          algorithm_variant: string
+          created_at: string
+          id: string
+          inputs_hash: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by: string | null
+          week_number: number | null
+        }
+        Insert: {
+          action: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Update: {
+          action?: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary?: Json
+          plano_id?: string
+          reason?: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Relationships: []
+      }
+      plan_decisions_2026_06: {
+        Row: {
+          action: string
+          algorithm_variant: string
+          created_at: string
+          id: string
+          inputs_hash: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by: string | null
+          week_number: number | null
+        }
+        Insert: {
+          action: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Update: {
+          action?: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary?: Json
+          plano_id?: string
+          reason?: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Relationships: []
+      }
+      plan_decisions_default: {
+        Row: {
+          action: string
+          algorithm_variant: string
+          created_at: string
+          id: string
+          inputs_hash: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by: string | null
+          week_number: number | null
+        }
+        Insert: {
+          action: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary: Json
+          plano_id: string
+          reason: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Update: {
+          action?: string
+          algorithm_variant?: string
+          created_at?: string
+          id?: string
+          inputs_hash?: string | null
+          output_summary?: Json
+          plano_id?: string
+          reason?: string
+          triggered_by?: string | null
+          week_number?: number | null
+        }
+        Relationships: []
+      }
+      plan_events: {
+        Row: {
+          attempts: number
+          dead_letter: boolean
+          event_type: string
+          fired_at: string
+          id: string
+          payload: Json
+          plano_id: string | null
+          processed_at: string | null
+          sequence_number: number
+        }
+        Insert: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type: string
+          fired_at?: string
+          id?: string
+          payload: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Update: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type?: string
+          fired_at?: string
+          id?: string
+          payload?: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_events_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_events_2026_05: {
+        Row: {
+          attempts: number
+          dead_letter: boolean
+          event_type: string
+          fired_at: string
+          id: string
+          payload: Json
+          plano_id: string | null
+          processed_at: string | null
+          sequence_number: number
+        }
+        Insert: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type: string
+          fired_at?: string
+          id?: string
+          payload: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Update: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type?: string
+          fired_at?: string
+          id?: string
+          payload?: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Relationships: []
+      }
+      plan_events_2026_06: {
+        Row: {
+          attempts: number
+          dead_letter: boolean
+          event_type: string
+          fired_at: string
+          id: string
+          payload: Json
+          plano_id: string | null
+          processed_at: string | null
+          sequence_number: number
+        }
+        Insert: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type: string
+          fired_at?: string
+          id?: string
+          payload: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Update: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type?: string
+          fired_at?: string
+          id?: string
+          payload?: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Relationships: []
+      }
+      plan_events_default: {
+        Row: {
+          attempts: number
+          dead_letter: boolean
+          event_type: string
+          fired_at: string
+          id: string
+          payload: Json
+          plano_id: string | null
+          processed_at: string | null
+          sequence_number: number
+        }
+        Insert: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type: string
+          fired_at?: string
+          id?: string
+          payload: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Update: {
+          attempts?: number
+          dead_letter?: boolean
+          event_type?: string
+          fired_at?: string
+          id?: string
+          payload?: Json
+          plano_id?: string | null
+          processed_at?: string | null
+          sequence_number?: number
+        }
+        Relationships: []
+      }
+      plan_templates: {
+        Row: {
+          cargo_id: number
+          config: Json
+          created_at: string
+          created_by: string | null
+          duracao_dias: number
+          id: string
+          nome: string
+          success_rate: number | null
+          uses_count: number
+          visibility: Database["public"]["Enums"]["plan_template_visibility"]
+        }
+        Insert: {
+          cargo_id: number
+          config: Json
+          created_at?: string
+          created_by?: string | null
+          duracao_dias: number
+          id?: string
+          nome: string
+          success_rate?: number | null
+          uses_count?: number
+          visibility?: Database["public"]["Enums"]["plan_template_visibility"]
+        }
+        Update: {
+          cargo_id?: number
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          duracao_dias?: number
+          id?: string
+          nome?: string
+          success_rate?: number | null
+          uses_count?: number
+          visibility?: Database["public"]["Enums"]["plan_template_visibility"]
+        }
+        Relationships: []
+      }
+      plano_config: {
+        Row: {
+          block_duration_minutes: number
+          created_at: string
+          daily_exceptions: Json
+          difficulty_weighting: boolean
+          fsrs_enabled: boolean
+          horario_preferido: Database["public"]["Enums"]["horario_preferido_enum"]
+          mix_ratio: Json
+          plano_id: string
+          simulados_freq: Database["public"]["Enums"]["simulados_freq_enum"]
+          tem_redacao: boolean
+          tipo_material: Database["public"]["Enums"]["tipo_material_enum"]
+          updated_at: string
+          weekday_minutes: number
+          weekend_minutes: number
+        }
+        Insert: {
+          block_duration_minutes?: number
+          created_at?: string
+          daily_exceptions?: Json
+          difficulty_weighting?: boolean
+          fsrs_enabled?: boolean
+          horario_preferido?: Database["public"]["Enums"]["horario_preferido_enum"]
+          mix_ratio?: Json
+          plano_id: string
+          simulados_freq?: Database["public"]["Enums"]["simulados_freq_enum"]
+          tem_redacao?: boolean
+          tipo_material?: Database["public"]["Enums"]["tipo_material_enum"]
+          updated_at?: string
+          weekday_minutes?: number
+          weekend_minutes?: number
+        }
+        Update: {
+          block_duration_minutes?: number
+          created_at?: string
+          daily_exceptions?: Json
+          difficulty_weighting?: boolean
+          fsrs_enabled?: boolean
+          horario_preferido?: Database["public"]["Enums"]["horario_preferido_enum"]
+          mix_ratio?: Json
+          plano_id?: string
+          simulados_freq?: Database["public"]["Enums"]["simulados_freq_enum"]
+          tem_redacao?: boolean
+          tipo_material?: Database["public"]["Enums"]["tipo_material_enum"]
+          updated_at?: string
+          weekday_minutes?: number
+          weekend_minutes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_config_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: true
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plano_config_history: {
+        Row: {
+          applied_at: string
+          id: string
+          plano_id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          applied_at?: string
+          id?: string
+          plano_id: string
+          snapshot: Json
+          version: number
+        }
+        Update: {
+          applied_at?: string
+          id?: string
+          plano_id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_config_history_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plano_disciplinas: {
+        Row: {
+          created_at: string
+          disciplina_id: string
+          enabled: boolean
+          excluded_subtopico_ids: string[]
+          id: string
+          is_ponto_fraco: boolean
+          nivel_conhecimento: Database["public"]["Enums"]["nivel_conhecimento_enum"]
+          ordem: number
+          peso: number
+          plano_id: string
+          prioridade: string
+        }
+        Insert: {
+          created_at?: string
+          disciplina_id: string
+          enabled?: boolean
+          excluded_subtopico_ids?: string[]
+          id?: string
+          is_ponto_fraco?: boolean
+          nivel_conhecimento?: Database["public"]["Enums"]["nivel_conhecimento_enum"]
+          ordem?: number
+          peso?: number
+          plano_id: string
+          prioridade?: string
+        }
+        Update: {
+          created_at?: string
+          disciplina_id?: string
+          enabled?: boolean
+          excluded_subtopico_ids?: string[]
+          id?: string
+          is_ponto_fraco?: boolean
+          nivel_conhecimento?: Database["public"]["Enums"]["nivel_conhecimento_enum"]
+          ordem?: number
+          peso?: number
+          plano_id?: string
+          prioridade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_disciplinas_disciplina_id_fkey"
+            columns: ["disciplina_id"]
+            isOneToOne: false
+            referencedRelation: "disciplinas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plano_disciplinas_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plano_predictions_history: {
+        Row: {
+          computed_at: string
+          coverage_pct: number
+          id: string
+          pace_index: number | null
+          plano_id: string
+          recommendations: Json | null
+          slack_weeks: number | null
+          weakest_disciplinas: Json | null
+        }
+        Insert: {
+          computed_at?: string
+          coverage_pct: number
+          id?: string
+          pace_index?: number | null
+          plano_id: string
+          recommendations?: Json | null
+          slack_weeks?: number | null
+          weakest_disciplinas?: Json | null
+        }
+        Update: {
+          computed_at?: string
+          coverage_pct?: number
+          id?: string
+          pace_index?: number | null
+          plano_id?: string
+          recommendations?: Json | null
+          slack_weeks?: number | null
+          weakest_disciplinas?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_predictions_history_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planos_estudo: {
+        Row: {
+          algorithm_variant: string
+          cargo_id: number | null
+          cargo_snapshot: Json | null
+          created_at: string
+          data_inicio: string
+          data_prova: string
+          deleted_at: string | null
+          edital_id: number | null
+          id: string
+          mode: Database["public"]["Enums"]["plano_mode"]
+          nome: string
+          paused_at: string | null
+          status: Database["public"]["Enums"]["plano_status"]
+          target_score: number | null
+          template_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          algorithm_variant?: string
+          cargo_id?: number | null
+          cargo_snapshot?: Json | null
+          created_at?: string
+          data_inicio: string
+          data_prova: string
+          deleted_at?: string | null
+          edital_id?: number | null
+          id?: string
+          mode?: Database["public"]["Enums"]["plano_mode"]
+          nome: string
+          paused_at?: string | null
+          status?: Database["public"]["Enums"]["plano_status"]
+          target_score?: number | null
+          template_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          algorithm_variant?: string
+          cargo_id?: number | null
+          cargo_snapshot?: Json | null
+          created_at?: string
+          data_inicio?: string
+          data_prova?: string
+          deleted_at?: string | null
+          edital_id?: number | null
+          id?: string
+          mode?: Database["public"]["Enums"]["plano_mode"]
+          nome?: string
+          paused_at?: string | null
+          status?: Database["public"]["Enums"]["plano_status"]
+          target_score?: number | null
+          template_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planos_estudo_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "plan_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -859,83 +1939,6 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      planos_editais: {
-        Row: {
-          cargo_id: number
-          created_at: string | null
-          edital_id: number
-          id: string
-          plano_id: string
-        }
-        Insert: {
-          cargo_id: number
-          created_at?: string | null
-          edital_id: number
-          id?: string
-          plano_id: string
-        }
-        Update: {
-          cargo_id?: number
-          created_at?: string | null
-          edital_id?: number
-          id?: string
-          plano_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "planos_editais_plano_id_fkey"
-            columns: ["plano_id"]
-            isOneToOne: false
-            referencedRelation: "planos_estudo"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      planos_estudo: {
-        Row: {
-          ativo: boolean
-          created_at: string | null
-          current_cycle: number
-          data_prova: string | null
-          id: string
-          nome: string
-          source_type: string
-          study_mode: string
-          target_score: number | null
-          triage_enabled: boolean
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          ativo?: boolean
-          created_at?: string | null
-          current_cycle?: number
-          data_prova?: string | null
-          id?: string
-          nome: string
-          source_type?: string
-          study_mode?: string
-          target_score?: number | null
-          triage_enabled?: boolean
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          ativo?: boolean
-          created_at?: string | null
-          current_cycle?: number
-          data_prova?: string | null
-          id?: string
-          nome?: string
-          source_type?: string
-          study_mode?: string
-          target_score?: number | null
-          triage_enabled?: boolean
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1158,6 +2161,7 @@ export type Database = {
           content_text: string
           created_at: string
           question_id: number
+          tags: string[] | null
           updated_at: string
           user_id: string
         }
@@ -1166,6 +2170,7 @@ export type Database = {
           content_text: string
           created_at?: string
           question_id: number
+          tags?: string[] | null
           updated_at?: string
           user_id: string
         }
@@ -1174,6 +2179,7 @@ export type Database = {
           content_text?: string
           created_at?: string
           question_id?: number
+          tags?: string[] | null
           updated_at?: string
           user_id?: string
         }
@@ -1432,126 +2438,121 @@ export type Database = {
           },
         ]
       }
-      schedule_items: {
+      rate_limit_buckets: {
         Row: {
-          actual_duration: number | null
-          completed: boolean | null
-          completed_at: string | null
-          created_at: string | null
-          delay_days: number | null
-          deleted_at: string | null
-          document_id: string | null
-          estimated_duration: number | null
-          fsrs_state: Json | null
-          id: string
-          is_delayed: boolean | null
-          is_manual: boolean | null
-          is_overbooked: boolean | null
-          item_type: string | null
-          next_revision_id: string | null
-          notes: string | null
-          original_scheduled_date: string | null
-          parent_item_id: string | null
-          performance_data: Json | null
-          priority: number | null
-          revision_number: number | null
-          revision_type: string | null
-          scheduled_date: string
-          study_goal_id: string | null
-          subtopico_id: string | null
-          sync_enabled: boolean | null
-          title: string
-          topico_id: string | null
-          disciplina_id: string | null
-          updated_at: string | null
+          action: string
+          count: number
           user_id: string
+          window_start: string
         }
         Insert: {
-          actual_duration?: number | null
-          completed?: boolean | null
-          completed_at?: string | null
-          created_at?: string | null
-          delay_days?: number | null
-          deleted_at?: string | null
-          document_id?: string | null
-          estimated_duration?: number | null
-          fsrs_state?: Json | null
-          id?: string
-          is_delayed?: boolean | null
-          is_manual?: boolean | null
-          is_overbooked?: boolean | null
-          item_type?: string | null
-          next_revision_id?: string | null
-          notes?: string | null
-          original_scheduled_date?: string | null
-          parent_item_id?: string | null
-          performance_data?: Json | null
-          priority?: number | null
-          revision_number?: number | null
-          revision_type?: string | null
-          scheduled_date: string
-          study_goal_id?: string | null
-          subtopico_id?: string | null
-          sync_enabled?: boolean | null
-          title: string
-          topico_id?: string | null
-          disciplina_id?: string | null
-          updated_at?: string | null
+          action: string
+          count?: number
           user_id: string
+          window_start: string
         }
         Update: {
-          actual_duration?: number | null
-          completed?: boolean | null
+          action?: string
+          count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      schedule_items: {
+        Row: {
+          actual_duration_minutes: number | null
+          completed_at: string | null
+          created_at: string
+          disciplina_id: string | null
+          estimated_duration_minutes: number
+          fsrs_due_date: string | null
+          fsrs_state: Json | null
+          id: string
+          is_anticipated: boolean
+          notes: string | null
+          parent_item_id: string | null
+          performance: Json | null
+          plano_id: string
+          priority: number
+          revision_number: number
+          scheduled_date: string
+          scheduled_time: string | null
+          status: Database["public"]["Enums"]["schedule_item_status"]
+          subtopico_id: string | null
+          title: string
+          topico_id: string | null
+          type: Database["public"]["Enums"]["schedule_item_type"]
+          unlocked_early: boolean
+          updated_at: string
+          user_id: string
+          version: number
+          week_number: number
+        }
+        Insert: {
+          actual_duration_minutes?: number | null
           completed_at?: string | null
-          created_at?: string | null
-          delay_days?: number | null
-          deleted_at?: string | null
-          document_id?: string | null
-          estimated_duration?: number | null
+          created_at?: string
+          disciplina_id?: string | null
+          estimated_duration_minutes?: number
+          fsrs_due_date?: string | null
           fsrs_state?: Json | null
           id?: string
-          is_delayed?: boolean | null
-          is_manual?: boolean | null
-          is_overbooked?: boolean | null
-          item_type?: string | null
-          next_revision_id?: string | null
+          is_anticipated?: boolean
           notes?: string | null
-          original_scheduled_date?: string | null
           parent_item_id?: string | null
-          performance_data?: Json | null
-          priority?: number | null
-          revision_number?: number | null
-          revision_type?: string | null
-          scheduled_date?: string
-          study_goal_id?: string | null
+          performance?: Json | null
+          plano_id: string
+          priority?: number
+          revision_number?: number
+          scheduled_date: string
+          scheduled_time?: string | null
+          status?: Database["public"]["Enums"]["schedule_item_status"]
           subtopico_id?: string | null
-          sync_enabled?: boolean | null
+          title: string
+          topico_id?: string | null
+          type: Database["public"]["Enums"]["schedule_item_type"]
+          unlocked_early?: boolean
+          updated_at?: string
+          user_id: string
+          version?: number
+          week_number: number
+        }
+        Update: {
+          actual_duration_minutes?: number | null
+          completed_at?: string | null
+          created_at?: string
+          disciplina_id?: string | null
+          estimated_duration_minutes?: number
+          fsrs_due_date?: string | null
+          fsrs_state?: Json | null
+          id?: string
+          is_anticipated?: boolean
+          notes?: string | null
+          parent_item_id?: string | null
+          performance?: Json | null
+          plano_id?: string
+          priority?: number
+          revision_number?: number
+          scheduled_date?: string
+          scheduled_time?: string | null
+          status?: Database["public"]["Enums"]["schedule_item_status"]
+          subtopico_id?: string | null
           title?: string
           topico_id?: string | null
-          disciplina_id?: string | null
-          updated_at?: string | null
+          type?: Database["public"]["Enums"]["schedule_item_type"]
+          unlocked_early?: boolean
+          updated_at?: string
           user_id?: string
+          version?: number
+          week_number?: number
         }
         Relationships: [
           {
-            foreignKeyName: "schedule_items_document_id_fkey"
-            columns: ["document_id"]
+            foreignKeyName: "schedule_items_disciplina_id_fkey"
+            columns: ["disciplina_id"]
             isOneToOne: false
-            referencedRelation: "documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "schedule_items_next_revision_id_fkey"
-            columns: ["next_revision_id"]
-            isOneToOne: false
-            referencedRelation: "schedule_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "schedule_items_next_revision_id_fkey"
-            columns: ["next_revision_id"]
-            isOneToOne: false
-            referencedRelation: "schedule_items_delayed"
+            referencedRelation: "disciplinas"
             referencedColumns: ["id"]
           },
           {
@@ -1562,17 +2563,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "schedule_items_parent_item_id_fkey"
-            columns: ["parent_item_id"]
+            foreignKeyName: "schedule_items_plano_id_fkey"
+            columns: ["plano_id"]
             isOneToOne: false
-            referencedRelation: "schedule_items_delayed"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "schedule_items_study_goal_id_fkey"
-            columns: ["study_goal_id"]
-            isOneToOne: false
-            referencedRelation: "study_goals"
+            referencedRelation: "planos_estudo"
             referencedColumns: ["id"]
           },
           {
@@ -1589,11 +2583,39 @@ export type Database = {
             referencedRelation: "topicos"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      schedule_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          item_id: string | null
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "schedule_items_disciplina_id_fkey"
-            columns: ["disciplina_id"]
+            foreignKeyName: "schedule_logs_item_id_fkey"
+            columns: ["item_id"]
             isOneToOne: false
-            referencedRelation: "disciplinas"
+            referencedRelation: "schedule_items"
             referencedColumns: ["id"]
           },
         ]
@@ -1629,130 +2651,7 @@ export type Database = {
           score_projected?: number | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "score_snapshots_plano_id_fkey"
-            columns: ["plano_id"]
-            isOneToOne: false
-            referencedRelation: "planos_estudo"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      study_goals: {
-        Row: {
-          aggressiveness: string | null
-          completed: boolean | null
-          completed_at: string | null
-          created_at: string | null
-          description: string | null
-          enable_fsrs: boolean | null
-          id: string
-          progress_percentage: number | null
-          start_date: string
-          study_weekends: boolean | null
-          target_date: string
-          title: string
-          disciplina_id: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          aggressiveness?: string | null
-          completed?: boolean | null
-          completed_at?: string | null
-          created_at?: string | null
-          description?: string | null
-          enable_fsrs?: boolean | null
-          id?: string
-          progress_percentage?: number | null
-          start_date: string
-          study_weekends?: boolean | null
-          target_date: string
-          title: string
-          disciplina_id?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          aggressiveness?: string | null
-          completed?: boolean | null
-          completed_at?: string | null
-          created_at?: string | null
-          description?: string | null
-          enable_fsrs?: boolean | null
-          id?: string
-          progress_percentage?: number | null
-          start_date?: string
-          study_weekends?: boolean | null
-          target_date?: string
-          title?: string
-          disciplina_id?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "study_goals_disciplina_id_fkey"
-            columns: ["disciplina_id"]
-            isOneToOne: false
-            referencedRelation: "disciplinas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      study_sessions: {
-        Row: {
-          active_minutes: number | null
-          activities: Json | null
-          created_at: string | null
-          cycle: number
-          ended_at: string | null
-          id: string
-          planned_minutes: number | null
-          plano_id: string | null
-          score_after: number | null
-          score_before: number | null
-          started_at: string
-          user_id: string
-        }
-        Insert: {
-          active_minutes?: number | null
-          activities?: Json | null
-          created_at?: string | null
-          cycle?: number
-          ended_at?: string | null
-          id?: string
-          planned_minutes?: number | null
-          plano_id?: string | null
-          score_after?: number | null
-          score_before?: number | null
-          started_at: string
-          user_id: string
-        }
-        Update: {
-          active_minutes?: number | null
-          activities?: Json | null
-          created_at?: string | null
-          cycle?: number
-          ended_at?: string | null
-          id?: string
-          planned_minutes?: number | null
-          plano_id?: string | null
-          score_after?: number | null
-          score_before?: number | null
-          started_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "study_sessions_plano_id_fkey"
-            columns: ["plano_id"]
-            isOneToOne: false
-            referencedRelation: "planos_estudo"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       study_questions: {
         Row: {
@@ -1799,6 +2698,51 @@ export type Database = {
         }
         Relationships: []
       }
+      study_sessions: {
+        Row: {
+          active_minutes: number | null
+          activities: Json | null
+          created_at: string | null
+          cycle: number | null
+          ended_at: string | null
+          id: string
+          planned_minutes: number | null
+          plano_id: string | null
+          score_after: number | null
+          score_before: number | null
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          active_minutes?: number | null
+          activities?: Json | null
+          created_at?: string | null
+          cycle?: number | null
+          ended_at?: string | null
+          id?: string
+          planned_minutes?: number | null
+          plano_id?: string | null
+          score_after?: number | null
+          score_before?: number | null
+          started_at: string
+          user_id: string
+        }
+        Update: {
+          active_minutes?: number | null
+          activities?: Json | null
+          created_at?: string | null
+          cycle?: number | null
+          ended_at?: string | null
+          id?: string
+          planned_minutes?: number | null
+          plano_id?: string | null
+          score_after?: number | null
+          score_before?: number | null
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subtopicos: {
         Row: {
           average_time: number | null
@@ -1807,12 +2751,12 @@ export type Database = {
           flashcards_vinculados: number | null
           id: string
           last_access: string | null
+          nome: string
           questoes_vinculadas: number | null
           resumos_vinculados: number | null
           status: string | null
           tempo: string | null
           tempo_investido: number | null
-          nome: string
           topico_id: string
           total_aulas: number | null
           updated_at: string | null
@@ -1825,12 +2769,12 @@ export type Database = {
           flashcards_vinculados?: number | null
           id?: string
           last_access?: string | null
+          nome: string
           questoes_vinculadas?: number | null
           resumos_vinculados?: number | null
           status?: string | null
           tempo?: string | null
           tempo_investido?: number | null
-          nome: string
           topico_id: string
           total_aulas?: number | null
           updated_at?: string | null
@@ -1843,12 +2787,12 @@ export type Database = {
           flashcards_vinculados?: number | null
           id?: string
           last_access?: string | null
+          nome?: string
           questoes_vinculadas?: number | null
           resumos_vinculados?: number | null
           status?: string | null
           tempo?: string | null
           tempo_investido?: number | null
-          nome?: string
           topico_id?: string
           total_aulas?: number | null
           updated_at?: string | null
@@ -1856,7 +2800,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "subtopicos_topico_id_fkey"
+            foreignKeyName: "subtopics_topic_id_fkey"
             columns: ["topico_id"]
             isOneToOne: false
             referencedRelation: "topicos"
@@ -1895,126 +2839,120 @@ export type Database = {
           synced_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "sync_history_schedule_item_id_fkey"
-            columns: ["schedule_item_id"]
-            isOneToOne: false
-            referencedRelation: "schedule_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "sync_history_schedule_item_id_fkey"
-            columns: ["schedule_item_id"]
-            isOneToOne: false
-            referencedRelation: "schedule_items_delayed"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       topicos: {
         Row: {
-          origin_topico_ref: number | null
+          ai_decomposed_at: string | null
           completed_at: string | null
           created_at: string | null
           depends_on: string[] | null
           diagnostic_score: number | null
           disciplina_id: string
-          discrimination_score: number
+          discrimination_score: number | null
           estimated_duration_minutes: number
-          fsrs_difficulty: number
-          fsrs_stability: number
+          fsrs_difficulty: number | null
+          fsrs_stability: number | null
           id: string
           last_access: string | null
-          learning_rate: number
-          learning_stage: string
+          learning_rate: number | null
+          learning_stage: string | null
           leis_lidas: string | null
           marginal_gain: number | null
-          mastery_score: number
+          mastery_score: number | null
           nome: string
+          nome_curto: string | null
+          origin_topico_ref: number | null
           peso_edital: number | null
-          question_accuracy: number
-          questoes_acertos: number
-          questoes_erros: number
-          questions_total: number
-          retention_score: number
-          source_type: string
+          question_accuracy: number | null
+          questions_total: number | null
+          questoes_acertos: number | null
+          questoes_erros: number | null
+          referencias_legais: Json | null
+          retention_score: number | null
+          source_type: string | null
           speed_avg_seconds: number | null
           tempo_investido: number | null
-          teoria_finalizada: boolean
+          teoria_finalizada: boolean | null
           total_aulas: number | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          origin_topico_ref?: number | null
+          ai_decomposed_at?: string | null
           completed_at?: string | null
           created_at?: string | null
           depends_on?: string[] | null
           diagnostic_score?: number | null
           disciplina_id: string
-          discrimination_score?: number
+          discrimination_score?: number | null
           estimated_duration_minutes?: number
-          fsrs_difficulty?: number
-          fsrs_stability?: number
+          fsrs_difficulty?: number | null
+          fsrs_stability?: number | null
           id?: string
           last_access?: string | null
-          learning_rate?: number
-          learning_stage?: string
+          learning_rate?: number | null
+          learning_stage?: string | null
           leis_lidas?: string | null
           marginal_gain?: number | null
-          mastery_score?: number
+          mastery_score?: number | null
           nome: string
+          nome_curto?: string | null
+          origin_topico_ref?: number | null
           peso_edital?: number | null
-          question_accuracy?: number
-          questoes_acertos?: number
-          questoes_erros?: number
-          questions_total?: number
-          retention_score?: number
-          source_type?: string
+          question_accuracy?: number | null
+          questions_total?: number | null
+          questoes_acertos?: number | null
+          questoes_erros?: number | null
+          referencias_legais?: Json | null
+          retention_score?: number | null
+          source_type?: string | null
           speed_avg_seconds?: number | null
           tempo_investido?: number | null
-          teoria_finalizada?: boolean
+          teoria_finalizada?: boolean | null
           total_aulas?: number | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          origin_topico_ref?: number | null
+          ai_decomposed_at?: string | null
           completed_at?: string | null
           created_at?: string | null
           depends_on?: string[] | null
           diagnostic_score?: number | null
           disciplina_id?: string
-          discrimination_score?: number
+          discrimination_score?: number | null
           estimated_duration_minutes?: number
-          fsrs_difficulty?: number
-          fsrs_stability?: number
+          fsrs_difficulty?: number | null
+          fsrs_stability?: number | null
           id?: string
           last_access?: string | null
-          learning_rate?: number
-          learning_stage?: string
+          learning_rate?: number | null
+          learning_stage?: string | null
           leis_lidas?: string | null
           marginal_gain?: number | null
-          mastery_score?: number
+          mastery_score?: number | null
           nome?: string
+          nome_curto?: string | null
+          origin_topico_ref?: number | null
           peso_edital?: number | null
-          question_accuracy?: number
-          questoes_acertos?: number
-          questoes_erros?: number
-          questions_total?: number
-          retention_score?: number
-          source_type?: string
+          question_accuracy?: number | null
+          questions_total?: number | null
+          questoes_acertos?: number | null
+          questoes_erros?: number | null
+          referencias_legais?: Json | null
+          retention_score?: number | null
+          source_type?: string | null
           speed_avg_seconds?: number | null
           tempo_investido?: number | null
-          teoria_finalizada?: boolean
+          teoria_finalizada?: boolean | null
           total_aulas?: number | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "topicos_disciplina_id_fkey"
+            foreignKeyName: "topics_unit_id_fkey"
             columns: ["disciplina_id"]
             isOneToOne: false
             referencedRelation: "disciplinas"
@@ -2022,47 +2960,40 @@ export type Database = {
           },
         ]
       }
-      disciplinas: {
+      user_achievements: {
         Row: {
-          origin_disciplina_ref: number | null
-          created_at: string | null
-          id: string
-          nome: string
-          peso_edital: number | null
-          plano_id: string | null
-          source_type: string
-          subject: string | null
-          total_chapters: number | null
-          updated_at: string | null
-          user_id: string | null
+          achievement_id: string
+          current_value: number
+          progress: number
+          unlocked_at: string | null
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          origin_disciplina_ref?: number | null
-          created_at?: string | null
-          id?: string
-          nome: string
-          peso_edital?: number | null
-          plano_id?: string | null
-          source_type?: string
-          subject?: string | null
-          total_chapters?: number | null
-          updated_at?: string | null
-          user_id?: string | null
+          achievement_id: string
+          current_value?: number
+          progress?: number
+          unlocked_at?: string | null
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          origin_disciplina_ref?: number | null
-          created_at?: string | null
-          id?: string
-          nome?: string
-          peso_edital?: number | null
-          plano_id?: string | null
-          source_type?: string
-          subject?: string | null
-          total_chapters?: number | null
-          updated_at?: string | null
-          user_id?: string | null
+          achievement_id?: string
+          current_value?: number
+          progress?: number
+          unlocked_at?: string | null
+          updated_at?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_moderation: {
         Row: {
@@ -2121,15 +3052,22 @@ export type Database = {
       user_study_config: {
         Row: {
           avoid_times: string[] | null
+          break_duration: number | null
           created_at: string | null
           daily_exceptions: Json | null
           exam_date: string | null
           fsrs_aggressiveness: string | null
           has_exam: boolean | null
           id: string
+          interleaving: boolean | null
+          max_new_topics_per_day: number | null
           metadata: Json | null
+          peak_hours: string[] | null
           preferred_session_duration: number | null
           preferred_times: string[] | null
+          questions_per_day: number | null
+          revision_style: string | null
+          session_duration: number | null
           study_goal_type: string | null
           study_saturday: boolean | null
           study_sunday: boolean | null
@@ -2140,15 +3078,22 @@ export type Database = {
         }
         Insert: {
           avoid_times?: string[] | null
+          break_duration?: number | null
           created_at?: string | null
           daily_exceptions?: Json | null
           exam_date?: string | null
           fsrs_aggressiveness?: string | null
           has_exam?: boolean | null
           id?: string
+          interleaving?: boolean | null
+          max_new_topics_per_day?: number | null
           metadata?: Json | null
+          peak_hours?: string[] | null
           preferred_session_duration?: number | null
           preferred_times?: string[] | null
+          questions_per_day?: number | null
+          revision_style?: string | null
+          session_duration?: number | null
           study_goal_type?: string | null
           study_saturday?: boolean | null
           study_sunday?: boolean | null
@@ -2159,15 +3104,22 @@ export type Database = {
         }
         Update: {
           avoid_times?: string[] | null
+          break_duration?: number | null
           created_at?: string | null
           daily_exceptions?: Json | null
           exam_date?: string | null
           fsrs_aggressiveness?: string | null
           has_exam?: boolean | null
           id?: string
+          interleaving?: boolean | null
+          max_new_topics_per_day?: number | null
           metadata?: Json | null
+          peak_hours?: string[] | null
           preferred_session_duration?: number | null
           preferred_times?: string[] | null
+          questions_per_day?: number | null
+          revision_style?: string | null
+          session_duration?: number | null
           study_goal_type?: string | null
           study_saturday?: boolean | null
           study_sunday?: boolean | null
@@ -2178,62 +3130,95 @@ export type Database = {
         }
         Relationships: []
       }
-    }
-    Views: {
-      schedule_items_delayed: {
+      weekly_stats: {
         Row: {
-          delay_days: number | null
-          estimated_duration: number | null
-          id: string | null
-          original_scheduled_date: string | null
-          revision_type: string | null
-          scheduled_date: string | null
-          title: string | null
+          completion_pct: number | null
+          desempenho_pct: number | null
+          items_completed: number
+          items_overdue: number
+          items_skipped: number
+          items_total: number
+          minutes_actual: number
+          minutes_estimated: number
+          overflow: boolean
+          plano_id: string
+          questoes_correct: number
+          questoes_total: number
+          unlocked_early: boolean
+          updated_at: string
+          week_number: number
         }
         Insert: {
-          delay_days?: number | null
-          estimated_duration?: number | null
-          id?: string | null
-          original_scheduled_date?: string | null
-          revision_type?: string | null
-          scheduled_date?: string | null
-          title?: string | null
+          completion_pct?: number | null
+          desempenho_pct?: number | null
+          items_completed?: number
+          items_overdue?: number
+          items_skipped?: number
+          items_total?: number
+          minutes_actual?: number
+          minutes_estimated?: number
+          overflow?: boolean
+          plano_id: string
+          questoes_correct?: number
+          questoes_total?: number
+          unlocked_early?: boolean
+          updated_at?: string
+          week_number: number
         }
         Update: {
-          delay_days?: number | null
-          estimated_duration?: number | null
-          id?: string | null
-          original_scheduled_date?: string | null
-          revision_type?: string | null
-          scheduled_date?: string | null
-          title?: string | null
+          completion_pct?: number | null
+          desempenho_pct?: number | null
+          items_completed?: number
+          items_overdue?: number
+          items_skipped?: number
+          items_total?: number
+          minutes_actual?: number
+          minutes_estimated?: number
+          overflow?: boolean
+          plano_id?: string
+          questoes_correct?: number
+          questoes_total?: number
+          unlocked_early?: boolean
+          updated_at?: string
+          week_number?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "weekly_stats_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      schedule_items_overbooked_by_date: {
+    }
+    Views: {
+      plano_predictions: {
         Row: {
-          overbooked_count: number | null
-          scheduled_date: string | null
-          titles: string[] | null
-          total_minutes: number | null
-        }
-        Relationships: []
-      }
-      schedule_items_revision_hierarchy: {
-        Row: {
-          depth: number | null
+          computed_at: string | null
+          coverage_pct: number | null
           id: string | null
-          parent_item_id: string | null
-          path: string[] | null
-          revision_type: string | null
-          scheduled_date: string | null
-          title: string | null
+          pace_index: number | null
+          plano_id: string | null
+          recommendations: Json | null
+          slack_weeks: number | null
+          weakest_disciplinas: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plano_predictions_history_plano_id_fkey"
+            columns: ["plano_id"]
+            isOneToOne: false
+            referencedRelation: "planos_estudo"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
       extract_text_from_plate: { Args: { content: Json }; Returns: string }
+      gerar_cronograma: { Args: { plano_uuid: string }; Returns: Json }
       get_comment_replies: {
         Args: { p_root_id: string; p_user_id: string }
         Returns: {
@@ -2379,15 +3364,22 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: {
           avoid_times: string[] | null
+          break_duration: number | null
           created_at: string | null
           daily_exceptions: Json | null
           exam_date: string | null
           fsrs_aggressiveness: string | null
           has_exam: boolean | null
           id: string
+          interleaving: boolean | null
+          max_new_topics_per_day: number | null
           metadata: Json | null
+          peak_hours: string[] | null
           preferred_session_duration: number | null
           preferred_times: string[] | null
+          questions_per_day: number | null
+          revision_style: string | null
+          session_duration: number | null
           study_goal_type: string | null
           study_saturday: boolean | null
           study_sunday: boolean | null
@@ -2464,6 +3456,10 @@ export type Database = {
         Returns: Json
       }
       immutable_unaccent: { Args: { "": string }; Returns: string }
+      is_feature_enabled: {
+        Args: { p_flag_name: string; p_user_id: string }
+        Returns: boolean
+      }
       search_artigos: {
         Args: {
           lei_filter?: string
@@ -2505,7 +3501,33 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      horario_preferido_enum:
+        | "manha"
+        | "tarde"
+        | "noite"
+        | "madrugada"
+        | "flexivel"
+      nivel_conhecimento_enum: "iniciante" | "intermediario" | "avancado"
+      plan_template_visibility: "publico" | "privado" | "oficial"
+      plano_mode: "edital" | "continuo" | "misto"
+      plano_status: "rascunho" | "ativo" | "pausado" | "concluido" | "arquivado"
+      schedule_item_status:
+        | "pendente"
+        | "em_andamento"
+        | "concluido"
+        | "pulado"
+        | "cancelado"
+        | "reagendado"
+      schedule_item_type:
+        | "estudo_inicial_p1"
+        | "estudo_inicial_p2"
+        | "revisao"
+        | "questoes"
+        | "flashcards"
+        | "simulado"
+        | "lei_seca"
+      simulados_freq_enum: "nenhum" | "mensal" | "quinzenal" | "semanal"
+      tipo_material_enum: "video" | "pdf" | "livro" | "questoes" | "misto"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2632,6 +3654,37 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      horario_preferido_enum: [
+        "manha",
+        "tarde",
+        "noite",
+        "madrugada",
+        "flexivel",
+      ],
+      nivel_conhecimento_enum: ["iniciante", "intermediario", "avancado"],
+      plan_template_visibility: ["publico", "privado", "oficial"],
+      plano_mode: ["edital", "continuo", "misto"],
+      plano_status: ["rascunho", "ativo", "pausado", "concluido", "arquivado"],
+      schedule_item_status: [
+        "pendente",
+        "em_andamento",
+        "concluido",
+        "pulado",
+        "cancelado",
+        "reagendado",
+      ],
+      schedule_item_type: [
+        "estudo_inicial_p1",
+        "estudo_inicial_p2",
+        "revisao",
+        "questoes",
+        "flashcards",
+        "simulado",
+        "lei_seca",
+      ],
+      simulados_freq_enum: ["nenhum", "mensal", "quinzenal", "semanal"],
+      tipo_material_enum: ["video", "pdf", "livro", "questoes", "misto"],
+    },
   },
 } as const
