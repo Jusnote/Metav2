@@ -135,3 +135,56 @@ export const REASON_LABELS: Record<ReasonCode, string> = {
   week_completed_early: 'Recalibrado por término antecipado',
   week_behind: 'Detectado atraso na semana',
 };
+
+// ============================================================================
+// Sub-plan 2 — RPC payload/result types
+// ============================================================================
+
+export type GerarCronogramaV2Result = {
+  status: 'completed' | 'no_subtopics' | 'skeleton'
+  plano_id: string
+  items_created: number
+  overflow_weeks: number
+  total_semanas: number
+  warnings: Array<{ warning: string; msg: string; [k: string]: unknown }>
+}
+
+export type CriarPlanoCompletoInput = {
+  p_user_id: string
+  p_cargo_id: number
+  p_cargo_snapshot: {
+    nome: string
+    edital_id?: number
+    qtd_disciplinas?: number
+  }
+  p_data_inicio: string  // YYYY-MM-DD
+  p_data_prova: string
+  p_weekday_minutes: number
+  p_weekend_minutes: number
+  p_block_duration_minutes: number
+  p_mix_ratio: {
+    teoria: number
+    questoes: number
+    revisao?: number
+    flashcards?: number
+  }
+  p_simulados_freq: 'nenhum' | 'mensal' | 'quinzenal' | 'semanal'
+  p_tem_redacao: boolean
+  p_tipo_material: 'video' | 'pdf' | 'livro' | 'questoes' | 'misto'
+  p_horario_preferido: 'manha' | 'tarde' | 'noite' | 'madrugada' | 'flexivel'
+  p_disciplinas: Array<{
+    disciplina_id: string
+    peso?: number
+    nivel_conhecimento?: 'iniciante' | 'intermediario' | 'avancado'
+    is_ponto_fraco?: boolean
+    excluded_subtopico_ids?: string[]
+  }>
+  p_template_id?: string | null
+}
+
+export type CriarPlanoCompletoResult = {
+  plano_id: string
+  items_created: number
+  overflow_weeks: number
+  warnings: GerarCronogramaV2Result['warnings']
+}

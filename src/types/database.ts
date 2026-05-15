@@ -1,3 +1,8 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+Initialising login role...
 export type Json =
   | string
   | number
@@ -11,6 +16,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -3217,8 +3247,53 @@ export type Database = {
       }
     }
     Functions: {
+      aplicar_nivel_multiplicador: {
+        Args: {
+          p_base_minutos: number
+          p_nivel: Database["public"]["Enums"]["nivel_conhecimento_enum"]
+        }
+        Returns: number
+      }
+      aplicar_ponto_fraco_boost: {
+        Args: { p_is_ponto_fraco: boolean; p_minutos: number }
+        Returns: number
+      }
+      calcular_total_semanas: {
+        Args: { p_data_inicio: string; p_data_prova: string }
+        Returns: number
+      }
+      capacidade_dia: {
+        Args: {
+          p_daily_exceptions?: Json
+          p_data: string
+          p_weekday_minutes: number
+          p_weekend_minutes: number
+        }
+        Returns: number
+      }
+      criar_plano_completo: {
+        Args: {
+          p_block_duration_minutes: number
+          p_cargo_id: number
+          p_cargo_snapshot: Json
+          p_data_inicio: string
+          p_data_prova: string
+          p_disciplinas: Json
+          p_horario_preferido: string
+          p_mix_ratio: Json
+          p_simulados_freq: string
+          p_tem_redacao: boolean
+          p_template_id?: string
+          p_tipo_material: string
+          p_user_id: string
+          p_weekday_minutes: number
+          p_weekend_minutes: number
+        }
+        Returns: Json
+      }
       extract_text_from_plate: { Args: { content: Json }; Returns: string }
       gerar_cronograma: { Args: { plano_uuid: string }; Returns: Json }
+      gerar_cronograma_v2: { Args: { p_plano_uuid: string }; Returns: Json }
       get_comment_replies: {
         Args: { p_root_id: string; p_user_id: string }
         Returns: {
@@ -3526,6 +3601,7 @@ export type Database = {
         | "flashcards"
         | "simulado"
         | "lei_seca"
+        | "redacao"
       simulados_freq_enum: "nenhum" | "mensal" | "quinzenal" | "semanal"
       tipo_material_enum: "video" | "pdf" | "livro" | "questoes" | "misto"
     }
@@ -3653,6 +3729,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       horario_preferido_enum: [
@@ -3682,9 +3761,12 @@ export const Constants = {
         "flashcards",
         "simulado",
         "lei_seca",
+        "redacao",
       ],
       simulados_freq_enum: ["nenhum", "mensal", "quinzenal", "semanal"],
       tipo_material_enum: ["video", "pdf", "livro", "questoes", "misto"],
     },
   },
 } as const
+A new version of Supabase CLI is available: v2.98.2 (currently installed v2.51.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
