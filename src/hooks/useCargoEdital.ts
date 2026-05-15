@@ -54,16 +54,59 @@ export interface UseCargoEditalResult {
 // ---- Normalizer ----
 
 /**
- * Normaliza nome pra match: lowercase, sem acentos, sem separadores comuns.
+ * Expansão de siglas comuns de órgãos. Carreira local usa siglas curtas
+ * ("PF · Agente") mas API GraphQL costuma ter o nome completo
+ * ("Agente da Polícia Federal").
+ */
+const SIGLA_EXPANSIONS: Record<string, string> = {
+  pf: 'policia federal',
+  prf: 'policia rodoviaria federal',
+  pc: 'policia civil',
+  pm: 'policia militar',
+  pp: 'policia penal',
+  cbm: 'corpo de bombeiros militar',
+  inss: 'instituto nacional do seguro social',
+  trf: 'tribunal regional federal',
+  trt: 'tribunal regional do trabalho',
+  tre: 'tribunal regional eleitoral',
+  tjsp: 'tribunal de justica de sao paulo',
+  stf: 'supremo tribunal federal',
+  stj: 'superior tribunal de justica',
+  bb: 'banco do brasil',
+  cef: 'caixa economica federal',
+  oab: 'ordem dos advogados do brasil',
+}
+
+const STOPWORDS = new Set([
+  'de', 'da', 'do', 'das', 'dos', 'e', 'em', 'a', 'o', 'as', 'os',
+  'para', 'com', 'no', 'na', 'nos', 'nas',
+])
+
+/**
+ * Normaliza nome pra match: lowercase, sem acentos, sem separadores,
+ * expande siglas conhecidas.
  */
 function normalize(s: string): string {
-  return s
+  const base = s
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .replace(/[·\-—–]/g, ' ')
+    .replace(/[·\-—–/]/g, ' ')
+    .replace(/[^\w\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+
+  // Expande sigla se a palavra inteira for uma conhecida
+  return base
+    .split(' ')
+    .map(w => SIGLA_EXPANSIONS[w] ?? w)
+    .join(' ')
+}
+
+function tokens(s: string): string[] {
+  return normalize(s)
+    .split(' ')
+    .filter(w => w.length >= 2 && !STOPWORDS.has(w))
 }
 
 // ---- Match helper ----
@@ -73,8 +116,9 @@ function findCargoMatch(
   nomeCargo: string,
 ): { cargoId: number; cargoNome: string; editalId: number; editalNome: string } | null {
   const target = normalize(nomeCargo)
+  const targetTokens = tokens(nomeCargo)
 
-  // 1. Exact match (normalized)
+  // 1. Exact match normalizado
   for (const ed of editais) {
     for (const cg of ed.cargos) {
       if (normalize(cg.nome) === target) {
@@ -83,7 +127,7 @@ function findCargoMatch(
     }
   }
 
-  // 2. Substring match
+  // 2. Substring
   for (const ed of editais) {
     for (const cg of ed.cargos) {
       const n = normalize(cg.nome)
@@ -93,7 +137,24 @@ function findCargoMatch(
     }
   }
 
-  return null
+  // 3. Token overlap — escolhe o cargo com maior score, exige >= 2 tokens
+  //    fortes (ou >= todos os tokens do alvo se o alvo for curto).
+  let bestScore = 0
+  let best: { cargoId: number; cargoNome: string; editalId: number; editalNome: string } | null = null
+  const minRequired = Math.max(2, Math.ceil(targetTokens.length * 0.6))
+
+  for (const ed of editais) {
+    for (const cg of ed.cargos) {
+      const cgTokens = new Set(tokens(cg.nome))
+      const overlap = targetTokens.filter(t => cgTokens.has(t)).length
+      if (overlap > bestScore && overlap >= minRequired) {
+        bestScore = overlap
+        best = { cargoId: cg.id, cargoNome: cg.nome, editalId: ed.id, editalNome: ed.nome }
+      }
+    }
+  }
+
+  return best
 }
 
 // ---- Hook ----
