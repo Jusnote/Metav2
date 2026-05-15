@@ -181,3 +181,21 @@ BEGIN;
   VALUES ('2026-09-07', 'Independência do Brasil', 'nacional');
   SELECT COUNT(*) FROM feriados_nacionais;  -- esperado: 1
 ROLLBACK;
+
+-- ============================================================================
+-- Task 10: plan_templates
+-- ============================================================================
+
+-- plan_templates
+SELECT tablename FROM pg_tables WHERE tablename = 'plan_templates';
+
+BEGIN;
+  INSERT INTO plan_templates (cargo_id, nome, duracao_dias, config, visibility)
+  VALUES (1, 'PF Agente · 90 dias · Equilibrado', 90, '{"mix_ratio":{"teoria":0.4}}'::JSONB, 'oficial');
+  SELECT COUNT(*) FROM plan_templates;  -- esperado: 1
+
+  -- duracao < 14 deve falhar
+  INSERT INTO plan_templates (cargo_id, nome, duracao_dias, config)
+  VALUES (1, 'Invalid', 7, '{}'::JSONB);
+  -- ↑ esperado: ERROR
+ROLLBACK;
