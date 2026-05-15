@@ -149,10 +149,15 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // 7c. Mapeia disciplina_id API → UUID local
+        // 7c. Mapeia disciplina_id API → UUID local + popula topicos/subtopicos
+        // Sem isso, _v2_carrega_contexto retorna 0 subtopicos e gerar_cronograma_v2
+        // sai com status 'no_subtopics' → plano criado com 0 items.
         send({ type: 'progress', stage: 'map', message: 'Preparando disciplinas...' })
         const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-        const mappedDisciplinas = await Promise.all(
+
+        // Mapeia disciplinas + guarda apiId pra hidratação de topicos abaixo
+        type MappedDisc = (typeof payload.disciplinas)[number] & { _apiDiscId?: number }
+        const mappedDisciplinas: MappedDisc[] = await Promise.all(
           payload.disciplinas.map(async (d) => {
             const idStr = String(d.disciplina_id)
             if (UUID_RE.test(idStr)) return d
@@ -171,20 +176,105 @@ export async function POST(req: NextRequest) {
               .eq('user_id', userId)
               .eq('nome', apiDisc.nome)
               .maybeSingle()
-            if (existing?.id) {
-              return { ...d, disciplina_id: existing.id }
-            }
-            const { data: created, error: createErr } = await adminClient
-              .from('disciplinas')
-              .insert({ user_id: userId, nome: apiDisc.nome })
-              .select('id')
-              .single()
-            if (createErr || !created) {
-              throw new Error(`Falha ao criar disciplina local "${apiDisc.nome}": ${createErr?.message}`)
-            }
-            return { ...d, disciplina_id: created.id }
+            const localUuid = existing?.id ?? (await (async () => {
+              const { data: created, error: createErr } = await adminClient
+                .from('disciplinas')
+                .insert({ user_id: userId, nome: apiDisc.nome })
+                .select('id')
+                .single()
+              if (createErr || !created) {
+                throw new Error(`Falha ao criar disciplina local "${apiDisc.nome}": ${createErr?.message}`)
+              }
+              return created.id as string
+            })())
+            return { ...d, disciplina_id: localUuid, _apiDiscId: apiIdNum }
           }),
         )
+
+        // 7d. Hidrata topicos + subtopicos locais a partir do edital_payload + decomposicao
+        if (payload.edital_payload) {
+          send({ type: 'progress', stage: 'map', message: 'Hidratando tópicos do edital...' })
+          const decomp = (editalDecomposicao as { by_topico?: Record<string, {
+            subtopicos: Array<{ nome: string; duracao_min: number; conceito_pai?: string }>
+          }> } | null)?.by_topico ?? {}
+
+          for (const md of mappedDisciplinas) {
+            if (!md._apiDiscId) continue  // disciplina já era local
+
+            const apiTopicos = payload.edital_payload.topicos.filter(
+              (t) => Number(t.disciplina_id) === md._apiDiscId,
+            )
+            if (apiTopicos.length === 0) continue
+
+            for (const apiTopico of apiTopicos) {
+              // Upsert topico local idempotente por (user_id, disciplina_id, nome)
+              const { data: existingTopico } = await adminClient
+                .from('topicos')
+                .select('id')
+                .eq('user_id', userId)
+                .eq('disciplina_id', md.disciplina_id)
+                .eq('nome', apiTopico.nome)
+                .maybeSingle()
+
+              const topicoLocalId = existingTopico?.id ?? (await (async () => {
+                const { data: created, error } = await adminClient
+                  .from('topicos')
+                  .insert({
+                    user_id: userId,
+                    disciplina_id: md.disciplina_id,
+                    nome: apiTopico.nome,
+                  })
+                  .select('id')
+                  .single()
+                if (error || !created) {
+                  console.warn('[criar-plano] falha ao criar topico', apiTopico.nome, error)
+                  return null
+                }
+                return created.id as string
+              })())
+              if (!topicoLocalId) continue
+
+              // Subtopicos vindos da decomposição IA, ou fallback: 1 subtopico = nome do topico
+              const apiTopicoIdStr = String(apiTopico.id)
+              const decomposed = decomp[apiTopicoIdStr]
+              const subtopicos = decomposed?.subtopicos.length
+                ? decomposed.subtopicos.map((s) => ({
+                    nome: s.nome.slice(0, 200),
+                    estimated_duration_minutes: s.duracao_min ?? 45,
+                  }))
+                : [{ nome: apiTopico.nome.slice(0, 200), estimated_duration_minutes: 45 }]
+
+              // Lê subtopicos existentes desse topico pro user — evita N selects
+              const { data: existingSubs } = await adminClient
+                .from('subtopicos')
+                .select('nome')
+                .eq('user_id', userId)
+                .eq('topico_id', topicoLocalId)
+              const existingNomes = new Set((existingSubs ?? []).map((s) => s.nome))
+
+              const toInsert = subtopicos
+                .filter((s) => !existingNomes.has(s.nome))
+                .map((s) => ({
+                  user_id: userId,
+                  topico_id: topicoLocalId,
+                  nome: s.nome,
+                  estimated_duration_minutes: s.estimated_duration_minutes,
+                }))
+
+              if (toInsert.length > 0) {
+                const { error: subErr } = await adminClient
+                  .from('subtopicos')
+                  .insert(toInsert)
+                if (subErr) {
+                  console.warn(`[criar-plano] falha ao inserir ${toInsert.length} subtopicos:`, subErr)
+                }
+              }
+            }
+          }
+        }
+
+        // Remove o campo helper antes de enviar pra RPC (não faz parte do schema)
+        const cleanDisciplinas = mappedDisciplinas.map(({ _apiDiscId, ...rest }) => rest)
 
         // 7d. Chama RPC criar_plano_completo
         send({ type: 'progress', stage: 'rpc', message: 'Criando plano e distribuindo atividades...' })
@@ -211,7 +301,7 @@ export async function POST(req: NextRequest) {
           p_tem_redacao: payload.tem_redacao,
           p_tipo_material: payload.tipo_material,
           p_horario_preferido: payload.horario_preferido,
-          p_disciplinas: mappedDisciplinas,
+          p_disciplinas: cleanDisciplinas,
           p_template_id: payload.template_id ?? null,
         })
 
