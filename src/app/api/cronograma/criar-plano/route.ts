@@ -15,8 +15,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null)
   const parsed = setupPayloadSchema.safeParse(body)
   if (!parsed.success) {
+    const first = parsed.error.issues[0]
+    const detail = first
+      ? `${first.path.join('.') || '(root)'}: ${first.message}`
+      : 'sem detalhes'
+    console.error('[criar-plano] Payload inválido:', parsed.error.issues)
+    console.error('[criar-plano] body recebido:', JSON.stringify(body).slice(0, 800))
     return NextResponse.json(
-      { error: 'Payload inválido', issues: parsed.error.issues },
+      { error: `Payload inválido — ${detail}`, issues: parsed.error.issues },
       { status: 400 },
     )
   }
