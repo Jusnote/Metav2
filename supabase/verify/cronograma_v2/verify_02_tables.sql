@@ -262,6 +262,19 @@ ORDER BY column_name;
 -- esperado: 4 rows
 
 -- ============================================================================
+-- Task 20: Seed feriados nacionais 2026-2028
+-- ============================================================================
+
+-- Seed feriados
+SELECT COUNT(*) AS total_feriados FROM feriados_nacionais WHERE tipo = 'nacional';
+-- esperado: >= 39 (13 por ano × 3 anos)
+
+SELECT data, nome FROM feriados_nacionais
+WHERE data BETWEEN '2026-09-01' AND '2026-09-30'
+ORDER BY data;
+-- esperado: 7 de setembro
+
+-- ============================================================================
 -- Task 11: tabelas auxiliares (graphql_cache, analytics_events, rate_limit_buckets, feature_flags, ai_quality_feedback)
 -- ============================================================================
 
