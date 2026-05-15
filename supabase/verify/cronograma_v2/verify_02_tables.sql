@@ -102,3 +102,31 @@ BEGIN;
   VALUES ('00000000-0000-0000-0000-0000000000bb', 110.0);
   -- ↑ esperado: ERROR ('coverage_pct' check constraint violated)
 ROLLBACK;
+
+-- ============================================================================
+-- Task 6: plan_events
+-- ============================================================================
+
+-- plan_events
+SELECT tablename FROM pg_tables WHERE tablename LIKE 'plan_events%';
+SELECT indexname FROM pg_indexes WHERE tablename = 'plan_events' OR tablename LIKE 'plan_events_%';
+SELECT 'plan_events_seq exists' AS msg WHERE EXISTS (SELECT 1 FROM pg_class WHERE relname = 'plan_events_seq');
+
+BEGIN;
+  INSERT INTO auth.users (id, email, encrypted_password, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, aud, role)
+  VALUES ('00000000-0000-0000-0000-000000000001', 'test@verify.local', '', NOW(), NOW(), '{}', '{}', 'authenticated', 'authenticated')
+  ON CONFLICT (id) DO NOTHING;
+  INSERT INTO planos_estudo (id, user_id, nome, data_inicio, data_prova, mode, status)
+  VALUES ('00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000001',
+          'Test plan', CURRENT_DATE, CURRENT_DATE + 60, 'continuo', 'ativo');
+
+  INSERT INTO plan_events (plano_id, event_type, payload)
+  VALUES ('00000000-0000-0000-0000-0000000000cc', 'item.completed', '{"item_id": "x"}'::JSONB);
+  INSERT INTO plan_events (plano_id, event_type, payload)
+  VALUES ('00000000-0000-0000-0000-0000000000cc', 'week.completed', '{"week": 1}'::JSONB);
+
+  -- sequence_number deve ser monotônico
+  SELECT event_type, sequence_number FROM plan_events
+  WHERE plano_id = '00000000-0000-0000-0000-0000000000cc'
+  ORDER BY sequence_number;
+ROLLBACK;
