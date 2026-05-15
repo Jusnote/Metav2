@@ -72,6 +72,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // 6.5. Arquiva plano ativo anterior (constraint: 1 plano ativo por user).
+    // Falha do arquivamento não bloqueia — RPC vai gritar com constraint se houver.
+    const { data: prevAtivos } = await adminClient
+      .from('planos_estudo')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('status', 'ativo')
+    if (prevAtivos && prevAtivos.length > 0) {
+      const { error: archiveErr } = await adminClient
+        .from('planos_estudo')
+        .update({ status: 'arquivado' })
+        .eq('user_id', userId)
+        .eq('status', 'ativo')
+      if (archiveErr) {
+        console.warn('[criar-plano] falha ao arquivar planos ativos anteriores:', archiveErr)
+      } else {
+        console.log(`[criar-plano] ${prevAtivos.length} plano(s) ativo(s) arquivado(s) antes da criação`)
+      }
+    }
+
     // 7. Sync edital — best-effort com timeout duro (10s).
     // syncEdital decompõe tópicos longos via Claude Haiku (p-limit 3) e
     // pode levar minutos pra editais grandes. Aqui só queremos o que
