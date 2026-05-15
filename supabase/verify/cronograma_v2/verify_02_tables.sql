@@ -201,6 +201,16 @@ BEGIN;
 ROLLBACK;
 
 -- ============================================================================
+-- Task 15: ALTER schedule_items (anticipated, FSRS, parent, optimistic lock)
+-- ============================================================================
+
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'schedule_items'
+  AND column_name IN ('is_anticipated', 'fsrs_due_date', 'parent_item_id', 'unlocked_early', 'version')
+ORDER BY column_name;
+-- esperado: 5 rows
+
+-- ============================================================================
 -- Task 14: ALTER plano_disciplinas (nivel, ponto_fraco, excluded)
 -- ============================================================================
 
