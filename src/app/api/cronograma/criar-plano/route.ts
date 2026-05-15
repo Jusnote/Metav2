@@ -73,6 +73,59 @@ export async function POST(req: NextRequest) {
       editalDecomposicao = syncResult.decomposicao
     }
 
+    // 7.5. Mapeia disciplina_id da API (INT) → UUID local.
+    // A RPC criar_plano_completo faz `(disciplina_id)::UUID`, então IDs
+    // numéricos vindos do GraphQL precisam ser upserted em `disciplinas` local
+    // (uma cópia por user, idempotente por nome). Pré-requisito: edital_payload
+    // veio com a lista de disciplinas (id + nome).
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    const mappedDisciplinas = await Promise.all(
+      payload.disciplinas.map(async (d) => {
+        const idStr = String(d.disciplina_id)
+        if (UUID_RE.test(idStr)) {
+          return d  // já é UUID local, passa direto
+        }
+
+        // É ID da API. Acha o nome em edital_payload.
+        const apiIdNum = Number(idStr)
+        const apiDisc = payload.edital_payload?.disciplinas.find(
+          (x) => Number(x.id) === apiIdNum,
+        )
+        if (!apiDisc) {
+          throw new Error(
+            `Disciplina id=${idStr} não é UUID e não consta em edital_payload — ` +
+            `wizard precisa enviar edital_payload pra que mapping funcione.`,
+          )
+        }
+
+        // Upsert local: existe row com mesmo nome pro user?
+        const { data: existing } = await adminClient
+          .from('disciplinas')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('nome', apiDisc.nome)
+          .maybeSingle()
+
+        let localUuid: string
+        if (existing?.id) {
+          localUuid = existing.id
+        } else {
+          // Cria nova row local. Schema mínimo: id, user_id, nome (created_at default).
+          const { data: created, error: createErr } = await adminClient
+            .from('disciplinas')
+            .insert({ user_id: userId, nome: apiDisc.nome })
+            .select('id')
+            .single()
+          if (createErr || !created) {
+            throw new Error(`Falha ao criar disciplina local "${apiDisc.nome}": ${createErr?.message}`)
+          }
+          localUuid = created.id
+        }
+
+        return { ...d, disciplina_id: localUuid }
+      }),
+    )
+
     // 8. Chama RPC criar_plano_completo
     const cargoSnapshot = {
       nome: payload.cargo_nome,
@@ -97,7 +150,7 @@ export async function POST(req: NextRequest) {
       p_tem_redacao: payload.tem_redacao,
       p_tipo_material: payload.tipo_material,
       p_horario_preferido: payload.horario_preferido,
-      p_disciplinas: payload.disciplinas,
+      p_disciplinas: mappedDisciplinas,
       p_template_id: payload.template_id ?? null,
     })
 
