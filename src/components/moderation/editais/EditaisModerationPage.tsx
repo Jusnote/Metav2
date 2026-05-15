@@ -6,11 +6,13 @@ import { ChevronRight, Plus, Search, ClipboardList } from 'lucide-react'
 import { ModerationDataTable } from '@/components/moderation/shared/ModerationDataTable'
 import { EditaisDrawer } from './EditaisDrawer'
 import { EditaisBulkBar } from './EditaisBulkBar'
+import { EditalCuradoriaPanel } from './EditalCuradoriaPanel'
 import { getEditalColumns, getCargoColumns, getDisciplinaColumns, getTopicoColumns } from './columns'
 import { useEditaisAdmin, type HierarchyLevel, type BreadcrumbItem } from '@/hooks/moderation/useEditaisAdmin'
 import { useUserRole } from '@/hooks/moderation/useUserRole'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import type { EditalGraphQL } from '@/lib/cronograma-v2/schemas'
 
 const LEVEL_CHILD_LABEL: Record<HierarchyLevel, string | null> = {
   editais: 'Cargos', cargos: 'Disciplinas', disciplinas: 'Tópicos', topicos: null,
@@ -48,6 +50,10 @@ export function EditaisModerationPage() {
   const [tipoFilter, setTipoFilter] = useState<string>('')
   const [ativoFilter, setAtivoFilter] = useState<string>('')
 
+  // Curadoria: edital payload assembled when at 'disciplinas' level (cargoId = parentId)
+  // Built lazily: disciplinas come from `data`, topicos fetched across all disciplinas
+  const [editalPayload, setEditalPayload] = useState<EditalGraphQL | null>(null)
+
   // Fetch data for current level
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -80,6 +86,50 @@ export function EditaisModerationPage() {
   }, [level, parentId, esferaFilter, tipoFilter, ativoFilter, search, admin.refreshKey])
 
   useEffect(() => { fetchData() }, [fetchData])
+
+  // Build EditalGraphQL payload for the curadoria panel when at 'disciplinas' level.
+  // disciplinas are already in `data`; topicos are fetched once per disciplina.
+  useEffect(() => {
+    if (level !== 'disciplinas' || !parentId || loading || data.length === 0) {
+      setEditalPayload(null)
+      return
+    }
+    // Edital = breadcrumb[0], Cargo = breadcrumb[1]
+    const editalItem = breadcrumb[0]
+    const cargoItem = breadcrumb[1]
+    if (!editalItem || !cargoItem) return
+
+    let cancelled = false
+    async function buildPayload() {
+      try {
+        const disciplinas = data.map((d: any) => ({ id: d.id, nome: d.nome as string }))
+        // Fetch topicos for each disciplina in parallel
+        const topicosByDisc = await Promise.all(
+          data.map((d: any) => admin.fetchTopicos(d.id))
+        )
+        if (cancelled) return
+        const topicos = topicosByDisc.flatMap((tops: any[], idx: number) =>
+          tops.map((t: any) => ({
+            id: t.id,
+            disciplina_id: (data as any[])[idx].id,
+            nome: t.nome as string,
+          }))
+        )
+        setEditalPayload({
+          cargo_id: parentId!,
+          edital_id: editalItem.id,
+          cargo_nome: cargoItem.nome,
+          disciplinas,
+          topicos,
+        })
+      } catch {
+        // Non-critical — curadoria panel will show fallback
+        setEditalPayload(null)
+      }
+    }
+    buildPayload()
+    return () => { cancelled = true }
+  }, [level, parentId, loading, data, breadcrumb, admin])
 
   // Filter data by search (client-side for sub-levels)
   const filteredData = search && level !== 'editais'
@@ -336,6 +386,18 @@ export function EditaisModerationPage() {
           emptyIcon={<ClipboardList className="h-10 w-10 text-zinc-300" />}
           pageSize={20}
         />
+
+        {/* Curadoria V2 panel — shown when admin drills into a specific cargo (disciplinas level) */}
+        {isAdmin && level === 'disciplinas' && parentId !== null && editalPayload !== null && (
+          <div className="mt-6">
+            <EditalCuradoriaPanel
+              cargoId={parentId}
+              editalId={breadcrumb[0]?.id ?? 0}
+              cargoNome={breadcrumb[1]?.nome ?? ''}
+              editalPayload={editalPayload}
+            />
+          </div>
+        )}
       </div>
 
       {/* Drawer */}
