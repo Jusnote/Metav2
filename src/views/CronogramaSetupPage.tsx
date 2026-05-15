@@ -372,9 +372,10 @@ export default function CronogramaSetupPage() {
 
   const onPickObjetivo = useCallback(async (o: Objetivo) => {
     setAnswers((a) => ({ ...a, objetivo: o }));
-    loadDisciplinas();
+    // loadDisciplinas é chamada pelo useEffect que reage a answers.objetivo —
+    // não pode entrar nas deps daqui porque é declarada depois (TDZ).
     await advance('data', reactObjetivo(o));
-  }, [advance, loadDisciplinas]);
+  }, [advance]);
 
   const onPickData = useCallback(async (days: number) => {
     setAnswers((a) => ({ ...a, daysToExam: days }));
