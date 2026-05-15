@@ -57,3 +57,18 @@ BEGIN;
 
   SELECT COUNT(*) FROM behavioral_signals;  -- esperado: 1
 ROLLBACK;
+
+-- ============================================================================
+-- Task 4: edital_cache
+-- ============================================================================
+
+-- edital_cache
+SELECT tablename FROM pg_tables WHERE tablename = 'edital_cache';
+SELECT indexname FROM pg_indexes WHERE tablename = 'edital_cache';
+
+BEGIN;
+  INSERT INTO edital_cache (cargo_id, edital_id, payload_hash, decomposicao, ai_model)
+  VALUES (1, 1, 'abc123', '{"disciplinas":[]}'::JSONB, 'claude-haiku-4.5');
+
+  SELECT COUNT(*) FROM edital_cache;  -- esperado: 1
+ROLLBACK;
