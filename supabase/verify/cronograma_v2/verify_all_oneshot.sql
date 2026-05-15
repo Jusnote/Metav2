@@ -106,6 +106,29 @@ WITH checks AS (
   UNION ALL SELECT 70, 'migrations: 20 V2 migrations recorded',
          (SELECT COUNT(*)::INT FROM supabase_migrations.schema_migrations
           WHERE version LIKE '20260514%'), 20
+
+  -- Section 9: helpers + RPCs
+  UNION ALL SELECT 80, 'function: aplicar_nivel_multiplicador',
+         (SELECT COUNT(*)::INT FROM pg_proc WHERE proname = 'aplicar_nivel_multiplicador'), 1
+  UNION ALL SELECT 81, 'function: aplicar_ponto_fraco_boost',
+         (SELECT COUNT(*)::INT FROM pg_proc WHERE proname = 'aplicar_ponto_fraco_boost'), 1
+  UNION ALL SELECT 82, 'function: calcular_total_semanas',
+         (SELECT COUNT(*)::INT FROM pg_proc WHERE proname = 'calcular_total_semanas'), 1
+  UNION ALL SELECT 83, 'function: capacidade_dia',
+         (SELECT COUNT(*)::INT FROM pg_proc WHERE proname = 'capacidade_dia'), 1
+  UNION ALL SELECT 84, 'function: gerar_cronograma_v2 (signature 1-arg uuid)',
+         (SELECT COUNT(*)::INT FROM pg_proc p JOIN pg_namespace n ON p.pronamespace=n.oid
+          WHERE n.nspname='public' AND p.proname='gerar_cronograma_v2' AND p.pronargs=1), 1
+  UNION ALL SELECT 85, 'function: criar_plano_completo (signature 15-arg)',
+         (SELECT COUNT(*)::INT FROM pg_proc p JOIN pg_namespace n ON p.pronamespace=n.oid
+          WHERE n.nspname='public' AND p.proname='criar_plano_completo' AND p.pronargs=15), 1
+  UNION ALL SELECT 86, 'procedure: _v2_carrega_contexto',
+         (SELECT COUNT(*)::INT FROM pg_proc WHERE proname='_v2_carrega_contexto' AND prokind='p'), 1
+
+  -- Section 10: migration history (deve ter +9 migrations 20260515*)
+  UNION ALL SELECT 90, 'migrations: 9 V2 sub-plan-2 migrations recorded',
+         (SELECT COUNT(*)::INT FROM supabase_migrations.schema_migrations
+          WHERE version LIKE '20260515%'), 9
 )
 SELECT
   seq,
