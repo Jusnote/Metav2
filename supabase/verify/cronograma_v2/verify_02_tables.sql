@@ -168,3 +168,16 @@ BEGIN;
   VALUES ('00000000-0000-0000-0000-0000000000dd', 1, '{}'::JSONB);
   -- ↑ esperado: ERROR (unique constraint)
 ROLLBACK;
+
+-- ============================================================================
+-- Task 9: feriados_nacionais
+-- ============================================================================
+
+-- feriados_nacionais
+SELECT tablename FROM pg_tables WHERE tablename = 'feriados_nacionais';
+
+BEGIN;
+  INSERT INTO feriados_nacionais (data, nome, tipo)
+  VALUES ('2026-09-07', 'Independência do Brasil', 'nacional');
+  SELECT COUNT(*) FROM feriados_nacionais;  -- esperado: 1
+ROLLBACK;
