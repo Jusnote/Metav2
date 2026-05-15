@@ -201,6 +201,16 @@ BEGIN;
 ROLLBACK;
 
 -- ============================================================================
+-- Task 16: ALTER topicos (referencias_legais, nome_curto, ai_decomposed_at)
+-- ============================================================================
+
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'topicos'
+  AND column_name IN ('referencias_legais', 'ai_decomposed_at', 'nome_curto')
+ORDER BY column_name;
+-- esperado: 3 rows
+
+-- ============================================================================
 -- Task 15: ALTER schedule_items (anticipated, FSRS, parent, optimistic lock)
 -- ============================================================================
 
