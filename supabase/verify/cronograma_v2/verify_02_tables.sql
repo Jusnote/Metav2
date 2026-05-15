@@ -201,6 +201,16 @@ BEGIN;
 ROLLBACK;
 
 -- ============================================================================
+-- Task 14: ALTER plano_disciplinas (nivel, ponto_fraco, excluded)
+-- ============================================================================
+
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'plano_disciplinas'
+  AND column_name IN ('nivel_conhecimento', 'is_ponto_fraco', 'excluded_subtopico_ids')
+ORDER BY column_name;
+-- esperado: 3 rows
+
+-- ============================================================================
 -- Task 13: ALTER plano_config (simulados, redação, material, horário)
 -- ============================================================================
 
