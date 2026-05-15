@@ -88,8 +88,14 @@ Função pura: dado um `nivel_conhecimento_enum` e duração base em minutos, re
 Conteúdo de `20260515120000_cronograma_v2_helpers.sql`:
 
 ```sql
--- UP: helpers puros do algoritmo V2
--- DOWN: DROP FUNCTION cada helper
+-- UP: helpers puros do algoritmo V2 + valor 'redacao' no schedule_item_type
+-- DOWN: DROP FUNCTION cada helper (não reverter o enum value — PG não suporta)
+
+-- 0. Adiciona 'redacao' ao enum schedule_item_type (idempotente)
+-- Necessário pra Task 7 que aloca blocos de redação.
+DO $$ BEGIN
+  ALTER TYPE schedule_item_type ADD VALUE IF NOT EXISTS 'redacao';
+EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 -- Multiplicador de duração por nível de conhecimento
 CREATE OR REPLACE FUNCTION aplicar_nivel_multiplicador(
@@ -304,13 +310,13 @@ BEGIN
     s.topico_id,
     t.disciplina_id,
     s.nome,
-    s.duracao_minutos AS duracao_base,
+    COALESCE(s.estimated_duration_minutes, s.average_time, 45) AS duracao_base,
     d.nivel_conhecimento,
     d.is_ponto_fraco,
     d.peso AS disciplina_peso,
     -- Ajusta duração: nivel × ponto_fraco
     aplicar_ponto_fraco_boost(
-      aplicar_nivel_multiplicador(d.nivel_conhecimento, s.duracao_minutos),
+      aplicar_nivel_multiplicador(d.nivel_conhecimento, COALESCE(s.estimated_duration_minutes, s.average_time, 45)),
       d.is_ponto_fraco
     ) AS duracao_ajustada
   FROM subtopicos s
@@ -478,7 +484,7 @@ BEGIN
   questoes AS (
     SELECT
       subtopico_id, topico_id, disciplina_id, disciplina_peso,
-      'questoes_p1'::schedule_item_type AS tipo,
+      'estudo_inicial_p2'::schedule_item_type AS tipo,
       GREATEST(20, CEIL(duracao_ajustada * 0.5)::INTEGER) AS minutos,  -- mínimo 20min de questões
       nome AS title,
       2 AS ordem_no_subtopico
@@ -565,7 +571,7 @@ BEGIN
   ),
   questoes AS (
     SELECT subtopico_id, topico_id, disciplina_id, disciplina_peso,
-           'questoes_p1'::schedule_item_type AS tipo,
+           'estudo_inicial_p2'::schedule_item_type AS tipo,
            GREATEST(20, CEIL(duracao_ajustada * 0.5)::INTEGER) AS minutos,
            nome AS title, 2 AS ordem
     FROM _ctx_subtopicos
@@ -687,7 +693,7 @@ BEGIN
   ),
   questoes AS (
     SELECT subtopico_id, topico_id, disciplina_id, disciplina_peso,
-           'questoes_p1'::schedule_item_type AS tipo,
+           'estudo_inicial_p2'::schedule_item_type AS tipo,
            GREATEST(20, CEIL(duracao_ajustada * 0.5)::INTEGER) AS minutos,
            nome AS title, 2 AS ordem
     FROM _ctx_subtopicos
@@ -725,7 +731,7 @@ BEGIN
     )
     SELECT
       NULL, NULL, NULL, NULL,
-      'simulado_periodico'::schedule_item_type,
+      'simulado'::schedule_item_type,
       180,  -- 3 horas
       'Simulado periódico — semana ' || s,
       99 AS ordem,
@@ -734,7 +740,7 @@ BEGIN
       NULL
     FROM generate_series(v_simulado_interval, v_total_semanas, v_simulado_interval) s;
 
-    SELECT COUNT(*) FROM _ctx_assigned WHERE tipo = 'simulado_periodico'
+    SELECT COUNT(*) FROM _ctx_assigned WHERE tipo = 'simulado'
       INTO v_simulados_count;
   END IF;
 
@@ -965,7 +971,7 @@ BEGIN;
     ('00000000-0000-0000-0000-000000000c01', '00000000-0000-0000-0000-000000000b01', 'Princípios Fundamentais')
   ON CONFLICT (id) DO NOTHING;
 
-  INSERT INTO subtopicos (id, topico_id, nome, duracao_minutos) VALUES
+  INSERT INTO subtopicos (id, topico_id, nome, estimated_duration_minutes) VALUES
     ('00000000-0000-0000-0000-000000000d01', '00000000-0000-0000-0000-000000000c01', 'Conceito de Estado', 45),
     ('00000000-0000-0000-0000-000000000d02', '00000000-0000-0000-0000-000000000c01', 'Soberania', 50)
   ON CONFLICT (id) DO NOTHING;
@@ -1194,7 +1200,7 @@ BEGIN;
   INSERT INTO topicos (id, disciplina_id, nome) VALUES
     ('00000000-0000-0000-0000-000000000c02', '00000000-0000-0000-0000-000000000b02', 'Teoria do Crime')
   ON CONFLICT (id) DO NOTHING;
-  INSERT INTO subtopicos (id, topico_id, nome, duracao_minutos) VALUES
+  INSERT INTO subtopicos (id, topico_id, nome, estimated_duration_minutes) VALUES
     ('00000000-0000-0000-0000-000000000d11', '00000000-0000-0000-0000-000000000c02', 'Tipicidade', 50),
     ('00000000-0000-0000-0000-000000000d12', '00000000-0000-0000-0000-000000000c02', 'Ilicitude', 45)
   ON CONFLICT (id) DO NOTHING;
