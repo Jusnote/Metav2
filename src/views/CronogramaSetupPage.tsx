@@ -11,11 +11,15 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCargoAtivo } from '@/hooks/useCargoAtivo';
+import { useCriarPlano } from '@/hooks/useCriarPlano';
+import { useSetupDraftPersistence } from '@/hooks/useSetupDraftPersistence';
 import type { Carreira } from '@/types/carreira';
 import { CargoStep } from '@/components/cronograma-v2/setup/CargoStep';
 import { DisciplinaNivelChip } from '@/components/cronograma-v2/setup/DisciplinaNivelChip';
 import { MaterialHorarioStep } from '@/components/cronograma-v2/setup/MaterialHorarioStep';
 import { ExtrasStep } from '@/components/cronograma-v2/setup/ExtrasStep';
+
+type AnswersBlob = Record<string, unknown>;
 
 // =============================================================================
 // Types
@@ -278,6 +282,59 @@ export default function CronogramaSetupPage() {
 
   const { cargo, hydrated: cargoHydrated } = useCargoAtivo();
 
+  // --- Auth userId ---
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+  }, []);
+
+  // --- Draft persistence ---
+  const draft = useSetupDraftPersistence(userId);
+  const draftLoadAttemptedRef = useRef(false);
+
+  // Save answers to draft on every change (debounced inside hook)
+  useEffect(() => {
+    if (userId && Object.keys(answers).length > 0) {
+      draft.save(answers as AnswersBlob);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers, userId]);
+
+  // On mount: if a recent draft exists and answers are empty, offer to restore
+  useEffect(() => {
+    if (draft.loading || draftLoadAttemptedRef.current) return;
+    if (draft.existing && Object.keys(answers).length === 0) {
+      draftLoadAttemptedRef.current = true;
+      const date = new Date(draft.existing.updated_at).toLocaleDateString('pt-BR');
+      const shouldLoad = window.confirm(
+        `Você tem um rascunho de ${date}. Carregar de onde parou?`,
+      );
+      if (shouldLoad) {
+        draft.load().then((restored) => {
+          if (restored) setAnswers(restored as Answers);
+        });
+      } else {
+        draft.discardAll();
+      }
+    } else if (!draft.loading && !draftLoadAttemptedRef.current) {
+      draftLoadAttemptedRef.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft.loading, draft.existing]);
+
+  // --- Feature flag V2 ---
+  const [v2Enabled, setV2Enabled] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!userId) return;
+    supabase
+      .rpc('is_feature_enabled', { p_flag_name: 'cronograma_v2_enabled', p_user_id: userId })
+      .then(({ data }) => setV2Enabled(data === true))
+      .catch(() => setV2Enabled(false));
+  }, [userId]);
+
+  // --- useCriarPlano hook (V2 submission) ---
+  const criarPlano = useCriarPlano();
+
   const stepIdx = STEPS.indexOf(step);
 
   // Sync cargo from navbar into answers when hydrated; skip cargo step if already set
@@ -435,8 +492,8 @@ export default function CronogramaSetupPage() {
     };
   }, [answers, disciplinas]);
 
-  // Submit
-  const handleSubmit = async () => {
+  // Submit V1 — raw inserts (fallback when feature flag is off)
+  const handleSubmitV1 = async () => {
     setSubmitError(null);
     setSubmitting(true);
     try {
@@ -480,6 +537,63 @@ export default function CronogramaSetupPage() {
     }
   };
 
+  // Submit V2 — via useCriarPlano (feature flag gated)
+  const handleSubmitV2 = async () => {
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      if (!answers.cargo) throw new Error('Cargo não selecionado');
+
+      const disciplinas = Array.from((answers.selectedDisciplinas ?? new Map()).values()).map((s) => ({
+        disciplina_id: s.id,
+        peso: s.peso,
+        nivel_conhecimento: s.nivel_conhecimento ?? ('intermediario' as const),
+        is_ponto_fraco: s.is_ponto_fraco ?? false,
+        excluded_subtopico_ids: [] as string[],
+      }));
+
+      if (disciplinas.length === 0) throw new Error('Selecione ao menos uma disciplina.');
+
+      const payload = {
+        cargo_id: answers.cargo.id,
+        cargo_nome: answers.cargo.nome,
+        data_inicio: computed.dataInicio,
+        data_prova: computed.dataProva,
+        weekday_minutes: computed.weekdayMinutes,
+        weekend_minutes: computed.weekendMinutes,
+        block_duration_minutes: 50,
+        mix_ratio: {
+          teoria: computed.mix.teoria / 100,
+          questoes: computed.mix.questoes / 100,
+          revisao: computed.mix.revisao / 100,
+          flashcards: computed.mix.flashcards / 100,
+        },
+        simulados_freq: answers.simulados_freq ?? ('mensal' as const),
+        tem_redacao: answers.tem_redacao ?? false,
+        tipo_material: answers.tipo_material ?? ('misto' as const),
+        horario_preferido: answers.horario_preferido ?? ('flexivel' as const),
+        disciplinas,
+        // edital_payload: undefined — TODO: pass when edital hook is wired (sub-plan 5)
+      };
+
+      await criarPlano.mutateAsync(payload);
+
+      // Clear draft after successful plan creation
+      await draft.discardAll().catch(() => {});
+
+      navigate('/cronograma');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes('uniq_one_active_per_user')) setSubmitError('Você já tem um plano ativo. Arquive-o antes de criar outro.');
+      else setSubmitError(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Feature flag gate: use V2 when flag is on, fall back to V1
+  const handleSubmit = v2Enabled === true ? handleSubmitV2 : handleSubmitV1;
+
   return (
     <div
       className="min-h-screen text-slate-100 relative overflow-hidden"
@@ -514,6 +628,11 @@ export default function CronogramaSetupPage() {
           <div className="text-[10px] tracking-[0.18em] uppercase text-slate-400 font-semibold">
             Papiro
           </div>
+          {v2Enabled === true && (
+            <div className="text-[9px] tracking-widest uppercase text-emerald-400 font-semibold px-1.5 py-0.5 rounded border border-emerald-400/30 bg-emerald-400/10">
+              V2
+            </div>
+          )}
         </div>
       </div>
 
