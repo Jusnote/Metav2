@@ -201,6 +201,16 @@ BEGIN;
 ROLLBACK;
 
 -- ============================================================================
+-- Task 17: ALTER weekly_stats (unlocked_early, overflow)
+-- ============================================================================
+
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'weekly_stats'
+  AND column_name IN ('unlocked_early', 'overflow')
+ORDER BY column_name;
+-- esperado: 2 rows
+
+-- ============================================================================
 -- Task 16: ALTER topicos (referencias_legais, nome_curto, ai_decomposed_at)
 -- ============================================================================
 
