@@ -122,7 +122,8 @@ import { editalGraphQLSchema } from './schemas'
 
 export const setupPayloadSchema = z.object({
   // Identificação do cargo (vem da navbar via useCargoAtivo)
-  cargo_id: z.number().int().positive(),
+  // Carreira.id é string no app (geralmente "42"); coerce pra INT pro RPC
+  cargo_id: z.coerce.number().int().positive(),
   cargo_nome: z.string().min(1),
 
   // Datas
@@ -490,29 +491,43 @@ Componente que reusa `CargoSelectorContent` (já existe em `src/components/Cargo
 
 - [ ] **Step 1: Criar `CargoStep.tsx`**
 
+`CargoSelector.tsx` exporta `CargoSelectorCard`, `CargoSelectorExpansion`, `useCargoSelectorState` e o tipo `CargoSelectorContext`. Vamos compor esses ao invés de buscar um `CargoSelectorContent` que não existe.
+
 ```typescript
 'use client'
 
-import { useCallback } from 'react'
-// Assumindo que CargoSelectorContent é exportado de CargoSelector
-import { CargoSelectorContent } from '@/components/CargoSelector'
+import { useEffect } from 'react'
+import {
+  CargoSelectorCard,
+  CargoSelectorExpansion,
+  useCargoSelectorState,
+} from '@/components/CargoSelector'
+import { useCargoAtivo } from '@/hooks/useCargoAtivo'
 import type { Carreira } from '@/types/carreira'
 
 export interface CargoStepProps {
-  onPick: (cargo: Carreira) => void
+  onPicked: (cargo: Carreira) => void
 }
 
-export function CargoStep({ onPick }: CargoStepProps) {
-  const handlePick = useCallback((c: Carreira) => onPick(c), [onPick])
+export function CargoStep({ onPicked }: CargoStepProps) {
+  const state = useCargoSelectorState()
+  const { cargo } = useCargoAtivo()
+
+  // Se o user salvou cargo via useCargoAtivo (ou via CargoSelectorExpansion), propaga
+  useEffect(() => {
+    if (cargo) onPicked(cargo)
+  }, [cargo, onPicked])
+
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <CargoSelectorContent onSelect={handlePick} />
+      <CargoSelectorCard state={state} />
+      <CargoSelectorExpansion state={state} onAfterApply={() => { /* useCargoAtivo já atualizou */ }} />
     </div>
   )
 }
 ```
 
-> **Note:** Se `CargoSelector.tsx` não exporta `CargoSelectorContent`, subagent deve abrir o arquivo e decidir: extrair conteúdo pra componente reusável OU inline a lógica de seleção. Reportar a decisão tomada no commit.
+> **Note:** Se compor esses 2 não der o resultado visual desejado (a UI de selector costuma esperar overlay/sheet), subagent pode optar por extrair a lógica relevante manualmente. Reportar a decisão.
 
 - [ ] **Step 2: Adicionar step na sequência**
 
