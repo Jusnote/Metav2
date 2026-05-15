@@ -201,6 +201,17 @@ BEGIN;
 ROLLBACK;
 
 -- ============================================================================
+-- Task 12: ALTER planos_estudo (cargo_snapshot, template_id, algorithm_variant, deleted_at)
+-- ============================================================================
+
+-- Verifica que novas colunas existem em planos_estudo
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'planos_estudo'
+  AND column_name IN ('cargo_snapshot', 'template_id', 'algorithm_variant', 'deleted_at')
+ORDER BY column_name;
+-- esperado: 4 rows
+
+-- ============================================================================
 -- Task 11: tabelas auxiliares (graphql_cache, analytics_events, rate_limit_buckets, feature_flags, ai_quality_feedback)
 -- ============================================================================
 
