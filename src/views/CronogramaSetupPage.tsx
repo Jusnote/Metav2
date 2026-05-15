@@ -6,28 +6,35 @@
  * as respostas chegam. Tom escuro, accent emerald, accent secundário roxo
  * para o avatar/persona.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCargoAtivo } from '@/hooks/useCargoAtivo';
 import type { Carreira } from '@/types/carreira';
+import { CargoStep } from '@/components/cronograma-v2/setup/CargoStep';
+import { DisciplinaNivelChip } from '@/components/cronograma-v2/setup/DisciplinaNivelChip';
+import { MaterialHorarioStep } from '@/components/cronograma-v2/setup/MaterialHorarioStep';
+import { ExtrasStep } from '@/components/cronograma-v2/setup/ExtrasStep';
 
 // =============================================================================
 // Types
 // =============================================================================
 
 type StepId =
+  | 'cargo'
   | 'objetivo'
   | 'data'
   | 'horasUtil'
   | 'fimDeSemana'
   | 'estilo'
   | 'disciplinas'
+  | 'materialHorario'
+  | 'extras'
   | 'reveal';
 
 const STEPS: StepId[] = [
-  'objetivo', 'data', 'horasUtil', 'fimDeSemana', 'estilo', 'disciplinas', 'reveal',
+  'cargo', 'objetivo', 'data', 'horasUtil', 'fimDeSemana', 'estilo', 'disciplinas', 'materialHorario', 'extras', 'reveal',
 ];
 
 type Objetivo = 'concurso' | 'oab' | 'vestibular' | 'outro';
@@ -78,6 +85,11 @@ interface Disciplina {
 // =============================================================================
 
 const QUESTIONS: Record<StepId, { eyebrow: string; title: string; hint?: string }> = {
+  cargo: {
+    eyebrow: 'Ponto de partida',
+    title: 'Para qual cargo você está estudando?',
+    hint: 'O cronograma se molda às disciplinas e ao peso de cada matéria do edital.',
+  },
   objetivo: {
     eyebrow: 'Vamos começar',
     title: 'O que você está estudando?',
@@ -107,6 +119,16 @@ const QUESTIONS: Record<StepId, { eyebrow: string; title: string; hint?: string 
     eyebrow: 'Conteúdo',
     title: 'Quais matérias entram?',
     hint: 'Marque o que estuda. Ajuste a intensidade conforme a importância.',
+  },
+  materialHorario: {
+    eyebrow: 'Preferências',
+    title: 'Como você gosta de estudar?',
+    hint: 'Vou sugerir o formato certo e respeitar seu horário preferido.',
+  },
+  extras: {
+    eyebrow: 'Extras',
+    title: 'Simulados e redação?',
+    hint: 'Reservo blocos específicos pra isso no seu cronograma.',
   },
   reveal: {
     eyebrow: 'Pronto',
@@ -239,7 +261,7 @@ function reactDisciplinas(count: number, s: Scenario): string {
 export default function CronogramaSetupPage() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<StepId>('objetivo');
+  const [step, setStep] = useState<StepId>('cargo');
   const [phase, setPhase] = useState<'asking' | 'reacting' | 'transitioning'>('asking');
   const [reaction, setReaction] = useState<string>('');
   const [answers, setAnswers] = useState<Answers>({});
@@ -258,12 +280,17 @@ export default function CronogramaSetupPage() {
 
   const stepIdx = STEPS.indexOf(step);
 
-  // Sync cargo from navbar into answers when hydrated
+  // Sync cargo from navbar into answers when hydrated; skip cargo step if already set
   useEffect(() => {
-    if (cargoHydrated && cargo && !answers.cargo) {
-      setAnswers(prev => ({ ...prev, cargo }));
+    if (cargoHydrated && cargo) {
+      setAnswers(prev => {
+        if (prev.cargo?.id === cargo.id) return prev;
+        return { ...prev, cargo };
+      });
+      // Auto-advance past cargo step if cargo is already set from navbar
+      setStep(prev => prev === 'cargo' ? 'objetivo' : prev);
     }
-  }, [cargoHydrated, cargo, answers.cargo]);
+  }, [cargoHydrated, cargo]);
 
   // Transition: question → fade out → reaction (hold) → fade out → next question
   const advance = useCallback(async (nextStep: StepId, reactionText: string) => {
@@ -308,14 +335,28 @@ export default function CronogramaSetupPage() {
     await advance('disciplinas', reactEstilo(e));
   }, [advance]);
 
+  const onCargoPickedInStep = useCallback((c: Carreira) => {
+    setAnswers((a) => ({ ...a, cargo: c }));
+    setStep('objetivo');
+    setPhase('asking');
+  }, []);
+
   const onConfirmDisciplinas = useCallback(async (sel: Map<string, SelectedDisciplina>) => {
     if (sel.size === 0) return;
     setAnswers((a) => ({ ...a, selectedDisciplinas: sel }));
     setRevealed((r) => ({ ...r, viability: true }));
     const scenario = computeScenarioPreview(sel, answers, disciplinas);
-    await advance('reveal', reactDisciplinas(sel.size, scenario));
-    setFinalReveal(true);
+    await advance('materialHorario', reactDisciplinas(sel.size, scenario));
   }, [advance, answers, disciplinas]);
+
+  const onConfirmMaterialHorario = useCallback(async () => {
+    await advance('extras', 'Quase lá — mais dois detalhes e o plano fica completo.');
+  }, [advance]);
+
+  const onConfirmExtras = useCallback(async () => {
+    await advance('reveal', 'Perfeito. Montei tudo com o que você me deu.');
+    setFinalReveal(true);
+  }, [advance]);
 
   const loadDisciplinas = useCallback(async () => {
     setDiscsLoading(true);
@@ -490,12 +531,16 @@ export default function CronogramaSetupPage() {
                 answers={answers}
                 disciplinas={disciplinas}
                 discsLoading={discsLoading}
+                onCargoPickedInStep={onCargoPickedInStep}
                 onPickObjetivo={onPickObjetivo}
                 onPickData={onPickData}
                 onPickHoras={onPickHoras}
                 onPickWeekend={onPickWeekend}
                 onPickEstilo={onPickEstilo}
                 onConfirmDisciplinas={onConfirmDisciplinas}
+                onSetAnswers={setAnswers}
+                onConfirmMaterialHorario={onConfirmMaterialHorario}
+                onConfirmExtras={onConfirmExtras}
                 onCreate={handleSubmit}
                 onAdjust={() => navigate('/cronograma')}
                 submitting={submitting}
@@ -643,12 +688,16 @@ function QuestionStage(props: {
   answers: Answers;
   disciplinas: Disciplina[];
   discsLoading: boolean;
+  onCargoPickedInStep: (c: Carreira) => void;
   onPickObjetivo: (o: Objetivo) => void;
   onPickData: (d: number) => void;
   onPickHoras: (h: number) => void;
   onPickWeekend: (m: WeekendMode) => void;
   onPickEstilo: (e: Estilo) => void;
   onConfirmDisciplinas: (s: Map<string, SelectedDisciplina>) => void;
+  onSetAnswers: React.Dispatch<React.SetStateAction<Answers>>;
+  onConfirmMaterialHorario: () => void;
+  onConfirmExtras: () => void;
   onCreate: () => void;
   onAdjust: () => void;
   submitting: boolean;
@@ -657,6 +706,10 @@ function QuestionStage(props: {
   const { step, phase } = props;
   const q = QUESTIONS[step];
   const transitioning = phase === 'transitioning';
+
+  const canAdvanceMaterialHorario =
+    !!props.answers.tipo_material && !!props.answers.horario_preferido;
+
   return (
     <div
       className="w-full transition-all duration-300 ease-out"
@@ -683,6 +736,9 @@ function QuestionStage(props: {
       </div>
 
       <div>
+        {step === 'cargo' && (
+          <CargoStep onPicked={props.onCargoPickedInStep} />
+        )}
         {step === 'objetivo' && <ObjetivoOptions onPick={props.onPickObjetivo} />}
         {step === 'data' && <DataOptions onPick={props.onPickData} />}
         {step === 'horasUtil' && <HorasOptions onPick={props.onPickHoras} />}
@@ -693,7 +749,54 @@ function QuestionStage(props: {
             disciplinas={props.disciplinas}
             loading={props.discsLoading}
             onConfirm={props.onConfirmDisciplinas}
+            answers={props.answers}
+            onSetAnswers={props.onSetAnswers}
           />
+        )}
+        {step === 'materialHorario' && (
+          <div className="space-y-6">
+            <MaterialHorarioStep
+              tipoMaterial={props.answers.tipo_material}
+              horario={props.answers.horario_preferido}
+              onPickMaterial={(m) => props.onSetAnswers(p => ({ ...p, tipo_material: m }))}
+              onPickHorario={(h) => props.onSetAnswers(p => ({ ...p, horario_preferido: h }))}
+            />
+            <button
+              type="button"
+              onClick={props.onConfirmMaterialHorario}
+              disabled={!canAdvanceMaterialHorario}
+              className="mt-4 px-6 py-2.5 rounded-full text-[13px] font-semibold transition disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{
+                background: canAdvanceMaterialHorario
+                  ? 'linear-gradient(135deg, rgba(16,185,129,0.95) 0%, rgba(5,150,105,0.95) 100%)'
+                  : 'rgba(71,85,105,0.2)',
+                color: canAdvanceMaterialHorario ? '#022c22' : '#94a3b8',
+              }}
+            >
+              Próximo
+            </button>
+          </div>
+        )}
+        {step === 'extras' && (
+          <div className="space-y-6">
+            <ExtrasStep
+              simuladosFreq={props.answers.simulados_freq}
+              temRedacao={props.answers.tem_redacao}
+              onPickFreq={(f) => props.onSetAnswers(p => ({ ...p, simulados_freq: f }))}
+              onToggleRedacao={(v) => props.onSetAnswers(p => ({ ...p, tem_redacao: v }))}
+            />
+            <button
+              type="button"
+              onClick={props.onConfirmExtras}
+              className="mt-4 px-6 py-2.5 rounded-full text-[13px] font-semibold transition"
+              style={{
+                background: 'linear-gradient(135deg, rgba(16,185,129,0.95) 0%, rgba(5,150,105,0.95) 100%)',
+                color: '#022c22',
+              }}
+            >
+              Próximo
+            </button>
+          </div>
         )}
         {step === 'reveal' && (
           <RevealActions
@@ -997,18 +1100,20 @@ function MiniDonut({ mix }: { mix: MixRatio }) {
 
 // Step 6: Disciplinas
 function DisciplinasPicker({
-  disciplinas, loading, onConfirm,
+  disciplinas, loading, onConfirm, answers, onSetAnswers,
 }: {
   disciplinas: Disciplina[];
   loading: boolean;
   onConfirm: (sel: Map<string, SelectedDisciplina>) => void;
+  answers: Answers;
+  onSetAnswers: React.Dispatch<React.SetStateAction<Answers>>;
 }) {
   const [sel, setSel] = useState<Map<string, SelectedDisciplina>>(new Map());
   const toggle = (id: string) => {
     setSel((prev) => {
       const next = new Map(prev);
       if (next.has(id)) next.delete(id);
-      else next.set(id, { id, peso: 1, prioridade: 'media' });
+      else next.set(id, { id, peso: 1, prioridade: 'media', nivel_conhecimento: 'intermediario', is_ponto_fraco: false });
       return next;
     });
   };
@@ -1019,6 +1124,30 @@ function DisciplinasPicker({
       if (!cur) return prev;
       const prioridade: Prioridade = peso >= 1.3 ? 'alta' : peso <= 0.7 ? 'baixa' : 'media';
       next.set(id, { ...cur, peso, prioridade });
+      return next;
+    });
+  };
+  const setNivel = (id: string, nivel: 'iniciante' | 'intermediario' | 'avancado') => {
+    setSel((prev) => {
+      const next = new Map(prev);
+      const cur = next.get(id);
+      if (!cur) return prev;
+      next.set(id, { ...cur, nivel_conhecimento: nivel });
+      return next;
+    });
+  };
+  const togglePontoFraco = (id: string) => {
+    setSel((prev) => {
+      const next = new Map(prev);
+      const cur = next.get(id);
+      if (!cur) return prev;
+      const nextVal = !cur.is_ponto_fraco;
+      // Enforce max 3 pontos fracos
+      if (nextVal) {
+        const total = Array.from(next.values()).filter(d => d.is_ponto_fraco).length;
+        if (total >= 3) return prev; // silent block
+      }
+      next.set(id, { ...cur, is_ponto_fraco: nextVal });
       return next;
     });
   };
@@ -1067,30 +1196,43 @@ function DisciplinasPicker({
       </div>
 
       <div className="space-y-1 max-h-[420px] overflow-y-auto pr-1">
-        {disciplinas.map((d) => (
-          <DisciplinaRow
-            key={d.id} disc={d} selected={sel.get(d.id)}
-            onToggle={() => toggle(d.id)}
-            onIntensity={(p) => setIntensity(d.id, p)}
-          />
-        ))}
+        {disciplinas.map((d) => {
+          const pontosFracosCount = Array.from(sel.values()).filter(s => s.is_ponto_fraco).length;
+          return (
+            <DisciplinaRow
+              key={d.id} disc={d} selected={sel.get(d.id)}
+              onToggle={() => toggle(d.id)}
+              onIntensity={(p) => setIntensity(d.id, p)}
+              onNivel={(n) => setNivel(d.id, n)}
+              onTogglePontoFraco={() => togglePontoFraco(d.id)}
+              pontosFracosAtLimit={pontosFracosCount >= 3}
+            />
+          );
+        })}
       </div>
     </div>
   );
 }
 
 function DisciplinaRow({
-  disc, selected, onToggle, onIntensity,
+  disc, selected, onToggle, onIntensity, onNivel, onTogglePontoFraco, pontosFracosAtLimit,
 }: {
   disc: Disciplina;
   selected: SelectedDisciplina | undefined;
   onToggle: () => void;
   onIntensity: (peso: number) => void;
+  onNivel: (n: 'iniciante' | 'intermediario' | 'avancado') => void;
+  onTogglePontoFraco: () => void;
+  pontosFracosAtLimit: boolean;
 }) {
   const on = !!selected;
   const peso = selected?.peso ?? 1;
   const intensityColor = peso <= 0.7 ? '#60a5fa' : peso >= 1.3 ? '#fb7185' : '#34d399';
   const intensityLabel = peso <= 0.7 ? 'baixa' : peso >= 1.3 ? 'alta' : 'média';
+  const nivel = selected?.nivel_conhecimento ?? 'intermediario';
+  const isPontoFraco = !!selected?.is_ponto_fraco;
+  const pontoFracoDisabled = pontosFracosAtLimit && !isPontoFraco;
+
   return (
     <div
       className="relative rounded-xl transition-all duration-200"
@@ -1120,7 +1262,7 @@ function DisciplinaRow({
           )}
         </div>
         {on && (
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 flex-wrap justify-end">
             <div className="text-right min-w-[60px]">
               <div
                 className="text-[10px] font-semibold uppercase tracking-[0.14em]"
@@ -1131,6 +1273,22 @@ function DisciplinaRow({
               <div className="text-[10px] text-slate-500 tabular-nums">×{peso.toFixed(1)}</div>
             </div>
             <IntensityDrag value={peso} onChange={onIntensity} accent={intensityColor} />
+            <DisciplinaNivelChip current={nivel} onChange={onNivel} />
+            <button
+              type="button"
+              onClick={onTogglePontoFraco}
+              disabled={pontoFracoDisabled}
+              title={pontoFracoDisabled ? 'Máximo 3 pontos fracos' : isPontoFraco ? 'Remover ponto fraco' : 'Marcar como ponto fraco'}
+              className={`text-[10px] px-2 py-1 rounded-full border transition font-semibold ${
+                isPontoFraco
+                  ? 'bg-rose-500/20 border-rose-400/60 text-rose-300'
+                  : pontoFracoDisabled
+                    ? 'border-slate-700 text-slate-600 cursor-not-allowed'
+                    : 'border-slate-600 text-slate-500 hover:border-rose-400/60 hover:text-rose-300'
+              }`}
+            >
+              {isPontoFraco ? '★ Fraco' : '☆ Fraco'}
+            </button>
           </div>
         )}
       </div>
