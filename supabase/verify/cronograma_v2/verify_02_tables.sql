@@ -144,3 +144,27 @@ BEGIN;
   VALUES ('item.completed', '{"foo":"bar"}'::JSONB, 'timeout', 3, NOW(), NOW());
   SELECT COUNT(*) FROM dead_letters;  -- esperado: 1
 ROLLBACK;
+
+-- ============================================================================
+-- Task 8: plano_config_history
+-- ============================================================================
+
+-- plano_config_history
+SELECT tablename FROM pg_tables WHERE tablename = 'plano_config_history';
+
+BEGIN;
+  INSERT INTO auth.users (id, email, encrypted_password, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, aud, role)
+  VALUES ('00000000-0000-0000-0000-000000000001', 'test@verify.local', '', NOW(), NOW(), '{}', '{}', 'authenticated', 'authenticated')
+  ON CONFLICT (id) DO NOTHING;
+  INSERT INTO planos_estudo (id, user_id, nome, data_inicio, data_prova, mode, status)
+  VALUES ('00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001',
+          'Test', CURRENT_DATE, CURRENT_DATE + 60, 'continuo', 'ativo');
+
+  INSERT INTO plano_config_history (plano_id, version, snapshot)
+  VALUES ('00000000-0000-0000-0000-0000000000dd', 1, '{"weekday_minutes": 180}'::JSONB);
+
+  -- Versão duplicada deve falhar
+  INSERT INTO plano_config_history (plano_id, version, snapshot)
+  VALUES ('00000000-0000-0000-0000-0000000000dd', 1, '{}'::JSONB);
+  -- ↑ esperado: ERROR (unique constraint)
+ROLLBACK;
