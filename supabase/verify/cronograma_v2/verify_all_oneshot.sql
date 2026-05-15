@@ -49,26 +49,26 @@ WITH checks AS (
          (SELECT COUNT(*)::INT FROM information_schema.columns
           WHERE table_schema='public' AND table_name='planos_estudo'
           AND column_name IN ('cargo_snapshot','template_id','algorithm_variant','deleted_at')), 4
-  UNION ALL SELECT 31, 'columns: plano_config (simulados/redacao/material/horario)',
+  UNION ALL SELECT 31, 'columns: plano_config (simulados_freq/tem_redacao/tipo_material/horario_preferido)',
          (SELECT COUNT(*)::INT FROM information_schema.columns
           WHERE table_schema='public' AND table_name='plano_config'
-          AND column_name IN ('simulados_freq','incluir_redacao','tipo_material','horario_preferido')), 4
-  UNION ALL SELECT 32, 'columns: plano_disciplinas (nivel/ponto_fraco/excluded)',
+          AND column_name IN ('simulados_freq','tem_redacao','tipo_material','horario_preferido')), 4
+  UNION ALL SELECT 32, 'columns: plano_disciplinas (nivel_conhecimento/is_ponto_fraco/excluded_subtopico_ids)',
          (SELECT COUNT(*)::INT FROM information_schema.columns
           WHERE table_schema='public' AND table_name='plano_disciplinas'
-          AND column_name IN ('nivel','ponto_fraco','excluded_subtopico_ids')), 3
-  UNION ALL SELECT 33, 'columns: schedule_items (FSRS/anticipated/parent/version)',
+          AND column_name IN ('nivel_conhecimento','is_ponto_fraco','excluded_subtopico_ids')), 3
+  UNION ALL SELECT 33, 'columns: schedule_items (is_anticipated/fsrs_due_date/parent_item_id/unlocked_early/version)',
          (SELECT COUNT(*)::INT FROM information_schema.columns
           WHERE table_schema='public' AND table_name='schedule_items'
-          AND column_name IN ('anticipated_at','fsrs_state','fsrs_data','parent_item_id','version')), 5
-  UNION ALL SELECT 34, 'columns: topicos (referencias/nome_curto/ai_decomposed)',
+          AND column_name IN ('is_anticipated','fsrs_due_date','parent_item_id','unlocked_early','version')), 5
+  UNION ALL SELECT 34, 'columns: topicos (referencias_legais/nome_curto/ai_decomposed_at)',
          (SELECT COUNT(*)::INT FROM information_schema.columns
           WHERE table_schema='public' AND table_name='topicos'
           AND column_name IN ('referencias_legais','nome_curto','ai_decomposed_at')), 3
   UNION ALL SELECT 35, 'columns: weekly_stats (unlocked_early/overflow)',
          (SELECT COUNT(*)::INT FROM information_schema.columns
           WHERE table_schema='public' AND table_name='weekly_stats'
-          AND column_name IN ('unlocked_early','overflow_count')), 2
+          AND column_name IN ('unlocked_early','overflow')), 2
 
   -- Section 5: triggers + functions
   UNION ALL SELECT 40, 'triggers: 3 expected',
