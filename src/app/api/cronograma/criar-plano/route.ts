@@ -72,11 +72,24 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // 7. Sync edital (opcional — se payload veio)
+    // 7. Sync edital — best-effort com timeout duro (10s).
+    // syncEdital decompõe tópicos longos via Claude Haiku (p-limit 3) e
+    // pode levar minutos pra editais grandes. Aqui só queremos o que
+    // estiver em cache; se demora, segue sem ele. Cache é otimização,
+    // não bloqueante pra criar o plano.
     let editalDecomposicao = null
     if (payload.edital_payload) {
-      const syncResult = await syncEdital(adminClient, payload.edital_payload, { forceRefresh: false })
-      editalDecomposicao = syncResult.decomposicao
+      try {
+        editalDecomposicao = await Promise.race([
+          syncEdital(adminClient, payload.edital_payload, { skipAI: true })
+            .then(r => r.decomposicao),
+          new Promise<null>((resolve) =>
+            setTimeout(() => resolve(null), 10_000),
+          ),
+        ])
+      } catch (syncErr) {
+        console.warn('[criar-plano] syncEdital falhou, seguindo sem decomposição:', syncErr)
+      }
     }
 
     // 7.5. Mapeia disciplina_id da API (INT) → UUID local.
