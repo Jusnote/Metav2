@@ -924,7 +924,187 @@ Versionados em `tests/fixtures/`:
 
 ---
 
-## 12. Próximos passos
+## 12. Produto e evolução
+
+### 12.1 Roadmap pós-lançamento
+
+V2 é a fundação. Sistema legendário tem trajetória clara de evolução. Cada release vem de hipótese validada (não chute).
+
+**V2.1 — FSRS-5 completo** (Q3 2026)
+- Migrar do SM-2 simplificado pro FSRS-5 real
+- Parâmetros adaptativos por usuário (stability, difficulty)
+- Otimização baseada em behavioral signals coletados
+- Schema já preparado: `schedule_items.fsrs_state` está no formato FSRS-5
+
+**V2.2 — A/B testing real** (Q3 2026)
+- Variantes de algoritmo (`v2_default`, `v2_serial`, `v2_aggressive_revision`)
+- Atribuição randomizada por user
+- Métricas: completion rate por variante, retention 30d
+- Promove ganhador estatisticamente significativo (≥5% improvement, p<0.05)
+
+**V2.3 — Multi-país** (Q4 2026)
+- i18n estrutural ativado (PT-BR, ES, EN)
+- Feriados por país (`feriados.country_code`)
+- Currency-aware
+- Templates regionalizados
+
+**V3.0 — Modo colaborativo** (Q4 2026)
+- Grupos de estudo com plano compartilhado
+- Ranking visível dentro do grupo
+- Mentor pode acompanhar progresso de mentorado
+- Chat opcional por disciplina
+
+**V3.1 — Tutor IA durante atividades** (Q1 2027)
+- Claude como tutor inline: tirar dúvidas em tempo real durante teoria
+- Sugestões de simulados baseadas em fraquezas detectadas
+- Resumos automáticos de tópicos estudados
+- Custo controlado por usuário (limit semanal)
+
+**V3.2 — Mobile native** (Q2 2027)
+- React Native ou Expo
+- Notifications push (recall sessions, achievements)
+- Offline mode (study sem conexão, sync depois)
+
+**V4.0 — Marketplace de templates** (Q3 2027)
+- Templates pagos criados por experts (advogados aprovados, top scorers)
+- Revenue share com criadores
+- Verificação de qualidade automática
+
+### 12.2 Métricas de sucesso (Product KPIs)
+
+Métricas técnicas (P95 <500ms etc.) garantem que o sistema **funciona**. Estas garantem que **resolve o problema do usuário**.
+
+**Métricas primárias (North Star + leading indicators):**
+
+| Métrica | Meta MVP | Meta 6 meses | Como medir |
+|---|---|---|---|
+| **Plan completion rate** (% que termina sem desistir) | ≥40% | ≥60% | `weekly_stats` cobertura final >= 80% |
+| **Wizard conversion** (criou plano / iniciou wizard) | ≥50% | ≥70% | `analytics_events`: ratio plan_created_success / wizard_step_started |
+| **D7 retention** (estuda 7 dias após criar) | ≥45% | ≥65% | Tabela `behavioral_signals` filtrada por completion |
+| **D30 retention** | ≥25% | ≥40% | Idem |
+| **NPS pós-criação** (1 semana após criar) | ≥30 | ≥50 | Survey in-app one-shot |
+| **NPS pós-prova** (após data_prova) | ≥20 | ≥40 | Survey opt-in |
+
+**Métricas secundárias (engajamento profundo):**
+
+| Métrica | Meta |
+|---|---|
+| Tempo médio do wizard | P50 ≤4min, P95 ≤8min |
+| % de planos com pontos fracos marcados | ≥40% |
+| % de users que usam drill-down | ≥15% |
+| % de users que pulam ≥1 step | ≤20% |
+| Drop-off por step do wizard | ≤15% por step |
+| Items completados / items planejados (semanal) | ≥70% médio |
+| Antecipações por mês (sinal de engajamento alto) | ≥1 a cada 3 weeks ativas |
+| % de planos que migram de template | ≥25% |
+
+**Métricas de qualidade IA:**
+
+| Métrica | Meta |
+|---|---|
+| AI feedback positivo (👍) na decomposição | ≥80% |
+| % de tópicos com decomposição rejeitada (👎) | ≤15% |
+| Re-decomposição manual via admin | ≤5% dos editais |
+
+**Métricas de custo:**
+
+| Métrica | Meta |
+|---|---|
+| Custo IA por plano criado | ≤R$ 0,30 |
+| Custo de armazenamento / user ativo / mês | ≤R$ 0,50 |
+| Custo total Supabase / 10k MAU | ≤R$ 800/mês |
+
+### 12.3 Hipóteses a validar (kill criteria)
+
+A spec assume várias coisas. Cada uma é uma **hipótese testável**, com critério explícito pra matar a feature se errado.
+
+**H1: Drill-down em subtópicos vale o esforço de implementar.**
+- **Predição:** ≥15% dos users vão expandir disciplinas e desmarcar ≥1 subtópico
+- **Como medir:** event `wizard_subtopic_excluded` em `analytics_events`
+- **Janela:** primeiros 60 dias pós-launch
+- **Kill criteria:** se <5% usa após 90 dias → remover drill-down, simplificar UI
+
+**H2: Templates da comunidade vão crescer organicamente.**
+- **Predição:** ≥30 templates públicos publicados após 6 meses
+- **Como medir:** count em `plan_templates WHERE visibility='publico'`
+- **Kill criteria:** se <10 após 6 meses → desativar feature, manter só `oficial`
+
+**H3: IA decompõe mega-tópicos com qualidade suficiente.**
+- **Predição:** ≥80% feedback positivo em `ai_quality_feedback`
+- **Como medir:** ratio de 👍 vs 👎 por edital
+- **Kill criteria:** se <60% em qualquer edital → re-treinar prompt; se persistir → fallback regex
+
+**H4: FSRS reativo aumenta retenção.**
+- **Predição:** users com FSRS ativo têm D30 retention ≥10% maior que sem
+- **Como medir:** comparar coortes com/sem revisões geradas
+- **Kill criteria:** se diferença <3% após 3 meses → manter mas marcar como "experimental"
+
+**H5: Sugestões IA contextuais durante wizard aumentam conversion.**
+- **Predição:** A/B test mostra +5% conversion no grupo com sugestões
+- **Como medir:** feature flag binário, mede `plan_created_success`
+- **Kill criteria:** se -2% ou neutro → remover sugestões (poluição de UX sem ganho)
+
+**H6: Recalibração event-driven vs cron faz diferença.**
+- **Predição:** users com recalibração imediata reportam ≥15% maior satisfação
+- **Como medir:** A/B test entre handler imediato e cron-only
+- **Kill criteria:** se diferença <5% → simplificar pra cron-only (menos infra)
+
+**H7: Cargo da navbar como fonte de verdade reduz fricção.**
+- **Predição:** wizard conversion sobe ≥10% com cargo pré-preenchido vs perguntar do zero
+- **Como medir:** comparar coortes pré/pós-V2
+- **Kill criteria:** se conversion não muda → reavaliar arquitetura de cargo
+
+**H8: Pontos fracos (max 3) é a granularidade certa.**
+- **Predição:** ≥40% dos users marcam ≥1 ponto fraco; ≤10% reclamam de limite
+- **Como medir:** distribuição em `plano_disciplinas WHERE is_ponto_fraco=true`
+- **Kill criteria:** se >25% querem >3 → aumentar limite ou tornar dinâmico
+
+**Processo de validação:**
+- Toda hipótese tem dashboard dedicado em `/admin/cronograma/hypotheses`
+- Revisão mensal: status de cada hipótese (Validando / Confirmada / Refutada / Killed)
+- Decisões de kill registradas em `docs/decisions/` (ADRs) com data + razão
+
+### 12.4 Risk register
+
+Riscos identificados e mitigações:
+
+| Risco | Probabilidade | Impacto | Mitigação |
+|---|---|---|---|
+| Claude API rate limit/outage em scale | Média | Alto | Cache agressivo + fallback regex + circuit breaker |
+| GraphQL externo cai por dias | Baixa | Alto | Cache stale serve | dados antigos + banner UI |
+| Custo IA explode com viral growth | Baixa | Alto | `daily_ai_spend_cents` cap + alerta + degradação graceful |
+| Schema migration trava produção | Média | Alto | Migrations aditivas + testadas em snapshot de prod |
+| User vai embora durante 8-15s de IA | Alta | Médio | Stepper narrativo + cache warming dos top cargos |
+| FSRS gera revisões "esquisitas" | Média | Médio | SM-2 simplificado é conservador; migração pra FSRS-5 só após dados |
+| LGPD audit identifica problema | Baixa | Crítico | Opt-in explícito + dashboard de consents + data export request flow |
+| Concorrente lança feature similar | Alta | Médio | Diferencial = qualidade da decomposição + templates comunidade |
+| Spec fica desatualizada vs código | Alta | Médio | ADRs obrigatórios pra cada decisão de produto; spec atualizada mensalmente |
+
+### 12.5 Decision Records (ADRs)
+
+Cada decisão arquitetural significativa fica em `docs/decisions/YYYY-MM-DD-titulo.md` com formato:
+
+```markdown
+# ADR: <título>
+
+**Data:** YYYY-MM-DD
+**Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXX
+**Context:** <problema que motivou>
+**Decision:** <o que decidimos>
+**Consequences:** <trade-offs>
+**Alternatives considered:** <outras opções e por que não>
+```
+
+Primeiras ADRs a criar imediatamente após esta spec:
+- ADR-001: Por que PL/pgSQL + TS híbrido em vez de full TS
+- ADR-002: Por que SM-2 simplificado em vez de FSRS-5 no MVP
+- ADR-003: Por que cache compartilhado em edital_cache
+- ADR-004: Por que feature flags em DB em vez de PostHog/LaunchDarkly
+- ADR-005: Por que modelo semanal puro vs day-level scheduling
+
+---
+
+## 13. Próximos passos
 
 1. **Spec approval** — usuário revisa este documento e aprova
 2. **Implementation plan** — invocar skill `writing-plans` para detalhar tarefas executáveis
