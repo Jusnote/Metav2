@@ -92,24 +92,41 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 7. Sync edital — best-effort com timeout duro (10s).
-    // syncEdital decompõe tópicos longos via Claude Haiku (p-limit 3) e
-    // pode levar minutos pra editais grandes. Aqui só queremos o que
-    // estiver em cache; se demora, segue sem ele. Cache é otimização,
-    // não bloqueante pra criar o plano.
+    // 7. Sync edital — síncrono apenas pra cache HIT (já decomposto antes).
+    // Se cache miss, dispara decomposição IA em background (não bloqueia).
+    // Plano atual não usa decomposição (RPC não lê edital_cache), mas o
+    // próximo usuário do mesmo cargo terá cache pronto.
     let editalDecomposicao = null
     if (payload.edital_payload) {
       try {
+        // Tentativa rápida: cache hit retorna instantâneo, miss usa fallback regex.
+        // Hard timeout 5s só pra não bloquear se Supabase travar.
         editalDecomposicao = await Promise.race([
           syncEdital(adminClient, payload.edital_payload, { skipAI: true })
             .then(r => r.decomposicao),
           new Promise<null>((resolve) =>
-            setTimeout(() => resolve(null), 10_000),
+            setTimeout(() => resolve(null), 5_000),
           ),
         ])
       } catch (syncErr) {
-        console.warn('[criar-plano] syncEdital falhou, seguindo sem decomposição:', syncErr)
+        console.warn('[criar-plano] syncEdital síncrono falhou:', syncErr)
       }
+
+      // Background: decomposição IA real (fire-and-forget). Demora 1-5 min
+      // pra editais grandes; preenche o cache pros próximos planos do cargo.
+      void (async () => {
+        try {
+          const result = await syncEdital(adminClient, payload.edital_payload!, {
+            skipAI: false,
+            forceRefresh: true,
+          })
+          console.log(
+            `[criar-plano] background syncEdital IA: ${result.decomposed_topicos} decompostos, ${result.fallback_topicos} fallback, cargo=${payload.cargo_id}`,
+          )
+        } catch (bgErr) {
+          console.error('[criar-plano] background syncEdital IA falhou:', bgErr)
+        }
+      })()
     }
 
     // 7.5. Mapeia disciplina_id da API (INT) → UUID local.
