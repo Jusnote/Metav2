@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { editaisQuery } from '@/lib/editais-client'
+import { supabase } from '@/integrations/supabase/client'
 import type { ApiDisciplina, ApiTopico } from './useEditaisData'
 
 // ---- GraphQL queries ----
@@ -262,10 +263,37 @@ export function useCargoEdital(nomeCargo: string | null | undefined): UseCargoEd
     gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
   })
 
+  // Step 4: check edital_cache.status='published' for the matched cargo
+  // Only expose data to setup wizard if admin has curated + published this cargo.
+  const publishedCheck = useQuery({
+    queryKey: ['edital-cache-published', match?.cargoId, match?.editalId],
+    queryFn: async () => {
+      if (!match) return false
+      const { data, error } = await supabase
+        .from('edital_cache')
+        .select('status')
+        .eq('cargo_id', match.cargoId)
+        .eq('edital_id', match.editalId)
+        .eq('status', 'published')
+        .maybeSingle()
+      if (error) return false
+      return !!data
+    },
+    enabled: !!match,
+    staleTime: 60 * 1000, // 1 min — refreshes reasonably fast when admin publishes
+  })
+
+  const isPublished = publishedCheck.data === true
+  const publishedCheckDone = !publishedCheck.isLoading && publishedCheck.isFetched
+
   return {
-    data: composedQuery.data ?? null,
-    isLoading: editaisComCargos.isLoading || composedQuery.isLoading,
+    data: isPublished ? (composedQuery.data ?? null) : null,
+    isLoading: editaisComCargos.isLoading || composedQuery.isLoading || publishedCheck.isLoading,
     error: (editaisComCargos.error ?? composedQuery.error) as Error | null,
-    notFound: !editaisComCargos.isLoading && !!nomeCargo && !!editaisComCargos.data && match === null,
+    notFound:
+      !editaisComCargos.isLoading &&
+      !!nomeCargo &&
+      !!editaisComCargos.data &&
+      (match === null || (publishedCheckDone && !isPublished)),
   }
 }

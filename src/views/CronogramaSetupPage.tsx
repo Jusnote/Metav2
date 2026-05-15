@@ -1378,9 +1378,15 @@ function DisciplinasPicker({
   return (
     <div className="max-w-[680px] space-y-5">
       {editalNotFound && (
-        <div className="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2">
-          Não encontrei um edital correspondente ao cargo &ldquo;{cargoNome ?? '?'}&rdquo;.
-          Mostrando suas disciplinas locais.
+        <div className="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 space-y-0.5">
+          <div className="font-semibold text-amber-300">
+            Cargo ainda em curadoria — V2 indisponível
+          </div>
+          <div>
+            O cargo &ldquo;{cargoNome ?? '?'}&rdquo; ainda não foi publicado pelo admin.
+            Aguarde a curadoria ser concluída ou use o fluxo V1.
+            Mostrando suas disciplinas locais enquanto isso.
+          </div>
         </div>
       )}
       <div className="flex items-center justify-between text-[12px]">
