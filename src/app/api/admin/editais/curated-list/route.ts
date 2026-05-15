@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { listEditaisCurados } from '@/lib/cronograma-v2/edital-cache'
 
 export async function GET(req: NextRequest) {
   // 1. Auth
@@ -38,10 +37,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Acesso negado (admin only)' }, { status: 403 })
   }
 
-  // 5. Return list
+  // 5. Return list (includes decomposicao JSONB for the admin tree UI)
   try {
-    const items = await listEditaisCurados(adminClient)
-    return NextResponse.json({ items })
+    const { data, error } = await adminClient
+      .from('edital_cache')
+      .select('cargo_id, edital_id, status, generated_at, last_validated_at, published_at, decomposicao')
+      .order('last_validated_at', { ascending: false })
+    if (error) throw error
+    const items = (data ?? []).map((row: Record<string, unknown>) => ({
+      cargo_id: row.cargo_id,
+      edital_id: row.edital_id,
+      status: row.status,
+      generated_at: row.generated_at,
+      last_validated_at: row.last_validated_at,
+      published_at: row.published_at ?? null,
+      decomposicao: row.decomposicao ?? null,
+      topicos_count: Object.keys(
+        ((row.decomposicao as { by_topico?: Record<string, unknown> }) ?? {})?.by_topico ?? {},
+      ).length,
+    }))
+    return NextResponse.json(items)
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Erro ao listar' },
