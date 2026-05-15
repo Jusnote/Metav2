@@ -125,10 +125,11 @@ WITH checks AS (
   UNION ALL SELECT 86, 'procedure: _v2_carrega_contexto',
          (SELECT COUNT(*)::INT FROM pg_proc WHERE proname='_v2_carrega_contexto' AND prokind='p'), 1
 
-  -- Section 10: migration history (deve ter +9 migrations 20260515*)
-  UNION ALL SELECT 90, 'migrations: 9 V2 sub-plan-2 migrations recorded',
+  -- Section 10: migration history (8 migrations 20260515*; o 20260515120800
+  -- foi reservado no plano como "compute_prediction futuro" e não foi criado)
+  UNION ALL SELECT 90, 'migrations: 8 V2 sub-plan-2 migrations recorded',
          (SELECT COUNT(*)::INT FROM supabase_migrations.schema_migrations
-          WHERE version LIKE '20260515%'), 9
+          WHERE version LIKE '20260515%'), 8
 )
 SELECT
   seq,
