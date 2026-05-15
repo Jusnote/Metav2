@@ -18,3 +18,23 @@ SELECT 'calcular_total_semanas 1 dia extra (ceil)',
        calcular_total_semanas('2026-05-15', '2026-06-27')::TEXT, '7';
 SELECT 'calcular_total_semanas data invertida',
        calcular_total_semanas('2026-06-26', '2026-05-15')::TEXT, '0';
+
+-- capacidade_dia: 2026-09-07 (Independência, feriado nacional → 0)
+SELECT 'capacidade_dia feriado nacional',
+       capacidade_dia('2026-09-07', 180, 240, '{}'::JSONB)::TEXT, '0';
+
+-- 2026-05-18 (segunda, sem exceção, sem feriado) → weekday 180
+SELECT 'capacidade_dia weekday normal',
+       capacidade_dia('2026-05-18', 180, 240, '{}'::JSONB)::TEXT, '180';
+
+-- 2026-05-17 (domingo) → weekend 240
+SELECT 'capacidade_dia weekend',
+       capacidade_dia('2026-05-17', 180, 240, '{}'::JSONB)::TEXT, '240';
+
+-- Daily exception sobrescreve weekend
+SELECT 'capacidade_dia daily_exception',
+       capacidade_dia('2026-05-17', 180, 240, '{"2026-05-17": 60}'::JSONB)::TEXT, '60';
+
+-- Daily exception não bate o feriado (feriado vence)
+SELECT 'capacidade_dia feriado > exception',
+       capacidade_dia('2026-09-07', 180, 240, '{"2026-09-07": 999}'::JSONB)::TEXT, '0';

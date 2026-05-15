@@ -52,3 +52,39 @@ $$;
 
 COMMENT ON FUNCTION calcular_total_semanas IS
   'Número de semanas entre data_inicio e data_prova (arredonda pra cima). Retorna 0 se data_prova ≤ data_inicio.';
+
+-- Capacidade de minutos num dia específico
+CREATE OR REPLACE FUNCTION capacidade_dia(
+  p_data DATE,
+  p_weekday_minutes INTEGER,
+  p_weekend_minutes INTEGER,
+  p_daily_exceptions JSONB DEFAULT '{}'::JSONB
+) RETURNS INTEGER
+LANGUAGE plpgsql STABLE AS $$
+DECLARE
+  v_iso_dow INTEGER;  -- 1..7 (segunda..domingo)
+  v_exception TEXT;
+  v_is_feriado BOOLEAN;
+BEGIN
+  -- Feriado nacional → 0 minutos
+  SELECT EXISTS(SELECT 1 FROM feriados_nacionais WHERE data = p_data AND tipo = 'nacional')
+  INTO v_is_feriado;
+  IF v_is_feriado THEN RETURN 0; END IF;
+
+  -- Exceção declarada na config (ex: {"2026-07-04": 0, "2026-12-24": 60})
+  v_exception := p_daily_exceptions->>(p_data::TEXT);
+  IF v_exception IS NOT NULL THEN
+    RETURN v_exception::INTEGER;
+  END IF;
+
+  -- Base: weekday (Mon-Fri) ou weekend (Sat-Sun)
+  v_iso_dow := EXTRACT(ISODOW FROM p_data);
+  IF v_iso_dow <= 5 THEN
+    RETURN p_weekday_minutes;
+  ELSE
+    RETURN p_weekend_minutes;
+  END IF;
+END $$;
+
+COMMENT ON FUNCTION capacidade_dia IS
+  'Minutos disponíveis num dia. Feriado nacional zera; daily_exceptions sobrescreve; fallback weekday/weekend.';
