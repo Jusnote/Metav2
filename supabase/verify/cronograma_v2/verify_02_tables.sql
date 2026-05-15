@@ -201,6 +201,16 @@ BEGIN;
 ROLLBACK;
 
 -- ============================================================================
+-- Task 13: ALTER plano_config (simulados, redação, material, horário)
+-- ============================================================================
+
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'plano_config'
+  AND column_name IN ('simulados_freq', 'tem_redacao', 'tipo_material', 'horario_preferido')
+ORDER BY column_name;
+-- esperado: 4 rows
+
+-- ============================================================================
 -- Task 12: ALTER planos_estudo (cargo_snapshot, template_id, algorithm_variant, deleted_at)
 -- ============================================================================
 
