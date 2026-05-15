@@ -33,3 +33,27 @@ BEGIN;
 
   SELECT COUNT(*) AS decisions_inserted FROM plan_decisions;  -- esperado: 1
 ROLLBACK;
+
+-- ============================================================================
+-- Task 3: behavioral_signals
+-- ============================================================================
+
+-- behavioral_signals
+SELECT tablename FROM pg_tables
+WHERE schemaname = 'public' AND tablename LIKE 'behavioral_signals%';
+
+SELECT indexname FROM pg_indexes
+WHERE tablename = 'behavioral_signals'
+   OR tablename LIKE 'behavioral_signals_%';
+
+-- Smoke test idempotência
+BEGIN;
+  INSERT INTO behavioral_signals (user_id, signal_type, value)
+  VALUES ('00000000-0000-0000-0000-000000000001', 'session_start', '{"item_id": "test"}'::JSONB);
+
+  -- Segundo insert no mesmo dia, mesmo signal_type, mesmo plano_id/item_id (NULLs aqui) → idempotente?
+  -- NOTE: NULL não é considerado igual por UNIQUE; pra teste real usamos plano_id/item_id reais.
+  -- Skip neste smoke; testar idempotência real após criar plano + item.
+
+  SELECT COUNT(*) FROM behavioral_signals;  -- esperado: 1
+ROLLBACK;
