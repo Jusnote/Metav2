@@ -337,15 +337,19 @@ export default function CronogramaSetupPage() {
 
   const stepIdx = STEPS.indexOf(step);
 
-  // Sync cargo from navbar into answers when hydrated; skip cargo step if already set
+  // Sync cargo from navbar into answers when hydrated.
+  // Cargo already selected ⇒ objetivo é redundante (PF·Agente já implica "concurso").
+  // Salta cargo + objetivo, derivando objetivo do cargo.area.
+  // Disciplinas são carregadas em useEffect separado que reage a answers.objetivo.
   useEffect(() => {
     if (cargoHydrated && cargo) {
       setAnswers(prev => {
-        if (prev.cargo?.id === cargo.id) return prev;
-        return { ...prev, cargo };
+        if (prev.cargo?.id === cargo.id && prev.objetivo) return prev;
+        const derivedObjetivo: Objetivo =
+          cargo.area === 'advocacia' ? 'oab' : 'concurso';
+        return { ...prev, cargo, objetivo: prev.objetivo ?? derivedObjetivo };
       });
-      // Auto-advance past cargo step if cargo is already set from navbar
-      setStep(prev => prev === 'cargo' ? 'objetivo' : prev);
+      setStep(prev => (prev === 'cargo' || prev === 'objetivo') ? 'data' : prev);
     }
   }, [cargoHydrated, cargo]);
 
@@ -393,9 +397,12 @@ export default function CronogramaSetupPage() {
   }, [advance]);
 
   const onCargoPickedInStep = useCallback((c: Carreira) => {
-    setAnswers((a) => ({ ...a, cargo: c }));
-    setStep('objetivo');
+    const derivedObjetivo: Objetivo =
+      c.area === 'advocacia' ? 'oab' : 'concurso';
+    setAnswers((a) => ({ ...a, cargo: c, objetivo: a.objetivo ?? derivedObjetivo }));
+    setStep('data');
     setPhase('asking');
+    // Disciplinas serão carregadas pelo useEffect que reage a answers.objetivo
   }, []);
 
   const onConfirmDisciplinas = useCallback(async (sel: Map<string, SelectedDisciplina>) => {
@@ -441,6 +448,14 @@ export default function CronogramaSetupPage() {
     setDisciplinas(mapped);
     setDiscsLoading(false);
   }, []);
+
+  // Quando objetivo é derivado automaticamente (cargo da navbar), pre-carrega
+  // disciplinas — replica o efeito de onPickObjetivo.
+  useEffect(() => {
+    if (answers.objetivo && disciplinas.length === 0 && !discsLoading) {
+      loadDisciplinas();
+    }
+  }, [answers.objetivo, disciplinas.length, discsLoading, loadDisciplinas]);
 
   // Computed for preview
   const computed = useMemo(() => {
