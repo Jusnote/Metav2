@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { setupPayloadSchema } from '@/lib/cronograma-v2/setup-payload'
-import { syncEdital } from '@/lib/cronograma-v2/sync-edital'
+import { getPublishedDecomposicao } from '@/lib/cronograma-v2/edital-cache'
 
 // Stream NDJSON eventos pro client (progress + done + error)
 type StreamEvent =
@@ -104,49 +104,32 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // 7b. Sync edital com IA — bloqueia, mas com progresso visível
+        // 7b. Lê cache curado (published) — IA foi removida do hot path (Sub-plan 5, Task 11)
         let editalDecomposicao: unknown = null
         if (payload.edital_payload) {
-          const totalTopicos = payload.edital_payload.topicos.length
           send({
             type: 'progress',
             stage: 'sync',
-            message: `Sincronizando edital com IA (${totalTopicos} tópicos)...`,
-            done: 0,
-            total: totalTopicos,
+            message: 'Lendo cache curado...',
+            done: 1,
+            total: 1,
           })
 
-          try {
-            const result = await syncEdital(adminClient, payload.edital_payload, {
-              skipAI: false,
-              onProgress: (done, total) => {
-                send({
-                  type: 'progress',
-                  stage: 'sync',
-                  message: `Decompondo tópicos (${done}/${total})...`,
-                  done,
-                  total,
-                })
-              },
-            })
-            editalDecomposicao = result.decomposicao
+          const cached = await getPublishedDecomposicao(
+            adminClient,
+            payload.edital_payload.cargo_id,
+            payload.edital_payload.edital_id,
+          )
+          if (!cached) {
             send({
-              type: 'progress',
-              stage: 'sync',
-              message: result.cacheHit
-                ? 'Edital encontrado em cache (instantâneo)'
-                : `Decomposição concluída — ${result.decomposed_topicos} via IA, ${result.fallback_topicos} fallback`,
-              done: totalTopicos,
-              total: totalTopicos,
+              type: 'error',
+              status: 400,
+              message: `Cargo "${payload.cargo_nome}" ainda não foi curado pelo admin. Solicite a curadoria antes de criar um plano.`,
             })
-          } catch (syncErr) {
-            console.warn('[criar-plano] syncEdital falhou, segue sem decomposição:', syncErr)
-            send({
-              type: 'progress',
-              stage: 'sync',
-              message: 'IA indisponível — usando tópicos brutos do edital',
-            })
+            controller.close()
+            return
           }
+          editalDecomposicao = cached.decomposicao
         }
 
         // 7c. Mapeia disciplina_id API → UUID local + popula topicos/subtopicos
