@@ -130,3 +130,17 @@ BEGIN;
   WHERE plano_id = '00000000-0000-0000-0000-0000000000cc'
   ORDER BY sequence_number;
 ROLLBACK;
+
+-- ============================================================================
+-- Task 7: dead_letters
+-- ============================================================================
+
+-- dead_letters
+SELECT tablename FROM pg_tables WHERE tablename = 'dead_letters';
+SELECT indexname FROM pg_indexes WHERE tablename = 'dead_letters';
+
+BEGIN;
+  INSERT INTO dead_letters (event_type, payload, error_message, attempts, first_failed_at, last_failed_at)
+  VALUES ('item.completed', '{"foo":"bar"}'::JSONB, 'timeout', 3, NOW(), NOW());
+  SELECT COUNT(*) FROM dead_letters;  -- esperado: 1
+ROLLBACK;
