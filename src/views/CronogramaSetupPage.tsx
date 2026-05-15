@@ -743,6 +743,7 @@ export default function CronogramaSetupPage() {
                 onAdjust={() => navigate('/cronograma')}
                 submitting={submitting}
                 submitError={submitError}
+                submitProgress={criarPlano.progress}
               />
             )}
           </div>
@@ -901,6 +902,7 @@ function QuestionStage(props: {
   onAdjust: () => void;
   submitting: boolean;
   submitError: string | null;
+  submitProgress?: { stage: string; message: string; done?: number; total?: number } | null;
 }) {
   const { step, phase } = props;
   const q = QUESTIONS[step];
@@ -1005,6 +1007,7 @@ function QuestionStage(props: {
             onAdjust={props.onAdjust}
             submitting={props.submitting}
             error={props.submitError}
+            progress={props.submitProgress}
           />
         )}
       </div>
@@ -1539,13 +1542,18 @@ function IntensityDrag({
 
 // --- Reveal CTA ---
 function RevealActions({
-  onCreate, onAdjust, submitting, error,
+  onCreate, onAdjust, submitting, error, progress,
 }: {
   onCreate: () => void;
   onAdjust: () => void;
   submitting: boolean;
   error: string | null;
+  progress?: { stage: string; message: string; done?: number; total?: number } | null;
 }) {
+  const pct = progress?.total && progress?.done !== undefined
+    ? Math.min(100, Math.round((progress.done / progress.total) * 100))
+    : null;
+
   return (
     <div className="space-y-4 max-w-[560px]">
       <div className="flex items-center gap-4">
@@ -1566,11 +1574,34 @@ function RevealActions({
         <button
           type="button"
           onClick={onAdjust}
-          className="text-[12px] font-medium text-slate-400 hover:text-slate-100 transition"
+          disabled={submitting}
+          className="text-[12px] font-medium text-slate-400 hover:text-slate-100 transition disabled:opacity-40"
         >
           Quero ajustar antes
         </button>
       </div>
+
+      {submitting && progress && (
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 space-y-2">
+          <div className="text-[12px] text-emerald-200 font-medium">
+            {progress.message}
+          </div>
+          {pct !== null && (
+            <>
+              <div className="h-1.5 rounded-full bg-emerald-950/60 overflow-hidden">
+                <div
+                  className="h-full bg-emerald-400 transition-all duration-300"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <div className="text-[10px] text-emerald-300/70 tabular-nums">
+                {progress.done}/{progress.total} · {pct}%
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {error && (
         <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-[12px] text-rose-200">
           {error}

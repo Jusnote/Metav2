@@ -3,6 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 import { setupPayloadSchema } from '@/lib/cronograma-v2/setup-payload'
 import { syncEdital } from '@/lib/cronograma-v2/sync-edital'
 
+// Stream NDJSON eventos pro client (progress + done + error)
+type StreamEvent =
+  | { type: 'progress'; stage: 'sync' | 'archive' | 'map' | 'rpc'; message: string; done?: number; total?: number }
+  | { type: 'done'; plano_id: string; items_created: number; overflow_weeks: number; warnings: unknown[]; edital_synced: boolean; decomposicao_summary?: unknown }
+  | { type: 'error'; status: number; message: string; details?: unknown }
+
 export async function POST(req: NextRequest) {
   // 1. Auth
   const authHeader = req.headers.get('authorization')
@@ -71,164 +77,190 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  try {
-    // 6.5. Arquiva plano ativo anterior (constraint: 1 plano ativo por user).
-    // Falha do arquivamento não bloqueia — RPC vai gritar com constraint se houver.
-    const { data: prevAtivos } = await adminClient
-      .from('planos_estudo')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('status', 'ativo')
-    if (prevAtivos && prevAtivos.length > 0) {
-      const { error: archiveErr } = await adminClient
-        .from('planos_estudo')
-        .update({ status: 'arquivado' })
-        .eq('user_id', userId)
-        .eq('status', 'ativo')
-      if (archiveErr) {
-        console.warn('[criar-plano] falha ao arquivar planos ativos anteriores:', archiveErr)
-      } else {
-        console.log(`[criar-plano] ${prevAtivos.length} plano(s) ativo(s) arquivado(s) antes da criação`)
+  // 7. Stream NDJSON com progress + done/error
+  const encoder = new TextEncoder()
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (event: StreamEvent) => {
+        controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
       }
-    }
 
-    // 7. Sync edital — síncrono apenas pra cache HIT (já decomposto antes).
-    // Se cache miss, dispara decomposição IA em background (não bloqueia).
-    // Plano atual não usa decomposição (RPC não lê edital_cache), mas o
-    // próximo usuário do mesmo cargo terá cache pronto.
-    let editalDecomposicao = null
-    if (payload.edital_payload) {
       try {
-        // Tentativa rápida: cache hit retorna instantâneo, miss usa fallback regex.
-        // Hard timeout 5s só pra não bloquear se Supabase travar.
-        editalDecomposicao = await Promise.race([
-          syncEdital(adminClient, payload.edital_payload, { skipAI: true })
-            .then(r => r.decomposicao),
-          new Promise<null>((resolve) =>
-            setTimeout(() => resolve(null), 5_000),
-          ),
-        ])
-      } catch (syncErr) {
-        console.warn('[criar-plano] syncEdital síncrono falhou:', syncErr)
-      }
-
-      // Background: decomposição IA real (fire-and-forget). Demora 1-5 min
-      // pra editais grandes; preenche o cache pros próximos planos do cargo.
-      void (async () => {
-        try {
-          const result = await syncEdital(adminClient, payload.edital_payload!, {
-            skipAI: false,
-            forceRefresh: true,
-          })
-          console.log(
-            `[criar-plano] background syncEdital IA: ${result.decomposed_topicos} decompostos, ${result.fallback_topicos} fallback, cargo=${payload.cargo_id}`,
-          )
-        } catch (bgErr) {
-          console.error('[criar-plano] background syncEdital IA falhou:', bgErr)
-        }
-      })()
-    }
-
-    // 7.5. Mapeia disciplina_id da API (INT) → UUID local.
-    // A RPC criar_plano_completo faz `(disciplina_id)::UUID`, então IDs
-    // numéricos vindos do GraphQL precisam ser upserted em `disciplinas` local
-    // (uma cópia por user, idempotente por nome). Pré-requisito: edital_payload
-    // veio com a lista de disciplinas (id + nome).
-    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-    const mappedDisciplinas = await Promise.all(
-      payload.disciplinas.map(async (d) => {
-        const idStr = String(d.disciplina_id)
-        if (UUID_RE.test(idStr)) {
-          return d  // já é UUID local, passa direto
-        }
-
-        // É ID da API. Acha o nome em edital_payload.
-        const apiIdNum = Number(idStr)
-        const apiDisc = payload.edital_payload?.disciplinas.find(
-          (x) => Number(x.id) === apiIdNum,
-        )
-        if (!apiDisc) {
-          throw new Error(
-            `Disciplina id=${idStr} não é UUID e não consta em edital_payload — ` +
-            `wizard precisa enviar edital_payload pra que mapping funcione.`,
-          )
-        }
-
-        // Upsert local: existe row com mesmo nome pro user?
-        const { data: existing } = await adminClient
-          .from('disciplinas')
+        // 7a. Arquiva planos ativos anteriores
+        send({ type: 'progress', stage: 'archive', message: 'Arquivando planos anteriores...' })
+        const { data: prevAtivos } = await adminClient
+          .from('planos_estudo')
           .select('id')
           .eq('user_id', userId)
-          .eq('nome', apiDisc.nome)
-          .maybeSingle()
-
-        let localUuid: string
-        if (existing?.id) {
-          localUuid = existing.id
-        } else {
-          // Cria nova row local. Schema mínimo: id, user_id, nome (created_at default).
-          const { data: created, error: createErr } = await adminClient
-            .from('disciplinas')
-            .insert({ user_id: userId, nome: apiDisc.nome })
-            .select('id')
-            .single()
-          if (createErr || !created) {
-            throw new Error(`Falha ao criar disciplina local "${apiDisc.nome}": ${createErr?.message}`)
+          .eq('status', 'ativo')
+        if (prevAtivos && prevAtivos.length > 0) {
+          const { error: archiveErr } = await adminClient
+            .from('planos_estudo')
+            .update({ status: 'arquivado' })
+            .eq('user_id', userId)
+            .eq('status', 'ativo')
+          if (archiveErr) {
+            console.warn('[criar-plano] falha ao arquivar:', archiveErr)
           }
-          localUuid = created.id
         }
 
-        return { ...d, disciplina_id: localUuid }
-      }),
-    )
+        // 7b. Sync edital com IA — bloqueia, mas com progresso visível
+        let editalDecomposicao: unknown = null
+        if (payload.edital_payload) {
+          const totalTopicos = payload.edital_payload.topicos.length
+          send({
+            type: 'progress',
+            stage: 'sync',
+            message: `Sincronizando edital com IA (${totalTopicos} tópicos)...`,
+            done: 0,
+            total: totalTopicos,
+          })
 
-    // 8. Chama RPC criar_plano_completo
-    const cargoSnapshot = {
-      nome: payload.cargo_nome,
-      cargo_id: payload.cargo_id,
-      ...(payload.edital_payload && {
-        edital_id: payload.edital_payload.edital_id,
-        qtd_disciplinas: payload.edital_payload.disciplinas.length,
-      }),
-    }
+          try {
+            const result = await syncEdital(adminClient, payload.edital_payload, {
+              skipAI: false,
+              onProgress: (done, total) => {
+                send({
+                  type: 'progress',
+                  stage: 'sync',
+                  message: `Decompondo tópicos (${done}/${total})...`,
+                  done,
+                  total,
+                })
+              },
+            })
+            editalDecomposicao = result.decomposicao
+            send({
+              type: 'progress',
+              stage: 'sync',
+              message: result.cacheHit
+                ? 'Edital encontrado em cache (instantâneo)'
+                : `Decomposição concluída — ${result.decomposed_topicos} via IA, ${result.fallback_topicos} fallback`,
+              done: totalTopicos,
+              total: totalTopicos,
+            })
+          } catch (syncErr) {
+            console.warn('[criar-plano] syncEdital falhou, segue sem decomposição:', syncErr)
+            send({
+              type: 'progress',
+              stage: 'sync',
+              message: 'IA indisponível — usando tópicos brutos do edital',
+            })
+          }
+        }
 
-    const { data: rpcResult, error: rpcErr } = await adminClient.rpc('criar_plano_completo', {
-      p_user_id: userId,
-      p_cargo_id: payload.cargo_id,
-      p_cargo_snapshot: cargoSnapshot,
-      p_data_inicio: payload.data_inicio,
-      p_data_prova: payload.data_prova,
-      p_weekday_minutes: payload.weekday_minutes,
-      p_weekend_minutes: payload.weekend_minutes,
-      p_block_duration_minutes: payload.block_duration_minutes,
-      p_mix_ratio: payload.mix_ratio,
-      p_simulados_freq: payload.simulados_freq,
-      p_tem_redacao: payload.tem_redacao,
-      p_tipo_material: payload.tipo_material,
-      p_horario_preferido: payload.horario_preferido,
-      p_disciplinas: mappedDisciplinas,
-      p_template_id: payload.template_id ?? null,
-    })
+        // 7c. Mapeia disciplina_id API → UUID local
+        send({ type: 'progress', stage: 'map', message: 'Preparando disciplinas...' })
+        const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+        const mappedDisciplinas = await Promise.all(
+          payload.disciplinas.map(async (d) => {
+            const idStr = String(d.disciplina_id)
+            if (UUID_RE.test(idStr)) return d
+            const apiIdNum = Number(idStr)
+            const apiDisc = payload.edital_payload?.disciplinas.find(
+              (x) => Number(x.id) === apiIdNum,
+            )
+            if (!apiDisc) {
+              throw new Error(
+                `Disciplina id=${idStr} não é UUID e não consta em edital_payload`,
+              )
+            }
+            const { data: existing } = await adminClient
+              .from('disciplinas')
+              .select('id')
+              .eq('user_id', userId)
+              .eq('nome', apiDisc.nome)
+              .maybeSingle()
+            if (existing?.id) {
+              return { ...d, disciplina_id: existing.id }
+            }
+            const { data: created, error: createErr } = await adminClient
+              .from('disciplinas')
+              .insert({ user_id: userId, nome: apiDisc.nome })
+              .select('id')
+              .single()
+            if (createErr || !created) {
+              throw new Error(`Falha ao criar disciplina local "${apiDisc.nome}": ${createErr?.message}`)
+            }
+            return { ...d, disciplina_id: created.id }
+          }),
+        )
 
-    if (rpcErr) {
-      console.error('[criar-plano] RPC error:', rpcErr)
-      return NextResponse.json(
-        { error: rpcErr.message, code: rpcErr.code, details: rpcErr.details },
-        { status: 500 },
-      )
-    }
+        // 7d. Chama RPC criar_plano_completo
+        send({ type: 'progress', stage: 'rpc', message: 'Criando plano e distribuindo atividades...' })
+        const cargoSnapshot = {
+          nome: payload.cargo_nome,
+          cargo_id: payload.cargo_id,
+          ...(payload.edital_payload && {
+            edital_id: payload.edital_payload.edital_id,
+            qtd_disciplinas: payload.edital_payload.disciplinas.length,
+          }),
+        }
 
-    return NextResponse.json({
-      ...rpcResult,
-      edital_synced: !!editalDecomposicao,
-      decomposicao_summary: editalDecomposicao?.metadata,
-    }, { status: 200 })
+        const { data: rpcResult, error: rpcErr } = await adminClient.rpc('criar_plano_completo', {
+          p_user_id: userId,
+          p_cargo_id: payload.cargo_id,
+          p_cargo_snapshot: cargoSnapshot,
+          p_data_inicio: payload.data_inicio,
+          p_data_prova: payload.data_prova,
+          p_weekday_minutes: payload.weekday_minutes,
+          p_weekend_minutes: payload.weekend_minutes,
+          p_block_duration_minutes: payload.block_duration_minutes,
+          p_mix_ratio: payload.mix_ratio,
+          p_simulados_freq: payload.simulados_freq,
+          p_tem_redacao: payload.tem_redacao,
+          p_tipo_material: payload.tipo_material,
+          p_horario_preferido: payload.horario_preferido,
+          p_disciplinas: mappedDisciplinas,
+          p_template_id: payload.template_id ?? null,
+        })
 
-  } catch (err) {
-    console.error('[criar-plano] unexpected:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erro desconhecido' },
-      { status: 500 },
-    )
-  }
+        if (rpcErr) {
+          console.error('[criar-plano] RPC error:', rpcErr)
+          send({
+            type: 'error',
+            status: 500,
+            message: rpcErr.message,
+            details: { code: rpcErr.code, details: rpcErr.details },
+          })
+          controller.close()
+          return
+        }
+
+        const result = rpcResult as {
+          plano_id: string
+          items_created: number
+          overflow_weeks: number
+          warnings: unknown[]
+        }
+
+        send({
+          type: 'done',
+          plano_id: result.plano_id,
+          items_created: result.items_created,
+          overflow_weeks: result.overflow_weeks,
+          warnings: result.warnings ?? [],
+          edital_synced: !!editalDecomposicao,
+          decomposicao_summary: (editalDecomposicao as { metadata?: unknown })?.metadata,
+        })
+        controller.close()
+      } catch (err) {
+        console.error('[criar-plano] unexpected:', err)
+        send({
+          type: 'error',
+          status: 500,
+          message: err instanceof Error ? err.message : 'Erro desconhecido',
+        })
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store',
+      'X-Accel-Buffering': 'no',  // hint pra proxies não bufferizarem
+    },
+  })
 }
