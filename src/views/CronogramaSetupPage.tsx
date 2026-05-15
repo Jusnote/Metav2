@@ -598,19 +598,42 @@ export default function CronogramaSetupPage() {
     try {
       if (!answers.cargo) throw new Error('Cargo não selecionado');
 
-      const disciplinas = Array.from((answers.selectedDisciplinas ?? new Map()).values()).map((s) => ({
-        disciplina_id: s.id,
+      // Resolve cargo_id: prefer INT from edital API; fallback to coerced local id
+      const cargoIdFromApi = editalMatch.data?.cargoId;
+      const cargoIdFromLocal = Number(answers.cargo.id);
+      const resolvedCargoId = cargoIdFromApi ?? (Number.isNaN(cargoIdFromLocal) ? null : cargoIdFromLocal);
+      if (!resolvedCargoId) {
+        throw new Error(
+          'Não foi possível associar o cargo a um edital — V2 indisponível para este cargo. ' +
+          'Aguarde o edital ser cadastrado ou use o fluxo V1.',
+        );
+      }
+
+      const disciplinasList = Array.from((answers.selectedDisciplinas ?? new Map()).values()).map((s) => ({
+        disciplina_id: s.id, // string: UUID (local) ou numeric string (API via editalMatch)
         peso: s.peso,
         nivel_conhecimento: s.nivel_conhecimento ?? ('intermediario' as const),
         is_ponto_fraco: s.is_ponto_fraco ?? false,
         excluded_subtopico_ids: [] as string[],
       }));
 
-      if (disciplinas.length === 0) throw new Error('Selecione ao menos uma disciplina.');
+      if (disciplinasList.length === 0) throw new Error('Selecione ao menos uma disciplina.');
+
+      // Build edital_payload when GraphQL match is available (used by syncEdital in endpoint).
+      // Shape must match editalGraphQLSchema in src/lib/cronograma-v2/schemas.ts.
+      const editalPayload = editalMatch.data
+        ? {
+            cargo_id: editalMatch.data.cargoId,
+            edital_id: editalMatch.data.editalId,
+            cargo_nome: editalMatch.data.cargoNome,
+            disciplinas: editalMatch.data.disciplinas,
+            topicos: editalMatch.data.topicos,
+          }
+        : undefined;
 
       const payload = {
-        cargo_id: answers.cargo.id,
-        cargo_nome: answers.cargo.nome,
+        cargo_id: resolvedCargoId,
+        cargo_nome: editalMatch.data?.cargoNome ?? answers.cargo.nome,
         data_inicio: computed.dataInicio,
         data_prova: computed.dataProva,
         weekday_minutes: computed.weekdayMinutes,
@@ -626,8 +649,8 @@ export default function CronogramaSetupPage() {
         tem_redacao: answers.tem_redacao ?? false,
         tipo_material: answers.tipo_material ?? ('misto' as const),
         horario_preferido: answers.horario_preferido ?? ('flexivel' as const),
-        disciplinas,
-        // edital_payload: undefined — TODO: pass when edital hook is wired (sub-plan 5)
+        disciplinas: disciplinasList,
+        edital_payload: editalPayload,
       };
 
       await criarPlano.mutateAsync(payload);

@@ -34,12 +34,13 @@ export const setupPayloadSchema = z.object({
   horario_preferido: z.enum(['manha', 'tarde', 'noite', 'madrugada', 'flexivel']).default('flexivel'),
 
   // Disciplinas selecionadas
+  // disciplina_id aceita UUID string (estoque local) OU ID numérico da API (string ou number)
   disciplinas: z.array(z.object({
-    disciplina_id: z.string().uuid(),
+    disciplina_id: z.union([z.string(), z.number()]),
     peso: z.number().int().min(1).max(10).default(5),
     nivel_conhecimento: z.enum(['iniciante', 'intermediario', 'avancado']).default('intermediario'),
     is_ponto_fraco: z.boolean().default(false),
-    excluded_subtopico_ids: z.array(z.string().uuid()).default([]),
+    excluded_subtopico_ids: z.array(z.string()).default([]),
   })).min(1).refine(
     (arr) => arr.filter(d => d.is_ponto_fraco).length <= 3,
     { message: 'Máximo 3 disciplinas marcadas como ponto fraco' },
