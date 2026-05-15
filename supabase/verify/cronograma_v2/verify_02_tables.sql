@@ -199,3 +199,34 @@ BEGIN;
   VALUES (1, 'Invalid', 7, '{}'::JSONB);
   -- ↑ esperado: ERROR
 ROLLBACK;
+
+-- ============================================================================
+-- Task 11: tabelas auxiliares (graphql_cache, analytics_events, rate_limit_buckets, feature_flags, ai_quality_feedback)
+-- ============================================================================
+
+-- Auxiliary tables
+SELECT tablename FROM pg_tables WHERE tablename IN (
+  'graphql_cache', 'analytics_events', 'rate_limit_buckets', 'feature_flags', 'ai_quality_feedback'
+) ORDER BY tablename;
+-- esperado: 5 rows
+
+-- Feature flag function
+SELECT proname FROM pg_proc WHERE proname = 'is_feature_enabled';
+
+BEGIN;
+  INSERT INTO feature_flags (flag_name, enabled, rollout_pct) VALUES ('test_flag', TRUE, 50);
+
+  -- User com hash < 50 → TRUE; >= 50 → FALSE. Verifica que ambos os casos existem.
+  SELECT is_feature_enabled('test_flag', '00000000-0000-0000-0000-000000000001');
+  SELECT is_feature_enabled('test_flag', '00000000-0000-0000-0000-000000000099');
+
+  -- Blocklist sempre FALSE
+  UPDATE feature_flags SET user_blocklist = ARRAY['00000000-0000-0000-0000-000000000001'::UUID]
+  WHERE flag_name = 'test_flag';
+  SELECT is_feature_enabled('test_flag', '00000000-0000-0000-0000-000000000001');  -- FALSE
+
+  -- Allowlist sempre TRUE (mesmo com rollout=0)
+  UPDATE feature_flags SET rollout_pct = 0, user_allowlist = ARRAY['00000000-0000-0000-0000-000000000002'::UUID]
+  WHERE flag_name = 'test_flag';
+  SELECT is_feature_enabled('test_flag', '00000000-0000-0000-0000-000000000002');  -- TRUE
+ROLLBACK;
