@@ -72,3 +72,33 @@ BEGIN;
 
   SELECT COUNT(*) FROM edital_cache;  -- esperado: 1
 ROLLBACK;
+
+-- ============================================================================
+-- Task 5: plano_predictions_history + view plano_predictions
+-- ============================================================================
+
+-- plano_predictions
+SELECT tablename FROM pg_tables WHERE tablename = 'plano_predictions_history';
+SELECT viewname FROM pg_views WHERE viewname = 'plano_predictions';
+
+BEGIN;
+  INSERT INTO auth.users (id, email, encrypted_password, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, aud, role)
+  VALUES ('00000000-0000-0000-0000-000000000001', 'test@verify.local', '', NOW(), NOW(), '{}', '{}', 'authenticated', 'authenticated')
+  ON CONFLICT (id) DO NOTHING;
+  INSERT INTO planos_estudo (id, user_id, nome, data_inicio, data_prova, mode, status)
+  VALUES ('00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000001',
+          'Test plan', CURRENT_DATE, CURRENT_DATE + 60, 'continuo', 'ativo');
+
+  INSERT INTO plano_predictions_history (plano_id, coverage_pct, slack_weeks, pace_index)
+  VALUES ('00000000-0000-0000-0000-0000000000bb', 87.5, 2.0, 1.0);
+  INSERT INTO plano_predictions_history (plano_id, coverage_pct, slack_weeks, pace_index)
+  VALUES ('00000000-0000-0000-0000-0000000000bb', 92.0, 2.5, 1.05);
+
+  SELECT coverage_pct FROM plano_predictions WHERE plano_id = '00000000-0000-0000-0000-0000000000bb';
+  -- esperado: 92.0 (última)
+
+  -- Constraint test: 110% deveria falhar
+  INSERT INTO plano_predictions_history (plano_id, coverage_pct)
+  VALUES ('00000000-0000-0000-0000-0000000000bb', 110.0);
+  -- ↑ esperado: ERROR ('coverage_pct' check constraint violated)
+ROLLBACK;
