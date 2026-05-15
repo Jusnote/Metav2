@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCargoAtivo } from '@/hooks/useCargoAtivo';
+import { useCargoEdital } from '@/hooks/useCargoEdital';
 import { useCriarPlano } from '@/hooks/useCriarPlano';
 import { useSetupDraftPersistence } from '@/hooks/useSetupDraftPersistence';
 import type { Carreira } from '@/types/carreira';
@@ -282,6 +283,9 @@ export default function CronogramaSetupPage() {
 
   const { cargo, hydrated: cargoHydrated } = useCargoAtivo();
 
+  // Busca cargo no edital GraphQL pra popular disciplinas reais do edital
+  const editalMatch = useCargoEdital(answers.cargo?.nome ?? cargo?.nome ?? null);
+
   // --- Auth userId ---
   const [userId, setUserId] = useState<string | null>(null);
   useEffect(() => {
@@ -370,7 +374,7 @@ export default function CronogramaSetupPage() {
     setAnswers((a) => ({ ...a, objetivo: o }));
     loadDisciplinas();
     await advance('data', reactObjetivo(o));
-  }, [advance]);
+  }, [advance, loadDisciplinas]);
 
   const onPickData = useCallback(async (days: number) => {
     setAnswers((a) => ({ ...a, daysToExam: days }));
@@ -424,6 +428,32 @@ export default function CronogramaSetupPage() {
 
   const loadDisciplinas = useCallback(async () => {
     setDiscsLoading(true);
+
+    // Preferência 1: disciplinas do edital via GraphQL (cargo ativo)
+    if (editalMatch.data && editalMatch.data.disciplinas.length > 0) {
+      // Estima subtopicCount e baseMinutes a partir dos tópicos disponíveis.
+      // syncEdital no backend vai refinar com a decomposição via IA.
+      const topicosByDisc = new Map<number, number>();
+      for (const t of editalMatch.data.topicos) {
+        topicosByDisc.set(t.disciplina_id, (topicosByDisc.get(t.disciplina_id) ?? 0) + 1);
+      }
+      const mapped: Disciplina[] = editalMatch.data.disciplinas.map((d) => {
+        const nTopicos = topicosByDisc.get(d.id) ?? 0;
+        const estSubtopicos = nTopicos * 3; // estimativa: ~3 subtópicos por tópico
+        return {
+          id: String(d.id), // converte INT pra string pra compat com state existente
+          nome: d.nome,
+          baseMinutes: estSubtopicos * 45,
+          subtopicCount: estSubtopicos,
+        };
+      });
+      mapped.sort((a, b) => a.nome.localeCompare(b.nome));
+      setDisciplinas(mapped);
+      setDiscsLoading(false);
+      return;
+    }
+
+    // Preferência 2 (fallback): disciplinas locais do user (V1 behavior)
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setDiscsLoading(false); return; }
     const { data: discRows } = await supabase
@@ -447,15 +477,24 @@ export default function CronogramaSetupPage() {
     mapped.sort((a, b) => a.nome.localeCompare(b.nome));
     setDisciplinas(mapped);
     setDiscsLoading(false);
-  }, []);
+  }, [editalMatch.data]);
 
   // Quando objetivo é derivado automaticamente (cargo da navbar), pre-carrega
   // disciplinas — replica o efeito de onPickObjetivo.
+  // Re-roda quando editalMatch.data chega (async) pra trocar de local → API.
   useEffect(() => {
-    if (answers.objetivo && disciplinas.length === 0 && !discsLoading) {
+    if (!answers.objetivo || discsLoading) return;
+    // Aguarda editalMatch resolver antes de cair no fallback local
+    if (editalMatch.isLoading) return;
+    // Carrega se vazio OU se dados atuais vieram do estoque local (id não-numérico)
+    // e agora temos dados do edital disponíveis
+    if (
+      disciplinas.length === 0 ||
+      (editalMatch.data && disciplinas.some((d) => !/^\d+$/.test(d.id)))
+    ) {
       loadDisciplinas();
     }
-  }, [answers.objetivo, disciplinas.length, discsLoading, loadDisciplinas]);
+  }, [answers.objetivo, disciplinas, discsLoading, loadDisciplinas, editalMatch.data, editalMatch.isLoading]);
 
   // Computed for preview
   const computed = useMemo(() => {
@@ -665,6 +704,7 @@ export default function CronogramaSetupPage() {
                 answers={answers}
                 disciplinas={disciplinas}
                 discsLoading={discsLoading}
+                editalNotFound={editalMatch.notFound}
                 onCargoPickedInStep={onCargoPickedInStep}
                 onPickObjetivo={onPickObjetivo}
                 onPickData={onPickData}
@@ -822,6 +862,7 @@ function QuestionStage(props: {
   answers: Answers;
   disciplinas: Disciplina[];
   discsLoading: boolean;
+  editalNotFound: boolean;
   onCargoPickedInStep: (c: Carreira) => void;
   onPickObjetivo: (o: Objetivo) => void;
   onPickData: (d: number) => void;
@@ -882,6 +923,8 @@ function QuestionStage(props: {
           <DisciplinasPicker
             disciplinas={props.disciplinas}
             loading={props.discsLoading}
+            editalNotFound={props.editalNotFound}
+            cargoNome={props.answers.cargo?.nome}
             onConfirm={props.onConfirmDisciplinas}
             answers={props.answers}
             onSetAnswers={props.onSetAnswers}
@@ -1234,10 +1277,12 @@ function MiniDonut({ mix }: { mix: MixRatio }) {
 
 // Step 6: Disciplinas
 function DisciplinasPicker({
-  disciplinas, loading, onConfirm, answers, onSetAnswers,
+  disciplinas, loading, editalNotFound, cargoNome, onConfirm, answers, onSetAnswers,
 }: {
   disciplinas: Disciplina[];
   loading: boolean;
+  editalNotFound: boolean;
+  cargoNome?: string;
   onConfirm: (sel: Map<string, SelectedDisciplina>) => void;
   answers: Answers;
   onSetAnswers: React.Dispatch<React.SetStateAction<Answers>>;
@@ -1305,6 +1350,12 @@ function DisciplinasPicker({
 
   return (
     <div className="max-w-[680px] space-y-5">
+      {editalNotFound && (
+        <div className="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2">
+          Não encontrei um edital correspondente ao cargo &ldquo;{cargoNome ?? '?'}&rdquo;.
+          Mostrando suas disciplinas locais.
+        </div>
+      )}
       <div className="flex items-center justify-between text-[12px]">
         <span className="text-slate-500 uppercase tracking-[0.14em] text-[10px]">
           <span className="text-slate-100 font-semibold tabular-nums">{sel.size}</span> selecionada
