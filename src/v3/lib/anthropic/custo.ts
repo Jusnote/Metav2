@@ -2,6 +2,7 @@
 // Ref: public/PLANO COACHING/plano/05-prompts-ia.md (seção "Custo estimado")
 
 import { createServerClient } from '@/v3/lib/supabase/server'
+import type { Json } from '@/v3/types/database'
 
 // Preços públicos Anthropic claude-sonnet-4-5 (USD por 1M tokens) — set/2025
 // Input: $3 / 1M | Output: $15 / 1M
@@ -55,7 +56,7 @@ export async function registrarEventoIaCall(payload: IaCallEventPayload): Promis
     const supabase = createServerClient()
     const { error } = await supabase.from('eventos').insert({
       tipo: 'ia_call',
-      payload: payload as unknown as Record<string, unknown>,
+      payload: payload as unknown as Json,
     })
     if (error) {
       console.warn('[v3/custo] Falha ao registrar evento ia_call:', error.message)

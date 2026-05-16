@@ -287,7 +287,27 @@ export function ArvoreEditor({ concurso: initialConcurso }: Props) {
               topico={topicoSel}
               onSalvar={async (patch) => {
                 patchTopico(topicoSel.id, patch)
-                await atualizarTopicoAction({ topicoId: topicoSel.id, ...patch })
+                // Sanitiza: cast natureza para enum + remove nullables
+                const { natureza, tipo_revisao, observacao, ...rest } = patch
+                await atualizarTopicoAction({
+                  topicoId: topicoSel.id,
+                  ...rest,
+                  ...(natureza !== undefined && {
+                    natureza: natureza as
+                      | 'doutrina'
+                      | 'doutrina_pratica'
+                      | 'pratica'
+                      | 'pratica_intensiva'
+                      | 'lei_seca'
+                      | 'lei_seca_mais_doutrina'
+                      | 'jurisprudencia'
+                      | 'misto',
+                  }),
+                  ...(tipo_revisao !== undefined &&
+                    tipo_revisao !== null && { tipo_revisao }),
+                  ...(observacao !== undefined &&
+                    observacao !== null && { observacao }),
+                })
               }}
               onSalvarSubtopico={async (sId, patch) => {
                 // Otimista

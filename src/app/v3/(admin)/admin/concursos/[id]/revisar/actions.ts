@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createServerClient } from '@/v3/lib/supabase/server'
 import { NaturezaEnum } from '@/v3/lib/anthropic/schemas'
+import type { Json } from '@/v3/types/database'
 
 // ---------------------------------------------------------------------------
 // Atualizar tópico
@@ -151,10 +152,10 @@ export async function reordenarTopicosAction(
   // sanity check — os IDs realmente são do mesmo bloco?
   await supabase.from('eventos').insert({
     tipo: 'arvore_reordenada',
-    payload: { bloco_id: parsed.data.blocoId, count: ids.length } as unknown as Record<
-      string,
-      unknown
-    >,
+    payload: {
+      bloco_id: parsed.data.blocoId,
+      count: ids.length,
+    } as unknown as Json,
   })
 
   return { ok: true }
@@ -211,7 +212,7 @@ export async function publicarConcursoAction(
 
   await supabase.from('eventos').insert({
     tipo: 'concurso_publicado',
-    payload: { concurso_id: concursoId } as unknown as Record<string, unknown>,
+    payload: { concurso_id: concursoId } as unknown as Json,
   })
 
   revalidatePath('/v3/admin/concursos')

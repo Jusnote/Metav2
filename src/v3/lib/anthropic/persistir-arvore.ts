@@ -2,6 +2,7 @@
 // Ref: doc 04 (schema do banco) — usa client com service role e schema coaching
 
 import { createServerClient } from '@/v3/lib/supabase/server'
+import type { Json } from '@/v3/types/database'
 import type { DisciplinaEstruturada } from './schemas'
 
 interface PersistirArvoreParams {
@@ -43,7 +44,7 @@ export async function persistirArvoreEdital(
         horas_totais: d.horas_totais_sugeridas,
         nivel: d.nivel,
         ordem: dIdx + 1,
-        observacoes_globais: d.observacoes_globais as unknown as Record<string, unknown>,
+        observacoes_globais: d.observacoes_globais as unknown as Json,
       })
       .select('id')
       .single()

@@ -39,7 +39,10 @@ export function NovoConcursoForm() {
   const [erro, setErro] = useState<string | null>(null)
   const [statusProcessamento, setStatusProcessamento] = useState<string | null>(null)
 
-  const step1Valido = step1.nome.trim().length >= 3 && step1.banca && step1.cargo.trim().length >= 2
+  const step1Valido =
+    step1.nome.trim().length >= 3 &&
+    step1.banca.length > 0 &&
+    step1.cargo.trim().length >= 2
   const step2Valido = textoEdital.trim().length >= 200
 
   function handleContinuarStep1() {

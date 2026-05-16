@@ -10,6 +10,7 @@ import { processarEdital, type ContextoConcurso } from '@/v3/lib/anthropic/parse
 import { persistirArvoreEdital } from '@/v3/lib/anthropic/persistir-arvore'
 import { createServerClient } from '@/v3/lib/supabase/server'
 import { IAResponseError } from '@/v3/lib/anthropic/schemas'
+import type { Json } from '@/v3/types/database'
 
 // ---------------------------------------------------------------------------
 // Schemas de input
@@ -155,7 +156,7 @@ export async function processarEditalAction(
       totais,
       custo: resultado.custoTotal,
       alertas_count: resultado.alertasGerais.length,
-    } as unknown as Record<string, unknown>,
+    } as unknown as Json,
   })
 
   revalidatePath('/v3/admin/concursos')
