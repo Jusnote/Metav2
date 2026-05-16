@@ -159,7 +159,7 @@ Conforme doc 10:
 2. Setup folder structure em `src/v3/` (ver doc 02-arquitetura.md)
 3. Configurar Anthropic SDK direto (não Vercel AI SDK) — `@anthropic-ai/sdk`
 4. Instalar dependências novas: `@dnd-kit/core`, `recharts`, `@tanstack/react-table`, `react-hook-form`, `zod`, `zustand`
-5. Tiptap v2 já estará disponível (instalar se não tiver)
+5. **Plate** já está integrado e mantido — Tiptap NÃO entra no escopo
 6. Config Tailwind com tokens do doc 03-design-system.md
 7. Validar: pnpm dev roda sem erro, página inicial renderiza com background `--bg-canvas`
 
@@ -171,7 +171,7 @@ Conforme doc 10:
 
 1. ✅ Catálogo de concursos próprio (admin gerencia, abandona dependência do GraphQL externo pro core)
 2. ✅ Reescrita total (Sub-plans 1-5.6 viram legado, V3 começa limpo)
-3. ✅ Tiptap pra conteúdos admin (substitui Plate)
+3. ❌ Tiptap **revertido em 2026-05-16** — V3 mantém **Plate** (já integrado: editor-kit, floating-toolbar-kit, slash-kit, ai-kit). Plate é Slate-based, performance suficiente pra docs pequenos (1-3K palavras por subtópico). Economiza 30-50h de re-integração. Tiptap volta a ser considerado se collaborative editing real-time virar requisito (V5+).
 4. ⚠️ API questões externa: contrato ainda precisa ser descoberto na Fase 2.5 — bloqueia FSRS de cronograma (Fase 6) até resolver
 5. ✅ Tabela `alunos` separada de `auth.users` (role + horas_por_dia + horario_pico)
 6. ✅ Coexistência V2 (legado, congelado) + V3 (novo, ativo) durante desenvolvimento
