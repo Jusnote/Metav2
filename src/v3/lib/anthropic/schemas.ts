@@ -95,16 +95,26 @@ export type HorasDisciplina = z.infer<typeof HorasDisciplinaSchema>
 // ---------------------------------------------------------------------------
 
 export class IAResponseError extends Error {
+  // Campos públicos sem parameter properties (compatível com node --experimental-strip-types)
+  public etapa: 'dividir' | 'estimar' | 'estruturar'
+  public raw: string
+  public causa: unknown
+  public disciplina?: string
+
   constructor(
-    public etapa: 'dividir' | 'estimar' | 'estruturar',
-    public raw: string,
-    public causa: unknown,
-    public disciplina?: string,
+    etapa: 'dividir' | 'estimar' | 'estruturar',
+    raw: string,
+    causa: unknown,
+    disciplina?: string,
   ) {
     const sufixo = disciplina ? ` (disciplina: ${disciplina})` : ''
     super(
       `Falha na etapa "${etapa}"${sufixo}: ${causa instanceof Error ? causa.message : String(causa)}`,
     )
     this.name = 'IAResponseError'
+    this.etapa = etapa
+    this.raw = raw
+    this.causa = causa
+    this.disciplina = disciplina
   }
 }
