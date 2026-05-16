@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react'
 import { OriginBadge } from './OriginBadge'
+import { SubtopicoLengthWarning } from './SubtopicoLengthWarning'
 import type { SubtopicoDecomposed } from '@/lib/cronograma-v2/schemas'
 
 export function SubtopicoRow({
@@ -11,34 +12,45 @@ export function SubtopicoRow({
   onDelete: () => void
 }) {
   return (
-    <div className="flex items-center gap-2 py-1.5 px-3 hover:bg-slate-50 rounded-lg">
-      <OriginBadge origin={sub.origin ?? 'ai'} />
-      <input
-        type="text"
-        value={sub.nome}
-        disabled={readOnly}
-        onChange={(e) => onChange({ ...sub, nome: e.target.value })}
-        className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:bg-white focus:px-2 focus:rounded disabled:cursor-not-allowed"
-      />
-      <input
-        type="number"
-        value={sub.duracao_min}
-        disabled={readOnly}
-        min={15} max={120}
-        onChange={(e) => onChange({ ...sub, duracao_min: Number(e.target.value) || 45 })}
-        className="w-16 text-xs text-right bg-transparent border-none focus:outline-none focus:bg-white focus:rounded disabled:cursor-not-allowed"
-      />
-      <span className="text-[10px] text-slate-400">min</span>
-      {!readOnly && (
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-slate-300 hover:text-rose-500 transition"
-          title="Remover"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      )}
+    <div className="py-1.5 px-3 hover:bg-slate-50 rounded-lg space-y-1">
+      <div className="flex items-center gap-2">
+        <OriginBadge origin={sub.origin ?? 'ai'} />
+        <input
+          type="text"
+          value={sub.nome}
+          disabled={readOnly}
+          onChange={(e) => onChange({ ...sub, nome: e.target.value })}
+          className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:bg-white focus:px-2 focus:rounded disabled:cursor-not-allowed"
+          maxLength={80}
+        />
+        <SubtopicoLengthWarning length={sub.nome.length} />
+        <input
+          type="number"
+          value={sub.duracao_min}
+          disabled={readOnly}
+          min={15} max={120}
+          onChange={(e) => onChange({ ...sub, duracao_min: Number(e.target.value) || 45 })}
+          className="w-16 text-xs text-right bg-transparent border-none focus:outline-none focus:bg-white focus:rounded disabled:cursor-not-allowed"
+        />
+        <span className="text-[10px] text-slate-400">min</span>
+        {!readOnly && (
+          <button type="button" onClick={onDelete} className="text-slate-300 hover:text-rose-500" title="Remover">
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+      <div className="flex items-center gap-1.5 pl-5">
+        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">contexto</span>
+        <input
+          type="text"
+          value={sub.conceito_pai}
+          disabled={readOnly}
+          placeholder="ex: Licitações"
+          onChange={(e) => onChange({ ...sub, conceito_pai: e.target.value })}
+          className="flex-1 text-[11px] text-slate-500 bg-transparent border-none focus:outline-none focus:bg-white focus:px-1.5 focus:rounded focus:text-slate-700 disabled:cursor-not-allowed"
+          maxLength={80}
+        />
+      </div>
     </div>
   )
 }
