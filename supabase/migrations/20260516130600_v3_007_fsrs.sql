@@ -1,10 +1,11 @@
 -- V3 Migration 007 — FSRS: cards e log de revisões
 -- Refs: doc 04 (schema), doc 10 (fase 1)
+-- REESCRITO: tabelas em coaching.*
 
-CREATE TABLE fsrs_cards (
+CREATE TABLE coaching.fsrs_cards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  aluno_id UUID NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
-  subtopico_id UUID NOT NULL REFERENCES subtopicos(id) ON DELETE CASCADE,
+  aluno_id UUID NOT NULL REFERENCES coaching.alunos(id) ON DELETE CASCADE,
+  subtopico_id UUID NOT NULL REFERENCES coaching.subtopicos(id) ON DELETE CASCADE,
   difficulty NUMERIC(8,4) NOT NULL,
   stability NUMERIC(8,4) NOT NULL,
   retrievability NUMERIC(8,4),
@@ -20,18 +21,18 @@ CREATE TABLE fsrs_cards (
   UNIQUE(aluno_id, subtopico_id)
 );
 
-CREATE INDEX idx_fsrs_due ON fsrs_cards(aluno_id, due_date);
-CREATE INDEX idx_fsrs_state ON fsrs_cards(aluno_id, state);
-CREATE INDEX idx_fsrs_retrievability ON fsrs_cards(aluno_id, retrievability) WHERE retrievability IS NOT NULL;
+CREATE INDEX idx_fsrs_due ON coaching.fsrs_cards(aluno_id, due_date);
+CREATE INDEX idx_fsrs_state ON coaching.fsrs_cards(aluno_id, state);
+CREATE INDEX idx_fsrs_retrievability ON coaching.fsrs_cards(aluno_id, retrievability) WHERE retrievability IS NOT NULL;
 
 CREATE TRIGGER trg_fsrs_cards_atualizado
-  BEFORE UPDATE ON fsrs_cards
-  FOR EACH ROW EXECUTE FUNCTION update_atualizado_em();
+  BEFORE UPDATE ON coaching.fsrs_cards
+  FOR EACH ROW EXECUTE FUNCTION coaching.update_atualizado_em();
 
-CREATE TABLE fsrs_reviews_log (
+CREATE TABLE coaching.fsrs_reviews_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  card_id UUID NOT NULL REFERENCES fsrs_cards(id) ON DELETE CASCADE,
-  aluno_id UUID NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+  card_id UUID NOT NULL REFERENCES coaching.fsrs_cards(id) ON DELETE CASCADE,
+  aluno_id UUID NOT NULL REFERENCES coaching.alunos(id) ON DELETE CASCADE,
   rating INT NOT NULL CHECK (rating BETWEEN 1 AND 4),
   acertos INT NOT NULL,
   total_questoes INT NOT NULL,
@@ -46,5 +47,5 @@ CREATE TABLE fsrs_reviews_log (
   revisado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_reviews_card ON fsrs_reviews_log(card_id, revisado_em DESC);
-CREATE INDEX idx_reviews_aluno ON fsrs_reviews_log(aluno_id, revisado_em DESC);
+CREATE INDEX idx_reviews_card ON coaching.fsrs_reviews_log(card_id, revisado_em DESC);
+CREATE INDEX idx_reviews_aluno ON coaching.fsrs_reviews_log(aluno_id, revisado_em DESC);

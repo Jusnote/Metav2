@@ -1,9 +1,10 @@
 -- V3 Migration 006 — Semanas e atividades
 -- Refs: doc 04 (schema), doc 10 (fase 1)
+-- REESCRITO: tabelas em coaching.*
 
-CREATE TABLE semanas (
+CREATE TABLE coaching.semanas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  aluno_id UUID NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+  aluno_id UUID NOT NULL REFERENCES coaching.alunos(id) ON DELETE CASCADE,
   numero INT NOT NULL,
   data_inicio DATE NOT NULL,
   data_fim DATE NOT NULL,
@@ -17,16 +18,16 @@ CREATE TABLE semanas (
   UNIQUE(aluno_id, numero)
 );
 
-CREATE INDEX idx_semanas_aluno_status ON semanas(aluno_id, status);
-CREATE INDEX idx_semanas_atual ON semanas(aluno_id) WHERE status = 'atual';
+CREATE INDEX idx_semanas_aluno_status ON coaching.semanas(aluno_id, status);
+CREATE INDEX idx_semanas_atual ON coaching.semanas(aluno_id) WHERE status = 'atual';
 
-CREATE TABLE atividades (
+CREATE TABLE coaching.atividades (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  semana_id UUID NOT NULL REFERENCES semanas(id) ON DELETE CASCADE,
-  aluno_id UUID NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
-  topico_id UUID REFERENCES topicos(id),
-  subtopico_id UUID REFERENCES subtopicos(id),
-  conteudo_id UUID REFERENCES conteudos(id),
+  semana_id UUID NOT NULL REFERENCES coaching.semanas(id) ON DELETE CASCADE,
+  aluno_id UUID NOT NULL REFERENCES coaching.alunos(id) ON DELETE CASCADE,
+  topico_id UUID REFERENCES coaching.topicos(id),
+  subtopico_id UUID REFERENCES coaching.subtopicos(id),
+  conteudo_id UUID REFERENCES coaching.conteudos(id),
   tipo TEXT NOT NULL CHECK (tipo IN (
     'teoria', 'questoes', 'lei_seca', 'resumo',
     'mapa_mental', 'revisao_fsrs', 'simulado'
@@ -46,7 +47,7 @@ CREATE TABLE atividades (
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_atividades_aluno_semana ON atividades(aluno_id, semana_id);
-CREATE INDEX idx_atividades_pendentes ON atividades(aluno_id, status) WHERE status = 'pendente';
-CREATE INDEX idx_atividades_fsrs_due ON atividades(aluno_id, origem) WHERE origem = 'fsrs_due';
-CREATE INDEX idx_atividades_topico ON atividades(topico_id, status);
+CREATE INDEX idx_atividades_aluno_semana ON coaching.atividades(aluno_id, semana_id);
+CREATE INDEX idx_atividades_pendentes ON coaching.atividades(aluno_id, status) WHERE status = 'pendente';
+CREATE INDEX idx_atividades_fsrs_due ON coaching.atividades(aluno_id, origem) WHERE origem = 'fsrs_due';
+CREATE INDEX idx_atividades_topico ON coaching.atividades(topico_id, status);
