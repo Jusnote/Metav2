@@ -1,1423 +1,473 @@
-import { useState, useEffect, useRef } from 'react';
-import { Calendar, Clock, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle, Pause, Square, Settings, X, FileText, HelpCircle } from 'lucide-react';
-import { DayWithProgress } from '../components/DayWithProgress';
-import { DayExceptionModal } from '../components/DayExceptionModal';
-import { ConflictAlert } from '../components/ConflictAlert';
-import { useTimer } from '../contexts/TimerContext';
-import { useScheduleItems } from '../hooks/useScheduleItems';
-import { useStudyConfig } from '../contexts/StudyConfigContext';
-import { useConflictDetection } from '../hooks/useConflictDetection';
-import { format, isSameDay, startOfMonth, getDaysInMonth, getDay } from 'date-fns';
+/**
+ * CronogramaPage — versão clean-slate sobre o schema novo.
+ *
+ * Composta por blocos minimalistas para evoluir com facilidade:
+ *  - useCronogramaActivo: plano + jornada
+ *  - useCronogramaWeek:  items + stats da semana selecionada
+ *  - useGerarCronograma: trigger do RPC de geração
+ *
+ * Mantém a navegação tradicional (`/cronograma`). O drawer (CronogramaSheet)
+ * continua sendo a vista resumida; esta página é a vista detalhada.
+ */
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Sparkles,
+} from 'lucide-react';
+import { useCronogramaActivo } from '@/hooks/useCronogramaActivo';
+import { useCronogramaWeek } from '@/hooks/useCronogramaWeek';
+import { useGerarCronograma } from '@/hooks/useGerarCronograma';
+import { ScheduleItemTitle } from '@/components/cronograma/ScheduleItemTitle';
+import type {
+  ScheduleItem,
+  ScheduleItemType,
+} from '@/types/cronograma';
 
-
-// Interface para tópicos agendados
-interface ScheduledTopic {
-  topicId: string;
-  originalDay: number;
-  currentDay: number;
-  scheduledDate?: Date;
-  movedAt?: Date;
-  topic: TopicData;
-}
-
-interface TopicData {
-  id: string;
-  title: string;
-  estimatedTime: string;
-  cardsCount: number;
-  status: string | null;
-  completed: boolean;
-  description: string;
-  subtopics: string[];
-}
-
-// Mock data organizado por dia
-const mockTopicsByDay = {
-  1: [
-    {
-      id: '1-1',
-      title: 'Introduction to Biochemistry',
-      estimatedTime: '25 min',
-      cardsCount: 12,
-      status: null,
-      completed: false,
-      description: 'Fundamentos básicos da bioquímica e metabolismo celular',
-      subtopics: [
-        'Estrutura molecular',
-        'Enzimas e catálise',
-        'Vias metabólicas',
-        'Regulação enzimática'
-      ]
-    },
-    {
-      id: '1-2',
-      title: 'Organic Chemistry Basics',
-      estimatedTime: '18 min',
-      cardsCount: 8,
-      status: 'Revisão',
-      completed: true,
-      description: 'Conceitos fundamentais de química orgânica',
-      subtopics: [
-        'Grupos funcionais',
-        'Isomeria',
-        'Reações orgânicas'
-      ]
-    }
-  ],
-  3: [
-    {
-      id: '3-1',
-      title: 'Physics: Mechanics Overview',
-      estimatedTime: '22 min',
-      cardsCount: 15,
-      status: null,
-      completed: false,
-      description: 'Princípios fundamentais da mecânica clássica',
-      subtopics: [
-        'Cinemática',
-        'Dinâmica',
-        'Energia e trabalho',
-        'Momento linear'
-      ]
-    },
-    {
-      id: '3-2',
-      title: 'Thermodynamics Introduction',
-      estimatedTime: '16 min',
-      cardsCount: 9,
-      status: 'Pré-teste',
-      completed: false,
-      description: 'Leis da termodinâmica e aplicações',
-      subtopics: [
-        'Primeira lei',
-        'Segunda lei',
-        'Entropia',
-        'Processos reversíveis'
-      ]
-    }
-  ],
-  21: [
-    {
-      id: '21-1',
-      title: 'RemNote MCAT Overview',
-      estimatedTime: '0 min',
-      cardsCount: 1,
-      status: null,
-      completed: false,
-      description: 'Visão geral do sistema RemNote para preparação do MCAT',
-      subtopics: [
-        'Introdução ao RemNote',
-        'Estrutura do MCAT',
-        'Estratégias de estudo'
-      ]
-    },
-    {
-      id: '21-2', 
-      title: 'Cell membrane overview',
-      estimatedTime: '19 min',
-      cardsCount: 6,
-      status: 'Pré-teste',
-      completed: false,
-      description: 'Estrutura e função das membranas celulares',
-      subtopics: [
-        'Composição da membrana',
-        'Modelo do mosaico fluido',
-        'Transporte através da membrana',
-        'Proteínas de membrana'
-      ]
-    },
-    {
-      id: '21-3',
-      title: 'Biological basis of behavior: The nervous system', 
-      estimatedTime: '13 min',
-      cardsCount: 15,
-      status: null,
-      completed: false,
-      description: 'Fundamentos neurobiológicos do comportamento',
-      subtopics: [
-        'Anatomia do sistema nervoso',
-        'Neurônios e sinapses',
-        'Neurotransmissores',
-        'Reflexos e comportamentos'
-      ]
-    },
-    {
-      id: '21-4',
-      title: 'Vectors and scalars',
-      estimatedTime: '3 min', 
-      cardsCount: 4,
-      status: null,
-      completed: false,
-      description: 'Conceitos fundamentais de vetores e escalares',
-      subtopics: [
-        'Definição de vetor',
-        'Definição de escalar',
-        'Operações com vetores'
-      ]
-    },
-    {
-      id: '21-5',
-      title: 'Acid/base equilibria',
-      estimatedTime: '12 min',
-      cardsCount: 14, 
-      status: null,
-      completed: false,
-      description: 'Equilíbrios ácido-base em sistemas químicos',
-      subtopics: [
-        'Teorias ácido-base',
-        'pH e pOH',
-        'Titulações',
-        'Sistemas tampão'
-      ]
-    },
-    {
-      id: '21-6',
-      title: 'Self-identity',
-      estimatedTime: '8 min',
-      cardsCount: 10,
-      status: null,
-      completed: false,
-      description: 'Desenvolvimento e conceitos de identidade pessoal',
-      subtopics: [
-        'Teoria da identidade',
-        'Desenvolvimento da personalidade',
-        'Fatores sociais'
-      ]
-    }
-  ],
-  24: [
-    {
-      id: '24-1',
-      title: 'Psychology: Learning and Memory',
-      estimatedTime: '20 min',
-      cardsCount: 11,
-      status: null,
-      completed: false,
-      description: 'Processos de aprendizagem e formação de memória',
-      subtopics: [
-        'Tipos de memória',
-        'Condicionamento',
-        'Neuroplasticidade',
-        'Esquecimento'
-      ]
-    }
-  ],
-  28: [
-    {
-      id: '28-1',
-      title: 'Genetics and Evolution',
-      estimatedTime: '30 min',
-      cardsCount: 20,
-      status: 'Revisão',
-      completed: false,
-      description: 'Princípios de genética e teoria evolutiva',
-      subtopics: [
-        'Leis de Mendel',
-        'Genética molecular',
-        'Seleção natural',
-        'Especiação',
-        'Genética de populações'
-      ]
-    },
-    {
-      id: '28-2',
-      title: 'Molecular Biology Techniques',
-      estimatedTime: '15 min',
-      cardsCount: 7,
-      status: null,
-      completed: true,
-      description: 'Técnicas laboratoriais em biologia molecular',
-      subtopics: [
-        'PCR',
-        'Eletroforese',
-        'Sequenciamento',
-        'Clonagem'
-      ]
-    }
-  ]
+const TYPE_LABEL: Record<ScheduleItemType, string> = {
+  estudo_inicial_p1: 'Teoria',
+  estudo_inicial_p2: 'Prática',
+  revisao: 'Revisão',
+  questoes: 'Questões',
+  flashcards: 'Flashcards',
+  simulado: 'Simulado',
+  lei_seca: 'Lei seca',
 };
 
-// Função para converter mock data para estrutura flexível
-const convertMockToScheduledTopics = (): ScheduledTopic[] => {
-  const scheduledTopics: ScheduledTopic[] = [];
-  
-  Object.entries(mockTopicsByDay).forEach(([day, topics]) => {
-    topics.forEach(topic => {
-      scheduledTopics.push({
-        topicId: topic.id,
-        originalDay: parseInt(day),
-        currentDay: parseInt(day),
-        topic: topic
-      });
-    });
-  });
-  
-  return scheduledTopics;
+const TYPE_TONE: Record<ScheduleItemType, string> = {
+  estudo_inicial_p1: 'bg-amber-100 text-amber-700 border-amber-200',
+  estudo_inicial_p2: 'bg-orange-100 text-orange-700 border-orange-200',
+  revisao: 'bg-blue-100 text-blue-700 border-blue-200',
+  questoes: 'bg-violet-100 text-violet-700 border-violet-200',
+  flashcards: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+  simulado: 'bg-rose-100 text-rose-700 border-rose-200',
+  lei_seca: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 };
+
+function formatMinutes(min: number | null | undefined): string {
+  if (!min || min <= 0) return '—';
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `${m}min`;
+  return `${h}h${String(m).padStart(2, '0')}`;
+}
+
+function groupByDay(items: ScheduleItem[]): Array<{ date: string; items: ScheduleItem[] }> {
+  const map = new Map<string, ScheduleItem[]>();
+  for (const item of items) {
+    const arr = map.get(item.scheduled_date) ?? [];
+    arr.push(item);
+    map.set(item.scheduled_date, arr);
+  }
+  return Array.from(map.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, items]) => ({ date, items }));
+}
+
+function formatDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+  const dayMonth = `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`;
+  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${dayMonth}`;
+}
 
 export default function CronogramaPage() {
-  const [selectedDay, setSelectedDay] = useState(() => new Date().getDate());
-  const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
-  const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set(['1-2', '28-2'])); // Alguns tópicos já completos para demo
-  const [completedSubtopics, setCompletedSubtopics] = useState<Set<string>>(new Set(['21-2-0', '21-2-1', '28-1-0', '28-1-2'])); // Formato: topicId-subtopicIndex
-
-  // Estados para reagendamento
-  const [scheduledTopics, setScheduledTopics] = useState<ScheduledTopic[]>(() => convertMockToScheduledTopics());
-  const [rescheduleMode, setRescheduleMode] = useState(false);
-  const [rescheduleModal, setRescheduleModal] = useState<{isOpen: boolean; topic: TopicData | null}>({
-    isOpen: false,
-    topic: null
-  });
-  const [rescheduleConflict, setRescheduleConflict] = useState<any>(null);
-  const [selectedRescheduleDay, setSelectedRescheduleDay] = useState<number | null>(null);
-  const [showRescheduleException, setShowRescheduleException] = useState(false);
-
-  // Estados para exceções de disponibilidade
-  const [exceptionModal, setExceptionModal] = useState<{ isOpen: boolean; date: Date | null }>({
-    isOpen: false,
-    date: null,
-  });
-
-  // Hook para buscar schedule_items das metas FSRS
-  const { items: scheduleItems, completeItem } = useScheduleItems();
-
-  // Hook para config de estudo (exceções de disponibilidade)
+  const navigate = useNavigate();
   const {
-    config,
-    getDailyHours,
-    setDayException,
-    removeDayException,
-    hasDayException,
-    getDayException,
-  } = useStudyConfig();
+    plano,
+    isLoading: planoLoading,
+    hasActivePlan,
+    totalWeeks,
+    currentWeek,
+    refresh: refreshPlano,
+  } = useCronogramaActivo();
 
-  // Hook para detecção de conflitos
-  const { checkConflict } = useConflictDetection();
-
-  // Hook do Timer Context - conditional to avoid SSR issues
-  const [timerContext, setTimerContext] = useState<{
-    getTotalTimeForSubtopic: (key: string) => number;
-    getActivityTime: (key: string, activity: 'documento' | 'flashcards' | 'questoes') => number;
-    startActivity: (key: string, type: 'documento' | 'flashcards' | 'questoes', name: string) => void;
-    timerState: any;
-  } | null>(null);
-
+  const [selectedWeek, setSelectedWeek] = useState<number>(1);
   useEffect(() => {
-    // Only initialize timer context on client side
-    if (typeof window !== 'undefined') {
-      try {
-        const timer = useTimer();
-        setTimerContext(timer);
-      } catch (error) {
-        // Fallback if TimerProvider is not available
-        setTimerContext({
-          getTotalTimeForSubtopic: () => 0,
-          getActivityTime: () => 0,
-          startActivity: () => {},
-          timerState: { isActive: false, currentActivity: '', currentSubtopicKey: '', currentActivityType: null, savedTime: 0 }
-        });
-      }
-    }
-  }, []);
+    setSelectedWeek(currentWeek);
+  }, [currentWeek]);
 
-  // Removido re-render em tempo real - subtópicos mostram apenas tempo salvo
-  
-  // Estados para timers manuais (mantidos para compatibilidade)
-  const [activeTimers, setActiveTimers] = useState<Set<string>>(new Set()); // IDs dos timers ativos
-  const [timeSpent, setTimeSpent] = useState<Record<string, number>>({}); // Tempo gasto em segundos
-  const intervalRefs = useRef<Record<string, NodeJS.Timeout>>({});
-  
-  // Estado para modal de detalhamento de tempo
-  const [timeBreakdownModal, setTimeBreakdownModal] = useState<{
-    isOpen: boolean;
-    subtopicKey: string | null;
-    subtopicName: string | null;
-  }>({
-    isOpen: false,
-    subtopicKey: null,
-    subtopicName: null
-  });
-  
-  // Funções de data
-  const currentDate = new Date();
-  const currentDay = currentDate.getDate();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-  
-  // Obter informações do mês atual
-  const monthNames = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-  
-  const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-  
-  const handleDayClick = (day: number) => {
-    setSelectedDay(day);
-    // Limpar expansões quando mudar de dia
-    setExpandedTopics(new Set());
-  };
-  
-  const toggleTopicExpansion = (topicId: string) => {
-    setExpandedTopics(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(topicId)) {
-        newSet.delete(topicId);
-      } else {
-        newSet.add(topicId);
-      }
-      return newSet;
-    });
-  };
-  
-  const toggleTopicCompletion = (topicId: string) => {
-    const topic = currentTopics.find(t => t.id === topicId);
-    if (!topic) return;
-    
-    setCompletedTopics(prev => {
-      const newSet = new Set(prev);
-      const wasCompleted = newSet.has(topicId);
-      
-      if (wasCompleted) {
-        // Se estava completo, desmarcar
-        newSet.delete(topicId);
-        // Também desmarcar todos os subtópicos
-        setCompletedSubtopics(prevSub => {
-          const newSubSet = new Set(prevSub);
-          topic.subtopics.forEach((_, index) => {
-            newSubSet.delete(`${topicId}-${index}`);
-          });
-          return newSubSet;
-        });
-      } else {
-        // Se não estava completo, marcar
-        newSet.add(topicId);
-        // Também marcar todos os subtópicos
-        setCompletedSubtopics(prevSub => {
-          const newSubSet = new Set(prevSub);
-          topic.subtopics.forEach((_, index) => {
-            newSubSet.add(`${topicId}-${index}`);
-          });
-          return newSubSet;
-        });
-      }
-      
-      return newSet;
-    });
-  };
-  
-  const toggleSubtopicCompletion = (topicId: string, subtopicIndex: number) => {
-    const subtopicKey = `${topicId}-${subtopicIndex}`;
-    setCompletedSubtopics(prev => {
-      const newSet = new Set(prev);
-      const wasCompleted = newSet.has(subtopicKey);
-      
-      if (wasCompleted) {
-        // Se estava completo, desmarcar subtópico
-        newSet.delete(subtopicKey);
-        // Também desmarcar o tópico principal (já que não está mais 100% completo)
-        setCompletedTopics(prevTopics => {
-          const newTopicSet = new Set(prevTopics);
-          newTopicSet.delete(topicId);
-          return newTopicSet;
-        });
-      } else {
-        // Se não estava completo, marcar subtópico
-        newSet.add(subtopicKey);
-        // Verificar se todos os subtópicos estão completos agora
-        const topic = currentTopics.find(t => t.id === topicId);
-        if (topic) {
-          const allSubtopicsCompleted = topic.subtopics.every((_, index) => 
-            index === subtopicIndex || newSet.has(`${topicId}-${index}`)
-          );
-          
-          // Se todos subtópicos estão completos, marcar tópico principal automaticamente
-          if (allSubtopicsCompleted) {
-            setCompletedTopics(prevTopics => {
-              const newTopicSet = new Set(prevTopics);
-              newTopicSet.add(topicId);
-              return newTopicSet;
-            });
-          }
-        }
-      }
-      
-      return newSet;
-    });
-  };
-  
-  const getSubtopicProgress = (topicId: string, subtopics: string[]) => {
-    const completedCount = subtopics.filter((_, index) => 
-      completedSubtopics.has(`${topicId}-${index}`)
-    ).length;
-    return { completed: completedCount, total: subtopics.length };
-  };
-  
-  const isTopicCompleteBySubtopics = (topicId: string, subtopics: string[]) => {
-    const { completed, total } = getSubtopicProgress(topicId, subtopics);
-    return completed === total && total > 0;
-  };
-  
-  // Calcular tempo total do tópico baseado nos subtópicos
-  const getTopicTotalTime = (topicId: string, subtopics: string[]) => {
-    return subtopics.reduce((total, _, index) => {
-      const subtopicKey = `${topicId}-${index}`;
-      const totalActivityTime = timerContext?.getTotalTimeForSubtopic(subtopicKey) || 0;
-      return total + totalActivityTime + (timeSpent[subtopicKey] || 0);
-    }, 0);
-  };
-  
-  // Funções do modal de breakdown
-  const openTimeBreakdown = (subtopicKey: string, subtopicName: string) => {
-    setTimeBreakdownModal({
-      isOpen: true,
-      subtopicKey,
-      subtopicName
-    });
-  };
+  const {
+    items,
+    stats,
+    isLoading: weekLoading,
+    toggleComplete,
+    refresh: refreshWeek,
+  } = useCronogramaWeek(plano?.id, selectedWeek);
 
-  const closeTimeBreakdown = () => {
-    setTimeBreakdownModal({
-      isOpen: false,
-      subtopicKey: null,
-      subtopicName: null
-    });
-  };
-  
-  // Calcular progresso real de cada dia usando nova estrutura
-  const calculateDayProgress = (day: number) => {
-    const dayTopics = getTopicsForDay(day);
-    if (dayTopics.length === 0) return 0;
-    
-    const completedCount = dayTopics.filter(topic => {
-      const isManuallyCompleted = completedTopics.has(topic.id);
-      const isAutoCompleted = isTopicCompleteBySubtopics(topic.id, topic.subtopics);
-      return isManuallyCompleted || isAutoCompleted;
-    }).length;
-    
-    return Math.round((completedCount / dayTopics.length) * 100);
-  };
-  
-  // Funções do timer
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-  
-  const startTimer = (id: string) => {
-    if (activeTimers.has(id)) return; // Já está rodando
-    
-    setActiveTimers(prev => new Set([...prev, id]));
-    
-    intervalRefs.current[id] = setInterval(() => {
-      setTimeSpent(prev => ({
-        ...prev,
-        [id]: (prev[id] || 0) + 1
-      }));
-    }, 1000);
-  };
-  
-  const pauseTimer = (id: string) => {
-    if (!activeTimers.has(id)) return; // Não está rodando
-    
-    setActiveTimers(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(id);
-      return newSet;
-    });
-    
-    if (intervalRefs.current[id]) {
-      clearInterval(intervalRefs.current[id]);
-      delete intervalRefs.current[id];
-    }
-  };
-  
-  const resetTimer = (id: string) => {
-    pauseTimer(id);
-    setTimeSpent(prev => ({
-      ...prev,
-      [id]: 0
-    }));
-  };
-  
-  const toggleTimer = (id: string) => {
-    if (activeTimers.has(id)) {
-      pauseTimer(id);
-    } else {
-      startTimer(id);
+  const { isGenerating, gerar, error: gerarError } = useGerarCronograma();
+
+  const grouped = useMemo(() => groupByDay(items), [items]);
+
+  const completedCount = items.filter((i) => i.status === 'concluido').length;
+  const completionPct = items.length > 0 ? Math.round((completedCount / items.length) * 100) : 0;
+
+  const handleGerar = async () => {
+    if (!plano?.id) return;
+    try {
+      await gerar(plano.id);
+      await refreshWeek();
+      await refreshPlano();
+    } catch {
+      // erro já capturado em gerarError
     }
   };
 
-  // Funções de reagendamento
-  const openRescheduleModal = (topic: TopicData) => {
-    setRescheduleModal({
-      isOpen: true,
-      topic: topic
-    });
-  };
-
-  const closeRescheduleModal = () => {
-    setRescheduleModal({
-      isOpen: false,
-      topic: null
-    });
-  };
-
-  const handleRescheduleDayClick = (topicId: string, topic: TopicData, newDay: number) => {
-    // Converter estimatedTime string para minutos (ex: "25 min" → 25)
-    const minutesMatch = topic.estimatedTime.match(/(\d+)\s*min/);
-    const durationMinutes = minutesMatch ? parseInt(minutesMatch[1]) : 90;
-
-    // Construir a data do novo dia
-    const newDate = new Date(currentYear, currentMonth, newDay);
-
-    // Verificar conflito no novo dia (excluindo o próprio item sendo movido)
-    const conflict = checkConflict(newDate, durationMinutes);
-
-    if (conflict.hasConflict) {
-      // Tem conflito - mostrar alerta e aguardar usuário resolver
-      setRescheduleConflict({ ...conflict, newDay, topicId, durationMinutes });
-      setSelectedRescheduleDay(newDay);
-    } else {
-      // Sem conflito - reagendar diretamente
-      rescheduleTopicToDay(topicId, newDay);
-    }
-  };
-
-  const rescheduleTopicToDay = (topicId: string, newDay: number) => {
-    setScheduledTopics(prev =>
-      prev.map(scheduledTopic =>
-        scheduledTopic.topicId === topicId
-          ? {
-              ...scheduledTopic,
-              currentDay: newDay,
-              movedAt: new Date()
-            }
-          : scheduledTopic
-      )
+  if (planoLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 text-slate-400 animate-spin" />
+      </div>
     );
-    setRescheduleConflict(null);
-    setSelectedRescheduleDay(null);
-    closeRescheduleModal();
-  };
+  }
 
-  const handleIncreaseRescheduleAvailability = () => {
-    setShowRescheduleException(true);
-  };
-
-  const handleSaveRescheduleException = async (hours: number, reason?: string) => {
-    if (!selectedRescheduleDay || !rescheduleConflict) return;
-
-    const date = new Date(currentYear, currentMonth, selectedRescheduleDay);
-    await setDayException(date, hours, reason);
-    setShowRescheduleException(false);
-
-    // Re-verificar conflito
-    const newConflict = checkConflict(date, rescheduleConflict.durationMinutes);
-
-    if (!newConflict.hasConflict) {
-      // Resolveu o conflito - reagendar
-      rescheduleTopicToDay(rescheduleConflict.topicId, selectedRescheduleDay);
-    } else {
-      // Ainda tem conflito - atualizar estado
-      setRescheduleConflict({ ...newConflict, ...rescheduleConflict });
-    }
-  };
-  
-  // Cleanup dos intervals quando componente desmonta
-  useEffect(() => {
-    return () => {
-      Object.values(intervalRefs.current).forEach(interval => {
-        if (interval) clearInterval(interval);
-      });
-    };
-  }, []);
-  
-  // Função para converter schedule_items em TopicData
-  const convertScheduleItemsToTopics = (day: number): TopicData[] => {
-    if (!scheduleItems || scheduleItems.length === 0) {
-      return [];
-    }
-
-    const selectedDate = new Date(currentYear, currentMonth, day);
-
-    const filtered = scheduleItems.filter(item => {
-      // IMPORTANTE: Parse de data local sem conversão UTC
-      const [year, month, dayNum] = item.scheduled_date.split('-').map(Number);
-      const itemDate = new Date(year, month - 1, dayNum); // month é 0-indexed
-
-      return isSameDay(itemDate, selectedDate);
-    });
-
-    return filtered.map(item => ({
-      id: `fsrs-${item.id}`,
-      title: item.title,
-      estimatedTime: `${item.estimated_duration || 20} min`,
-      cardsCount: 0, // TODO: vincular com flashcards reais
-      status: item.completed ? 'Concluído' : null,
-      completed: item.completed || false,
-      description: item.notes || `Revisão agendada - ${item.revision_type}`,
-      subtopics: [item.title], // Por enquanto, um subtópico com o mesmo nome
-    }));
-  };
-
-  // Função para obter tópicos do dia selecionado (manuais + FSRS)
-  const getTopicsForDay = (day: number): TopicData[] => {
-    const manualTopics = scheduledTopics
-      .filter(scheduledTopic => scheduledTopic.currentDay === day)
-      .map(scheduledTopic => scheduledTopic.topic);
-
-    const fsrsTopics = convertScheduleItemsToTopics(day);
-
-    return [...manualTopics, ...fsrsTopics];
-  };
-
-  // Calcular porcentagem de carga do dia (horas agendadas / horas disponíveis)
-  const calculateDayLoad = (day: number): number => {
-    const date = new Date(currentYear, currentMonth, day);
-    const availableHours = getDailyHours(date);
-
-    if (availableHours === 0) return 0; // Dia indisponível
-
-    const topics = getTopicsForDay(day);
-    const scheduledMinutes = topics.reduce((sum, topic) => {
-      const time = parseInt(topic.estimatedTime) || 0;
-      return sum + time;
-    }, 0);
-
-    const scheduledHours = scheduledMinutes / 60;
-    return (scheduledHours / availableHours) * 100;
-  };
-  
-  // Obter tópicos do dia selecionado
-  const currentTopics = getTopicsForDay(selectedDay);
-  
-  // Calcular estatísticas do dia atual
-  const totalTopics = currentTopics.length;
-  const completedCount = currentTopics.filter(topic => {
-    const isManuallyCompleted = completedTopics.has(topic.id);
-    const isAutoCompleted = isTopicCompleteBySubtopics(topic.id, topic.subtopics);
-    return isManuallyCompleted || isAutoCompleted;
-  }).length;
-  const totalTime = currentTopics.reduce((sum, topic) => {
-    const time = parseInt(topic.estimatedTime) || 0;
-    return sum + time;
-  }, 0);
-  const totalCards = currentTopics.reduce((sum, topic) => sum + topic.cardsCount, 0);
-
-  // Handlers para exceções de disponibilidade
-  const handleChangeAvailability = (day: number) => {
-    const date = new Date(currentYear, currentMonth, day);
-    setExceptionModal({ isOpen: true, date });
-  };
-
-  const handleSaveException = async (hours: number, reason?: string) => {
-    if (exceptionModal.date) {
-      await setDayException(exceptionModal.date, hours, reason);
-    }
-  };
+  if (!hasActivePlan || !plano) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <PageHeader plano={null} currentWeek={0} totalWeeks={0} />
+        <div className="max-w-3xl mx-auto px-6 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-8 py-12">
+            <Sparkles className="h-8 w-8 text-slate-400 mx-auto" />
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">
+              Nenhum plano de estudo ativo
+            </h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Crie um plano com data de início, data da prova e disciplinas para liberar
+              a geração automática do cronograma.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/cronograma/setup')}
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
+            >
+              <Calendar className="h-4 w-4" />
+              Criar plano
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-xs border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Calendar className="h-6 w-6 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Cronograma de Estudos</h1>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-slate-50">
+      <PageHeader plano={plano.nome} currentWeek={currentWeek} totalWeeks={totalWeeks} />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-4">
-        {/* Single unified container */}
-        <div className="bg-white rounded-lg shadow-xs border">
-          <div className="grid grid-cols-12">
-            
-            {/* Calendar Sidebar */}
-            <div className="col-span-12 lg:col-span-3 border-r border-gray-200 p-6">
-              {/* Date Info */}
-              <div className="mb-6">
-                <div className="text-2xl font-bold text-gray-900">
-                  {monthNames[currentMonth].substring(0, 3)} {selectedDay}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {new Date(currentYear, currentMonth, selectedDay).toLocaleDateString('pt-BR', { weekday: 'long' })}
-                </div>
-              </div>
-              
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                {monthNames[currentMonth]} de {currentYear}
-              </h2>
-              
-              {/* Simple Calendar Grid */}
-              <div className="space-y-2">
-                {/* Calendar Header */}
-                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500 mb-2">
-                  <div>Dom</div>
-                  <div>Seg</div>
-                  <div>Ter</div>
-                  <div>Qua</div>
-                  <div>Qui</div>
-                  <div>Sex</div>
-                  <div>Sáb</div>
-                </div>
-                
-                {/* Calendar Days */}
-                <div className="grid grid-cols-7 gap-1">
-                  {/* Dias vazios no início do mês */}
-                  {Array.from({ length: firstDayOfMonth }, (_, i) => (
-                    <DayWithProgress key={`empty-${i}`} day={0} progress={0} isEmpty />
-                  ))}
-                  
-                  {/* Dias do mês atual */}
-                  {Array.from({ length: daysInCurrentMonth }, (_, i) => {
-                    const day = i + 1;
-                    const date = new Date(currentYear, currentMonth, day);
-                    const hasException = hasDayException(date);
-                    const exception = getDayException(date);
-                    const loadPercentage = calculateDayLoad(day);
+      <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
+        <WeekPicker
+          totalWeeks={totalWeeks}
+          currentWeek={currentWeek}
+          selectedWeek={selectedWeek}
+          onSelect={setSelectedWeek}
+        />
 
-                    return (
-                      <DayWithProgress
-                        key={day}
-                        day={day}
-                        progress={calculateDayProgress(day)}
-                        isSelected={selectedDay === day}
-                        isToday={day === currentDay}
-                        onClick={() => handleDayClick(day)}
-                        hasException={hasException}
-                        exceptionHours={exception?.hours}
-                        loadPercentage={loadPercentage}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Botão de Reagendamento */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <button
-                  onClick={() => setRescheduleMode(!rescheduleMode)}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    rescheduleMode
-                      ? 'bg-blue-500 text-white hover:bg-blue-600'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Settings className="h-4 w-4" />
-                  {rescheduleMode ? 'Sair do Modo Reagendamento' : 'Reagendamento Manual'}
-                </button>
-                
-                {rescheduleMode && (
-                  <p className="text-xs text-gray-500 text-center mt-2">
-                    Clique no ícone de calendário nos tópicos para reagendar
-                  </p>
-                )}
-              </div>
-              
-            </div>
+        <SummaryRow
+          completed={completedCount}
+          total={items.length}
+          completionPct={
+            stats?.completion_pct != null ? Math.round(stats.completion_pct) : completionPct
+          }
+          minutesEstimated={stats?.minutes_estimated ?? null}
+          minutesActual={stats?.minutes_actual ?? null}
+          desempenhoPct={stats?.desempenho_pct ?? null}
+        />
 
-            {/* Topics List */}
-            <div className="col-span-12 lg:col-span-9 p-6">
-              
-              {/* Topics Header */}
-              <div className="mb-6 border-b pb-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-3">
-                    <span>{selectedDay} de {monthNames[currentMonth]}</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-sm font-normal text-gray-600 flex items-center gap-2">
-                      Disponibilidade: {(() => {
-                        const date = new Date(currentYear, currentMonth, selectedDay);
-                        const hours = getDailyHours(date);
-                        const hasException = hasDayException(date);
-                        return (
-                          <>
-                            {hours}h {hasException ? '(customizado)' : '(padrão)'}
-                            <button
-                              onClick={() => handleChangeAvailability(selectedDay)}
-                              className="text-gray-400 hover:text-blue-600 transition-colors"
-                              title="Personalizar disponibilidade deste dia"
-                            >
-                              <Settings className="h-4 w-4" />
-                            </button>
-                          </>
-                        );
-                      })()}
-                    </span>
-                  </h2>
-                </div>
-
-                <div className="mt-2 space-y-2">
-                  {totalTopics === 0 ? (
-                    <p className="text-sm text-gray-500 italic">
-                      Nenhum tópico programado para este dia
-                    </p>
-                  ) : (
-                    <>
-                      {/* Estatísticas do dia */}
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <BookOpen className="h-3 w-3" />
-                          {totalTopics} tópicos
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" />
-                          {completedCount}/{totalTopics} completos
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {totalTime} min
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {totalCards} cards
-                        </span>
-                      </div>
-                      
-                      {/* Barra de progresso */}
-                      <div className="w-full bg-gray-200 rounded-full h-1.5">
-                        <div 
-                          className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
-                          style={{ width: `${(completedCount / totalTopics) * 100}%` }}
-                        ></div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Topics List */}
-              <div className="space-y-1">
-                {currentTopics.map((topic) => {
-                  const isExpanded = expandedTopics.has(topic.id);
-                  const isManuallyCompleted = completedTopics.has(topic.id);
-                  const isAutoCompleted = isTopicCompleteBySubtopics(topic.id, topic.subtopics);
-                  const isCompleted = isManuallyCompleted || isAutoCompleted;
-                  const subtopicProgress = getSubtopicProgress(topic.id, topic.subtopics);
-                  
-                  return (
-                    <div key={topic.id}>
-                      {/* Container com borda quando expandido */}
-                      <div className={`${isExpanded ? 'border border-gray-200 rounded-lg bg-white shadow-xs overflow-hidden' : ''}`}>
-                        {/* Topic Header */}
-                        <div className={`flex items-center justify-between py-2 transition-colors px-2 ${
-                          isExpanded 
-                            ? 'bg-linear-to-r from-blue-50 to-indigo-50 border-b border-gray-100' 
-                            : 'hover:bg-gray-50 rounded-lg'
-                        }`}>
-                          {/* Topic Info */}
-                          <div className="flex items-center gap-3 flex-1">
-                            {/* Checkbox */}
-                            <button 
-                              onClick={() => toggleTopicCompletion(topic.id)}
-                              className={`w-5 h-5 border-2 rounded-full flex items-center justify-center transition-all ${
-                                isCompleted 
-                                  ? 'border-green-500 bg-green-500' 
-                                  : 'border-gray-300 hover:border-green-400'
-                              }`}
-                            >
-                              {isCompleted && (
-                                <CheckCircle className="h-4 w-4 text-white" />
-                              )}
-                            </button>
-                            
-                            {/* Topic Title */}
-                            <div className="flex-1">
-                              <h3 className={`font-medium transition-all ${
-                                isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
-                              }`}>
-                                {topic.title}
-                              </h3>
-                              {topic.status && (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-1">
-                                  🧠 {topic.status}
-                                </span>
-                              )}
-                            </div>
-                            
-                            {/* Ícone de Reagendamento */}
-                            {rescheduleMode && (
-                              <button
-                                onClick={() => openRescheduleModal(topic)}
-                                className="flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                title="Reagendar tópico"
-                              >
-                                <Calendar className="h-4 w-4" />
-                              </button>
-                            )}
-                          </div>
-
-                        {/* Topic Stats */}
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          {/* Time Info */}
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            <span className="text-xs text-gray-500">Estimado:</span>
-                            <span>{topic.estimatedTime}</span>
-                            <span className="text-gray-400">|</span>
-                            <span className="text-xs text-gray-500">Total:</span>
-                            <div className={`px-2 py-1 rounded-md text-xs font-mono ${
-                              getTopicTotalTime(topic.id, topic.subtopics) > 0 
-                                ? 'bg-blue-100 text-blue-700'
-                                : 'bg-gray-100 text-gray-600'
-                            }`}>
-                              <span>{formatTime(getTopicTotalTime(topic.id, topic.subtopics))}</span>
-                            </div>
-                          </div>
-                          
-                          {/* Cards Count */}
-                          <div className="flex items-center gap-1">
-                            <BookOpen className="h-4 w-4" />
-                            <span>{topic.cardsCount}</span>
-                          </div>
-                          
-                          {/* Expand Button */}
-                          <button 
-                            onClick={() => toggleTopicExpansion(topic.id)}
-                            className="p-1 hover:bg-gray-100 rounded transition-colors"
-                          >
-                            {isExpanded ? (
-                              <ChevronDown className="h-4 w-4" />
-                            ) : (
-                              <ChevronRight className="h-4 w-4" />
-                            )}
-                          </button>
-                        </div>
-                        </div>
-
-                        {/* Expanded Content */}
-                        {isExpanded && (
-                          <div className="p-4 space-y-4">
-                            {/* Description */}
-                            <div>
-                              <p className="text-sm text-gray-700 leading-relaxed">{topic.description}</p>
-                            </div>
-                            
-                            {/* Subtopics */}
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Subtópicos</h5>
-                                <div className="flex items-center gap-2 text-xs text-gray-500">
-                                  <span>{subtopicProgress.completed}/{subtopicProgress.total} concluídos</span>
-                                  <div className="w-16 bg-gray-200 rounded-full h-1">
-                                    <div 
-                                      className="bg-blue-500 h-1 rounded-full transition-all duration-300" 
-                                      style={{ width: `${subtopicProgress.total > 0 ? (subtopicProgress.completed / subtopicProgress.total) * 100 : 0}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="grid gap-2">
-                                {topic.subtopics.map((subtopic, index) => {
-                                  const subtopicKey = `${topic.id}-${index}`;
-                                  const isSubtopicCompleted = completedSubtopics.has(subtopicKey);
-                                  
-                                  return (
-                                    <div 
-                                      key={index} 
-                                      className={`group flex items-center gap-3 p-2 rounded-md transition-colors ${
-                                        isSubtopicCompleted ? 'bg-green-50 border border-green-200' : 'bg-gray-50 hover:bg-gray-100'
-                                      }`}
-                                    >
-                                      {/* Checkbox do subtópico */}
-                                      <button
-                                        onClick={() => toggleSubtopicCompletion(topic.id, index)}
-                                        className={`shrink-0 w-5 h-5 border-2 rounded-full flex items-center justify-center transition-all ${
-                                          isSubtopicCompleted
-                                            ? 'border-green-500 bg-green-500'
-                                            : 'border-gray-300 hover:border-green-400'
-                                        }`}
-                                      >
-                                        {isSubtopicCompleted && (
-                                          <CheckCircle className="h-3 w-3 text-white" />
-                                        )}
-                                      </button>
-                                      
-                                      {/* Número do subtópico */}
-                                      <div className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
-                                        isSubtopicCompleted ? 'bg-green-100' : 'bg-blue-100'
-                                      }`}>
-                                        <span className={`text-xs font-medium ${
-                                          isSubtopicCompleted ? 'text-green-600' : 'text-blue-600'
-                                        }`}>
-                                          {index + 1}
-                                        </span>
-                                      </div>
-                                      
-                                      {/* Nome do subtópico */}
-                                      <span className={`flex-1 text-sm transition-all ${
-                                        isSubtopicCompleted ? 'text-gray-600 line-through' : 'text-gray-700'
-                                      }`}>
-                                        {subtopic}
-                                      </span>
-                                      
-                                      {/* Botões de Acesso - Aparecem no Hover */}
-                                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <button
-                                          onClick={() => {
-                                            timerContext?.startActivity(subtopicKey, 'documento', `📄 ${subtopic} - Documento`);
-                                            // TODO: Navegar para página do documento
-                                            // Abrindo documento do subtópico
-                                          }}
-                                          className="p-1 hover:bg-white hover:shadow-xs rounded transition-colors"
-                                          title="Abrir documento"
-                                        >
-                                          <FileText className="h-4 w-4 text-blue-600" />
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            timerContext?.startActivity(subtopicKey, 'flashcards', `🃏 ${subtopic} - Flashcards`);
-                                            // TODO: Navegar para página de flashcards
-                                            // Abrindo flashcards do subtópico
-                                          }}
-                                          className="p-1 hover:bg-white hover:shadow-xs rounded transition-colors"
-                                          title="Estudar flashcards"
-                                        >
-                                          <BookOpen className="h-4 w-4 text-green-600" />
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            timerContext?.startActivity(subtopicKey, 'questoes', `❓ ${subtopic} - Questões`);
-                                            // TODO: Navegar para página de questões
-                                            // Abrindo questões do subtópico
-                                          }}
-                                          className="p-1 hover:bg-white hover:shadow-xs rounded transition-colors"
-                                          title="Resolver questões"
-                                        >
-                                          <HelpCircle className="h-4 w-4 text-purple-600" />
-                                        </button>
-                                      </div>
-                                      
-                                      {/* Timer do Subtópico */}
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          onClick={() => openTimeBreakdown(subtopicKey, subtopic)}
-                                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono hover:ring-2 hover:ring-blue-200 transition-all ${
-                                            timerContext?.timerState?.isActive && timerContext?.timerState?.currentSubtopicKey === subtopicKey
-                                            ? 'bg-green-100 text-green-700' 
-                                              : (timeSpent[subtopicKey] > 0 || (timerContext?.getTotalTimeForSubtopic(subtopicKey) || 0) > 0)
-                                              ? 'bg-blue-100 text-blue-700'
-                                              : 'bg-gray-100 text-gray-500'
-                                          }`}
-                                          title="Ver detalhamento do tempo"
-                                        >
-                                     <span>{formatTime(
-                                       (timeSpent[subtopicKey] || 0) + (timerContext?.getTotalTimeForSubtopic(subtopicKey) || 0)
-                                     )}</span>
-                                        </button>
-                                        
-                                        <div className="flex items-center gap-1">
-                                          <button
-                                            onClick={() => toggleTimer(subtopicKey)}
-                                            className={`p-1 rounded transition-colors ${
-                                              activeTimers.has(subtopicKey)
-                                                ? 'text-orange-600 hover:bg-orange-50'
-                                                : 'text-green-600 hover:bg-green-50'
-                                            }`}
-                                            title={activeTimers.has(subtopicKey) ? 'Pausar timer' : 'Iniciar timer'}
-                                          >
-                                            {activeTimers.has(subtopicKey) ? (
-                                              <Pause className="h-3 w-3" />
-                                            ) : (
-                                              <Play className="h-3 w-3" />
-                                            )}
-                                          </button>
-                                          
-                                          {timeSpent[subtopicKey] > 0 && (
-                                            <button
-                                              onClick={() => resetTimer(subtopicKey)}
-                                              className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                                              title="Resetar timer"
-                                            >
-                                              <Square className="h-3 w-3" />
-                                            </button>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                            
-                            {/* Action Buttons */}
-                            <div className="flex gap-2 pt-2 border-t border-gray-100">
-                              <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors shadow-xs">
-                                <Play className="h-4 w-4" />
-                                Iniciar Estudo
-                              </button>
-                              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors">
-                                <BookOpen className="h-4 w-4" />
-                                Ver Flashcards
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal de Reagendamento */}
-      {rescheduleModal.isOpen && rescheduleModal.topic && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            {/* Header do Modal */}
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Reagendar Tópico
-              </h3>
-              <button
-                onClick={closeRescheduleModal}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-400" />
-              </button>
-            </div>
-
-            {/* Informações do Tópico */}
-            <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900">{rescheduleModal.topic.title}</h4>
-              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {rescheduleModal.topic.estimatedTime}
-                </span>
-                <span className="flex items-center gap-1">
-                  <BookOpen className="h-3 w-3" />
-                  {rescheduleModal.topic.cardsCount} cards
-                </span>
-              </div>
-            </div>
-
-            {/* Seletor de Dia */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Selecione o novo dia:
-              </label>
-              
-              <div className="grid grid-cols-7 gap-2">
-                {/* Cabeçalho dos dias da semana */}
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Dom</div>
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Seg</div>
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Ter</div>
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Qua</div>
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Qui</div>
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Sex</div>
-                <div className="text-xs font-medium text-gray-500 text-center py-1">Sáb</div>
-                
-                {/* Dias vazios no início do mês no modal */}
-                {Array.from({ length: firstDayOfMonth }, (_, i) => (
-                  <div key={`modal-empty-${i}`} className="h-8"></div>
-                ))}
-                
-                {/* Dias do mês atual no modal */}
-                {Array.from({ length: daysInCurrentMonth }, (_, i) => {
-                  const day = i + 1;
-                  const hasTopics = getTopicsForDay(day).length > 0;
-                  const currentTopicDay = scheduledTopics.find(st => st.topicId === rescheduleModal.topic?.id)?.currentDay;
-                  const isCurrentDay = day === currentTopicDay;
-                  const isSelectedForReschedule = selectedRescheduleDay === day;
-
-                  return (
-                    <button
-                      key={day}
-                      onClick={() => rescheduleModal.topic && handleRescheduleDayClick(rescheduleModal.topic.id, rescheduleModal.topic, day)}
-                      disabled={isCurrentDay}
-                      className={`
-                        h-8 text-xs font-medium rounded transition-colors
-                        ${isCurrentDay
-                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          : isSelectedForReschedule
-                            ? 'bg-red-100 text-red-800 border-2 border-red-400'
-                            : hasTopics
-                              ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                        }
-                      `}
-                      title={
-                        isCurrentDay
-                          ? 'Dia atual do tópico'
-                          : hasTopics
-                            ? `${getTopicsForDay(day).length} tópicos neste dia`
-                            : 'Dia disponível'
-                      }
-                    >
-                      {day}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Conflict Alert */}
-            {rescheduleConflict && selectedRescheduleDay && (
-              <ConflictAlert
-                conflict={rescheduleConflict}
-                date={new Date(currentYear, currentMonth, selectedRescheduleDay)}
-                onIncreaseAvailability={handleIncreaseRescheduleAvailability}
-                className="mb-4"
+        {items.length === 0 ? (
+          <EmptyWeek
+            isLoading={weekLoading}
+            isGenerating={isGenerating}
+            onGerar={handleGerar}
+            error={gerarError}
+          />
+        ) : (
+          <div className="space-y-6">
+            {grouped.map(({ date, items: dayItems }) => (
+              <DayGroup
+                key={date}
+                date={date}
+                items={dayItems}
+                onToggle={toggleComplete}
               />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PageHeader({
+  plano,
+  currentWeek,
+  totalWeeks,
+}: {
+  plano: string | null;
+  currentWeek: number;
+  totalWeeks: number;
+}) {
+  return (
+    <div className="bg-white border-b border-slate-200">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Calendar className="h-6 w-6 text-blue-600" />
+          <div>
+            <h1 className="text-xl font-bold text-slate-900 leading-tight">
+              Cronograma de Estudos
+            </h1>
+            {plano && (
+              <p className="text-xs text-slate-500 tabular-nums">
+                {plano} · Semana {currentWeek} de {totalWeeks}
+              </p>
             )}
-
-            {/* Botões de Ação */}
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={closeRescheduleModal}
-                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Cancelar
-              </button>
-            </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
 
-      {selectedRescheduleDay && (
-        <DayExceptionModal
-          open={showRescheduleException}
-          onOpenChange={setShowRescheduleException}
-          date={new Date(currentYear, currentMonth, selectedRescheduleDay)}
-          currentHours={getDailyHours(new Date(currentYear, currentMonth, selectedRescheduleDay))}
-          defaultHours={getDailyHours(new Date(currentYear, currentMonth, selectedRescheduleDay))}
-          hasException={hasDayException(new Date(currentYear, currentMonth, selectedRescheduleDay))}
-          onSave={handleSaveRescheduleException}
-          onRemove={async () => {
-            // Não implementado aqui
-          }}
-        />
-      )}
-
-      {/* Modal de Detalhamento de Tempo */}
-      {timeBreakdownModal.isOpen && timeBreakdownModal.subtopicKey && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            {/* Header do Modal */}
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Tempo por Atividade
-              </h3>
-              <button
-                onClick={closeTimeBreakdown}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-              >
-                <X className="h-5 w-5 text-gray-400" />
-              </button>
-            </div>
-
-            {/* Nome do Subtópico */}
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900">{timeBreakdownModal.subtopicName}</h4>
-            </div>
-
-            {/* Breakdown do Tempo */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-blue-50">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-900">Documento</span>
-                </div>
-                <span className="text-sm font-mono text-blue-700">
-                  {formatTime(timerContext?.getActivityTime(timeBreakdownModal.subtopicKey, 'documento') || 0)}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-green-50">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-900">Flashcards</span>
-                </div>
-                <span className="text-sm font-mono text-green-700">
-                  {formatTime(timerContext?.getActivityTime(timeBreakdownModal.subtopicKey, 'flashcards') || 0)}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-purple-50">
-                <div className="flex items-center gap-2">
-                  <HelpCircle className="h-4 w-4 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-900">Questões</span>
-                </div>
-                <span className="text-sm font-mono text-purple-700">
-                  {formatTime(timerContext?.getActivityTime(timeBreakdownModal.subtopicKey, 'questoes') || 0)}
-                </span>
-              </div>
-              
-              {/* Timer Manual */}
-              {timeSpent[timeBreakdownModal.subtopicKey] > 0 && (
-                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm font-medium text-gray-900">Timer Manual</span>
-                  </div>
-                  <span className="text-sm font-mono text-gray-700">
-                    {formatTime(timeSpent[timeBreakdownModal.subtopicKey])}
-                  </span>
-                </div>
+function WeekPicker({
+  totalWeeks,
+  currentWeek,
+  selectedWeek,
+  onSelect,
+}: {
+  totalWeeks: number;
+  currentWeek: number;
+  selectedWeek: number;
+  onSelect: (n: number) => void;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 overflow-x-auto">
+      <div className="flex items-center gap-1.5 min-w-max">
+        {Array.from({ length: totalWeeks }, (_, i) => {
+          const w = i + 1;
+          const isSelected = w === selectedWeek;
+          const isCurrent = w === currentWeek;
+          return (
+            <button
+              key={w}
+              type="button"
+              onClick={() => onSelect(w)}
+              className={`h-8 min-w-[36px] px-2 rounded-md text-[12px] font-medium tabular-nums transition ${
+                isSelected
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : isCurrent
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              {w}
+              {isCurrent && !isSelected && (
+                <span className="ml-1 text-[9px] text-emerald-600">·</span>
               )}
-            </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
-            {/* Tempo Total */}
-            <div className="border-t pt-4">
-              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-indigo-50">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-indigo-600" />
-                  <span className="font-semibold text-indigo-900">Total</span>
-                </div>
-                <span className="text-lg font-mono font-bold text-indigo-700">
-                  {formatTime((timeSpent[timeBreakdownModal.subtopicKey] || 0) + (timerContext?.getTotalTimeForSubtopic(timeBreakdownModal.subtopicKey) || 0))}
-                </span>
-              </div>
-            </div>
+function SummaryRow({
+  completed,
+  total,
+  completionPct,
+  minutesEstimated,
+  minutesActual,
+  desempenhoPct,
+}: {
+  completed: number;
+  total: number;
+  completionPct: number;
+  minutesEstimated: number | null;
+  minutesActual: number | null;
+  desempenhoPct: number | null;
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      <StatCard
+        label="Conclusão"
+        value={`${completionPct}%`}
+        sub={`${completed} de ${total}`}
+        tone="blue"
+      />
+      <StatCard
+        label="Tempo estimado"
+        value={formatMinutes(minutesEstimated)}
+        sub="esta semana"
+        tone="slate"
+      />
+      <StatCard
+        label="Tempo realizado"
+        value={formatMinutes(minutesActual)}
+        sub="esta semana"
+        tone="emerald"
+      />
+      <StatCard
+        label="Desempenho"
+        value={desempenhoPct != null ? `${Math.round(desempenhoPct)}%` : '—'}
+        sub="questões corretas"
+        tone="amber"
+      />
+    </div>
+  );
+}
 
-            {/* Botão de Fechar */}
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={closeTimeBreakdown}
-                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
+function StatCard({
+  label,
+  value,
+  sub,
+  tone,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  tone: 'blue' | 'emerald' | 'amber' | 'slate';
+}) {
+  const TONE = {
+    blue: 'text-blue-700',
+    emerald: 'text-emerald-700',
+    amber: 'text-amber-700',
+    slate: 'text-slate-700',
+  } as const;
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 px-4 py-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+        {label}
+      </div>
+      <div className={`mt-1 text-[22px] font-bold tabular-nums leading-none ${TONE[tone]}`}>
+        {value}
+      </div>
+      <div className="mt-1 text-[11px] text-slate-500">{sub}</div>
+    </div>
+  );
+}
+
+function EmptyWeek({
+  isLoading,
+  isGenerating,
+  onGerar,
+  error,
+}: {
+  isLoading: boolean;
+  isGenerating: boolean;
+  onGerar: () => void;
+  error: string | null;
+}) {
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+        <Loader2 className="h-5 w-5 text-slate-400 animate-spin mx-auto" />
+        <p className="mt-3 text-sm text-slate-500">Carregando atividades…</p>
+      </div>
+    );
+  }
+  return (
+    <div className="bg-white rounded-xl border border-dashed border-slate-300 px-6 py-12 text-center">
+      <Sparkles className="h-7 w-7 text-slate-400 mx-auto" />
+      <h3 className="mt-3 text-base font-semibold text-slate-900">
+        Nenhuma atividade nesta semana
+      </h3>
+      <p className="mt-1 text-sm text-slate-600">
+        Gere o cronograma completo do plano em um único passo. O sistema distribui as
+        disciplinas pelos dias respeitando sua disponibilidade.
+      </p>
+      <button
+        type="button"
+        onClick={onGerar}
+        disabled={isGenerating}
+        className="mt-5 inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
+      >
+        {isGenerating ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Gerando…
+          </>
+        ) : (
+          <>
+            <Sparkles className="h-4 w-4" />
+            Gerar cronograma
+          </>
+        )}
+      </button>
+      {error && (
+        <p className="mt-3 text-xs text-rose-600">Erro: {error}</p>
       )}
+    </div>
+  );
+}
 
-      {/* Modal de Exceção */}
-      {exceptionModal.isOpen && exceptionModal.date && (
-        <DayExceptionModal
-          open={exceptionModal.isOpen}
-          onOpenChange={(open) => setExceptionModal({ isOpen: open, date: null })}
-          date={exceptionModal.date}
-          currentHours={getDayException(exceptionModal.date)?.hours ?? getDailyHours(exceptionModal.date)}
-          defaultHours={(() => {
-            const dayOfWeek = exceptionModal.date.getDay();
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-            if (isWeekend) {
-              return config?.weekend_hours ?? 5;
-            }
-            return config?.weekday_hours ?? 3;
-          })()}
-          onSave={handleSaveException}
-          onRemove={() => removeDayException(exceptionModal.date!)}
-          hasException={hasDayException(exceptionModal.date)}
+function DayGroup({
+  date,
+  items,
+  onToggle,
+}: {
+  date: string;
+  items: ScheduleItem[];
+  onToggle: (id: string) => void;
+}) {
+  return (
+    <div>
+      <div className="px-1 mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+        {formatDate(date)}
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+        {items.map((item) => (
+          <ItemRow key={item.id} item={item} onToggle={onToggle} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ItemRow({
+  item,
+  onToggle,
+}: {
+  item: ScheduleItem;
+  onToggle: (id: string) => void;
+}) {
+  const done = item.status === 'concluido';
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition">
+      <button
+        type="button"
+        onClick={() => onToggle(item.id)}
+        aria-label={done ? 'Desmarcar concluído' : 'Marcar como concluído'}
+        className={`shrink-0 h-5 w-5 rounded-full border-2 flex items-center justify-center transition ${
+          done
+            ? 'bg-emerald-500 border-emerald-500'
+            : 'border-slate-300 hover:border-emerald-400'
+        }`}
+      >
+        {done && <CheckCircle2 className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+      </button>
+
+      <span
+        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-md border text-[10px] font-semibold ${TYPE_TONE[item.type]}`}
+      >
+        {TYPE_LABEL[item.type]}
+        {item.revision_number > 0 && ` ${item.revision_number}`}
+      </span>
+
+      <div className="flex-1 min-w-0">
+        <ScheduleItemTitle
+          conceitoPai={item.subtopicos?.conceito_pai}
+          nome={item.title}
+          size="default"
+          className={done ? 'opacity-50 line-through' : undefined}
         />
-      )}
+      </div>
+
+      <div className="shrink-0 flex items-center gap-1 text-[12px] text-slate-500 tabular-nums">
+        <Clock className="h-3.5 w-3.5" strokeWidth={1.8} />
+        {formatMinutes(item.estimated_duration_minutes)}
+      </div>
     </div>
   );
 }

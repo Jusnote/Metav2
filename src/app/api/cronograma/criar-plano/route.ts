@@ -222,10 +222,11 @@ export async function POST(req: NextRequest) {
               const decomposed = decomp[apiTopicoIdStr]
               const subtopicos = decomposed?.subtopicos.length
                 ? decomposed.subtopicos.map((s) => ({
-                    nome: s.nome.slice(0, 200),
+                    nome: s.nome.slice(0, 60),
                     estimated_duration_minutes: s.duracao_min ?? 45,
+                    conceito_pai: s.conceito_pai ?? null,
                   }))
-                : [{ nome: apiTopico.nome.slice(0, 200), estimated_duration_minutes: 45 }]
+                : [{ nome: apiTopico.nome.slice(0, 60), estimated_duration_minutes: 45, conceito_pai: null }]
 
               // Lê subtopicos existentes desse topico pro user — evita N selects
               const { data: existingSubs } = await adminClient
@@ -242,6 +243,7 @@ export async function POST(req: NextRequest) {
                   topico_id: topicoLocalId,
                   nome: s.nome,
                   estimated_duration_minutes: s.estimated_duration_minutes,
+                  conceito_pai: s.conceito_pai ?? null,
                 }))
 
               if (toInsert.length > 0) {
