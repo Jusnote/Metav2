@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { AlertTriangle } from 'lucide-react'
 import { useCuradoriaTree } from '@/hooks/moderation/useCuradoriaTree'
 import { CuradoriaActions } from './CuradoriaActions'
 import { DisciplinaSection } from './DisciplinaSection'
@@ -26,6 +27,17 @@ export function CuradoriaTreeMain({
     setLocalDecomp(next)
     debouncedSave(next)
   }
+
+  const longNamesCount = useMemo(() => {
+    if (!decomp) return 0
+    let count = 0
+    for (const t of Object.values(decomp.by_topico)) {
+      for (const s of t.subtopicos) {
+        if (s.nome.length > 60) count++
+      }
+    }
+    return count
+  }, [decomp])
 
   if (tree.isLoading) return <div className="p-8 text-slate-500">Carregando…</div>
   if (tree.error) return <div className="p-8 text-rose-600">Erro: {tree.error.message}</div>
@@ -53,6 +65,13 @@ export function CuradoriaTreeMain({
           }}
         />
       </header>
+
+      {longNamesCount > 0 && (
+        <div className="mx-6 mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-900 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span><strong>{longNamesCount}</strong> subtópicos com nome &gt; 60 chars — pode ficar truncado. Considere encurtar ou mover o contexto pra &quot;Contexto&quot;.</span>
+        </div>
+      )}
 
       <div className="px-6 py-6 space-y-4">
         {tree.tree.length === 0 && (
