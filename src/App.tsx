@@ -19,6 +19,7 @@ import ResumosListPage from "./views/ResumosListPage";
 import QuestoesPage from "./views/QuestoesPage";
 import CriarQuestaoPage from "./views/CriarQuestaoPage";
 import CronogramaPage from "./views/CronogramaPage";
+import CronogramaSetupPage from "./views/CronogramaSetupPage";
 import AuthPage from "./views/AuthPage";
 import NotFound from "./views/NotFound";
 import EditorPage from "./views/EditorPage";
@@ -41,6 +42,7 @@ import DocumentsOrganizationPage from "./views/DocumentsOrganizationPage";
 import CadernosPage from "./views/CadernosPage";
 import NotesPage from "./views/NotesPage";
 import GoalsPage from "./views/GoalsPage";
+import OabAnalysisPage from "./views/OabAnalysisPage";
 import { useAuth } from "./hooks/useAuth";
 import { useVisualViewport } from '@/hooks/useVisualViewport';
 import GlobalTimer from "./components/GlobalTimer";
@@ -54,7 +56,8 @@ import { ReportsPage } from './components/moderation/reports/ReportsPage';
 import { UsersPage } from './components/moderation/users/UsersPage';
 import { QuestionsReportsPage } from './components/moderation/questions/QuestionsReportsPage';
 import { LeiReportsPage } from './components/moderation/lei-seca/LeiReportsPage';
-import { EditaisModerationPage } from './components/moderation/editais/EditaisModerationPage';
+import { EditaisModerationPage } from './components/moderation/editais/EditaisModerationPage'
+import CuradoriaEditaisPage from './views/CuradoriaEditaisPage';
 
 const queryClient = new QueryClient();
 
@@ -91,8 +94,11 @@ const AppContent = () => {
   // Detectar páginas full-width (sem padding no main)
   const isFullWidth = (location?.pathname?.startsWith('/lei-seca') || location?.pathname?.startsWith('/documents-organization') || location?.pathname?.startsWith('/cadernos') || location?.pathname?.startsWith('/editais')) ?? false;
 
-  // Páginas com fundo branco sólido
-  const hasWhiteBackground = location?.pathname?.startsWith('/questoes') ?? false;
+  // /questoes: sem breadcrumb (conteúdo sobe mais), mas mantém padding normal
+  const hideBreadcrumb = location?.pathname?.startsWith('/questoes') ?? false;
+
+  // /questoes usa aurora background (renderizado dentro de QuestoesPage)
+  const hasWhiteBackground = false;
   
   // Expor função para mostrar/esconder timer globalmente
   React.useEffect(() => {
@@ -131,10 +137,10 @@ const AppContent = () => {
     <LeiSecaProvider>
     <DocumentsOrganizationProvider>
     <AppTopNav>
-      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : 'px-4 py-5'} ${hasWhiteBackground ? 'bg-white' : ''}`} style={{
+      <main className={`flex-1 overflow-auto ${isFullWidth ? 'p-0' : hideBreadcrumb ? 'px-4 pt-0 pb-5' : 'px-4 py-5'} ${hasWhiteBackground ? 'bg-white' : ''}`} style={{
         paddingBottom: isTimerVisible ? '80px' : isFullWidth ? '0' : '24px'
       }}>
-        {!isFullWidth && <AppBreadcrumb />}
+        {!isFullWidth && !hideBreadcrumb && <AppBreadcrumb />}
         <Outlet />
       </main>
       <GlobalTimer
@@ -187,6 +193,7 @@ const App = () => {
                     <Route path="resumos" element={<PrivateRoute><EditResumoPage /></PrivateRoute>} />
                     <Route path="study" element={<PrivateRoute><StudyPage /></PrivateRoute>} />
                     <Route path="cronograma" element={<PrivateRoute><CronogramaPage /></PrivateRoute>} />
+                    <Route path="cronograma/setup" element={<PrivateRoute><CronogramaSetupPage /></PrivateRoute>} />
                     <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
                     <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
                     <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
@@ -211,6 +218,7 @@ const App = () => {
                     {/* <Route path="test-schedule" element={<PrivateRoute><TestScheduleHooks /></PrivateRoute>} /> */}
                     <Route path="test-time-input" element={<PrivateRoute><TimeEstimateInputTest /></PrivateRoute>} />
                     <Route path="goals" element={<PrivateRoute><GoalsPage /></PrivateRoute>} />
+                    <Route path="oab-analysis" element={<PrivateRoute><OabAnalysisPage /></PrivateRoute>} />
                   </Route>
                   {/* Moderation Panel — separate layout */}
                   <Route
@@ -229,6 +237,7 @@ const App = () => {
                     <Route path="questoes" element={<QuestionsReportsPage />} />
                     <Route path="lei-seca" element={<LeiReportsPage />} />
                     <Route path="editais" element={<EditaisModerationPage />} />
+                    <Route path="curadoria-editais" element={<CuradoriaEditaisPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -10,6 +10,7 @@ import {
   CreditCard,
   LogOut,
   ClipboardList,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -66,6 +67,11 @@ export function ModerationSidebar({ pendingCount = 0 }: { pendingCount?: number 
       label: 'Editais',
       href: '/moderacao/editais',
       icon: <ClipboardList className="h-[15px] w-[15px]" />,
+    },
+    {
+      label: 'Curadoria',
+      href: '/moderacao/curadoria-editais',
+      icon: <Sparkles className="h-[15px] w-[15px]" />,
     },
   ];
 
