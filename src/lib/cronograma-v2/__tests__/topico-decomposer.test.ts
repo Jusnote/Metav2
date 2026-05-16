@@ -24,11 +24,11 @@ describe('fallbackDecompose', () => {
     expect(r.nome_curto).toBe('Princípios fundamentais')
   })
 
-  it('truncates long topic name to 60/200 chars', () => {
+  it('truncates long topic name to 60 chars', () => {
     const long = 'X'.repeat(300)
     const r = fallbackDecompose(long)
     expect(r.nome_curto.length).toBeLessThanOrEqual(60)
-    expect(r.subtopicos[0].nome.length).toBeLessThanOrEqual(200)
+    expect(r.subtopicos[0].nome.length).toBeLessThanOrEqual(60)
   })
 })
 

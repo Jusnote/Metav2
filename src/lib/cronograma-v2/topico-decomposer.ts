@@ -4,23 +4,34 @@ import { topicoDecomposedSchema, type TopicoDecomposed } from './schemas'
 
 const CLAUDE_HAIKU_MODEL = 'claude-haiku-4-5-20251001'
 
-const SYSTEM_PROMPT = `Você é um especialista em editais de concurso. Dado o texto bruto de um tópico do edital, decomponha em:
+const SYSTEM_PROMPT = `Você é um especialista em editais de concurso. Decomponha o texto bruto de um tópico do edital em subtópicos pequenos, atômicos e estudáveis isoladamente.
 
-1. nome_curto: nome resumido do tópico (3-6 palavras)
-2. conceitos_pai: até 3 grupos conceituais (substantivos do tópico)
-3. subtopicos: lista com formato "<Conceito-pai> - <Subtópico específico>"
-4. referencias_legais: leis/decretos/súmulas extraídos
-5. duracao_min: 25 a 75 minutos por subtópico (dependendo da densidade)
+REGRA CRÍTICA — nome do subtópico:
+- 3 a 6 palavras MÁXIMO. Apenas o conceito atômico em si.
+- NUNCA inclua o contexto pai no nome — isso vai em "conceito_pai" separadamente.
+- NUNCA use frases longas, listas, vírgulas ou "e" coordenando conceitos distintos.
 
-Regras estritas:
-- Retorne APENAS JSON válido, sem prefácio nem comentários
-- nome_curto: 2-60 caracteres
-- conceitos_pai: 1 a 5 itens, cada um 1-80 chars
-- subtopicos: 1 a 20 itens, nome formato "<Conceito-pai> - <Subtópico>"
-- duracao_min: 15-120 minutos
-- referencias_legais: array vazio se não houver
+Exemplos CORRETOS:
+  nome: "Pregão", conceito_pai: "Licitações"
+  nome: "Centralização", conceito_pai: "Organização administrativa"
+  nome: "Princípio da legalidade", conceito_pai: "Princípios constitucionais"
 
-Esquema JSON:
+Exemplos ERRADOS (não faça isso):
+  nome: "Licitações - Pregão"                      ← já tem o pai colado
+  nome: "Centralização e descentralização"         ← 2 conceitos distintos virariam 2 subtopicos
+  nome: "Noções de organização administrativa"     ← longo demais e é o pai, não filho
+
+Para cada subtópico produza:
+1. nome: 3-6 palavras, sem contexto pai (3-60 chars)
+2. duracao_min: 25-75 minutos (mais longo se denso)
+3. conceito_pai: o tópico/agrupamento (1-80 chars)
+
+No nível do tópico inteiro também produza:
+- nome_curto: 2-6 palavras resumindo o tópico (3-60 chars)
+- conceitos_pai: até 5 grupos conceituais identificados
+- referencias_legais: leis/decretos/súmulas citados
+
+Retorne APENAS JSON válido, sem prefácio. Schema:
 {
   "nome_curto": string,
   "conceitos_pai": string[],
@@ -87,7 +98,7 @@ export function fallbackDecompose(topicoNome: string): TopicoDecomposed {
     nome_curto: nomeCurto,
     conceitos_pai: [nomeCurto],
     subtopicos: [{
-      nome: topicoNome.slice(0, 200),
+      nome: topicoNome.slice(0, 60),
       duracao_min: 45,
       conceito_pai: nomeCurto,
     }],

@@ -25,7 +25,9 @@ export type EditalGraphQL = z.infer<typeof editalGraphQLSchema>
 // ============================================================================
 
 export const subtopicoDecomposedSchema = z.object({
-  nome: z.string().min(3).max(200),
+  nome: z.string()
+    .min(3)
+    .max(60, 'Nome muito longo. Use 3-6 palavras. Coloque o contexto em conceito_pai.'),
   duracao_min: z.number().int().min(15).max(120),
   conceito_pai: z.string().min(1).max(80),
   origin: z.enum(['ai', 'manual']).default('ai'),  // ⬅ novo: rastreia se foi gerado pela IA ou adicionado manualmente
