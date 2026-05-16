@@ -1,0 +1,99 @@
+/*
+  Design tokens V3 — Mentoria para Concursos
+  Fonte da verdade: public/PLANO COACHING/plano/03-design-system.md
+  Não hardcodar cores, espaçamentos ou tamanhos fora deste arquivo.
+*/
+
+@layer base {
+  :root {
+    /* ── Backgrounds ─────────────────────────────────────────── */
+    --bg-canvas: #0F1419;
+    --bg-surface: #1A1F26;
+    --bg-surface-2: rgba(255, 255, 255, 0.03);
+    --bg-surface-3: rgba(255, 255, 255, 0.06);
+
+    /* ── Texto ───────────────────────────────────────────────── */
+    --fg-primary: #E6E8EB;
+    --fg-secondary: #8B95A1;
+    --fg-tertiary: #5A6470;
+
+    /* ── Bordas ──────────────────────────────────────────────── */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.12);
+
+    /* ── Verde — Teoria, Sucesso, Concluído ──────────────────── */
+    --color-teoria-bg: rgba(29, 158, 117, 0.12);
+    --color-teoria-border: rgba(29, 158, 117, 0.4);
+    --color-teoria-text: #5DCAA5;
+    --color-teoria-solid: #1D9E75;
+
+    /* ── Azul — Questões, Informação ─────────────────────────── */
+    --color-questoes-bg: rgba(55, 138, 221, 0.12);
+    --color-questoes-border: rgba(55, 138, 221, 0.4);
+    --color-questoes-text: #85B7EB;
+    --color-questoes-solid: #378ADD;
+
+    /* ── Coral — Lei Seca, Alerta ────────────────────────────── */
+    --color-leiseca-bg: rgba(216, 90, 48, 0.12);
+    --color-leiseca-border: rgba(216, 90, 48, 0.4);
+    --color-leiseca-text: #F0997B;
+    --color-leiseca-solid: #D85A30;
+
+    /* ── Roxo — Revisão FSRS, Sugestão Inteligente ───────────── */
+    --color-revisao-bg: rgba(127, 119, 221, 0.12);
+    --color-revisao-border: rgba(127, 119, 221, 0.4);
+    --color-revisao-text: #AFA9EC;
+    --color-revisao-solid: #7F77DD;
+
+    /* ── Verde-claro — Mapa Mental, Resumo ──────────────────── */
+    --color-mapa-bg: rgba(99, 153, 34, 0.15);
+    --color-mapa-text: #97C459;
+    --color-mapa-solid: #639922;
+
+    /* ── Âmbar — Atenção, Em Risco ───────────────────────────── */
+    --color-atencao-bg: rgba(239, 159, 39, 0.15);
+    --color-atencao-text: #EF9F27;
+    --color-atencao-solid: #EF9F27;
+
+    /* ── Vermelho — Erro, Crítico, Peso 5 ────────────────────── */
+    --color-erro-bg: rgba(226, 75, 74, 0.15);
+    --color-erro-text: #F09595;
+    --color-erro-solid: #E24B4A;
+
+    /* ── Tipografia ──────────────────────────────────────────── */
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+}
+
+/*
+  Tokens Tailwind v4 (@theme) — expostos como utilities Tailwind
+  Usar bg-[var(--bg-canvas)] ou simplesmente as classes mapeadas abaixo.
+*/
+@theme {
+  /* Fontes */
+  --font-family-v3-sans: 'Inter', system-ui, sans-serif;
+  --font-family-v3-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  /* Escala tipográfica V3 (sobrescreve Tailwind padrão apenas no contexto .v3) */
+  /* text-xs = 10px, text-sm = 11px, text-base = 12px, text-md = 13px, etc. */
+  /* Nota: Tailwind v4 usa rem; 10px = 0.625rem @ 16px base */
+
+  /* Tamanhos de fonte V3 (prefixados para não colidir com V2) */
+  --font-size-v3-xs: 0.625rem;     /* 10px — labels técnicos, badges */
+  --font-size-v3-sm: 0.6875rem;    /* 11px — metadados, dicas */
+  --font-size-v3-base: 0.75rem;    /* 12px — texto secundário */
+  --font-size-v3-md: 0.8125rem;    /* 13px — texto padrão da UI */
+  --font-size-v3-lg: 0.875rem;     /* 14px — subtítulos */
+  --font-size-v3-xl: 1rem;         /* 16px — títulos de seção */
+  --font-size-v3-2xl: 1.125rem;    /* 18px — títulos de página */
+  --font-size-v3-3xl: 1.5rem;      /* 24px — KPIs, números grandes */
+
+  /* Border radius V3 */
+  --radius-v3-sm: 4px;
+  --radius-v3-md: 6px;
+  --radius-v3-lg: 8px;
+  --radius-v3-xl: 12px;
+  --radius-v3-full: 9999px;
+}
