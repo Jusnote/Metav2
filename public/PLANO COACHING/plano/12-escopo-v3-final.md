@@ -6,7 +6,7 @@
 
 - **Branch dedicado**: `v3-mentoria` (criado a partir de `cargo-transition-v2`)
 - **Sub-plans 1-5.6 (V2)**: ficam congelados no histórico. Código antigo NÃO é deletado nesta fase — fica como referência. Será removido na fase 11 (cleanup) após V3 estar estável em produção
-- **Supabase**: mesmo projeto, tabelas novas sem prefixo (`concursos`, `alunos`, `semanas`, `atividades`, `fsrs_cards` etc.). Tabelas V2 (`planos_estudo`, `schedule_items` etc.) permanecem intocadas como legado
+- **Supabase**: mesmo projeto, **schema dedicado `coaching`** (criado em 2026-05-16 por colisão de nomes `disciplinas`/`topicos`/`subtopicos` com V2). Todas as tabelas V3 ficam em `coaching.*`. Tabelas V2 (`public.planos_estudo`, `public.disciplinas` etc.) permanecem intocadas como legado em `public`. Cliente Supabase V3 inicializa com `db: { schema: 'coaching' }`. Dashboard Supabase precisa adicionar `coaching` em Settings → API → Exposed schemas.
 - **Rotas**: V3 ocupa `/app/*` (root da app). V2 fica acessível em `/legacy/cronograma` enquanto não for deletado
 - **Filosofia**: "Sistema impecável > Sistema feito rápido" (princípio do README do plano)
 
