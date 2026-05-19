@@ -25,6 +25,12 @@ export default function AdminGroupLayout({ children }: { children: ReactNode }) 
           <AdminNavLink href="/v3/admin/concursos" label="Concursos" />
           <AdminNavLink href="/v3/admin/concursos/novo" label="Novo concurso" />
         </nav>
+        <p
+          className="px-3 mt-6 text-[10px] uppercase tracking-wider"
+          style={{ color: 'var(--fg-tertiary)' }}
+        >
+          Por concurso: abra um concurso publicado para acessar Resumos.
+        </p>
       </aside>
 
       <main className="flex-1 overflow-x-hidden">{children}</main>
