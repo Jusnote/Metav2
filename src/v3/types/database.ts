@@ -593,6 +593,44 @@ export type Database = {
           },
         ]
       }
+      resumos: {
+        Row: {
+          atualizado_em: string
+          atualizado_por: string | null
+          conteudo_plate: Json
+          id: string
+          publicado_em: string | null
+          status: string
+          subtopico_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          atualizado_por?: string | null
+          conteudo_plate?: Json
+          id?: string
+          publicado_em?: string | null
+          status?: string
+          subtopico_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          atualizado_por?: string | null
+          conteudo_plate?: Json
+          id?: string
+          publicado_em?: string | null
+          status?: string
+          subtopico_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resumos_subtopico_id_fkey"
+            columns: ["subtopico_id"]
+            isOneToOne: true
+            referencedRelation: "subtopicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       questoes: {
         Row: {
           alternativas: Json | null
