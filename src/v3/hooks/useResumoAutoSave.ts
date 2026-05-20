@@ -1,17 +1,27 @@
 'use client'
 
-// Auto-save de resumo (Plate doc → server action) com debounce.
+// Auto-save de resumo (Plate doc + tldr + takeaways → server action) com debounce.
 // Pattern: chame `agendar(novoValor)` a cada onChange; o hook agenda salvar
 // 5s depois da última chamada. Indica status saving/saved/error.
+//
+// Extras (tldr, takeaways) são lidos via callback no momento do save, pra
+// sempre pegar o estado mais recente do componente.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { salvarRascunhoResumo } from '@/app/v3/(admin)/admin/concursos/[id]/resumos/actions'
 
 export type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
+export interface ResumoExtras {
+  tldr?: string | null
+  takeaways?: string[]
+}
+
 interface UseResumoAutoSaveOptions {
   subtopicoId: string
   debounceMs?: number
+  /** Callback chamado no momento do save pra obter tldr/takeaways atuais. */
+  getExtras?: () => ResumoExtras
 }
 
 interface UseResumoAutoSaveReturn {
@@ -25,6 +35,7 @@ interface UseResumoAutoSaveReturn {
 export function useResumoAutoSave({
   subtopicoId,
   debounceMs = 5000,
+  getExtras,
 }: UseResumoAutoSaveOptions): UseResumoAutoSaveReturn {
   const [status, setStatus] = useState<AutoSaveStatus>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -32,21 +43,27 @@ export function useResumoAutoSave({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ultimoValorRef = useRef<unknown>(null)
   const desmontadoRef = useRef(false)
+  const getExtrasRef = useRef(getExtras)
 
-  // Salva imediato (usado por blur / beforeunload / botão "Salvar agora")
+  useEffect(() => {
+    getExtrasRef.current = getExtras
+  }, [getExtras])
+
   const salvarAgora = useCallback(
     async (valor: unknown) => {
       if (desmontadoRef.current) return
       setStatus('saving')
       setError(null)
+      const extras = getExtrasRef.current?.() ?? {}
       const res = await salvarRascunhoResumo({
         subtopicoId,
         conteudoPlate: valor,
+        tldr: extras.tldr,
+        takeaways: extras.takeaways,
       })
       if (desmontadoRef.current) return
       if (res.ok) {
         setStatus('saved')
-        // Volta pra 'idle' depois de 2s pra UI ficar "limpa"
         setTimeout(() => {
           if (!desmontadoRef.current) setStatus('idle')
         }, 2000)
@@ -76,7 +93,6 @@ export function useResumoAutoSave({
     [cancelar, debounceMs, salvarAgora],
   )
 
-  // Salvar pendente antes de fechar a janela / trocar de aba
   useEffect(() => {
     const handler = () => {
       if (timerRef.current && ultimoValorRef.current !== null) {

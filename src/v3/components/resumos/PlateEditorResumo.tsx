@@ -1,51 +1,70 @@
 'use client'
 
-// Editor de resumo (admin). Reusa Plate via EditorKit do projeto, mas com
-// auto-save (useResumoAutoSave) e header de status + ações publicar/despublicar.
+// Editor de resumo (admin) refinado. Inclui:
+//  - TL;DR (textarea acima do Plate)
+//  - Plate editor (auto-save 5s via useResumoAutoSave)
+//  - Takeaways editor (lista de bullets, mesmo debounce)
+//  - Footer sticky com saveState + Descartar + Publicar
 //
-// Decisão: usa o MESMO EditorKit do app (src/components/editor-kit) — não
-// duplica plugins. O sistema de comentários do Plate fica visualmente inativo
-// porque não criamos infraestrutura de discussão por ora, mas o plugin é
-// inerte (sem dados, sem UI ativa).
+// Decisão: TL;DR e takeaways são CAMPOS do schema (não plugins Plate).
 
-import { useCallback, useMemo, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plate, usePlateEditor } from 'platejs/react'
 import type { Value } from 'platejs'
 
 import { EditorKit } from '@/components/editor-kit'
 import { Editor, EditorContainer } from '@/components/ui/editor'
-import { SaveIndicator } from '@/components/ui/save-indicator'
-import type { SaveStatus } from '@/types/plate-document'
 
 import { useResumoAutoSave } from '@/v3/hooks/useResumoAutoSave'
 import {
   despublicarResumo,
   publicarResumo,
 } from '@/app/v3/(admin)/admin/concursos/[id]/resumos/actions'
+import { TakeawaysEditor } from './TakeawaysEditor'
+import styles from './resumos.module.css'
 
 interface Props {
   subtopicoId: string
-  /** Conteúdo inicial. Se null → editor começa vazio. */
   conteudoInicial: Value | null
-  /** Status inicial do resumo. 'nao-existe' quando subtopicoId não tem resumo ainda. */
   statusInicial: 'nao-existe' | 'rascunho' | 'publicado'
+  tldrInicial: string
+  takeawaysInicial: string[]
 }
 
 const VAZIO: Value = [{ type: 'p', children: [{ text: '' }] }]
+const TLDR_MAX = 240
 
 export function PlateEditorResumo({
   subtopicoId,
   conteudoInicial,
   statusInicial,
+  tldrInicial,
+  takeawaysInicial,
 }: Props) {
   const router = useRouter()
   const [statusResumo, setStatusResumo] = useState(statusInicial)
   const [pending, startTransition] = useTransition()
   const [acaoErro, setAcaoErro] = useState<string | null>(null)
 
+  const [tldr, setTldr] = useState(tldrInicial)
+  const [takeaways, setTakeaways] = useState<string[]>(takeawaysInicial)
+
+  // Refs mantém o estado mais recente fora do closure (pra usar em salvarAgora)
+  const tldrRef = useRef(tldr)
+  const takeawaysRef = useRef(takeaways)
+  useEffect(() => {
+    tldrRef.current = tldr
+  }, [tldr])
+  useEffect(() => {
+    takeawaysRef.current = takeaways
+  }, [takeaways])
+
   const valorInicial = useMemo<Value>(() => {
-    if (!conteudoInicial || (Array.isArray(conteudoInicial) && conteudoInicial.length === 0)) {
+    if (
+      !conteudoInicial ||
+      (Array.isArray(conteudoInicial) && conteudoInicial.length === 0)
+    ) {
       return VAZIO
     }
     return conteudoInicial
@@ -56,9 +75,16 @@ export function PlateEditorResumo({
     value: valorInicial,
   })
 
-  const auto = useResumoAutoSave({ subtopicoId, debounceMs: 5000 })
+  const auto = useResumoAutoSave({
+    subtopicoId,
+    debounceMs: 5000,
+    getExtras: () => ({
+      tldr: tldrRef.current,
+      takeaways: takeawaysRef.current,
+    }),
+  })
 
-  const handleChange = useCallback(
+  const handleChangePlate = useCallback(
     ({ value }: { value: Value }) => {
       auto.agendar(value)
     },
@@ -67,31 +93,23 @@ export function PlateEditorResumo({
 
   const handleBlur = useCallback(() => {
     if (!editor) return
-    // Flush imediato no blur
     void auto.salvarAgora(editor.children)
   }, [auto, editor])
 
-  // Mapeia status do auto-save para o SaveIndicator existente
-  const indicadorStatus: SaveStatus = useMemo(() => {
-    if (auto.status === 'saving') return { type: 'saving' }
-    if (auto.status === 'saved') return { type: 'saved' }
-    if (auto.status === 'error')
-      return { type: 'error', message: auto.error ?? 'Erro' }
-    return { type: 'idle' }
-  }, [auto.status, auto.error])
-
-  const handleSalvarAgora = () => {
-    if (!editor) return
-    void auto.salvarAgora(editor.children)
+  const handleTldrChange = (v: string) => {
+    setTldr(v)
+    if (editor) auto.agendar(editor.children)
+  }
+  const handleTakeawaysChange = (lista: string[]) => {
+    setTakeaways(lista)
+    if (editor) auto.agendar(editor.children)
   }
 
   const handlePublicar = () => {
     if (!editor) return
     setAcaoErro(null)
     startTransition(async () => {
-      // 1) flush conteúdo atual primeiro
       await auto.salvarAgora(editor.children)
-      // 2) publica
       const res = await publicarResumo(subtopicoId)
       if (res.ok) {
         setStatusResumo('publicado')
@@ -115,80 +133,127 @@ export function PlateEditorResumo({
     })
   }
 
+  const handleDescartar = () => {
+    if (typeof window === 'undefined') return
+    if (window.confirm('Descartar alterações não salvas e voltar para a lista?')) {
+      router.back()
+    }
+  }
+
+  const saveLabel = useMemo(() => {
+    if (auto.status === 'saving') return 'Salvando…'
+    if (auto.status === 'error') return `Erro: ${auto.error ?? 'desconhecido'}`
+    if (auto.status === 'saved') return 'Salvo agora'
+    return 'Sincronizado'
+  }, [auto.status, auto.error])
+
+  const saveDotClass = useMemo(() => {
+    if (auto.status === 'saving') return styles.saveDotSaving
+    if (auto.status === 'error') return styles.saveDotError
+    return ''
+  }, [auto.status])
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Barra de ações */}
-      <div
-        className="px-4 py-2 border-b flex items-center justify-between gap-3 flex-shrink-0"
-        style={{
-          borderColor: 'var(--border-default)',
-          backgroundColor: 'var(--bg-surface)',
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <SaveIndicator status={indicadorStatus} />
-          {acaoErro && (
-            <span
-              className="text-xs"
-              style={{ color: 'var(--color-danger, #c0392b)' }}
-            >
-              {acaoErro}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleSalvarAgora}
-            disabled={pending || auto.status === 'saving'}
-            className="text-xs px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
-            style={{
-              backgroundColor: 'var(--bg-surface-2)',
-              color: 'var(--fg-secondary)',
-              border: '1px solid var(--border-default)',
-            }}
-          >
-            Salvar rascunho
-          </button>
-          {statusResumo === 'publicado' ? (
-            <button
-              type="button"
-              onClick={handleDespublicar}
-              disabled={pending}
-              className="text-xs px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
-              style={{
-                backgroundColor: 'rgba(212,154,42,0.15)',
-                color: 'rgb(170,120,30)',
-                border: '1px solid rgba(212,154,42,0.4)',
-              }}
-            >
-              Despublicar
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handlePublicar}
-              disabled={pending}
-              className="text-xs px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
-              style={{
-                backgroundColor: 'rgba(70,160,90,0.18)',
-                color: 'rgb(50,120,65)',
-                border: '1px solid rgba(70,160,90,0.45)',
-              }}
-            >
-              Publicar
-            </button>
-          )}
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+      {/* TL;DR field */}
+      <div className={styles.tldrField}>
+        <div className={styles.tldrLabel}>O que vai aprender</div>
+        <textarea
+          className={styles.tldrInput}
+          placeholder="2 frases: o coração desse bloco, o que o aluno sai sabendo."
+          value={tldr}
+          maxLength={TLDR_MAX}
+          onChange={(e) => handleTldrChange(e.target.value)}
+          onBlur={() => {
+            if (editor) void auto.salvarAgora(editor.children)
+          }}
+          rows={3}
+        />
+        <div className={styles.tldrCount}>
+          {tldr.length} / {TLDR_MAX}
         </div>
       </div>
 
-      {/* Editor */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <Plate editor={editor} onChange={handleChange}>
+      {/* Plate editor card */}
+      <div className={styles.plateEditorCard}>
+        <Plate editor={editor} onChange={handleChangePlate}>
           <EditorContainer onBlur={handleBlur}>
-            <Editor variant="default" placeholder="Comece a escrever o resumo deste bloco…" />
+            <Editor
+              variant="default"
+              placeholder="Comece a escrever o resumo deste bloco…"
+            />
           </EditorContainer>
         </Plate>
+      </div>
+
+      {/* Takeaways field */}
+      <TakeawaysEditor
+        inicial={takeaways}
+        onChange={handleTakeawaysChange}
+      />
+
+      {acaoErro && (
+        <p
+          style={{
+            color: '#dc2626',
+            fontSize: 13,
+            marginTop: 16,
+            textAlign: 'center',
+          }}
+        >
+          {acaoErro}
+        </p>
+      )}
+
+      {/* Footer sticky com save state + actions */}
+      <div className={styles.plateFooter} style={{ marginTop: 32 }}>
+        <div className={styles.plateFooterMax}>
+          <div className={styles.saveState}>
+            <div className={`${styles.saveDot} ${saveDotClass}`} />
+            {saveLabel}
+          </div>
+          <div className={styles.plateActions}>
+            <button
+              type="button"
+              className={styles.btn}
+              onClick={handleDescartar}
+              disabled={pending}
+            >
+              Descartar
+            </button>
+            {statusResumo === 'publicado' ? (
+              <button
+                type="button"
+                className={styles.btn}
+                onClick={handleDespublicar}
+                disabled={pending}
+              >
+                Despublicar
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnAccent}`}
+                onClick={handlePublicar}
+                disabled={pending}
+              >
+                Publicar
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
