@@ -602,6 +602,8 @@ export type Database = {
           publicado_em: string | null
           status: string
           subtopico_id: string
+          tldr: string | null
+          takeaways: Json
         }
         Insert: {
           atualizado_em?: string
@@ -611,6 +613,8 @@ export type Database = {
           publicado_em?: string | null
           status?: string
           subtopico_id: string
+          tldr?: string | null
+          takeaways?: Json
         }
         Update: {
           atualizado_em?: string
@@ -620,6 +624,8 @@ export type Database = {
           publicado_em?: string | null
           status?: string
           subtopico_id?: string
+          tldr?: string | null
+          takeaways?: Json
         }
         Relationships: [
           {
@@ -627,6 +633,38 @@ export type Database = {
             columns: ["subtopico_id"]
             isOneToOne: true
             referencedRelation: "subtopicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resumo_revisoes: {
+        Row: {
+          id: string
+          aluno_id: string
+          resumo_id: string
+          rating: string
+          criado_em: string
+        }
+        Insert: {
+          id?: string
+          aluno_id: string
+          resumo_id: string
+          rating: string
+          criado_em?: string
+        }
+        Update: {
+          id?: string
+          aluno_id?: string
+          resumo_id?: string
+          rating?: string
+          criado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resumo_revisoes_resumo_id_fkey"
+            columns: ["resumo_id"]
+            isOneToOne: false
+            referencedRelation: "resumos"
             referencedColumns: ["id"]
           },
         ]
