@@ -29,7 +29,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.root * { box-sizing: border-box; }
+/* IMPORTANTE: NÃO usar `.root *` reset aqui — quebra Plate editor internamente.
+   Box-sizing é aplicado por elemento específico onde necessário (cards, headers). */
 .serif { font-family: 'Plus Jakarta Sans', Georgia, sans-serif; letter-spacing: -0.005em; }
 .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 
@@ -320,14 +321,17 @@
 .pillGray::before { background: var(--ink-4); }
 
 /* ============== EDITOR ============== */
+/* Página: scroll natural. NÃO usa height: 100vh + overflow:hidden porque
+   o Plate precisa empurrar o conteúdo abaixo dele (takeaways, rating). */
 .platePage {
-  width: 100%; min-height: calc(100vh - 0px);
+  width: 100%;
+  min-height: 100vh;
   background: var(--bg);
   display: flex; flex-direction: column;
 }
 .platePageHeader {
   border-bottom: 1px solid var(--line);
-  background: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   position: sticky; top: 0; z-index: 30;
@@ -335,6 +339,7 @@
 .plateHeaderInner {
   max-width: 1280px; margin: 0 auto;
   padding: 16px 24px;
+  box-sizing: border-box;
   display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
 }
 .plateHeaderLeft {
@@ -382,64 +387,94 @@
 }
 .plateHeaderOutline:hover { background: var(--bg-tint); border-color: var(--line-strong); }
 
+/* Stage: Plate full-bleed. Plate tem padding interno próprio via variant default
+   ('px-16 pt-4 pb-72 sm:px-[max(64px,calc(50%-350px))]'). Nada de cardificar. */
 .plateStage {
-  flex: 1; padding: 32px 24px 80px;
-  max-width: 1280px; width: 100%;
-  margin: 0 auto;
+  width: 100%;
   position: relative;
 }
-.plateEditorCard {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  overflow: hidden;
-}
 
-/* TL;DR editor input */
-.tldrField {
-  margin-bottom: 24px;
-  background: var(--bg-tint);
-  border-radius: 14px;
-  padding: 18px 22px;
-  border-left: 3px solid var(--accent);
-}
-.tldrLabel {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px; color: var(--accent);
-  text-transform: uppercase; letter-spacing: 0.08em;
-  margin-bottom: 10px; font-weight: 500;
-}
-.tldrLabel::before {
-  content: ''; width: 5px; height: 5px;
-  background: var(--accent); border-radius: 50%;
-}
-.tldrInput {
+/* TL;DR como faixa fina horizontal logo abaixo do header (admin) ou leitor.
+   Sem card grande, sem borda lateral colorida — só uma linha discreta. */
+.tldrBar {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-dim);
   width: 100%;
+}
+.tldrBarInner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 10px 24px;
+  box-sizing: border-box;
+}
+.tldrInline {
+  width: 100%;
+  display: block;
   background: transparent;
   border: none;
   outline: none;
-  resize: vertical;
-  min-height: 56px;
+  resize: none;
   font-family: 'Inter', sans-serif;
-  font-size: 15px; line-height: 1.6;
+  font-size: 13px;
   color: var(--ink-2);
+  line-height: 1.5;
+  font-style: italic;
+  padding: 0;
+  box-sizing: border-box;
 }
-.tldrInput::placeholder { color: var(--ink-4); }
+.tldrInline::placeholder { color: var(--ink-4); font-style: italic; }
+.tldrInline:focus { color: var(--ink); }
+.tldrInlineReadonly {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  font-style: italic;
+}
 .tldrCount {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10.5px; color: var(--ink-4);
-  margin-top: 6px;
+  margin-top: 4px;
   text-align: right;
 }
 
-/* Takeaways editor */
+/* Save state pill (canto direito do header) */
+.saveStatePill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--ink-3);
+  padding: 5px 11px;
+  background: var(--bg-tint);
+  border-radius: 999px;
+  font-family: inherit;
+}
+.saveStatePillDot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+}
+.saveStatePillDotSaving { background: var(--amber); }
+.saveStatePillDotError { background: #dc2626; }
+
+/* Cluster de ações no header (botões à direita) */
+.plateHeaderRight {
+  display: flex; align-items: center; gap: 12px;
+}
+
+/* Conteúdo extra logo abaixo do Plate no leitor aluno (takeaways + rating).
+   Centralizado e com max-width compatível com a coluna interna do Plate. */
+.afterPlate {
+  max-width: 760px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* Takeaways editor — usado dentro do drawer (admin) e como card no leitor.
+   margin-top zero quando usado no drawer, herda do contexto. */
 .takeawaysField {
-  margin-top: 32px;
   background: var(--dark);
   color: white;
   border-radius: 16px;
   padding: 24px 28px;
+  box-sizing: border-box;
 }
 .takeawaysFieldLabel {
   display: inline-flex; align-items: center; gap: 7px;
@@ -638,36 +673,6 @@
 }
 .drawerNextLink:hover { gap: 11px; color: white; }
 
-.plateFooter {
-  border-top: 1px solid var(--line);
-  background: var(--surface-dim);
-  padding: 14px 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky;
-  bottom: 0;
-  z-index: 20;
-}
-.plateFooterMax {
-  max-width: 1280px; width: 100%; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.saveState {
-  display: flex; align-items: center; gap: 9px;
-  font-size: 12.5px; color: var(--ink-3);
-}
-.saveDot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 4px var(--green-soft);
-}
-.saveDotSaving {
-  background: var(--amber);
-  box-shadow: 0 0 0 4px var(--amber-soft);
-}
-.saveDotError {
-  background: #dc2626;
-  box-shadow: 0 0 0 4px rgba(220,38,38,0.15);
-}
 .plateActions { display: flex; gap: 10px; }
 .btn {
   display: inline-flex; align-items: center; gap: 7px;
