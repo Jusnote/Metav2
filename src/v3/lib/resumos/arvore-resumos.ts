@@ -384,3 +384,14 @@ export async function carregarContextoBloco(
     blocosIrmaos: irmaos,
   }
 }
+
+// Helper: próximo bloco na mesma aula (ordem > atual). Retorna o de menor ordem
+// dentre os maiores. Se não houver, retorna null.
+export function calcularProximoBloco(
+  contexto: BlocoEditorContexto,
+): { id: string; nome: string; ordem: number } | null {
+  const candidatos = contexto.blocosIrmaos
+    .filter((b) => b.ordem > contexto.bloco.ordem)
+    .sort((a, b) => a.ordem - b.ordem)
+  return candidatos[0] ?? null
+}
