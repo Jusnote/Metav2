@@ -1,0 +1,407 @@
+{
+  "materia": {
+    "id": "informatica.redes_internet",
+    "nome": "Redes e Internet",
+    "disciplina": "Informática",
+    "macro_area": "Redes e Internet",
+    "concurso_alvo": "PC-BA — Investigador de Polícia",
+    "versao_taxonomia": "2.0",
+    "total_temas": 22,
+    "fontes_analisadas": [
+      {"nome": "Estratégia Concursos", "documento": "PC-BA Informática — Noções de Internet (primeira parte) - Aula 0", "tipo": "aula", "total_paginas": 67},
+      {"nome": "Estratégia Concursos", "documento": "PC-BA Informática — Noções de Internet (segunda parte) — Protocolos e Serviços", "tipo": "aula", "total_paginas": 78},
+      {"nome": "Estratégia Concursos", "documento": "PC-BA Informática — Intranet x Extranet x Internet (Aula 2)", "tipo": "aula", "total_paginas": 22},
+      {"nome": "Gran Cursos (Fabrício Melo)", "documento": "redes-e-internet (Livro Eletrônico)", "tipo": "livro", "total_paginas": 285}
+    ]
+  },
+  "temas_papiro": [
+    {
+      "id": "informatica.redes_internet.fundamentos_redes",
+      "nome": "Fundamentos de Redes de Computadores",
+      "ordem_curricular": 1,
+      "descricao_breve": "Conceitos-base de redes, enlace e métricas de transmissão.",
+      "objetivo_pedagogico": "Estabelecer o vocabulário fundamental antes de qualquer aprofundamento.",
+      "tempo_estudo_estimado_minutos": 45,
+      "pre_requisitos": [],
+      "temas_relacionados": ["informatica.redes_internet.classificacao_redes", "informatica.redes_internet.topologias_transmissao", "informatica.redes_internet.meios_equipamentos"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["3-11"], "profundidade": "alta", "observacoes": "Bloco 'Conceitos de Redes e Tipos de Transmissão'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["7-9", "199-200", "230-232"], "profundidade": "media", "observacoes": "Conceito introdutório disperso."}
+      },
+      "conceitos_principais": ["rede de computadores", "enlace ponto-a-ponto", "enlace ponto-multiponto", "taxa de transferência", "largura de banda"],
+      "justificativa_pedagogica": "Tema-base independente que define os conceitos sem os quais nenhum tema posterior é compreensível."
+    },
+    {
+      "id": "informatica.redes_internet.classificacao_redes",
+      "nome": "Classificação de Redes (dimensão e arquitetura)",
+      "ordem_curricular": 2,
+      "descricao_breve": "Classificação por alcance (PAN/LAN/MAN/WAN) e arquitetura.",
+      "objetivo_pedagogico": "Permitir classificar qualquer rede apresentada em prova.",
+      "tempo_estudo_estimado_minutos": 35,
+      "pre_requisitos": ["informatica.redes_internet.fundamentos_redes"],
+      "temas_relacionados": ["informatica.redes_internet.intranet_extranet_vpn"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["3-11"], "profundidade": "alta", "observacoes": "Subtópico 'Classificação de Redes'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["9", "169-170", "176", "230-232"], "profundidade": "media", "observacoes": "LAN/WAN dispersos, inclusive na seção de Intranet."}
+      },
+      "conceitos_principais": ["PAN", "LAN", "MAN", "WAN", "arquitetura cliente/servidor", "arquitetura ponto-a-ponto"],
+      "justificativa_pedagogica": "Conjunto coeso de critérios de classificação; separado do Tema 1 para clareza de objetivos."
+    },
+    {
+      "id": "informatica.redes_internet.topologias_transmissao",
+      "nome": "Topologias e Modos de Transmissão",
+      "ordem_curricular": 3,
+      "descricao_breve": "Topologias físicas/lógicas, modos de transmissão e comutação.",
+      "objetivo_pedagogico": "Dominar como os dados trafegam e como a rede se organiza.",
+      "tempo_estudo_estimado_minutos": 40,
+      "pre_requisitos": ["informatica.redes_internet.fundamentos_redes"],
+      "temas_relacionados": ["informatica.redes_internet.meios_equipamentos"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["3-11"], "profundidade": "media", "observacoes": "Direções e modos de transmissão."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["215-225"], "profundidade": "alta", "observacoes": "Topologias 215-221; enlace 221; unicast/multicast/broadcast 223; comutação 223-225."}
+      },
+      "conceitos_principais": ["topologia estrela/barramento/anel/malha", "topologia lógica", "simplex/half-duplex/full-duplex", "unicast/multicast/broadcast", "comutação por circuito/pacotes/células"],
+      "justificativa_pedagogica": "Agrupados por pertencerem ao 'como o dado trafega'; Gran trata topologias e comutação com profundidade autônoma."
+    },
+    {
+      "id": "informatica.redes_internet.meios_equipamentos",
+      "nome": "Meios de Transmissão e Equipamentos de Rede",
+      "ordem_curricular": 4,
+      "descricao_breve": "Meios guiados/não-guiados e equipamentos de interconexão.",
+      "objetivo_pedagogico": "Reconhecer cada meio físico e equipamento, função e camada.",
+      "tempo_estudo_estimado_minutos": 50,
+      "pre_requisitos": ["informatica.redes_internet.fundamentos_redes", "informatica.redes_internet.topologias_transmissao"],
+      "temas_relacionados": ["informatica.redes_internet.padroes_wifi", "informatica.redes_internet.modelos_osi_tcpip"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["12-19"], "profundidade": "alta", "observacoes": "Bloco 'Meios, Equipamentos e Padrões'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["203-214", "226-233"], "profundidade": "alta", "observacoes": "Meios 203-214; equipamentos 226-233."}
+      },
+      "conceitos_principais": ["cabo coaxial", "par trançado", "fibra óptica", "meio não-guiado", "hub", "switch", "bridge", "roteador", "modem", "placa de rede", "repetidor"],
+      "justificativa_pedagogica": "Meios e equipamentos formam a camada física tangível; ambas as fontes os tratam juntos com alta profundidade."
+    },
+    {
+      "id": "informatica.redes_internet.padroes_wifi",
+      "nome": "Padrões de Rede e Wi-Fi (IEEE 802)",
+      "ordem_curricular": 5,
+      "descricao_breve": "Comitê IEEE 802, padrão 802.11, modos e segurança Wi-Fi.",
+      "objetivo_pedagogico": "Compreender a padronização das redes sem fio e sua segurança.",
+      "tempo_estudo_estimado_minutos": 45,
+      "pre_requisitos": ["informatica.redes_internet.meios_equipamentos"],
+      "temas_relacionados": ["informatica.redes_internet.tecnologias_acesso"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["12-19"], "profundidade": "alta", "observacoes": "Subtópico 'Padrões de Rede / Wi-Fi 802.11'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["208-214"], "profundidade": "media", "observacoes": "Wireless e 802.11 dispersos."}
+      },
+      "conceitos_principais": ["IEEE 802", "IEEE 802.11", "Wi-Fi × Wireless", "WEP/WPA/WPA2/WPA3", "modo ad-hoc", "modo infraestrutura", "evolução b/a/g/n/ac/ax"],
+      "justificativa_pedagogica": "Wi-Fi tem peso próprio em prova; separado dos meios para foco em padrões e segurança."
+    },
+    {
+      "id": "informatica.redes_internet.internet_origem_funcionamento",
+      "nome": "Internet: Origem, ARPANET e Funcionamento",
+      "ordem_curricular": 6,
+      "descricao_breve": "História, ARPANET, backbone, hierarquia ISP e funcionamento.",
+      "objetivo_pedagogico": "Entender origem e lógica estrutural da Internet antes dos serviços.",
+      "tempo_estudo_estimado_minutos": 40,
+      "pre_requisitos": ["informatica.redes_internet.classificacao_redes"],
+      "temas_relacionados": ["informatica.redes_internet.intranet_extranet_vpn", "informatica.redes_internet.modelos_osi_tcpip"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["20-27", "46-56"], "profundidade": "alta", "observacoes": "Origem (ordem 3) + hierarquia ISP (ordem 6)."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["7-10", "133-134"], "profundidade": "alta", "observacoes": "ARPANET/backbone 7-10; 'Funcionamento da Internet' 133-134."}
+      },
+      "conceitos_principais": ["Guerra Fria", "ARPA/ARPANET", "backbone", "provedores ISP nível 1/2/3", "rede pública", "comutação por pacotes"],
+      "justificativa_pedagogica": "ARPANET promovida a destaque interno; agrupada com funcionamento e provedores por coesão histórico-estrutural."
+    },
+    {
+      "id": "informatica.redes_internet.intranet_extranet_vpn",
+      "nome": "Intranet, Extranet e VPN",
+      "ordem_curricular": 7,
+      "descricao_breve": "Distinção entre Intranet, Extranet e Internet, com VPN autônoma.",
+      "objetivo_pedagogico": "Diferenciar os três ambientes e dominar VPN.",
+      "tempo_estudo_estimado_minutos": 60,
+      "pre_requisitos": ["informatica.redes_internet.classificacao_redes", "informatica.redes_internet.internet_origem_funcionamento"],
+      "temas_relacionados": ["informatica.redes_internet.modelos_osi_tcpip", "informatica.redes_internet.dns_identificadores", "informatica.redes_internet.acesso_remoto_voip"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Intranet x Extranet x Internet (Aula 2)", "paginas": ["5-22"], "profundidade": "alta", "observacoes": "Unifica os blocos 'Parte 1/Parte 2'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["169-179", "32-33", "253"], "profundidade": "alta", "observacoes": "Intranet 169; Extranet 170; VPN 171-178; distinção lógica×física 176."}
+      },
+      "conceitos_principais": ["intranet", "extranet", "VPN", "tunelamento", "IPSec", "L2TP", "Site-to-Site", "Client-to-Site", "B2B"],
+      "justificativa_pedagogica": "Eliminada a fragmentação do Estratégia; VPN promovida a destaque por aparecer isolada em provas."
+    },
+    {
+      "id": "informatica.redes_internet.web_www_geracoes",
+      "nome": "Web (WWW): Conceitos, Componentes e Gerações",
+      "ordem_curricular": 8,
+      "descricao_breve": "Web vs Internet, componentes e gerações 1.0 → 3.0.",
+      "objetivo_pedagogico": "Separar Web de Internet e dominar componentes e gerações.",
+      "tempo_estudo_estimado_minutos": 50,
+      "pre_requisitos": ["informatica.redes_internet.internet_origem_funcionamento"],
+      "temas_relacionados": ["informatica.redes_internet.motores_busca", "informatica.redes_internet.deep_dark_web", "informatica.redes_internet.protocolos_web_transferencia"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["28-36"], "profundidade": "alta", "observacoes": "Bloco 'Web e suas Gerações'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["11-13", "153-154", "194-197"], "profundidade": "baixa", "observacoes": "WWW 11-13; HTML 194-197. GRAN NÃO COBRE gerações da Web."}
+      },
+      "conceitos_principais": ["WWW × Internet", "hipertexto", "URL", "navegador", "servidor web", "Web 1.0/2.0/3.0", "HTML"],
+      "justificativa_pedagogica": "Gerações da Web só existem no Estratégia; tema mantido completo e alimentado por essa fonte."
+    },
+    {
+      "id": "informatica.redes_internet.motores_busca",
+      "nome": "Motores de Busca e Operadores de Pesquisa",
+      "ordem_curricular": 9,
+      "descricao_breve": "Funcionamento de buscadores e operadores de pesquisa.",
+      "objetivo_pedagogico": "Saber usar e descrever buscadores — relevante para investigação.",
+      "tempo_estudo_estimado_minutos": 30,
+      "pre_requisitos": ["informatica.redes_internet.web_www_geracoes"],
+      "temas_relacionados": ["informatica.redes_internet.redes_sociais", "informatica.redes_internet.deep_dark_web"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["28-36"], "profundidade": "baixa", "observacoes": "Citado como componente da Web."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["13-31"], "profundidade": "alta", "observacoes": "Seção dedicada e extensa 'Motor de Busca'."}
+      },
+      "conceitos_principais": ["motor de busca", "indexação", "operadores de pesquisa", "relevância de resultados"],
+      "justificativa_pedagogica": "Promovido a tema próprio pela seção autônoma do Gran e relevância investigativa."
+    },
+    {
+      "id": "informatica.redes_internet.redes_sociais",
+      "nome": "Redes Sociais e Aplicativos de Mensagem",
+      "ordem_curricular": 10,
+      "descricao_breve": "Categorias de redes sociais e principais plataformas, com foco investigativo.",
+      "objetivo_pedagogico": "Conhecer as categorias e recursos das principais redes sociais e apps de mensagem, no contexto de investigação digital.",
+      "tempo_estudo_estimado_minutos": 40,
+      "pre_requisitos": ["informatica.redes_internet.web_www_geracoes"],
+      "temas_relacionados": ["informatica.redes_internet.motores_busca", "informatica.redes_internet.deep_dark_web"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["5-13", "28-36"], "profundidade": "baixa", "observacoes": "Redes sociais citadas apenas como tecnologia/serviço online, sem seção própria."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["57-72"], "profundidade": "alta", "observacoes": "Seção dedicada: categorias 57-60; WhatsApp 61-64; Facebook/Messenger 65-72."}
+      },
+      "conceitos_principais": ["categorias de redes sociais", "WhatsApp", "Facebook/Messenger", "recursos e privacidade", "conteúdo gerado pelo usuário"],
+      "justificativa_pedagogica": "Criado por força das 15 páginas autônomas do Gran e do altíssimo valor investigativo (rastreamento/OSINT) para o cargo de Investigador da PC-BA."
+    },
+    {
+      "id": "informatica.redes_internet.deep_dark_web",
+      "nome": "Deep Web, Dark Web e Rede Tor",
+      "ordem_curricular": 11,
+      "descricao_breve": "Surface/Deep/Dark Web, rede Tor, .onion e casos policiais.",
+      "objetivo_pedagogico": "Distinguir as camadas da Web e a Dark Web no contexto investigativo.",
+      "tempo_estudo_estimado_minutos": 40,
+      "pre_requisitos": ["informatica.redes_internet.web_www_geracoes"],
+      "temas_relacionados": ["informatica.redes_internet.motores_busca", "informatica.redes_internet.bitcoin_blockchain"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["37-45"], "profundidade": "alta", "observacoes": "Bloco com Silk Road e caso Suzano."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["53-57"], "profundidade": "media", "observacoes": "Deep Web 53; Dark Web 54. Sem o caso Suzano."}
+      },
+      "conceitos_principais": ["surface web", "deep web", "dark web", "rede Tor", ".onion", "Silk Road", "caso Massacre de Suzano"],
+      "justificativa_pedagogica": "Altíssima relevância para concurso policial; casos do Estratégia complementam a teoria do Gran."
+    },
+    {
+      "id": "informatica.redes_internet.modelos_osi_tcpip",
+      "nome": "Modelos de Referência: OSI/ISO e TCP/IP",
+      "ordem_curricular": 12,
+      "descricao_breve": "As 7 camadas OSI, as 4 camadas TCP/IP e correspondência.",
+      "objetivo_pedagogico": "Construir o mapa das camadas antes dos protocolos específicos.",
+      "tempo_estudo_estimado_minutos": 55,
+      "pre_requisitos": ["informatica.redes_internet.fundamentos_redes", "informatica.redes_internet.internet_origem_funcionamento"],
+      "temas_relacionados": ["informatica.redes_internet.ip_tcp_udp", "informatica.redes_internet.meios_equipamentos"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["3-13"], "profundidade": "alta", "observacoes": "Bloco 'Modelos OSI/ISO e TCP/IP'."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["135-148"], "profundidade": "alta", "observacoes": "Seção 'Protocolos da Internet / TCP/IP'."}
+      },
+      "conceitos_principais": ["protocolo", "modelo OSI (7 camadas)", "arquitetura TCP/IP (4 camadas)", "correspondência OSI×TCP/IP", "dispositivos por camada"],
+      "justificativa_pedagogica": "Separado dos protocolos específicos para preservar a sequência fundamentos → camadas → protocolos."
+    },
+    {
+      "id": "informatica.redes_internet.ip_tcp_udp",
+      "nome": "Camada de Rede e Transporte: IP, TCP e UDP",
+      "ordem_curricular": 13,
+      "descricao_breve": "Protocolo IP, TCP confiável e UDP.",
+      "objetivo_pedagogico": "Dominar o núcleo funcional do TCP/IP nas camadas de rede e transporte.",
+      "tempo_estudo_estimado_minutos": 60,
+      "pre_requisitos": ["informatica.redes_internet.modelos_osi_tcpip"],
+      "temas_relacionados": ["informatica.redes_internet.enderecamento_ip_ipv6", "informatica.redes_internet.protocolos_aplicacao_email_dhcp"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["14-31"], "profundidade": "alta", "observacoes": "IP, TCP partes 1-2, portas, UDP."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["135-152"], "profundidade": "alta", "observacoes": "TCP/IP 135-147; portas/UDP dispersos 141-152."}
+      },
+      "conceitos_principais": ["pacote IP", "datagrama", "TCP", "3-way handshake", "controle de fluxo", "controle de congestionamento", "portas", "UDP"],
+      "justificativa_pedagogica": "IP+TCP+UDP formam o coração funcional do TCP/IP; agrupados por interdependência operacional. O endereçamento detalhado migra para o Tema 14."
+    },
+    {
+      "id": "informatica.redes_internet.enderecamento_ip_ipv6",
+      "nome": "Endereçamento IP e Transição para IPv6",
+      "ordem_curricular": 14,
+      "descricao_breve": "Endereçamento IPv4, NAT, IP público/privado e transição para IPv6.",
+      "objetivo_pedagogico": "Dominar a estrutura do endereçamento IP e a coexistência IPv4/IPv6, com profundidade exigida pela banca.",
+      "tempo_estudo_estimado_minutos": 55,
+      "pre_requisitos": ["informatica.redes_internet.ip_tcp_udp"],
+      "temas_relacionados": ["informatica.redes_internet.dns_identificadores"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["14-22"], "profundidade": "alta", "observacoes": "Endereço IP, notação binária e decimal pontuada."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["136-142", "180-183"], "profundidade": "media", "observacoes": "IP no contexto de TCP/IP; IPv6 tratado de forma pontual — reforço pelo PAPIRO necessário."}
+      },
+      "conceitos_principais": ["endereço IP", "notação decimal pontuada/binária", "IPv4 × IPv6", "esgotamento de IPv4", "NAT", "IP público/privado", "IP fixo/dinâmico"],
+      "justificativa_pedagogica": "Desmembrado do antigo Tema 13: endereçamento merece tratamento próprio e profundo, e é o ponto natural para suprir a lacuna de IPv6 sem criar tema isolado frágil."
+    },
+    {
+      "id": "informatica.redes_internet.dns_identificadores",
+      "nome": "DNS, URL e Identificadores Físicos/Móveis",
+      "ordem_curricular": 15,
+      "descricao_breve": "Resolução de nomes (DNS/Whois), URL e identificadores de hardware (MAC/IMEI/EID/MEID).",
+      "objetivo_pedagogico": "Dominar a tradução nome↔endereço e os identificadores físicos de dispositivos.",
+      "tempo_estudo_estimado_minutos": 55,
+      "pre_requisitos": ["informatica.redes_internet.enderecamento_ip_ipv6"],
+      "temas_relacionados": ["informatica.redes_internet.protocolos_aplicacao_email_dhcp", "informatica.redes_internet.protocolos_web_transferencia"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["42-60"], "profundidade": "alta", "observacoes": "DNS (funcionamento, hierarquia, Whois) e URL."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["179-194"], "profundidade": "alta", "observacoes": "Nome de Domínio 179; DNS 180-187; MAC 188; IMEI/EID/MEID 190-191; URL 192-193."}
+      },
+      "conceitos_principais": ["DNS", "hierarquia DNS", "Whois", "URL", "MAC Address", "IMEI", "EID", "MEID"],
+      "justificativa_pedagogica": "Desmembrado do antigo Tema 13: agrupa identificadores 'simbólicos e físicos' (nome, URL, MAC, IMEI) num universo coeso de identificação, separado do endereçamento numérico IP. MAC/IMEI/EID são exclusivos do Gran e têm valor investigativo."
+    },
+    {
+      "id": "informatica.redes_internet.protocolos_aplicacao_email_dhcp",
+      "nome": "Protocolos de Aplicação: E-mail e DHCP",
+      "ordem_curricular": 16,
+      "descricao_breve": "Protocolos de e-mail (SMTP/POP/IMAP/MIME/WebMail) e DHCP.",
+      "objetivo_pedagogico": "Dominar os protocolos de correio e configuração dinâmica.",
+      "tempo_estudo_estimado_minutos": 55,
+      "pre_requisitos": ["informatica.redes_internet.modelos_osi_tcpip"],
+      "temas_relacionados": ["informatica.redes_internet.ip_tcp_udp", "informatica.redes_internet.protocolos_web_transferencia"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["23-51"], "profundidade": "alta", "observacoes": "E-mail (ordens 3-4) + DHCP (ordem 5)."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["102-112", "148-153"], "profundidade": "alta", "observacoes": "Correio 102-112; DHCP 148-153."}
+      },
+      "conceitos_principais": ["SMTP", "POP", "IMAP", "WebMail", "MIME", "campos de envio", "DHCP"],
+      "justificativa_pedagogica": "E-mail e DHCP agrupados como protocolos de aplicação/configuração de alta recorrência."
+    },
+    {
+      "id": "informatica.redes_internet.protocolos_web_transferencia",
+      "nome": "Protocolos Web e de Transferência (HTTP/HTTPS/FTP)",
+      "ordem_curricular": 17,
+      "descricao_breve": "HTTP, HTTPS, FTP e download/upload.",
+      "objetivo_pedagogico": "Dominar os protocolos de acesso à Web e transferência de arquivos.",
+      "tempo_estudo_estimado_minutos": 45,
+      "pre_requisitos": ["informatica.redes_internet.modelos_osi_tcpip", "informatica.redes_internet.dns_identificadores"],
+      "temas_relacionados": ["informatica.redes_internet.web_www_geracoes", "informatica.redes_internet.protocolos_aplicacao_email_dhcp"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["52-69"], "profundidade": "alta", "observacoes": "HTTP, HTTPS, FTP (ordens 6-7)."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["153-160", "197-200"], "profundidade": "alta", "observacoes": "HTTP/HTTPS 153-157; FTP 157-160; download/upload 197-200."}
+      },
+      "conceitos_principais": ["HTTP", "HTTPS", "FTP", "download", "upload"],
+      "justificativa_pedagogica": "Protocolos de Web e transferência agrupados por finalidade; HTTPS referenciado também em Segurança."
+    },
+    {
+      "id": "informatica.redes_internet.acesso_remoto_voip",
+      "nome": "Acesso Remoto, Gerenciamento e VoIP",
+      "ordem_curricular": 18,
+      "descricao_breve": "Telnet, SSH, SNMP, NNTP, IRC, RDP e VoIP/videoconferência.",
+      "objetivo_pedagogico": "Conhecer protocolos de acesso/gerência remota e serviços de voz/vídeo.",
+      "tempo_estudo_estimado_minutos": 45,
+      "pre_requisitos": ["informatica.redes_internet.modelos_osi_tcpip"],
+      "temas_relacionados": ["informatica.redes_internet.intranet_extranet_vpn", "informatica.redes_internet.protocolos_aplicacao_email_dhcp"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (segunda parte) — Protocolos e Serviços", "paginas": ["70-78"], "profundidade": "alta", "observacoes": "Protocolos diversos + VoIP."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["112-117", "158-169"], "profundidade": "alta", "observacoes": "VoIP 112-117; acesso remoto/SSH 158-165; RDP 166-169 (exclusivo do Gran)."}
+      },
+      "conceitos_principais": ["Telnet", "SSH", "SNMP", "NNTP", "IRC", "RDP", "VoIP", "videoconferência"],
+      "justificativa_pedagogica": "Agrupa protocolos de acesso remoto e serviços em tempo real; RDP e videoconferência exclusivos do Gran."
+    },
+    {
+      "id": "informatica.redes_internet.tecnologias_acesso",
+      "nome": "Tecnologias de Acesso à Internet e Telefonia Móvel",
+      "ordem_curricular": 19,
+      "descricao_breve": "Dial-up, ADSL, HFC, fibra, PLC, rádio, satélite e gerações móveis 1G-5G.",
+      "objetivo_pedagogico": "Conhecer formas de conexão à Internet e evolução da telefonia móvel.",
+      "tempo_estudo_estimado_minutos": 50,
+      "pre_requisitos": ["informatica.redes_internet.meios_equipamentos"],
+      "temas_relacionados": ["informatica.redes_internet.padroes_wifi", "informatica.redes_internet.iot_emergentes"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["46-67"], "profundidade": "alta", "observacoes": "Acesso + telefonia móvel 1G-5G."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["199-208", "260"], "profundidade": "media", "observacoes": "Conexões/banda larga 199-208; telefonia móvel em 260."}
+      },
+      "conceitos_principais": ["Dial-up", "ADSL", "HFC", "fibra óptica", "PLC", "satélite", "banda larga", "gerações 1G-5G"],
+      "justificativa_pedagogica": "Tecnologias de última milha + telefonia móvel agrupadas como 'meios de chegar à Internet'."
+    },
+    {
+      "id": "informatica.redes_internet.computacao_nuvem",
+      "nome": "Computação em Nuvem (Cloud Computing)",
+      "ordem_curricular": 20,
+      "descricao_breve": "Conceito, características, modalidades de instalação e modelos de serviço.",
+      "objetivo_pedagogico": "Dominar a computação em nuvem como tema autônomo de alta recorrência.",
+      "tempo_estudo_estimado_minutos": 45,
+      "pre_requisitos": ["informatica.redes_internet.internet_origem_funcionamento"],
+      "temas_relacionados": ["informatica.redes_internet.iot_emergentes"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": null, "paginas": [], "profundidade": "ausente", "observacoes": "Não coberto nas aulas analisadas do Estratégia."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["31-52"], "profundidade": "alta", "observacoes": "Seção completa: conceito, características essenciais 34; modalidades 35; serviços 36-52."}
+      },
+      "conceitos_principais": ["cloud computing", "características essenciais", "nuvem pública/privada/híbrida/comunitária", "SaaS", "PaaS", "IaaS"],
+      "justificativa_pedagogica": "Desmembrado do antigo Tema 18. Nuvem tem peso enorme em concursos e ocupa 22 páginas no Gran; a heterogeneidade conceitual com IoT/Bitcoin não justificava mantê-los juntos. Profundidade alta justificada pela cobertura extensa do Gran."
+    },
+    {
+      "id": "informatica.redes_internet.iot_emergentes",
+      "nome": "IoT e Tecnologias Emergentes",
+      "ordem_curricular": 21,
+      "descricao_breve": "Internet das Coisas: conceito, hardware, tecnologias de comunicação e IA.",
+      "objetivo_pedagogico": "Compreender IoT, seus componentes e tecnologias de conectividade.",
+      "tempo_estudo_estimado_minutos": 40,
+      "pre_requisitos": ["informatica.redes_internet.internet_origem_funcionamento"],
+      "temas_relacionados": ["informatica.redes_internet.tecnologias_acesso", "informatica.redes_internet.computacao_nuvem"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": "Noções de Internet (primeira parte) - Aula 0", "paginas": ["46-56"], "profundidade": "alta", "observacoes": "IoT detalhado: aplicações, componentes, Zigbee/LoRa/Sigfox/NB-IoT, vantagens/desvantagens."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["128-133"], "profundidade": "media", "observacoes": "Conceito de IoT, hardware IoT, uso de IA com IoT."}
+      },
+      "conceitos_principais": ["IoT", "hardware IoT", "Zigbee/LoRa/Sigfox/NB-IoT", "aplicações (saúde, agro, indústria)", "IA com IoT", "vantagens e desvantagens"],
+      "justificativa_pedagogica": "Desmembrado do antigo Tema 18. IoT mantém coesão própria; o Estratégia detalha tecnologias de comunicação que o Gran não cobre — combinação que enriquece o tema. Profundidade média no Gran, alta no Estratégia."
+    },
+    {
+      "id": "informatica.redes_internet.bitcoin_blockchain",
+      "nome": "Bitcoin, Blockchain e Criptomoedas",
+      "ordem_curricular": 22,
+      "descricao_breve": "Bitcoin, lógica de blockchain e criptomoedas, com gancho investigativo.",
+      "objetivo_pedagogico": "Compreender criptomoedas e blockchain, incluindo rastreabilidade e uso ilícito.",
+      "tempo_estudo_estimado_minutos": 35,
+      "pre_requisitos": ["informatica.redes_internet.internet_origem_funcionamento"],
+      "temas_relacionados": ["informatica.redes_internet.deep_dark_web"],
+      "mapeamento_fontes": {
+        "estrategia": {"documento": null, "paginas": [], "profundidade": "ausente", "observacoes": "Não coberto nas aulas analisadas do Estratégia."},
+        "gran": {"documento": "redes-e-internet", "paginas": ["118-126"], "profundidade": "alta", "observacoes": "Seção dedicada 'Criptomoeda – Bitcoin'."}
+      },
+      "conceitos_principais": ["Bitcoin", "blockchain", "criptomoeda", "mineração", "carteira digital"],
+      "justificativa_pedagogica": "Desmembrado do antigo Tema 18. Bitcoin tem seção autônoma no Gran e conexão direta com a Dark Web (Silk Road), de interesse investigativo. Tema curto (35min) mas conceitualmente fechado — preferível a forçar coesão com Nuvem/IoT."
+    }
+  ],
+  "alertas_e_observacoes": {
+    "lacunas_em_ambas_fontes": [
+      {"conceito": "Cibersegurança aplicada à investigação / preservação de evidência digital", "relevancia_concurso": "alta", "recomendacao": "Provavelmente em 'Segurança da Informação'. Validar com edital da PC-BA."},
+      {"conceito": "OSINT (inteligência de fontes abertas) estruturada", "relevancia_concurso": "alta", "recomendacao": "Nenhuma fonte trata; ancorar futuramente no Tema 10 (Redes Sociais)."},
+      {"conceito": "IPv6 em profundidade", "relevancia_concurso": "media", "recomendacao": "Suprir dentro do Tema 14 (Endereçamento IP), que foi criado em parte para isto."},
+      {"conceito": "Rastreamento de IP e cadeia de custódia digital", "relevancia_concurso": "media", "recomendacao": "Avaliar tema-ponte com Segurança/Legislação."}
+    ],
+    "conceitos_exclusivos_estrategia": [
+      "Gerações da Web (Web 1.0/2.0/3.0) — ausente no Gran",
+      "Caso Massacre de Suzano (Dark Web)",
+      "Tecnologias de comunicação IoT detalhadas (Zigbee, LoRa, Sigfox, NB-IoT)",
+      "Gerações da telefonia móvel detalhadas (1G a 5G)"
+    ],
+    "conceitos_exclusivos_gran": [
+      "Computação em Nuvem (p. 31-52) — agora Tema 20",
+      "Bitcoin / Criptomoeda (p. 118-126) — agora Tema 22",
+      "Redes Sociais detalhadas: WhatsApp/Facebook (p. 57-72) — agora Tema 10",
+      "RDP (p. 166-169) — Tema 18",
+      "MAC Address / IMEI / EID / MEID (p. 188-191) — Tema 15"
+    ],
+    "sobreposicoes_entre_temas_papiro": [
+      {"conceito": "VPN", "temas_envolvidos": ["informatica.redes_internet.intranet_extranet_vpn", "informatica.redes_internet.acesso_remoto_voip"], "recomendacao_de_tratamento": "Tratamento principal no Tema 7; no Tema 18 apenas referência cruzada."},
+      {"conceito": "Endereço IP", "temas_envolvidos": ["informatica.redes_internet.ip_tcp_udp", "informatica.redes_internet.enderecamento_ip_ipv6"], "recomendacao_de_tratamento": "IP como protocolo (pacote/datagrama) no Tema 13; IP como esquema de endereçamento (notação, classes, IPv6) no Tema 14."},
+      {"conceito": "HTTPS / criptografia", "temas_envolvidos": ["informatica.redes_internet.protocolos_web_transferencia"], "recomendacao_de_tratamento": "Protocolo no Tema 17; teoria criptográfica na macro-área de Segurança."},
+      {"conceito": "Bitcoin / blockchain", "temas_envolvidos": ["informatica.redes_internet.bitcoin_blockchain", "informatica.redes_internet.deep_dark_web"], "recomendacao_de_tratamento": "Tratamento principal no Tema 22; no Tema 11 apenas referência (uso na Silk Road)."},
+      {"conceito": "Redes Sociais", "temas_envolvidos": ["informatica.redes_internet.redes_sociais"], "recomendacao_de_tratamento": "Aspecto técnico no Tema 10; aspectos de crimes cibernéticos/legislação ficam em Direito."}
+    ],
+    "decisoes_arquiteturais_relevantes": [
+      "Desmembrado o antigo Tema 18 em três temas autônomos (Nuvem 20, IoT 21, Bitcoin 22), aceitando temas de 35-45min em troca de coesão temática total.",
+      "Criado o Tema 10 (Redes Sociais) ancorado em 15 páginas do Gran (57-72), com enquadramento investigativo.",
+      "Dividido o antigo Tema 13 (Identificadores) em dois: Endereçamento IP+IPv6 (Tema 14) e DNS+URL+Identificadores físicos (Tema 15).",
+      "IPv6 reforçado dentro do Tema 14 em vez de tema isolado, por insuficiência de material-fonte para sustentar um tema autônomo de 30min+.",
+      "Renumeração curricular completa para 22 temas, preservando a sequência fundamentos → Internet → protocolos → tecnologias de fronteira.",
+      "Calibração de páginas do Gran: numeração impressa = página física do PDF + 1."
+    ]
+  }
+}

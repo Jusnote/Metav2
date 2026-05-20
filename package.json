@@ -9,7 +9,8 @@
     "start": "next start",
     "build:dev": "next build",
     "lint": "eslint .",
-    "preview": "next start"
+    "preview": "next start",
+    "papiro:seed": "tsx scripts/papiro/generate-seed.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.70",
