@@ -24,6 +24,8 @@ export interface Resumo {
   atualizado_em: string
   atualizado_por: string | null
   publicado_em: string | null
+  tldr: string | null
+  takeaways: Json
 }
 
 type ActionResult<T = unknown> =
@@ -39,6 +41,8 @@ const UuidSchema = z.string().uuid()
 const SalvarRascunhoSchema = z.object({
   subtopicoId: z.string().uuid(),
   conteudoPlate: z.unknown(), // Plate doc — array de blocos arbitrários
+  tldr: z.string().max(2000).nullable().optional(),
+  takeaways: z.array(z.string().max(500)).max(20).optional(),
 })
 
 // ----------------------------------------------------------------------------
@@ -75,6 +79,8 @@ export async function getResumoPorBloco(
 export async function salvarRascunhoResumo(input: {
   subtopicoId: string
   conteudoPlate: unknown
+  tldr?: string | null
+  takeaways?: string[]
 }): Promise<ActionResult<{ id: string; status: 'rascunho' | 'publicado' }>> {
   const parsed = SalvarRascunhoSchema.safeParse(input)
   if (!parsed.success) {
@@ -94,13 +100,21 @@ export async function salvarRascunhoResumo(input: {
     return { ok: false, erro: `Falha ao buscar resumo: ${errSelect.message}` }
   }
 
+  // Monta payload de update/insert; só inclui campos efetivamente passados
+  const conteudoPayload: Record<string, unknown> = {
+    conteudo_plate: parsed.data.conteudoPlate as Json,
+  }
+  if (parsed.data.tldr !== undefined) {
+    conteudoPayload.tldr = parsed.data.tldr
+  }
+  if (parsed.data.takeaways !== undefined) {
+    conteudoPayload.takeaways = parsed.data.takeaways as unknown as Json
+  }
+
   if (existente) {
     const { error } = await supabase
       .from('resumos')
-      .update({
-        conteudo_plate: parsed.data.conteudoPlate as Json,
-        // status mantido (rascunho ou publicado)
-      })
+      .update(conteudoPayload)
       .eq('id', existente.id)
     if (error) return { ok: false, erro: error.message }
 
@@ -120,6 +134,8 @@ export async function salvarRascunhoResumo(input: {
       subtopico_id: parsed.data.subtopicoId,
       conteudo_plate: parsed.data.conteudoPlate as Json,
       status: 'rascunho',
+      tldr: parsed.data.tldr ?? null,
+      takeaways: (parsed.data.takeaways ?? []) as unknown as Json,
     })
     .select('id, status')
     .single()

@@ -192,6 +192,102 @@ export async function carregarConcursoComResumos(
   }
 }
 
+// Helper "Continue de onde parou": último resumo em rascunho do concurso,
+// junto com contexto mínimo (nome do bloco, aula, ordens) pra renderizar o card.
+export interface UltimoRascunho {
+  resumoId: string
+  blocoId: string
+  blocoNome: string
+  blocoOrdem: number
+  aulaOrdem: number
+  aulaNome: string
+  disciplinaNome: string
+  atualizadoEm: string
+}
+
+export async function carregarUltimoRascunho(
+  concursoId: string,
+): Promise<UltimoRascunho | null> {
+  const supabase = createServerClient()
+
+  // 1) Pega o conjunto de subtopico_ids deste concurso
+  const { data: discData } = await supabase
+    .from('concursos')
+    .select(
+      `
+      id,
+      disciplinas (
+        id, nome,
+        blocos_tematicos (
+          topicos (
+            id, nome, ordem,
+            subtopicos ( id, nome, ordem )
+          )
+        )
+      )
+    `,
+    )
+    .eq('id', concursoId)
+    .maybeSingle()
+
+  if (!discData) return null
+
+  const subtopicoMap = new Map<
+    string,
+    {
+      nome: string
+      ordem: number
+      aulaNome: string
+      aulaOrdem: number
+      disciplinaNome: string
+    }
+  >()
+
+  for (const d of discData.disciplinas ?? []) {
+    for (const bt of d.blocos_tematicos ?? []) {
+      for (const t of bt.topicos ?? []) {
+        for (const s of t.subtopicos ?? []) {
+          subtopicoMap.set(s.id, {
+            nome: s.nome,
+            ordem: s.ordem,
+            aulaNome: t.nome,
+            aulaOrdem: t.ordem,
+            disciplinaNome: d.nome,
+          })
+        }
+      }
+    }
+  }
+
+  if (subtopicoMap.size === 0) return null
+
+  // 2) Mais recente rascunho dentre esses subtópicos
+  const { data: rascunho } = await supabase
+    .from('resumos')
+    .select('id, subtopico_id, atualizado_em, status')
+    .in('subtopico_id', Array.from(subtopicoMap.keys()))
+    .eq('status', 'rascunho')
+    .order('atualizado_em', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!rascunho) return null
+
+  const ctx = subtopicoMap.get(rascunho.subtopico_id)
+  if (!ctx) return null
+
+  return {
+    resumoId: rascunho.id,
+    blocoId: rascunho.subtopico_id,
+    blocoNome: ctx.nome,
+    blocoOrdem: ctx.ordem,
+    aulaOrdem: ctx.aulaOrdem,
+    aulaNome: ctx.aulaNome,
+    disciplinaNome: ctx.disciplinaNome,
+    atualizadoEm: rascunho.atualizado_em,
+  }
+}
+
 // Helper para a tela do editor: dados de um bloco específico (com aula/disciplina pai).
 export interface BlocoEditorContexto {
   concursoId: string
