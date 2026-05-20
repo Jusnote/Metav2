@@ -1,170 +1,279 @@
-// Server Component. Renderiza árvore disciplina → aula → bloco (subtopico)
-// com pill de status do resumo + link "Criar" ou "Editar".
+'use client'
+
+// Lista flat de aulas/blocos no padrão do mock (Tela 1).
+// Aula header collapsible com chevron + counter "X/Y" + tempo total.
+// Bloco row com ord + nome + meta + pill de status + arrow.
+//
+// Filtros (Todas/Pendentes/Rascunhos/Publicadas) + busca client-side.
 
 import Link from 'next/link'
-import { StatusResumoPill } from './StatusResumoPill'
-import type { ConcursoComResumos } from '@/v3/lib/resumos/arvore-resumos'
+import { useMemo, useState } from 'react'
+import type {
+  ConcursoComResumos,
+  StatusResumo,
+} from '@/v3/lib/resumos/arvore-resumos'
+import styles from './resumos.module.css'
 
 interface Props {
   concurso: ConcursoComResumos
 }
 
+type Filtro = 'todas' | 'pendentes' | 'rascunhos' | 'publicadas'
+
+const STATUS_PILL: Record<StatusResumo, { className: string; label: string }> = {
+  publicado: { className: styles.pillGreen, label: 'publicado' },
+  rascunho: { className: styles.pillAmber, label: 'rascunho' },
+  'sem-resumo': { className: styles.pillGray, label: 'pendente' },
+}
+
 export function ListaBlocosResumos({ concurso }: Props) {
+  const [filtro, setFiltro] = useState<Filtro>('todas')
+  const [busca, setBusca] = useState('')
+  const [abertas, setAbertas] = useState<Set<string>>(
+    () => new Set(concurso.disciplinas[0]?.aulas[0] ? [concurso.disciplinas[0].aulas[0].id] : []),
+  )
+
+  // Flatten todas as aulas de todas as disciplinas (1 lista achatada como no mock)
+  const aulasFlat = useMemo(() => {
+    return concurso.disciplinas.flatMap((d) =>
+      d.aulas.map((a) => ({
+        ...a,
+        disciplinaId: d.id,
+        disciplinaNome: d.nome,
+      })),
+    )
+  }, [concurso])
+
+  // Aplica filtros + busca
+  const aulasFiltradas = useMemo(() => {
+    const buscaLower = busca.trim().toLowerCase()
+
+    return aulasFlat
+      .map((aula) => {
+        const blocosFiltrados = aula.blocos.filter((b) => {
+          if (filtro === 'pendentes' && b.statusResumo !== 'sem-resumo') return false
+          if (filtro === 'rascunhos' && b.statusResumo !== 'rascunho') return false
+          if (filtro === 'publicadas' && b.statusResumo !== 'publicado') return false
+          if (buscaLower && !b.nome.toLowerCase().includes(buscaLower)) return false
+          return true
+        })
+        return { ...aula, blocos: blocosFiltrados }
+      })
+      .filter((a) => a.blocos.length > 0)
+  }, [aulasFlat, filtro, busca])
+
+  const toggleAula = (aulaId: string) => {
+    setAbertas((prev) => {
+      const novo = new Set(prev)
+      if (novo.has(aulaId)) novo.delete(aulaId)
+      else novo.add(aulaId)
+      return novo
+    })
+  }
+
   if (concurso.disciplinas.length === 0) {
     return <EmptyState />
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-5xl">
-      {concurso.disciplinas.map((disc) => (
-        <section
-          key={disc.id}
-          className="rounded-lg border"
-          style={{
-            borderColor: 'var(--border-default)',
-            backgroundColor: 'var(--bg-surface)',
-          }}
-        >
-          <header
-            className="px-4 py-3 border-b flex items-center gap-3"
-            style={{ borderColor: 'var(--border-default)' }}
+    <div className={styles.listaWrap}>
+      <div className={styles.listaToolbar}>
+        <h3>Aulas</h3>
+        {(['todas', 'pendentes', 'rascunhos', 'publicadas'] as const).map((f) => (
+          <button
+            key={f}
+            type="button"
+            className={`${styles.filterPill} ${filtro === f ? styles.filterPillActive : ''}`}
+            onClick={() => setFiltro(f)}
           >
-            {disc.cor && (
-              <span
-                aria-hidden
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: disc.cor }}
-              />
-            )}
-            <h2
-              className="text-sm font-medium tracking-tight"
-              style={{ color: 'var(--fg-primary)' }}
-            >
-              {disc.nome}
-            </h2>
-            <span
-              className="text-xs"
-              style={{ color: 'var(--fg-tertiary)' }}
-            >
-              {disc.aulas.length} aulas
-            </span>
-          </header>
-          <ul className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
-            {disc.aulas.map((aula) => (
-              <li key={aula.id}>
-                <details className="group" open>
-                  <summary
-                    className="px-4 py-2 cursor-pointer flex items-center gap-3 hover:bg-[var(--bg-surface-2)] transition-colors list-none"
+            {LABELS[f]}
+          </button>
+        ))}
+        <div className={styles.searchWrap}>
+          <svg
+            className={styles.searchIcon}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Buscar bloco..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className={styles.aulas}>
+        {aulasFiltradas.length === 0 ? (
+          <div
+            style={{
+              padding: '40px 24px',
+              textAlign: 'center',
+              color: 'var(--ink-3)',
+              fontSize: 13,
+            }}
+          >
+            Nenhum bloco para os filtros selecionados.
+          </div>
+        ) : (
+          aulasFiltradas.map((aula) => {
+            const aberta = abertas.has(aula.id)
+            const totalBlocos = aula.blocos.length
+            const blocosConcluidos = aula.blocos.filter(
+              (b) => b.statusResumo === 'publicado',
+            ).length
+
+            // Tempo total: soma horas_sugeridas dos blocos (ou da aula como fallback)
+            const totalMin = aula.blocos.reduce((acc, b) => {
+              const h = b.horas_sugeridas ?? 0
+              return acc + h * 60
+            }, 0)
+            const tempoStr = formatarTempo(
+              totalMin > 0 ? totalMin : aula.horas_sugeridas * 60,
+            )
+
+            return (
+              <div
+                key={aula.id}
+                className={`${styles.aula} ${aberta ? styles.aulaOpen : ''}`}
+              >
+                <button
+                  type="button"
+                  className={styles.aulaHead}
+                  onClick={() => toggleAula(aula.id)}
+                >
+                  <svg
+                    className={styles.aulaChev}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <ChevronIcon />
-                    <span
-                      className="text-sm font-medium flex-1"
-                      style={{ color: 'var(--fg-primary)' }}
-                    >
-                      Aula {String(aula.ordem).padStart(2, '0')} —{' '}
-                      {aula.nome}
-                    </span>
-                    <span
-                      className="text-xs"
-                      style={{ color: 'var(--fg-tertiary)' }}
-                    >
-                      {aula.blocos.length} blocos
-                    </span>
-                  </summary>
-                  <ul
-                    className="border-t"
-                    style={{ borderColor: 'var(--border-subtle, rgba(127,127,127,0.15))' }}
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                  <div className={styles.aulaNum}>
+                    {String(aula.ordem).padStart(2, '0')}
+                  </div>
+                  <div className={styles.aulaName}>{aula.nome}</div>
+                  <div
+                    className={`${styles.aulaCounter} ${
+                      blocosConcluidos === totalBlocos && totalBlocos > 0
+                        ? styles.aulaCounterComplete
+                        : ''
+                    }`}
                   >
-                    {aula.blocos.length === 0 ? (
-                      <li
-                        className="px-10 py-2 text-xs italic"
-                        style={{ color: 'var(--fg-tertiary)' }}
-                      >
-                        Esta aula não tem blocos cadastrados.
-                      </li>
-                    ) : (
-                      aula.blocos.map((bloco) => (
-                        <li
+                    {blocosConcluidos} / {totalBlocos}
+                  </div>
+                  <div className={styles.aulaTime}>{tempoStr}</div>
+                </button>
+                {aberta && (
+                  <div className={styles.aulaBody}>
+                    {aula.blocos.map((bloco) => {
+                      const pillCfg = STATUS_PILL[bloco.statusResumo]
+                      const isPending = bloco.statusResumo === 'sem-resumo'
+                      const blocoTime = bloco.horas_sugeridas
+                        ? `${Math.round(bloco.horas_sugeridas * 60)} min`
+                        : '—'
+                      return (
+                        <Link
                           key={bloco.id}
-                          className="px-10 py-2 flex items-center gap-3 hover:bg-[var(--bg-surface-2)] transition-colors"
+                          href={`/v3/admin/concursos/${concurso.id}/resumos/${bloco.id}`}
+                          className={`${styles.bloco} ${
+                            isPending ? styles.blocoPending : ''
+                          }`}
                         >
-                          <span
-                            className="text-sm flex-1 min-w-0 truncate"
-                            style={{ color: 'var(--fg-secondary)' }}
-                          >
-                            <span
-                              className="font-medium mr-1"
-                              style={{ color: 'var(--fg-primary)' }}
-                            >
-                              Bloco {bloco.ordem}:
-                            </span>
-                            {bloco.nome}
+                          <div className={styles.blocoOrd}>
+                            {String(bloco.ordem).padStart(2, '0')}
+                          </div>
+                          <div className={styles.blocoName}>{bloco.nome}</div>
+                          <div className={styles.blocoMeta}>{blocoTime}</div>
+                          <span className={`${styles.pill} ${pillCfg.className}`}>
+                            {pillCfg.label}
                           </span>
-                          <StatusResumoPill status={bloco.statusResumo} />
-                          <Link
-                            href={`/v3/admin/concursos/${concurso.id}/resumos/${bloco.id}`}
-                            className="text-xs px-2 py-1 rounded-md transition-colors"
-                            style={{
-                              backgroundColor: 'var(--bg-surface-2)',
-                              color: 'var(--fg-secondary)',
-                              border: '1px solid var(--border-default)',
-                            }}
-                          >
-                            {bloco.statusResumo === 'sem-resumo'
-                              ? 'Criar'
-                              : 'Editar'}
-                          </Link>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </details>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+                          <span className={styles.blocoArrow}>
+                            {isPending ? (
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 5v14M5 12h14" />
+                              </svg>
+                            ) : (
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M5 12h14M13 5l7 7-7 7" />
+                              </svg>
+                            )}
+                          </span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })
+        )}
+      </div>
     </div>
   )
 }
 
-function ChevronIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      className="text-current group-open:rotate-90 transition-transform"
-      style={{ color: 'var(--fg-tertiary)' }}
-      aria-hidden
-    >
-      <path
-        d="M4 2l4 4-4 4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+const LABELS: Record<Filtro, string> = {
+  todas: 'Todas',
+  pendentes: 'Pendentes',
+  rascunhos: 'Rascunhos',
+  publicadas: 'Publicadas',
+}
+
+function formatarTempo(minutos: number): string {
+  if (minutos <= 0) return '—'
+  const h = Math.floor(minutos / 60)
+  const m = Math.round(minutos % 60)
+  if (h === 0) return `${m}min`
+  if (m === 0) return `${h}h`
+  return `${h}h${String(m).padStart(2, '0')}`
 }
 
 function EmptyState() {
   return (
-    <div className="flex items-center justify-center p-12">
-      <div className="text-center max-w-md">
-        <h2
-          className="text-base font-medium mb-2"
-          style={{ color: 'var(--fg-primary)' }}
-        >
-          Sem conteúdo
-        </h2>
-        <p className="text-sm" style={{ color: 'var(--fg-secondary)' }}>
-          Este concurso ainda não tem disciplinas/aulas cadastradas.
-          Volte para a tela de revisão para processar o edital.
-        </p>
-      </div>
+    <div
+      style={{
+        maxWidth: 1080,
+        margin: '56px auto 0',
+        padding: '40px',
+        textAlign: 'center',
+        color: 'var(--ink-3)',
+      }}
+    >
+      <h2 style={{ fontSize: 16, marginBottom: 8, color: 'var(--ink)' }}>
+        Sem conteúdo
+      </h2>
+      <p style={{ fontSize: 13 }}>
+        Este concurso ainda não tem disciplinas/aulas cadastradas. Volte para
+        a tela de revisão para processar o edital.
+      </p>
     </div>
   )
 }
