@@ -1,6 +1,7 @@
 // /v3/cursos/[id]/resumos/[blocoId] — leitor de resumo (aluno, read-only).
-// Refinado: header espelho PlateEditorPage, reading progress, TL;DR callout,
-// Plate read-only, takeaways card preto, rating FSRS, drawer com TOC + próximo.
+// Mesma estrutura visual do admin: Plate full-bleed sem cardificação.
+// TL;DR fica como faixa fina abaixo do header (readonly). Takeaways e
+// Rating FSRS aparecem em cards próprios DEPOIS do Plate (.afterPlate).
 
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -109,109 +110,106 @@ export default async function ResumoLeitorPage({ params }: Props) {
           </div>
         </header>
 
-        {/* Stage */}
-        <main className={styles.plateStage}>
-          {!publicado || !resumo ? (
-            <EstadoVazio />
-          ) : (
-            <>
-              <div className={styles.plateEditorCard}>
-                <div style={{ padding: '56px 64px 80px', maxWidth: 820, margin: '0 auto' }}>
-                  {tldr.trim().length > 0 && (
-                    <div className={styles.leitorCalloutCard}>
-                      <div className={styles.leitorCalloutLabel}>
-                        O que vai aprender
-                      </div>
-                      <p>{tldr}</p>
-                    </div>
-                  )}
-
-                  <ResumoLeitor conteudo={conteudo} />
-
-                  {takeaways.length > 0 && (
-                    <div className={styles.takeawaysCard}>
-                      <div className={styles.leitorCalloutLabel}>
-                        Decora isso
-                      </div>
-                      <ul>
-                        {takeaways.map((t, idx) => (
-                          <li key={idx}>{t}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <RatingFSRS
-                    resumoId={resumo.id}
-                    proximoBlocoHref={
-                      proximo
-                        ? `/v3/cursos/${id}/resumos/${proximo.id}`
-                        : null
-                    }
-                    proximoBlocoNome={proximo?.nome ?? null}
-                  />
+        {!publicado || !resumo ? (
+          <EstadoVazio />
+        ) : (
+          <>
+            {/* TL;DR como faixa fina (readonly no leitor) */}
+            {tldr.trim().length > 0 && (
+              <div className={styles.tldrBar}>
+                <div className={styles.tldrBarInner}>
+                  <p className={styles.tldrInlineReadonly} style={{ margin: 0 }}>
+                    {tldr}
+                  </p>
                 </div>
               </div>
+            )}
 
-              {/* Drawer "+" flutuante com TOC + próximo bloco */}
-              <DrawerContexto
-                titulo="Sumário"
-                triggerAriaLabel="Sumário & navegação"
-              >
-                {toc.length > 0 && (
-                  <section className={styles.drawerSection}>
+            {/* Plate readonly full-bleed */}
+            <div className={styles.plateStage}>
+              <ResumoLeitor conteudo={conteudo} />
+            </div>
+
+            {/* Conteúdo abaixo do Plate: Takeaways + Rating */}
+            <div className={styles.afterPlate}>
+              {takeaways.length > 0 && (
+                <div className={styles.takeawaysCard}>
+                  <div className={styles.leitorCalloutLabel}>Decora isso</div>
+                  <ul>
+                    {takeaways.map((t, idx) => (
+                      <li key={idx}>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <RatingFSRS
+                resumoId={resumo.id}
+                proximoBlocoHref={
+                  proximo ? `/v3/cursos/${id}/resumos/${proximo.id}` : null
+                }
+                proximoBlocoNome={proximo?.nome ?? null}
+              />
+            </div>
+
+            {/* Drawer "+" flutuante com TOC + próximo bloco */}
+            <DrawerContexto
+              titulo="Sumário"
+              triggerAriaLabel="Sumário & navegação"
+            >
+              {toc.length > 0 && (
+                <section className={styles.drawerSection}>
+                  <div className={styles.drawerSectionLabel}>
+                    <span className="dot" />
+                    Nesta página
+                  </div>
+                  {toc.map((entry) => (
+                    <a
+                      key={entry.id}
+                      href={`#${entry.id}`}
+                      className={styles.drawerTocLink}
+                      style={{
+                        paddingLeft: 16 + (entry.nivel - 1) * 12,
+                      }}
+                    >
+                      {entry.texto}
+                    </a>
+                  ))}
+                </section>
+              )}
+
+              {proximo && (
+                <section className={styles.drawerSection}>
+                  <div className={styles.drawerNext}>
                     <div className={styles.drawerSectionLabel}>
                       <span className="dot" />
-                      Nesta página
+                      Próximo bloco
                     </div>
-                    {toc.map((entry) => (
-                      <a
-                        key={entry.id}
-                        href={`#${entry.id}`}
-                        className={styles.drawerTocLink}
-                        style={{
-                          paddingLeft: 16 + (entry.nivel - 1) * 12,
-                        }}
+                    <h4 className={styles.drawerNextTitle}>{proximo.nome}</h4>
+                    <Link
+                      href={`/v3/cursos/${id}/resumos/${proximo.id}`}
+                      className={styles.drawerNextLink}
+                    >
+                      Continuar
+                      <svg
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        {entry.texto}
-                      </a>
-                    ))}
-                  </section>
-                )}
-
-                {proximo && (
-                  <section className={styles.drawerSection}>
-                    <div className={styles.drawerNext}>
-                      <div className={styles.drawerSectionLabel}>
-                        <span className="dot" />
-                        Próximo bloco
-                      </div>
-                      <h4 className={styles.drawerNextTitle}>{proximo.nome}</h4>
-                      <Link
-                        href={`/v3/cursos/${id}/resumos/${proximo.id}`}
-                        className={styles.drawerNextLink}
-                      >
-                        Continuar
-                        <svg
-                          width="13"
-                          height="13"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M5 12h14M13 5l7 7-7 7" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </section>
-                )}
-              </DrawerContexto>
-            </>
-          )}
-        </main>
+                        <path d="M5 12h14M13 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                </section>
+              )}
+            </DrawerContexto>
+          </>
+        )}
       </div>
     </div>
   )
