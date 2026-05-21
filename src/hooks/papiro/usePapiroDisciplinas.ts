@@ -66,7 +66,9 @@ export function usePapiroDisciplinas() {
           macroAreasCount: d.macro_area.length,
           stats: { temasTotal, tempoTotalMin, temasDisponiveis },
         };
-        if (temasDisponiveis > 0) disponiveis.push(resumo);
+        // Disponível = tem taxonomia exposta (≥1 tema, mesmo que todos "em breve").
+        // Em produção = curadoria ainda em andamento, sem nenhum tema ainda.
+        if (temasTotal > 0) disponiveis.push(resumo);
         else emProducao.push(resumo);
       }
 

@@ -68,7 +68,9 @@ export function usePapiroDisciplina(disciplinaSlug: string | undefined) {
           ordem: ma.ordem,
           stats: { temasTotal, tempoTotalMin, temasDisponiveis },
         };
-        if (temasDisponiveis > 0) macroAreasDisponiveis.push(resumo);
+        // Disponível = macro_area tem ≥1 tema (taxonomia exposta).
+        // Em produção = sem temas ainda.
+        if (temasTotal > 0) macroAreasDisponiveis.push(resumo);
         else macroAreasEmProducao.push(resumo);
       }
 
