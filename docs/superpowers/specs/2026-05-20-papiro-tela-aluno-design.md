@@ -123,11 +123,15 @@ disciplinaUrl(disciplinaSlug: string): string;          // → "/estudar/informa
 macroAreaUrl(macroAreaSlug: string): string;            // → "/estudar/informatica/redes_internet"
 temaUrl(temaSlugHierarquico: string): string;           // → "/estudar/informatica/redes_internet/fundamentos_redes"
 
-// Validações (joga erro se slug não casar com /^[a-z0-9_.]+$/ ou não tiver segmentos esperados)
+// Validações: isValidSlug retorna boolean (ergonômico no JSX);
+// validateSlug joga Error (defesa em utilities puros).
+isValidSlug(slug: string): boolean;
 validateSlug(slug: string): void;
 ```
 
-Cobertura de testes (`slug.test.ts`): slug normal, com underscore, com inválidos (espaço/maiúscula/acento → throw), URLs roundtrip, etc.
+**Invocação no fluxo real:** cada page component (`PapiroDisciplinaPage`, `PapiroTrilhaPage`, `PapiroLeitorPage`) chama `isValidSlug(...)` em todos os params de URL **antes** de montar o slug do DB ou chamar o hook. Se algum for inválido (chars fora de `/^[a-z0-9_.]+$/`, vazio, etc.), retorna `<Navigate to="..." replace />` pra rota válida acima — mesma estratégia do "tema não encontrado" (Sec 4). Sem isso, o validador não protegeria nada — só o `slug.test.ts` o exerceria isoladamente.
+
+Cobertura de testes (`slug.test.ts`): slug normal, com underscore, com inválidos (espaço/maiúscula/acento → `validateSlug` joga, `isValidSlug` retorna `false`), URLs roundtrip, etc.
 
 ---
 
@@ -509,6 +513,7 @@ Decisão consciente: focal **em desktop também** fica pra fase futura. Reaprove
 | Mobile focal cobrir AppTopNav com `position: fixed` quebrar scroll do body | `body.papiro-leitor-open { overflow: hidden }` aplicado pelo `useEffect` no leitor; só efetiva via media query mobile. |
 | Cache do React Query servir status antigo após publicar resumo | `staleTime: 5min`. Pra forçar após admin publicar (fase futura), `queryClient.invalidateQueries(['papiro'])`. |
 | `coaching.resumos` × `papiro.resumo` confusão futura | Spec irmã documenta a divisão (`coaching` = "quando", `papiro` = "o que"). Sem mistura na V1. |
+| **Duas portas pra conteúdo durante a V1**: nav "Estudar" (PAPIRO aluno) coexiste com item legacy "Resumos" no menu `more` (`/resumos-list`, v2/v3) | Aceito conscientemente pra não quebrar nada na V1. Decisão de destino do legado fica pra **quando o editor PAPIRO entrar** — aí avaliamos se o legado migra, é deprecated ou some. Documentado também na Sec 7. |
 | **Risco de produto**: V1 nasce com 22 "em breve" — tela pode parecer "abandonada" em vez de "chegando" | Mitigado pelas decisões 9 (preview pedagógico rico — cada tema mostra objetivo + conceitos + prereqs, dá sensação de catálogo curado) + texto da trilha "a trilha cresce conforme novos resumos saem". Validar visualmente quando a tela estiver pronta — se ainda parecer abandonada, ajustar copy/visual antes do primeiro release. |
 
 ---
