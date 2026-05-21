@@ -35,14 +35,14 @@ export default function PapiroLeitorPage() {
 
   if (isLoading) {
     return (
-      <article className="papiro-leitor-mobile-focal mx-auto max-w-[760px] px-8 py-10">
+      <article className="papiro-leitor-mobile-focal w-full px-8 py-10">
         <div className="text-sm text-stone-500">Carregando tema…</div>
       </article>
     );
   }
   if (error) {
     return (
-      <article className="papiro-leitor-mobile-focal mx-auto max-w-[760px] px-8 py-10">
+      <article className="papiro-leitor-mobile-focal w-full px-8 py-10">
         <div className="text-sm text-red-600">Erro ao carregar tema.</div>
       </article>
     );
@@ -55,9 +55,11 @@ export default function PapiroLeitorPage() {
   const temResumo = resumo !== null && resumo.conteudo_plate !== null;
 
   return (
-    <article className="papiro-leitor-mobile-focal mx-auto max-w-[760px] bg-white">
+    <article className="papiro-leitor-mobile-focal w-full bg-white">
       <LeitorTopbar onExitHref={trilhaHref} indice={indice} />
-      <div className="px-8 pb-12 pt-7">
+
+      {/* Header (breadcrumb + título + meta) constrito numa coluna de leitura */}
+      <div className="mx-auto max-w-[920px] px-8 pt-7">
         <div className="mb-3 text-[11px] text-stone-400">
           <Link to="/estudar" className="text-stone-600 hover:text-stone-900">Estudar</Link>
           {' › '}
@@ -75,13 +77,22 @@ export default function PapiroLeitorPage() {
         <div className="mb-5 border-b border-stone-100 pb-4 text-[11px] text-stone-500">
           Tema {tema.ordem_curricular} · {tema.tempo_estudo_min ?? '?'} min
         </div>
+      </div>
 
-        {temResumo ? (
+      {/* Resumo/preview: full-bleed quando publicado (Plate respira); preview pedagógico
+          em coluna de leitura (texto curto, melhor legibilidade) */}
+      {temResumo ? (
+        <div className="w-full">
           <ResumoLeitor conteudo={resumo.conteudo_plate as unknown as Value} />
-        ) : (
+        </div>
+      ) : (
+        <div className="mx-auto max-w-[920px] px-8">
           <TemaSemResumoPreview tema={tema} prereqs={prereqs} />
-        )}
+        </div>
+      )}
 
+      {/* Nav rodapé: constrita pra alinhar com o header */}
+      <div className="mx-auto max-w-[920px] px-8 pb-12">
         <LeitorNavRodape prev={prev} next={next} />
       </div>
     </article>
