@@ -4,6 +4,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
   IconHome,
+  IconBook2,
   IconPlayerPlay,
   IconHelpCircle,
   IconScale,
@@ -49,6 +50,7 @@ interface NavItem {
 
 const mainNavigation: NavItem[] = [
   { label: "Início", href: "/", icon: <IconHome className="h-4 w-4" /> },
+  { label: "Estudar", href: "/estudar", icon: <IconBook2 className="h-4 w-4" /> },
   {
     label: "Flashcards",
     href: "/flashcards",
