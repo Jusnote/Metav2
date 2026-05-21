@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import '../src/styles/_variables.scss';
 @import '../src/styles/_keyframe-animations.scss';
+@import './components/papiro/papiro.css';
 
 @plugin 'tailwindcss-animate';
 
@@ -233,6 +234,13 @@
       transform: translateY(100%) scale(0.96);
       opacity: 0;
     }
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-3deg); }
+    40% { transform: rotate(3deg); }
+    60% { transform: rotate(-2deg); }
+    80% { transform: rotate(2deg); }
   }
   @keyframes slide-up-in {
     0% {
@@ -2124,4 +2132,44 @@ All colors MUST be HSL.
 @keyframes pulse-dot {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
   50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+}
+
+@keyframes cargo-sigla-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-cargo-sigla-in {
+  animation: cargo-sigla-in .28s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes cargo-title-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-cargo-title-in {
+  animation: cargo-title-in .28s cubic-bezier(.22,1,.36,1);
+}
+
+/* Anticipation pulse — depois da transição, o card pulsa brevemente
+   pra reforçar "ecossistema atualizado". */
+@keyframes cargo-card-pulse {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.animate-cargo-card-pulse {
+  animation: cargo-card-pulse .55s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* === Cronograma Setup Wizard === */
+@keyframes typingPulse {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+@keyframes setup-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: setup-fade-up 0.4s ease-out;
 }

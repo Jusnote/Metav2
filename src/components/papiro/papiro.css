@@ -1,0 +1,40 @@
+/* PAPIRO — estilos locais escopados em .papiro-* */
+
+/* Cores PAPIRO (sage/cream) — usadas via classes Tailwind arbitrary nos componentes,
+   mas algumas precisam aqui pelo cascade do focal mobile. */
+
+/* === Mobile focal do leitor === */
+@media (max-width: 768px) {
+  .papiro-leitor-mobile-focal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #fff;
+    overflow-y: auto;
+  }
+  body.papiro-leitor-open {
+    overflow: hidden;
+  }
+}
+@media (min-width: 769px) {
+  .papiro-leitor-topbar { display: none !important; }
+}
+
+/* === Linha conectora da trilha (otimizada pra grid layout) === */
+.papiro-trilha-list {
+  position: relative;
+}
+.papiro-trilha-list::before {
+  content: '';
+  position: absolute;
+  left: 60px;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: #e5e7eb;
+}
+@media (max-width: 640px) {
+  .papiro-trilha-list::before {
+    left: 44px;
+  }
+}
