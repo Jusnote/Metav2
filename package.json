@@ -10,7 +10,8 @@
     "build:dev": "next build",
     "lint": "eslint .",
     "preview": "next start",
-    "papiro:seed": "tsx scripts/papiro/generate-seed.ts"
+    "papiro:seed": "tsx scripts/papiro/generate-seed.ts",
+    "papiro:types": "supabase gen types typescript --project-id xmtleqquivcukwgdexhc --schema papiro > src/types/database.papiro.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.70",
