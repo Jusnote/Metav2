@@ -10,7 +10,11 @@
  * Tudo puro, sem dependência de React/router. Testado em slug.test.ts.
  */
 
-const SLUG_PATTERN = /^[a-z0-9_.]+$/;
+/** Single segment: letters/digits/underscore only — no dots, no empties. */
+const SEGMENT_PATTERN = /^[a-z0-9_]+$/;
+
+/** Compound slug: 1+ segments joined by single dots (no leading/trailing/consecutive dots). */
+const SLUG_PATTERN = /^[a-z0-9_]+(\.[a-z0-9_]+)*$/;
 
 export function isValidSlug(slug: string): boolean {
   return typeof slug === 'string' && slug.length > 0 && SLUG_PATTERN.test(slug);
@@ -18,20 +22,26 @@ export function isValidSlug(slug: string): boolean {
 
 export function validateSlug(slug: string): void {
   if (!isValidSlug(slug)) {
-    throw new Error(`PAPIRO: slug inválido "${slug}" (esperado /^[a-z0-9_.]+$/)`);
+    throw new Error(`PAPIRO: slug inválido "${slug}" (esperado /^[a-z0-9_]+(\\.[a-z0-9_]+)*$/)`);
+  }
+}
+
+function validateSegment(segment: string, kind: string): void {
+  if (typeof segment !== 'string' || !SEGMENT_PATTERN.test(segment)) {
+    throw new Error(`PAPIRO: ${kind} inválido "${segment}" (esperado /^[a-z0-9_]+$/, sem pontos)`);
   }
 }
 
 export function buildMacroAreaSlug(disciplinaSlug: string, macroAreaTail: string): string {
-  validateSlug(disciplinaSlug);
-  validateSlug(macroAreaTail);
+  validateSegment(disciplinaSlug, 'disciplinaSlug');
+  validateSegment(macroAreaTail, 'macroAreaTail');
   return `${disciplinaSlug}.${macroAreaTail}`;
 }
 
 export function buildTemaSlug(disciplinaSlug: string, macroAreaTail: string, temaTail: string): string {
-  validateSlug(disciplinaSlug);
-  validateSlug(macroAreaTail);
-  validateSlug(temaTail);
+  validateSegment(disciplinaSlug, 'disciplinaSlug');
+  validateSegment(macroAreaTail, 'macroAreaTail');
+  validateSegment(temaTail, 'temaTail');
   return `${disciplinaSlug}.${macroAreaTail}.${temaTail}`;
 }
 

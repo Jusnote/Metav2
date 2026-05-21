@@ -27,6 +27,14 @@ describe('isValidSlug', () => {
     expect(isValidSlug('redes/internet')).toBe(false);
     expect(isValidSlug('')).toBe(false);
   });
+
+  it('rejeita slug com pontos pathológicos', () => {
+    expect(isValidSlug('.')).toBe(false);
+    expect(isValidSlug('..')).toBe(false);
+    expect(isValidSlug('a..b')).toBe(false);
+    expect(isValidSlug('a.')).toBe(false);
+    expect(isValidSlug('.a')).toBe(false);
+  });
 });
 
 describe('validateSlug', () => {
@@ -44,12 +52,23 @@ describe('buildMacroAreaSlug', () => {
     expect(buildMacroAreaSlug('informatica', 'redes_internet'))
       .toBe('informatica.redes_internet');
   });
+
+  it('rejeita argumento que já contém ponto (tail deve ser segmento único)', () => {
+    expect(() => buildMacroAreaSlug('a.b', 'c')).toThrow();
+    expect(() => buildMacroAreaSlug('a', 'b.c')).toThrow();
+  });
 });
 
 describe('buildTemaSlug', () => {
   it('concatena os 3 segmentos com pontos', () => {
     expect(buildTemaSlug('informatica', 'redes_internet', 'fundamentos_redes'))
       .toBe('informatica.redes_internet.fundamentos_redes');
+  });
+
+  it('rejeita argumento que contém ponto em qualquer posição', () => {
+    expect(() => buildTemaSlug('a.b', 'c', 'd')).toThrow();
+    expect(() => buildTemaSlug('a', 'b.c', 'd')).toThrow();
+    expect(() => buildTemaSlug('a', 'b', 'c.d')).toThrow();
   });
 });
 
