@@ -12,7 +12,9 @@ interface RawDisciplina {
     tema: Array<{
       id: string;
       tempo_estudo_min: number | null;
-      resumo: Array<{ status: string }>;
+      // FK UNIQUE em resumo.tema_id → PostgREST detecta 1-1 e devolve
+      // single object | null (não array). RLS bloqueada também vem null.
+      resumo: { status: string } | null;
     }>;
   }>;
 }
@@ -52,8 +54,8 @@ export function usePapiroDisciplinas() {
           for (const t of ma.tema) {
             temasTotal++;
             tempoTotalMin += t.tempo_estudo_min ?? 0;
-            // RLS já filtra status='publicado'; embed vem [] se bloqueado.
-            if (t.resumo.length > 0) temasDisponiveis++;
+            // RLS já filtra status='publicado'; embed vem null se bloqueado/inexistente.
+            if (t.resumo !== null) temasDisponiveis++;
           }
         }
         const resumo: PapiroDisciplinaResumo = {

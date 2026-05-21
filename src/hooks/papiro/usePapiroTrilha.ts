@@ -21,7 +21,8 @@ interface RawMacroAreaTrilha {
     conceitos_principais: unknown;
     mapeamento_paginas: unknown;
     criado_em: string;
-    resumo: Array<{ status: string }>;
+    // FK UNIQUE em resumo.tema_id → PostgREST 1-1: single object | null
+    resumo: { status: string } | null;
   }>;
 }
 
@@ -85,7 +86,7 @@ export function usePapiroTrilha(macroAreaSlug: string | undefined) {
           ...t,
           conceitos_principais: t.conceitos_principais as never,
           mapeamento_paginas: t.mapeamento_paginas as never,
-          temResumoPublicado: t.resumo.length > 0,
+          temResumoPublicado: t.resumo !== null,
           prereqs: prereqsByTema.get(t.id) ?? [],
         }));
 

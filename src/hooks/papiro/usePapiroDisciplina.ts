@@ -16,7 +16,8 @@ interface RawDisciplina {
     tema: Array<{
       id: string;
       tempo_estudo_min: number | null;
-      resumo: Array<{ status: string }>;
+      // FK UNIQUE → PostgREST 1-1: single object | null
+      resumo: { status: string } | null;
     }>;
   }>;
 }
@@ -58,7 +59,7 @@ export function usePapiroDisciplina(disciplinaSlug: string | undefined) {
         for (const t of ma.tema) {
           temasTotal++;
           tempoTotalMin += t.tempo_estudo_min ?? 0;
-          if (t.resumo.length > 0) temasDisponiveis++;
+          if (t.resumo !== null) temasDisponiveis++;
         }
         const resumo: PapiroMacroAreaResumo = {
           id: ma.id,

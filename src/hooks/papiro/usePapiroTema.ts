@@ -16,7 +16,8 @@ interface RawTema extends PapiroTema {
     disciplina: { slug: string; nome: string } | null;
     tema: Array<{ id: string; slug_hierarquico: string; nome: string; ordem_curricular: number }>;
   } | null;
-  resumo: PapiroResumo[];
+  // FK UNIQUE em resumo.tema_id → PostgREST 1-1: single object | null.
+  resumo: PapiroResumo | null;
 }
 
 interface RawPrereqTema {
@@ -68,7 +69,7 @@ export function usePapiroTema(temaSlug: string | undefined) {
       const prev: PapiroTemaSibling | null = idx > 0 ? irmaos[idx - 1] : null;
       const next: PapiroTemaSibling | null = idx >= 0 && idx < irmaos.length - 1 ? irmaos[idx + 1] : null;
 
-      const resumo: PapiroResumo | null = tema.resumo.length > 0 ? tema.resumo[0] : null;
+      const resumo: PapiroResumo | null = tema.resumo;
       const macroAreaSlug = tema.macro_area?.slug ?? '';
       const macroAreaTail = macroAreaSlug.includes('.') ? macroAreaSlug.split('.').slice(1).join('.') : macroAreaSlug;
 
