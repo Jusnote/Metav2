@@ -58,6 +58,10 @@ import { QuestionsReportsPage } from './components/moderation/questions/Question
 import { LeiReportsPage } from './components/moderation/lei-seca/LeiReportsPage';
 import { EditaisModerationPage } from './components/moderation/editais/EditaisModerationPage'
 import CuradoriaEditaisPage from './views/CuradoriaEditaisPage';
+import PapiroIndexPage from './views/papiro/PapiroIndexPage';
+import PapiroDisciplinaPage from './views/papiro/PapiroDisciplinaPage';
+import PapiroTrilhaPage from './views/papiro/PapiroTrilhaPage';
+import PapiroLeitorPage from './views/papiro/PapiroLeitorPage';
 
 const queryClient = new QueryClient();
 
@@ -189,6 +193,11 @@ const App = () => {
                   <Route path="/" element={<AppContent />}>
                     <Route index element={<PrivateRoute><HomePage /></PrivateRoute>} />
                     <Route path="flashcards" element={<PrivateRoute><Index /></PrivateRoute>} />
+                    {/* Papiro - estudar */}
+                    <Route path="estudar" element={<PrivateRoute><PapiroIndexPage /></PrivateRoute>} />
+                    <Route path="estudar/:disciplinaSlug" element={<PrivateRoute><PapiroDisciplinaPage /></PrivateRoute>} />
+                    <Route path="estudar/:disciplinaSlug/:macroAreaTail" element={<PrivateRoute><PapiroTrilhaPage /></PrivateRoute>} />
+                    <Route path="estudar/:disciplinaSlug/:macroAreaTail/:temaTail" element={<PrivateRoute><PapiroLeitorPage /></PrivateRoute>} />
                     <Route path="resumos-list" element={<PrivateRoute><ResumosListPage /></PrivateRoute>} />
                     <Route path="resumos" element={<PrivateRoute><EditResumoPage /></PrivateRoute>} />
                     <Route path="study" element={<PrivateRoute><StudyPage /></PrivateRoute>} />
