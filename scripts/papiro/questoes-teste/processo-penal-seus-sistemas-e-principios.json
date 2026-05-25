@@ -1,0 +1,975 @@
+[
+  {
+    "id": 458393,
+    "enunciado": "A condição de terceiro é [...] em relação às provas, ao conteúdo probatório, já que o acertamento das condutas deve ser novidade ao julgador. O juiz é um sujeito processual (não parte) ontologicamente concebido como um ignorante, porque ele (necessariamente) ignora o caso penal em julgamento. Deixará o juiz de ser um ignorante quando, ao longo da instrução, lhe trouxerem as partes às provas que lhe permitirão então conhecer. \n \n (LOPES JR, Aury e ROSA, Alexandre Moraes da. Quando o juiz já sabia, em: www.conjur.com.br) \n \n Tal lição doutrinária sinaliza como a atuação do mesmo juiz em fase pré-processual atinge sua imparcialidade para julgar o mérito da demanda penal, eis que macula algo primordial em sua atuação, a denominada",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "originalidade cognitiva.",
+      "falsa memória.",
+      "fishing expedition.",
+      "segurança normativa.",
+      "competência funcional."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "originalidade cognitiva.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459322,
+    "enunciado": "A Constituição Federal, por seus princípios e regras, estabelece a vigência de um sistema processual penal do tipo acusatório, previsão reforçada pelo disposto no art. 3ª A, da Lei nº 13.964/2019. São características deste sistema",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "publicidade dos atos processuais, fundamentação das decisões judiciais e suficiência da confissão como único meio de formação do livre convencimento motivado do julgador.",
+      "a verdade real, a presunção de inocência e a dignidade da pessoa humana.",
+      "a ampla iniciativa probatória do juiz, o contraditório e a ampla defesa.",
+      "a separação das funções de acusar e julgar, a presunção de inocência e a oralidade como regra.",
+      "o reexame obrigatório das decisões que absolvem o réu (primeira fase do júri), a igualdade das partes e a presunção de inocência."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "a separação das funções de acusar e julgar, a presunção de inocência e a oralidade como regra.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2025,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458627,
+    "enunciado": "No que diz respeito à norma processual penal, aos sistemas processuais penais e à investigação criminal, julgue o item subsequente. \n \n No ordenamento jurídico brasileiro, em regra, a lei processual penal será aplicada com fulcro no princípio do tempus delicti.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "Errado",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459135,
+    "enunciado": "A República Federativa Alfa reconhece o Poder Judiciário como um dos poderes independentes da República. Em Alfa há um órgão de acusação independente e diferente do Judiciário, responsável por formular acusações criminais, tendo a iniciativa probatória. \n \n Em Alfa , um acusado seria um sujeito de direitos no âmbito do processo penal, e os princípios democráticos do processo penal, tais como o princípio do Juiz Natural e da presunção de inocência, são reconhecidos. \n \n A partir dos dados fornecidos, o país Alfa adota o sistema processual com traços mais marcantes do sistema",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "acusatório.",
+      "inquisitivo.",
+      "misto.",
+      "consensual."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "acusatório.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458939,
+    "enunciado": "O sistema processual penal acusatório antagoniza o sistema inquisitivo, entre outras razões, por",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "adotar a prevalência das regras constitucionais sobre as regras legais.",
+      "determinar a participação do magistrado na discussão do acordo de não persecução penal.",
+      "prever a necessidade de reexame necessário em caso de absolvição.",
+      "possibilitar a decretação da prisão de ofício.",
+      "vedar a substituição probatória do órgão de acusação pelo juiz."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "vedar a substituição probatória do órgão de acusação pelo juiz.",
+    "bancaSigla": "VUNESP",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459038,
+    "enunciado": "Acerca dos princípios reitores do processo penal, assinale a afirmativa correta.",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "Como corolário do princípio da ampla defesa, é direito do defensor, no interesse do representado, ter acesso a todos elementos de prova, já documentados ou não, no procedimento investigatório conduzido pela polícia judiciária.",
+      "O princípio do juiz natural inviabiliza que a pena cumprida no estrangeiro exclua ou reduza a pena a ser cumprida no Brasil, ainda que se trate do mesmo fato criminoso.",
+      "Embora não seja absoluto, o princípio da identidade física consiste no mandamento de que o juiz que presidiu a instrução deverá, a princípio, proferir a sentença.",
+      "Como decorrência do princípio do contraditório, pode-se afirmar que tanto a falta de defesa quanto sua deficiência ensejam a nulidade absoluta do processo, independentemente da prova de prejuízo para o réu.",
+      "Embora vigente o princípio de que ninguém é obrigado a produzir prova contra si mesmo, o exercício do direito de permanecer em silêncio não impede que o juiz considere esta circunstância em prejuízo do réu na sentença."
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "Embora não seja absoluto, o princípio da identidade física consiste no mandamento de que o juiz que presidiu a instrução deverá, a princípio, proferir a sentença.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458655,
+    "enunciado": "Em relação ao sistema processual penal brasileiro, julgue o item subsecutivo. \n \nO afastamento do juiz da iniciativa probatória assegura a sua imparcialidade e fortalece a estrutura dialética do processo penal.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458187,
+    "enunciado": "A partir das disposições do ordenamento processual penal em vigor, julgue o próximo item. \n \n De acordo com o princípio do promotor natural, reconhecido pelos tribunais superiores, a atribuição para um promotor de justiça atuar em determinado caso deve ser fixada a partir de regras abstratas e preestabelecidas, o que é incompatível com a designação casuística do promotor de justiça pelo procurador-geral de justiça para atuar em casos que não sejam de sua atribuição.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458286,
+    "enunciado": "Considerando os princípios de Direito Processual Penal, com base na Constituição da República de 1988, no Código de Processo Penal e na jurisprudência atualizada dos Tribunais Superiores, analise as afirmativas a seguir e assinale ( V ) para a verdadeira e ( F ) para a falsa. \n ( ) O princípio do duplo grau de jurisdição tem previsão expressa na Convenção Americana sobre Direitos Humanos, promulgada pelo Decreto nº 678, de 06/11/1992, contudo não possui previsão expressa na Constituição da República de 1988. \n ( ) O indivíduo, que possui contra si mandado de prisão em aberto e que apresenta documento de identidade falso no momento da abordagem policial, não comete o crime disposto no Art. 304 do Código Penal (uso de documento falso), posto que está exercendo o seu direito de autodefesa. \n ( ) A publicidade restrita é regra geral dos atos processuais no processo penal, ao passo que a publicidade ampla é exceção e ocorre nas situações expressamente previstas em lei, dependendo de decisão judicial no caso concreto. \n ( ) Durante a investigação criminal, a defesa técnica é imprescindível, em razão da observância dos princípios do contraditório e ampla defesa do acusado. \n As afirmativas são, na ordem apresentada, respectivamente,",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "V – F – F – V.",
+      "V – F – F – F.",
+      "F – V – V – F.",
+      "F – V – V – V."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "V – F – F – F.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458402,
+    "enunciado": "No Brasil, o princípio da proibição da dupla persecução penal ou da vedação à dupla incriminação:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "tem expressa previsão na Constituição da República de 1988;",
+      "não tem previsão normativa, o que impede sua aplicação;",
+      "tem expressa previsão no Código de Processo Penal;",
+      "não tem previsão normativa, decorrendo implicitamente da Constituição da República de 1988;",
+      "tem expressa previsão na legislação processual penal extravagante."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "não tem previsão normativa, decorrendo implicitamente da Constituição da República de 1988;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458523,
+    "enunciado": "Como corolário do princípio do contraditório, é correto afirmar que",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "medidas investigativas que representem grave intervenção em direitos fundamentais dependem de decisão judicial.",
+      "o Ministério Público deve ser intimado de um documento novo juntado aos autos pela defesa.",
+      "o réu tem o direito de permanecer em silêncio em seu interrogatório judicial.",
+      "o defensor tem o dever de pedir a absolvição do réu em suas alegações finais.",
+      "o processo deve ser suspenso se o réu mudar de endereço e não puder mais ser encontrado para ser intimado."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "o Ministério Público deve ser intimado de um documento novo juntado aos autos pela defesa.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458581,
+    "enunciado": "Acerca dos sistemas processuais penais e a legislação processual penal brasileira interpretada pelos Tribunais Superiores, assinale a afirmativa correta .",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "A adoção do sistema acusatório no direito brasileiro advém da legislação adjetiva penal, que em sua redação original demonstrava a opção pelo sistema acusatório puro.",
+      "O sistema acusatório se caracteriza pela separação entre as funções de acusador e julgador, podendo haver, acidentalmente, a proibição de produção de provas de ofício pelo magistrado.",
+      "O sistema adversarial é sinônimo de sistema acusatório puro, e se caracteriza pela separação absoluta entre acusação e órgão julgador.",
+      "A Jurisprudência do STF é no sentido de que o sistema inquisitivo adotado no Brasil torna inadmissível a decretação da prisão preventiva, de ofício, pelo magistrado.",
+      "É compatível com o sistema acusatório adotado no Brasil a requisição, pelo Magistrado, de indiciamento do acusado, desde que realizada após o recebimento da denúncia."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "O sistema acusatório se caracteriza pela separação entre as funções de acusador e julgador, podendo haver, acidentalmente, a proibição de produção de provas de ofício pelo magistrado.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458411,
+    "enunciado": "Na evolução do direito processual penal, percebe-se a influência de outros ramos do direito. O deu uma atenção ao aspecto subjetivo do crime, combateu a vingança privada, humanizou as penas, reprimiu o uso de ordálias e introduziu as penas privativas de liberdade em substituição às patrimoniais. \n \n É correto afirmar que o ramo do direito que corretamente completa o enunciado é:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "Direito Americano",
+      "Direito Romano",
+      "Direito Germânico",
+      "Direito Francês",
+      "Direito Canônico"
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "Direito Canônico",
+    "bancaSigla": "VUNESP",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459316,
+    "enunciado": "Inconformada com a decisão que indeferiu seu pedido de progressão de regime prisional a João, a defesa do sentenciado apresentou recurso para a instância superior, argumentando o seguinte: “Constata-se da decisão a ausência de qualquer análise acerca das condições e requisitos preenchidos pelo postulante para a progressão pretendida, apenas mencionando a decisão acerca da impossibilidade, por ora, de se atender ao pleito, sem tecer uma linha sequer da situação específica do requerente”. Nota-se, pois, que a alegação da defesa se baseia em eventual descumprimento pelo magistrado do princípio do direito processual penal",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "do livre convencimento motivado.",
+      "da verdade real.",
+      "do juiz natural.",
+      "da publicidade.",
+      "do duplo grau de jurisdição."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "do livre convencimento motivado.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2025,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458281,
+    "enunciado": "No que diz respeito ao processo penal, julgue o seguinte item. \n \n São característicos do sistema acusatório os dispositivos do Código de Processo Penal que facultam ao juiz, de ofício, ordenar, mesmo antes de iniciada a ação penal, a produção antecipada de provas consideradas urgentes e relevantes ou determinar, no curso da instrução, ou antes de proferir a sentença, a realização de diligências para dirimir dúvida sobre ponto relevante.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "Errado",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458144,
+    "enunciado": "No tocante às garantias constitucionais aplicáveis ao processo penal,",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "a garantia do juiz natural é contemplada, mas não só, na previsão de proibição de juízo ou tribunal de exceção.",
+      "todos os julgamentos dos órgãos do Poder Judiciário serão públicos, e fundamentadas todas as decisões, sob pena de nulidade, podendo a lei limitar a presença, em determinados atos, às próprias partes e a seus advogados, mas não somente a estes.",
+      "o civilmente identificado jamais pode ser submetido a identificação criminal, sob pena de caracterização de constrangimento ilegal.",
+      "o preso tem direito à identificação do responsável por sua prisão, mas nem sempre por seu interrogatório policial.",
+      "a razoável duração do processo e os meios que garantam a celeridade de sua tramitação são garantias exclusivamente aplicáveis à ação penal."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "a garantia do juiz natural é contemplada, mas não só, na previsão de proibição de juízo ou tribunal de exceção.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458790,
+    "enunciado": "Segundo o princípio de vedação da autoincriminação ( nemo tenetur se detegere ), o acusado",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "é obrigado a fornecer padrões vocais necessários para subsidiar prova pericial de verificação de interlocutor.",
+      "é obrigado a fornecer material para exame grafotécnico, para fins de reconhecimento de escritos por comparação de letra.",
+      "é obrigado a participar da reconstituição do crime a ele imputado.",
+      "não pode mentir, sob pena de perjúrio.",
+      "tem direito ao silêncio, o que não implica direito de falsear a verdade quanto à identidade pessoal."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "tem direito ao silêncio, o que não implica direito de falsear a verdade quanto à identidade pessoal.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458061,
+    "enunciado": "No curso de inquérito policial para investigar a prática de crime sexual, a autoridade policial entendeu necessária a realização de exame de DNA de Leonardo, suspeito do delito, para colher informações sobre a sua autoria. \n Nesse sentido, a prova em questão:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "não poderá ser recusada por Leonardo, diante da sua condição de indiciado, independentemente de exigir comportamento ativo ou passivo;",
+      "poderá ser realizada, independentemente da concordância de Leonardo, ainda que invasiva, mas exige decisão judicial prévia;",
+      "poderá ser recusada por Leonardo no curso do inquérito policial, mas não no curso de processo judicial;",
+      "poderá ser realizada sobre material descartado por Leonardo, independentemente de sua concordância;",
+      "poderá ser realizada independentemente da concordância de Leonardo, ainda que exija comportamento ativo do agente, desde que sujeita ao contraditório e ampla defesa."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "poderá ser realizada sobre material descartado por Leonardo, independentemente de sua concordância;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459011,
+    "enunciado": "Julgue os itens a seguir, no que se refere ao sistema inquisitivo. \n \n I O sistema inquisitivo é caracterizado pela concentração de poder nas mãos do julgador, que exerce, também, a função de acusador. \n \n II No sistema inquisitivo, a confissão do réu é considerada a rainha das provas. \n \n III O sistema inquisitivo privilegia os debates orais, com procedimentos escritos formalizados. \n \n IV No sistema inquisitivo, o procedimento é público, pautado pelo princípio do contraditório, e a defesa do réu é atuante. \n \n Estão certos apenas os itens",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "I e II .",
+      "I e IV .",
+      "II e III .",
+      "I , III e IV .",
+      "II , III e IV ."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "I e II .",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458787,
+    "enunciado": "Assinale a opção correta acerca do processo penal constitucional.",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "Ninguém será considerado culpado até o seu julgamento em segunda instância.",
+      "Permite-se, excepcionalmente, a criação de juízo ou de tribunal especial para julgar crimes graves.",
+      "O princípio da inadmissibilidade das provas ilícitas será afastado quando a prova, ainda que obtida por meios ilícitos, for absolutamente necessária para estabelecer a verdade real dos fatos.",
+      "O princípio do contraditório constitui corolário do devido processo legal.",
+      "Por força do princípio da intranscendência, é terminantemente vedado estender aos sucessores do condenado a obrigação de reparar o dano por ele causado."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "O princípio do contraditório constitui corolário do devido processo legal.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458574,
+    "enunciado": "Assinale a opção que apresenta o princípio norteador do processo penal abordado, precipuamente, pelo brocardo audiatur et altera pars .",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "princípio do contraditório",
+      "princípio da oralidade",
+      "princípio da publicidade",
+      "princípio da não autoincriminação",
+      "princípio da presunção da inocência"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "princípio do contraditório",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458644,
+    "enunciado": "O princípio da confiança no juiz da causa é",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "princípio que está em consonância com o processo acusatório ao exigir que o juiz se abstenha de servir no processo quando houver incompatibilidade ou impedimento legal.",
+      "suposto princípio que viola o dever de motivação e fundamentação das decisões judiciais, sendo invocado nos casos em que resta ausente suporte adequado na decisão impugnada.",
+      "princípio que, à semelhança do princípio do duplo grau de jurisdição, está previsto expressamente na Convenção Americana de Direitos Humanos, da qual o Estado Brasileiro é signatário.",
+      "suposto princípio que viola os princípios do contraditório e da identidade física do juiz ao admitir, ainda que em casos excepcionais, a produção probatória por juízo diverso do sentenciante.",
+      "princípio que está em consonância com a figura do juiz das garantias, prevista a partir da Lei federal nº 13.964/2019, porém atualmente com sua eficácia suspensa."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "suposto princípio que viola o dever de motivação e fundamentação das decisões judiciais, sendo invocado nos casos em que resta ausente suporte adequado na decisão impugnada.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459007,
+    "enunciado": "O princípio do devido processo legal",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "tem suas raízes no princípio da legalidade e garante que o indivíduo somente seja processado e punido se houver lei penal anterior definindo determinada conduta como crime, cominando-lhe pena.",
+      "tem sua fundamentação na teoria da imputação objetiva e expressa uma concepção puramente legalista, excludente e supremacista do processo penal.",
+      "tem origem no sistema inquisitorial misto das tribos germânicas e serviu de base para a teoria do direito penal do inimigo de Gunther Jakobs.",
+      "se baseia na tradição romana do fas e no uso do fascio como instrumento de dominação usado pelos patres familiae .",
+      "se baseia no eficientismo penal e no movimento da Lei e da Ordem ( Law and Order ) de Dahrendorf."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "tem suas raízes no princípio da legalidade e garante que o indivíduo somente seja processado e punido se houver lei penal anterior definindo determinada conduta como crime, cominando-lhe pena.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459325,
+    "enunciado": "Considere as assertivas abaixo sobre princípios processuais. \n \n I. O Acesso à Justiça Penal abrange a incidência de outros princípios, que integram a face de um processo penal democrático, dentre os quais, destacam-se os princípios da jurisdicionalidade, da garantia do principio acusatório, presunção de inocência, contraditório e ampla defesa e da motivação das decisões judiciais. \n \n II . O princípio da verdade real ou processual é o objetivo fundamental do processo penal, permitindo a descoberta acerca da veracidade do fato praticado, através da instrução probatória. Este princípio permite ao juiz buscar provas, atividade concernente ao poder instrutório do magistrado. \n \n III . A implementação gradual do princípio da paridade de armas consagra o tratamento isonômico das partes no transcurso do processo penal (CF, art. 5º, caput), nivelando processualmente o Ministério Público e a Defensoria Pública, e fazendo com que, paulatinamente, se mitigue o princípio do favor rei. \n \n IV. O Princípio do Defensor Natural, que guarda similitude aos princípios do Juiz Natural e do Promotor Natural, veda que o Defensor Público seja afastado de casos em que, por critérios legais predeterminados, deveria oficiar. O Princípio do Defensor Natural apresenta dupla garantia, uma vez que se dirige tanto aos membros da Defensoria Pública, como para os assistidos da instituição. \n \n Esta correto o que se afirma APENAS em:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "I e III .",
+      "I, II e IV .",
+      "I e II .",
+      "II e IV.",
+      "I e IV."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "I e IV.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2025,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458943,
+    "enunciado": "Sobre o juiz de garantias, conforme sistemática a ser introduzida no processo penal, de acordo com a alteração promovida pela Lei nº 13.964/2019, assinale a alternativa correta .",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "Trata-se de juiz, cuja atuação ocorre na fase pré-processual, aplicando-se a todo e qualquer procedimento na esfera penal.",
+      "Trata-se de juiz, cuja atuação ocorre na fase pré-processual, na maioria dos procedimentos, em primeiro grau, para fortalecimento do sistema acusatório e da própria imparcialidade do juiz que atuará, depois, na fase de instrução.",
+      "Trata-se de juiz, cuja atuação ocorre na fase processual, durante a instrução criminal, para fortalecimento do sistema inquisitivo.",
+      "Trata-se da criação de uma nova instância de julgamento, prejudicando o princípio da duração razoável do processo.",
+      "Trata-se de uma espécie de juiz inquisidor, em prol da efetividade da investigação."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "Trata-se de juiz, cuja atuação ocorre na fase pré-processual, na maioria dos procedimentos, em primeiro grau, para fortalecimento do sistema acusatório e da própria imparcialidade do juiz que atuará, depois, na fase de instrução.",
+    "bancaSigla": "VUNESP",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458745,
+    "enunciado": "Levando-se em conta os princípios constitucionais que regem o processo penal brasileiro, corresponde ao que a doutrina brasileira nomeou de “garantismo penal integral”:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "a prevalência do direito das vítimas sobre os direitos fundamentais do réu;",
+      "o processo penal ter como exclusiva função servir de proteção ao réu contra abusos do Estado;",
+      "uma oposição à teoria do garantismo desenvolvida por Ferrajoli, que defende o abolicionismo penal;",
+      "os princípios penais e processuais penais serem interpretados de modo a favorecer a condenação de culpados, mesmo que exista violação de direitos fundamentais;",
+      "o reconhecimento de que no processo penal deve existir o equilíbrio entre os direitos fundamentais do réu e da vítima, bem como os interesses da sociedade."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "o reconhecimento de que no processo penal deve existir o equilíbrio entre os direitos fundamentais do réu e da vítima, bem como os interesses da sociedade.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459243,
+    "enunciado": "Assinale a opção correta em relação aos princípios do processo penal.",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "Embora o princípio do duplo grau de jurisdição decorra de previsão expressa na CF, ele não dispensa a parte de atender aos requisitos legais aplicáveis às suas manifestações processuais.",
+      "Sem embargo da aplicabilidade do princípio da vedação de provas ilícitas, é possível aproveitar certas provas produzidas com inobservância de regras processuais não consideradas essenciais.",
+      "O princípio da verdade real implica que uma condenação criminal somente será possível quando se obtiver certeza inafastável da verdade objetiva dos fatos em torno da imputação.",
+      "O princípio da isonomia processual exige que as partes, no processo penal, recebam tratamento rigorosamente equânime na lei e na práxis processual, a fim de não se produzirem injustiças.",
+      "Por força do princípio do contraditório, o investigado ou réu tem direito a participar da formação do convencimento judicial, de modo que ele deve ser intimado antes de qualquer decisão que possa afetar sua situação jurídica."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "Sem embargo da aplicabilidade do princípio da vedação de provas ilícitas, é possível aproveitar certas provas produzidas com inobservância de regras processuais não consideradas essenciais.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458263,
+    "enunciado": "Segundo orientação do Superior Tribunal de Justiça, o “poder geral de cautela”:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "pode ser aplicado ao processo penal, havendo restrição a ele no que diz respeito às cautelares pessoais que, de alguma forma, restrinjam o direito de ir e vir da pessoa;",
+      "não pode ser aplicado ao processo penal, pois há incidência do princípio do procedimento tipificado;",
+      "pode ser aplicado ao processo penal, não havendo restrição a ele, pois há incidência da teoria dos poderes implícitos, capacitando o juiz criminal a atuar de forma livre;",
+      "não pode ser aplicado ao processo penal, pois há proibição decorrente do princípio do nemo tenetur se detegere e da vedação à analogia in malam partem ;",
+      "pode ser aplicado ao processo penal, havendo restrição a ele no que diz respeito ao procedimento probatório que, de alguma forma, afete o direito de defesa."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "pode ser aplicado ao processo penal, havendo restrição a ele no que diz respeito às cautelares pessoais que, de alguma forma, restrinjam o direito de ir e vir da pessoa;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458214,
+    "enunciado": "Fundamento de existência e função de um Processo Penal acusatório e garantista: por que e para que existe o Processo Penal? Mais especificamente “o fundamento é o ‘porquê’, a razão de ser de algo, enquanto a função (finalidade) diz respeito ao ‘para que’. Assim, (...) existe uma relação de prejudicialidade entre tais conceitos: primeiro se analisa o fundamento para depois examinar as possíveis funções, que devem ser compatíveis com aquela premissa previamente estabelecida. \n \n (VASCONCELLOS, Vinicius G. Fundamento e função do processo penal. Revista Eletrônica de Direito \n Processual Penal. Rio de Janeiro, ano 12, v. 19, n. 2, maio-ago. 2018) \n \n A partir de tais lições, em um Estado Democrático de Direito, o fundamento de existência do processo penal (sua razão de existir) e sua função são, respectivamente:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "a pacificação social e autorizar a punição dos infratores da lei através de um procedimento em contraditório.",
+      "a pacificação social e desvendar a verdade real dos fatos narrados na exordial acusatória.",
+      "fomentar a Política de Segurança Pública, cujo símbolo maior é o Direito Penal, e permitir a punição dos infratores da lei de maneira célere.",
+      "limitar o poder punitivo estatal e verificar a acusação penal em uma reconstrução histórica dos fatos a partir de provas produzidas pelas partes.",
+      "limitar o poder punitivo estatal e fomentar a Política de Segurança Pública, cujo símbolo maior é o Direito Penal."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "limitar o poder punitivo estatal e verificar a acusação penal em uma reconstrução histórica dos fatos a partir de provas produzidas pelas partes.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458923,
+    "enunciado": "A ocorrência de processo e julgamento, por juiz de direito, de pessoa que detenha foro privilegiado nos tribunais viola o princípio",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "do contraditório.",
+      "da ampla defesa.",
+      "da oficiosidade.",
+      "da presunção de inocência.",
+      "do juiz natural."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "do juiz natural.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458666,
+    "enunciado": "João, após ser condenado em diversos processos criminais, com sentenças transitadas em julgado, pela prática de crimes contra o patrimônio, veio a falecer. João fora condenado a penas (1) privativas de liberdade e de (2) prestação de serviços à comunidade, bem como a (3) ressarcir os danos que causara aos lesados. Em razão desse quadro, seus herdeiros ficaram preocupados com a possibilidade de terem de cumprir as penas aplicadas a João e ainda não cumpridas. \n Ao procurarem a orientação de um advogado, foi corretamente informado aos herdeiros, considerando as três medidas impostas a João, que:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "somente podem vir a cumprir as medidas 2 e 3;",
+      "somente podem vir a cumprir a medida 3;",
+      "somente podem vir a cumprir a medida 1;",
+      "não devem arcar com nenhuma delas;",
+      "devem arcar com todas elas."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "somente podem vir a cumprir a medida 3;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458183,
+    "enunciado": "Julgue o item a seguir, referente ao direito processual penal. \n \n Não viola o principio da ampla defesa o indeferimento do rol de testemunhas de defesa apresentado fora do prazo legal estipulado inicialmente, todavia nada impede que elas sejam ouvidas como testemunhas do juízo, caso estejam presentes os requisitos para tanto.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458916,
+    "enunciado": "O direito de toda pessoa acusada de delito de recorrer da sentença para juiz ou tribunal superior, previsto na Convenção americana de Direitos Humanos, refere-se diretamente do princípio",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "da presunção de inocência.",
+      "da motivação das decisões judiciais.",
+      "do juiz natural.",
+      "da identidade física do juiz",
+      "do duplo grau de jurisdição"
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "do duplo grau de jurisdição",
+    "bancaSigla": "FCC",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458591,
+    "enunciado": "A respeito das disposições constitucionais aplicadas ao Direito Processual Penal, é correto afirmar que",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "o princípio do contraditório, que garante a oportunidade de manifestação sobre todos os atos do processo, é exclusivo à defesa, não se aplicando a acusação.",
+      "o princípio da publicidade assegura que os atos processuais sejam públicos, excepcionada unicamente a hipótese de preservar a intimidade do acusado.",
+      "a autodefesa, uma das formas de concretização do princípio da ampla defesa, é garantia indisponível, sendo nulo o processo em que não foi exercida pelo réu.",
+      "o princípio do juiz natural garante que o acusado seja julgado por juiz determinado por regras de fixação de competência editadas antes do fato criminoso.",
+      "o princípio do favor rei consagra que a dúvida relativa à prova favorece à sociedade, implicando a condenação do réu."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "o princípio do juiz natural garante que o acusado seja julgado por juiz determinado por regras de fixação de competência editadas antes do fato criminoso.",
+    "bancaSigla": "VUNESP",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459250,
+    "enunciado": "Acerca dos princípios gerais e constitucionais do processo penal, avalie as afirmativas a seguir: \n \n I . O princípio do duplo grau de jurisdição permite a revisão irrestrita do mérito de qualquer decisão judicial condenatória, independentemente do órgão prolator. \n \n II . O princípio da ampla defesa tem como corolário a indisponibilidade da defesa técnica no processo penal, ainda que o réu eventualmente deseje abdicar dessa prerrogativa. \n \n III . O princípio da publicidade impõe que todos os julgamentos do Poder Judiciário serão públicos, não sendo admissível qualquer limitação legal ao direito coletivo de informação. \n \n Está correto apenas o que se afirma em",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "I .",
+      "II .",
+      "I e II .",
+      "I e III .",
+      "II e III ."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "II .",
+    "bancaSigla": "FGV",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458261,
+    "enunciado": "Durante a realização de abordagem, guarnição composta por dois policiais militares do Batalhão de Polícia Rodoviária, no posto da Via Lagos, logrou identificar quatro agentes que transportavam em seu veículo expressiva quantidade de cocaína, acondicionada em tabletes, bem como, no forro do veículo, armas de fogo escondidas. Os abordados não ofereceram resistência ou se opuseram às ordens policiais. Os policiais militares, no entanto, efetuaram a algemação dos capturados, procedendo ao seu transporte até a unidade de Polícia Judiciária de plantão. \n \n O uso das algemas, no presente caso, é:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "ilegal, diante da ausência de resistência ou oferecimento de risco concreto à guarnição;",
+      "legal, diante do risco à integridade física dos policiais e de terceiros;",
+      "ilegal, diante da ausência de qualquer oposição às ordens policiais;",
+      "legal, diante do exercício regular do direito, decorrente da operação policial executada;",
+      "ilegal, diante da ausência de justificação, por escrito, da necessidade da aplicação da contenção."
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "legal, diante do risco à integridade física dos policiais e de terceiros;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458150,
+    "enunciado": "No que se refere aos princípios constitucionais do processo penal, julgue o item a seguir. \n \n Ação penal iniciada por denúncia que não contenha a exposição do fato criminoso, com todas as suas circunstâncias, fere o princípio da ampla defesa.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458284,
+    "enunciado": "O processo penal é regido pelas fontes formais imediata e mediata. Entre essas últimas, incluem-se os princípios explícitos ou implícitos no ordenamento jurídico que norteia a atuação dos operadores desse âmbito jurídico. Nesse sentido, assinale a opção correta acerca dos princípios do processo penal e de suas hipóteses de incidência.",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "A falta de intimação do denunciado para apresentar contrarrazões contra o recurso apresentado contra decisão que rejeitar a denúncia não ocasionará nulidade, quando a defesa técnica nomeada apresentar as referidas contrarrazões, por não haver prejuízo ao processo e ao denunciado, nem violação ao princípio do contraditório.",
+      "O princípio do contraditório sobre a prova determina que as provas sejam formadas pelas partes na presença do juiz, momento em que colaboram para a sua realização, como ocorre com a oitiva da prova testemunhal.",
+      "Positivado no ordenamento jurídico brasileiro, o princípio da contemporaneidade revela-se quando, para a decretação de prisão preventiva, analisa-se a distância do envolvimento criminal para justificar uma atual privação do status libertatis.",
+      "No processo penal, o princípio da ampla defesa determina que, além da autodefesa, deve haver a defesa técnica, a qual, se for meramente formal ou deficitária, ocasionará a nulidade de todos os atos do processo, sem a necessidade de valoração de prejuízo causado ao réu, pois presumível."
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "Positivado no ordenamento jurídico brasileiro, o princípio da contemporaneidade revela-se quando, para a decretação de prisão preventiva, analisa-se a distância do envolvimento criminal para justificar uma atual privação do status libertatis.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458466,
+    "enunciado": "Dos direitos abaixo elencados, NÃO constitui corolário do princípio do devido processo legal:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "contraditório.",
+      "Juiz natural.",
+      "proibição de prova ilícita.",
+      "sigilo do processo.",
+      "paridade de armas."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "sigilo do processo.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458589,
+    "enunciado": "A edição de medidas provisórias sobre matéria relativa a processo penal",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "é admitida, mas só terá eficácia no ano civil subsequente.",
+      "é admitida, mas apenas em situação de estado de defesa ou estado de sítio.",
+      "é excepcionalmente admitida, mas a medida provisória perderá eficácia, desde a edição, se não for convertida em lei no prazo de sessenta dias.",
+      "é excepcionalmente admitida, mas a medida provisória perderá eficácia, desde a edição, se não for convertida em lei no prazo indicado em seu próprio texto.",
+      "é constitucionalmente vedada."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "é constitucionalmente vedada.",
+    "bancaSigla": "VUNESP",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458672,
+    "enunciado": "A respeito do princípio do contraditório, é correto afirmar que",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "não tem previsão expressa na Constituição Federal, decorrendo de tratados e convenções interacionais a que o Brasil ratificou.",
+      "aplica-se somente aos processos judiciais, sendo incabível nos procedimentos administrativos, inclusive no inquérito policial.",
+      "garante o direito à informação, seja por intermédio da citação ou da intimação, a fim de que se possa efetivamente participar do processo e do procedimento instaurados.",
+      "tem aplicabilidade apenas à defesa, não se cogitando o princípio do contraditório à acusação.",
+      "garante que o acusado participe da audiência de instrução, impedindo sua retirada da sala de audiências, nas situações em que a testemunha se disser intimidada com a presença, obrigando a suspensão do ato e posterior realização de forma remota."
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "garante o direito à informação, seja por intermédio da citação ou da intimação, a fim de que se possa efetivamente participar do processo e do procedimento instaurados.",
+    "bancaSigla": "VUNESP",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458148,
+    "enunciado": "No que se refere aos princípios constitucionais do processo penal, julgue o item a seguir. \n \n O investigado que se atribui falsa identidade perante a autoridade policial age de forma legítima, face ao princípio constitucional da autodefesa.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 1,
+    "gabarito": "Errado",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2021,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458445,
+    "enunciado": "Em relação aos sistemas processuais penais e aos seus princípios reitores, assinale a opção correta.",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "A efetividade da repressão criminal do sistema acusatório cabe especialmente ao órgão julgador, responsável pela aplicação da pena no caso concreto.",
+      "No sistema acusatório, o legislador admite que a imparcialidade judicial esteja comprometida com um objetivo considerado mais importante.",
+      "O modelo ideal de sistema acusatório é previsto em instrumento normativo internacional, a partir de critérios uniformes definidos pela doutrina processual.",
+      "A crítica ao sistema inquisitivo está relacionada à sua falta de rigor quanto à certeza de repressão dos fatos contrários à ordem social.",
+      "A decisão sobre o sistema que deverá ser implantado em determinado país pressupõe uma definição prévia, por parte do legislador, de alguns critérios de política criminal, entre os quais está o grau de eficiência da repressão."
+    ],
+    "numeroAlternativaCorreta": 4,
+    "gabarito": "A decisão sobre o sistema que deverá ser implantado em determinado país pressupõe uma definição prévia, por parte do legislador, de alguns critérios de política criminal, entre os quais está o grau de eficiência da repressão.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459336,
+    "enunciado": "Assinale a opção que apresenta corretamente o princípio do direito processual penal que estabelece que ninguém será processado nem sentenciado senão pela autoridade competente, bem como que impede a criação de tribunais de exceção.",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "princípio da persuasão racional do juiz",
+      "princípio da presunção de inocência ou da não culpabilidade",
+      "princípio do juiz natural",
+      "princípio do devido processo legal",
+      "princípio do contraditório"
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "princípio do juiz natural",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2025,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458404,
+    "enunciado": "Em relação ao princípio da duração razoável do processo, é correto afirmar que a análise da indevida ou excessiva duração depende do(a):",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "soma aritmética dos prazos processuais;",
+      "passagem de noventa dias sem reavaliação judicial;",
+      "análise dos prazos previstos em lei, de maneira global;",
+      "princípio da razoabilidade e das peculiaridades do caso;",
+      "análise dos prazos previstos em lei, de maneira individual."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "princípio da razoabilidade e das peculiaridades do caso;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458936,
+    "enunciado": "O sistema processual penal no qual o magistrado pode desencadear a ação penal de ofício e impor sigilo ao processo por ato discricionário, independentemente de fundamentação, é denominado",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "sistema misto.",
+      "sistema inquisitivo garantista.",
+      "sistema inquisitivo.",
+      "sistema acusatório garantista.",
+      "sistema acusatório."
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "sistema inquisitivo.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 459411,
+    "enunciado": "Em audiência judicial em que se apura a prática de crime sexual contra mulher, a defesa do acusado, durante a oitiva da vítima, passou a questioná-la sobre seu comportamento, dando a entender que, de uma forma ou de outra, a conduta da vítima poderia ter influenciado a prática do crime pelo acusado. Constatando-se a tese da defesa, o membro do Ministério Público, imediatamente, pediu a intervenção do juiz. Diante de tal situação hipotética, evidenciando que, de fato, buscava a defesa a desqualificação da vitima mulher, o juiz",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "deverá advertir o advogado de que somente poderão ser levados em consideração o modo de vida e a vivência sexual das vítimas, caso devidamente comprovados nos autos.",
+      "negará o pedido do membro do Ministério Público, haja vista que é prerrogativa do advogado, diante do princípio da ampla defesa, utilizar-se de todos os meios para a defesa de seu cliente.",
+      "tem por dever coibir a prática da desqualificação da vítima mulher, impedindo tais abordagens durante o processo, sob pena de responsabilização civil, administrativa e penal.",
+      "negará o pedido do membro do Ministério Público, pois o comportamento da vítima é um dos elementos utilizados para a fixação da pena base do acusado, devendo ser assegurada à defesa a valoração negativa de aspectos da vida pregressa ou comportamento social da vítima.",
+      "deverá advertir a defesa para que não utilize de linguagem, de informações ou de material que ofendam a dignidade da vítima, permitindo-se, contudo, a manifestação sobre circunstancias ou elementos alheios aos fatos objeto de apuração nos autos, inclusive sobre a vida sexual pregressa da ofendida."
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "tem por dever coibir a prática da desqualificação da vítima mulher, impedindo tais abordagens durante o processo, sob pena de responsabilização civil, administrativa e penal.",
+    "bancaSigla": "FCC",
+    "concursoAno": 2025,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458400,
+    "enunciado": "Hermes foi denunciado pelo delito de falsidade ideológica eleitoral (Art. 350 do Código Eleitoral), corrupção passiva (Art. 317 do Código Penal) e lavagem de dinheiro (Art. 1º da Lei nº 9.613/1998), pois, na qualidade de servidor público, recebeu propina de uma empresa para deixar de atuar na sua atividade-fim, ocultando, na sequência, esse valor, por meio da simulação de uma atividade lícita. Tendo se candidatado a cargo eletivo, falseou sua declaração de bens eleitorais, para manter a ocultação dos valores indevidamente auferidos. A Justiça Eleitoral absolveu Hermes das imputações, entendendo que não havia qualquer ilícito eleitoral. Ato seguinte, Hermes foi denunciado pelo Ministério Público estadual, pelos crimes de corrupção passiva e lavagem de dinheiro, repetindo o articulado na denúncia oferecida anteriormente na Justiça Eleitoral. \n \n A nova imputação deve ser:",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "recebida, pois, ao absolver o réu do delito eleitoral, a Justiça Especializada deixou de ter competência;",
+      "recebida, pois houve alteração substancial na imputação, com a exclusão do contexto delitivo-eleitoral;",
+      "recebida, pois os delitos comuns não são acobertados pela coisa julgada da Justiça Eleitoral;",
+      "rejeitada, com base no princípio da vedação à dupla incriminação, limite derivado da coisa julgada;",
+      "não recebida, pela ausência de possibilidade jurídica do pedido."
+    ],
+    "numeroAlternativaCorreta": 3,
+    "gabarito": "rejeitada, com base no princípio da vedação à dupla incriminação, limite derivado da coisa julgada;",
+    "bancaSigla": "FGV",
+    "concursoAno": 2022,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458654,
+    "enunciado": "Em relação ao sistema processual penal brasileiro, julgue o item subsecutivo. \n \n A Constituição Federal de 1988 adota, em regra, o modelo acusatório, caracterizado pela separação das funções de acusação, defesa e julgamento.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2023,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  },
+  {
+    "id": 458978,
+    "enunciado": "“Devido à disputa entre as autoridades do Rio de Janeiro e de Vila Rica pela competência para julgar os sediciosos, a rainha, D. Maria I, determinou, através da Carta Régia de 17.07.1790, a composição de uma Alçada, na qual Desembargadores de Lisboa eram os responsáveis pelo julgamento. Após a oitiva dos vinte e nove réus, seguiu-se o prazo de cinco dias para defesa. \n \n Os réus argumentaram que não cometeram crime algum, porquanto o movimento fora abortado, ainda em seu início, com a suspensão da Derrama. Apesar disso, em 18 de abril de 1792, foi publicada a sentença pela Alçada, condenando onze réus à morte (na prática dez, porque Cláudio Manuel da Costa se “suicidara” no cárcere), e outros participantes receberam penas menores como açoites e o degredo eterno.” \n \n (A sentença condenatória de Tiradentes e a construção do mito. Ensaio elaborado por Andréa Vanessa da Costa Val, Assessora da Memória do Judiciário Mineiro, e por Carine Kely Rocha Viana, sob a supervisão do Superintendente, Desembargador Hélio Costa. Jurisp. Mineira, Belo Horizonte, a. 59, nº 187, p. 13-18, out./dez. 2008) \n \n Sobre os sistemas processuais penais e os princípios do processo penal no âmbito do processo mencionado pelo texto (julgamento de Tiradentes), é correto afirmar que o sistema processual então vigente apresentava traços mais característicos do sistema",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "inquisitivo, e o princípio do juiz natural não foi observado, o que se extrai claramente do texto apresentado.",
+      "acusatório, e o princípio da ampla defesa não foi observado, o que se pode inferir do texto apresentado.",
+      "misto, e os princípios fundamentais do processo penal foram observados, o que se extrai claramente do texto apresentado.",
+      "inquisitivo, e não é possível, pelo texto, observar o malferimento de princípios fundamentais do processo penal.",
+      "acusatório, e é possível, pelo texto, observar o malferimento de princípios fundamentais do processo penal."
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "inquisitivo, e o princípio do juiz natural não foi observado, o que se extrai claramente do texto apresentado.",
+    "bancaSigla": "FGV",
+    "concursoAno": 2024,
+    "nomeMateria": "Direito Processual Penal",
+    "nomeAssunto": "Processo Penal, seus Sistemas e Princípios",
+    "anulada": false,
+    "desatualizada": false
+  }
+]

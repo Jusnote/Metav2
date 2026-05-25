@@ -1,0 +1,47 @@
+[
+  {
+    "id": 74564,
+    "enunciado": "Julgue o próximo item, referentes ao tratamento de dados pessoais, de acordo com a Lei Geral de Proteção de Dados Pessoais (LGPD), e ao processo administrativo federal, consoante a Lei n.º 9.784/1999. \n \n A competência, no âmbito do processo administrativo federal, é irrenunciável e exercida pelos órgãos administrativos aos quais foi atribuída como própria, ressalvados os casos de delegação e avocação legalmente admitidos.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2025,
+    "nomeAssunto": "Da Competência (arts. 11 a 17 da Lei nº 9.784/1999)"
+  },
+  {
+    "id": 72317,
+    "enunciado": "Segundo a Lei n.º 9.784/1999, que regula o processo administrativo no âmbito da administração pública federal, a avocação temporária de competência atribuída a órgão hierarquicamente inferior será permitida \n \n I a critério do órgão delegante. \n II em caráter excepcional. \n III por interesse da autoridade delegante. \n IV por motivos relevantes devidamente justificados. \n \n Estão certos apenas os itens",
+    "tipoQuestao": "MULTIPLA_ESCOLHA",
+    "alternativas": [
+      "I e II.",
+      "II e III.",
+      "II e IV.",
+      "I, II e III.",
+      "I, III e IV."
+    ],
+    "numeroAlternativaCorreta": 2,
+    "gabarito": "II e IV.",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2024,
+    "nomeAssunto": "Da Competência (arts. 11 a 17 da Lei nº 9.784/1999)"
+  },
+  {
+    "id": 74545,
+    "enunciado": "Com base na legislação vigente e na doutrina majoritária, julgue o item a seguir, acerca do regime jurídico‐administrativo e dos princípios, poderes e atos da administração pública. \n \n No âmbito do processo administrativo federal, a permissão, em caráter excepcional e por motivos relevantes devidamente justificados, da avocação temporária de competência atribuída a órgão diverso é manifestação precípua do poder hierárquico da administração pública.",
+    "tipoQuestao": "CERTO_ERRADO",
+    "alternativas": [
+      "Certo",
+      "Errado"
+    ],
+    "numeroAlternativaCorreta": 0,
+    "gabarito": "Certo",
+    "bancaSigla": "CEBRASPE (CESPE)",
+    "concursoAno": 2025,
+    "nomeAssunto": "Da Competência (arts. 11 a 17 da Lei nº 9.784/1999)"
+  }
+]
