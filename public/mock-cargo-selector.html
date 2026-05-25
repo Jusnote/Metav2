@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mock — Cargo Global · Navbar Expandindo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    color: #0f172a;
+    background: linear-gradient(180deg, rgba(59,130,246,0.10) 0%, rgba(99,165,250,0.04) 18%, #ffffff 50%);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .top-bar {
+    background: #FBFAFD;
+    border-bottom: 1px solid rgba(241, 245, 249, 0.6);
+    padding: 0 32px;
+  }
+  .top-bar-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; gap: 20px;
+    height: 82px;
+  }
+  .logo {
+    display: flex; align-items: center;
+    font-family: 'Source Serif 4', serif; font-weight: 600; font-size: 28px;
+    color: #0f172a; letter-spacing: -0.02em;
+  }
+  .logo .accent { color: #3b82f6; margin-right: 4px; font-size: 32px; }
+  .logo small {
+    display: block; font-size: 9px; color: #64748b; font-weight: 500;
+    letter-spacing: 0.15em; margin-top: 2px; font-family: Inter, sans-serif;
+  }
+  .search {
+    flex: 1; max-width: 420px; position: relative;
+  }
+  .search input {
+    width: 100%; height: 38px; padding: 0 52px 0 36px;
+    border: 1.5px solid #e2e8f0; border-radius: 10px;
+    background: #f8fafc; font-size: 13px; outline: none;
+  }
+  .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; font-size: 14px;
+  }
+  .search-kbd {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    display: flex; gap: 2px;
+  }
+  .search-kbd kbd {
+    background: white; border: 1px solid #e2e8f0; border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 700; color: #94a3b8;
+  }
+
+  .right-actions {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ---------- CARGO CARD — minimalista, sem container ---------- */
+  .cargo-card {
+    display: flex; align-items: center; gap: 11px;
+    padding: 4px 10px 4px 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    user-select: none;
+  }
+  .cargo-card:hover {
+    background: rgba(15, 23, 42, 0.035);
+  }
+  .cargo-card:hover .cargo-thumb {
+    transform: translateY(-1px);
+    box-shadow:
+      0 4px 12px rgba(15,23,42,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 0 0 1px rgba(15,23,42,0.05);
+  }
+  .cargo-card.active {
+    background: rgba(30, 58, 138, 0.06);
+  }
+  .cargo-card.active .cargo-thumb {
+    box-shadow:
+      0 0 0 3px rgba(30, 58, 138, 0.18),
+      0 2px 6px rgba(15,23,42,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  /* ---------- CARGO THUMB — mini-card joalheria ---------- */
+  .cargo-thumb {
+    width: 40px; height: 40px; border-radius: 8px;
+    flex-shrink: 0;
+    background:
+      linear-gradient(180deg, rgba(15,23,42,0.05) 35%, rgba(15,23,42,0.88) 100%),
+      linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #2a4365 100%);
+    background-size: cover; background-position: center;
+    display: flex; align-items: flex-end; justify-content: flex-start;
+    padding: 3px 5px;
+    color: rgba(255,255,255,0.96);
+    font-size: 8.5px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    /* Inner highlight (joalheria): linha branca no topo + shadow externa + ring */
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      0 1px 3px rgba(15,23,42,0.18),
+      0 0 0 1px rgba(15,23,42,0.06);
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
+  }
+  .cargo-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(96,165,250,0.22), transparent 55%),
+      radial-gradient(circle at 75% 75%, rgba(167,139,250,0.16), transparent 55%);
+    pointer-events: none;
+  }
+  /* Sigla overlay com slide animation */
+  .cargo-thumb-sigla {
+    position: relative;
+    display: inline-block;
+    animation: sigla-in .28s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes sigla-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .cargo-meta { display: flex; flex-direction: column; min-width: 0; max-width: 150px; }
+  .cargo-eyebrow {
+    font-size: 8.5px; color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600; line-height: 1;
+  }
+  .cargo-title {
+    font-size: 13px; color: #0f172a; font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 4px;
+    transition: color .2s, transform .25s cubic-bezier(.22,1,.36,1);
+    animation: title-in .28s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes title-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .cargo-card.active .cargo-title { color: #1e3a8a; }
+
+  .cargo-chevron {
+    color: #cbd5e1; font-size: 9px;
+    margin-left: 2px;
+    transition: transform .3s cubic-bezier(.22,1,.36,1), color .2s;
+    /* Stroke fininho via font-weight e size */
+    font-weight: 400;
+  }
+  .cargo-card:hover .cargo-chevron { color: #64748b; }
+  .cargo-card.active .cargo-chevron { transform: rotate(180deg); color: #1e3a8a; }
+
+  /* Empty state (Limpar) */
+  .cargo-card.empty .cargo-thumb {
+    background: linear-gradient(180deg, #f0f7ff 0%, #e0effe 100%);
+    color: #3b82f6;
+    border: 1px dashed #93c5fd;
+    align-items: center; justify-content: center;
+    padding: 0;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      0 1px 2px rgba(59,130,246,0.10);
+    font-size: 16px; font-weight: 400;
+    letter-spacing: 0;
+  }
+  .cargo-card.empty .cargo-thumb::before { display: none; }
+  .cargo-card.empty .cargo-title { color: #2563eb; font-weight: 500; }
+  .cargo-card.empty .cargo-eyebrow { color: rgba(37,99,235,0.7); }
+
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #94a3b8; cursor: pointer;
+    border: none; background: transparent;
+    transition: all .15s;
+  }
+  .icon-btn:hover { background: #f1f5f9; color: #475569; }
+
+  .divider { width: 1px; height: 22px; background: #e2e8f0; margin: 0 6px; }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 3px 10px 3px 3px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+    border: 1px solid transparent;
+  }
+  .user-chip:hover { background: #f8fafc; border-color: #f1f5f9; }
+  .user-chip .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 13px;
+    box-shadow: 0 2px 8px rgba(30,64,175,0.18);
+  }
+  .user-chip .name { font-size: 13px; color: #334155; font-weight: 600; line-height: 1; }
+  .user-chip .plan { font-size: 9px; color: #94a3b8; line-height: 1; margin-top: 2px; }
+
+  /* ---------- EXPANSION PANEL (NOVO) ---------- */
+  .expansion {
+    background: #FBFAFD;
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .35s cubic-bezier(.22,1,.36,1);
+  }
+  .expansion.open {
+    max-height: 360px;
+  }
+  .expansion-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 32px 16px;
+  }
+  .expansion-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; gap: 16px;
+  }
+  .expansion-header .title-block {
+    display: flex; align-items: baseline; gap: 12px; min-width: 0;
+  }
+  .expansion-header h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px; font-weight: 600;
+    letter-spacing: -0.015em;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+  .expansion-header p {
+    font-size: 12px; color: #94a3b8;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .expansion-header .right {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+  .expansion-header .clear-btn-inline {
+    background: none; border: none; cursor: pointer;
+    color: #64748b; font-size: 11px; font-weight: 500;
+    padding: 4px 6px;
+  }
+  .expansion-header .clear-btn-inline:hover { color: #0f172a; text-decoration: underline; }
+  .expansion-header .close-btn-inline {
+    background: none; border: 1px solid #e2e8f0; cursor: pointer;
+    color: #475569; font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 5px;
+  }
+  .expansion-header .close-btn-inline:hover { background: #f1f5f9; }
+  .expansion-header .apply-btn {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    border: none; cursor: pointer;
+    color: white; font-size: 12px; font-weight: 600;
+    padding: 7px 16px; border-radius: 7px;
+    box-shadow: 0 4px 10px -2px rgba(30,58,138,0.30), inset 0 1px 0 rgba(255,255,255,0.14);
+    transition: transform .15s, box-shadow .2s, opacity .2s;
+    display: inline-flex; align-items: center; gap: 6px;
+    letter-spacing: 0.01em;
+  }
+  .expansion-header .apply-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px -4px rgba(30,58,138,0.40), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .expansion-header .apply-btn:disabled {
+    background: #e2e8f0; color: #94a3b8;
+    box-shadow: none; cursor: not-allowed;
+  }
+  .expansion-header .apply-btn .arrow {
+    font-size: 11px; opacity: 0.85;
+    transition: transform .2s;
+  }
+  .expansion-header .apply-btn:hover:not(:disabled) .arrow {
+    transform: translateX(2px);
+  }
+  .draft-indicator {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 8px;
+    background: rgba(245, 158, 11, 0.10);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 999px;
+    font-size: 10px; color: #b45309; font-weight: 600;
+  }
+  .draft-indicator .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #f59e0b;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  /* Area tabs */
+  .area-tabs {
+    display: flex; gap: 2px;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .area-tabs::-webkit-scrollbar { display: none; }
+  .area-tab {
+    border: 1px solid transparent; background: transparent;
+    padding: 4px 10px; cursor: pointer;
+    font-size: 11px; font-weight: 500; color: #64748b;
+    border-radius: 999px;
+    white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: all .15s;
+  }
+  .area-tab .count {
+    font-size: 9px; color: #94a3b8; font-weight: 600;
+  }
+  .area-tab.active {
+    color: #0f172a; font-weight: 700;
+    background: white;
+    border-color: #cbd5e1;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  }
+  .area-tab.active .count { color: #2563eb; }
+  .area-tab:hover { color: #0f172a; }
+
+  /* Carreira grid — full width, cards menores */
+  .carreira-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+    gap: 8px;
+  }
+  .carreira-card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .2s ease-out;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #2a4365 100%);
+    display: flex; align-items: flex-end; padding: 6px 8px;
+    color: rgba(255,255,255,0.95);
+    font-size: 9.5px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    user-select: none;
+    filter: grayscale(0.35) brightness(0.97);
+    opacity: 0.78;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.08);
+  }
+  .carreira-card.todas {
+    background: white;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
+    filter: none; opacity: 0.85;
+  }
+  .carreira-card.todas .icon { font-size: 16px; line-height: 1; color: #64748b; }
+  .carreira-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15,23,42,0.15);
+    filter: none; opacity: 1;
+  }
+  .carreira-card.active {
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30,58,138,0.10);
+    filter: none; opacity: 1;
+  }
+  .carreira-card.todas.active {
+    background: #eff6ff; color: #1e3a8a;
+    border-color: #1e3a8a;
+  }
+  .carreira-card.todas.active .icon { color: #1e3a8a; }
+
+  .carreira-card .check {
+    position: absolute; top: 4px; right: 4px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: #1e3a8a; color: white;
+    display: none; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 900;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .carreira-card.active .check { display: flex; }
+
+  .clear-row {
+    margin-top: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .clear-row .clear-btn {
+    background: none; border: none; cursor: pointer;
+    color: #64748b; font-size: 12px; font-weight: 500;
+    padding: 4px 6px;
+  }
+  .clear-row .clear-btn:hover { color: #0f172a; text-decoration: underline; }
+  .clear-row .close-btn {
+    background: none; border: 1px solid #e2e8f0; cursor: pointer;
+    color: #475569; font-size: 12px; font-weight: 500;
+    padding: 6px 12px; border-radius: 6px;
+  }
+  .clear-row .close-btn:hover { background: #f1f5f9; }
+
+  /* ---------- DARK NAVBAR ---------- */
+  .nav-dark {
+    background: #0f1b3d;
+    padding: 0 32px;
+  }
+  .nav-dark-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    height: 42px; gap: 4px;
+  }
+  .nav-dark a {
+    color: rgba(255,255,255,0.78);
+    font-size: 13px; font-weight: 500;
+    padding: 7px 14px; border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .nav-dark a:hover { background: rgba(255,255,255,0.06); color: white; }
+  .nav-dark a.active { background: rgba(255,255,255,0.12); color: white; font-weight: 600; }
+  .nav-dark .icon { font-size: 12px; opacity: 0.7; }
+
+  /* ---------- MAIN CONTENT (placeholder) ---------- */
+  .main {
+    max-width: 1200px; margin: 0 auto; padding: 32px;
+  }
+  .main h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px; letter-spacing: -0.02em; font-weight: 600;
+  }
+  .main p {
+    color: #64748b; font-size: 14px; line-height: 1.5; margin-top: 12px;
+    max-width: 720px;
+  }
+  .demo-notes {
+    margin-top: 28px;
+    background: white;
+    border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 30px -10px rgba(30,41,59,0.08);
+  }
+  .demo-notes h2 { font-size: 14px; margin-bottom: 10px; }
+  .demo-notes ol { padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.8; }
+  .demo-notes ol li strong { color: #0f172a; }
+  .demo-notes a { color: #2563eb; }
+
+  .todas-icon::before { content: '✔'; font-size: 18px; }
+</style>
+</head>
+<body>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">
+        <span class="accent">P</span>
+        <div>
+          PAPIRO
+          <small>ESTUDE · PRATIQUE · EVOLUA</small>
+        </div>
+      </div>
+
+      <div class="search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar disciplinas, concursos e provas..." />
+        <div class="search-kbd"><kbd>Ctrl</kbd><kbd>K</kbd></div>
+      </div>
+
+      <div class="right-actions">
+        <button class="cargo-card" id="cargoCard" onclick="toggleExpansion()">
+          <div class="cargo-thumb" id="cargoThumb"><span class="cargo-thumb-sigla">PF</span></div>
+          <div class="cargo-meta">
+            <span class="cargo-eyebrow">Estudando para</span>
+            <span class="cargo-title" id="cargoTitle">PF · Agente</span>
+          </div>
+          <span class="cargo-chevron">⌄</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="icon-btn" title="Configurações">⚙</button>
+        <button class="icon-btn" title="Notificações">🔔</button>
+
+        <div class="divider"></div>
+
+        <div class="user-chip">
+          <div class="avatar">A</div>
+          <div>
+            <div class="name">Aldemir</div>
+            <div class="plan">Pro Plan</div>
+          </div>
+          <span style="color:#94a3b8; font-size: 10px; margin-left: 4px;">▾</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPANSION PANEL (entre top bar e dark navbar) -->
+  <div class="expansion" id="expansion">
+    <div class="expansion-inner">
+      <div class="expansion-header">
+        <div class="title-block">
+          <h2>Selecione sua carreira<span style="color:#2563eb">.</span></h2>
+          <p>Tudo no app se adapta — questões, lei seca, cronograma.</p>
+        </div>
+        <div class="right">
+          <span class="draft-indicator" id="draftIndicator" style="display: none;">
+            <span class="dot"></span>
+            Mudança pendente
+          </span>
+          <button class="clear-btn-inline" onclick="clearDraft()">Limpar</button>
+          <button class="close-btn-inline" onclick="cancelExpansion()">Cancelar</button>
+          <button class="apply-btn" id="applyBtn" disabled onclick="applyDraft()">
+            Atualizar ecossistema
+            <span class="arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="area-tabs" id="areaTabs">
+        <button class="area-tab" data-area="advocacia">Advocacia <span class="count">1</span></button>
+        <button class="area-tab active" data-area="policial">Policial <span class="count">7</span></button>
+        <button class="area-tab" data-area="fiscal">Fiscal <span class="count">3</span></button>
+        <button class="area-tab" data-area="juridica">Jurídica <span class="count">2</span></button>
+        <button class="area-tab" data-area="tribunais">Tribunais <span class="count">2</span></button>
+        <button class="area-tab" data-area="saude">Saúde <span class="count">1</span></button>
+        <button class="area-tab" data-area="controle">Controle <span class="count">1</span></button>
+        <button class="area-tab" data-area="legislativo">Legislativo <span class="count">0</span></button>
+        <button class="area-tab" data-area="bancaria">Bancária <span class="count">2</span></button>
+        <button class="area-tab" data-area="militar">Militar <span class="count">0</span></button>
+      </nav>
+
+      <div class="carreira-grid" id="carreiraGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- DARK NAVBAR -->
+  <nav class="nav-dark">
+    <div class="nav-dark-inner">
+      <a href="#"><span class="icon">🏠</span> Início</a>
+      <a href="#"><span class="icon">▶</span> Flashcards</a>
+      <a href="#" class="active"><span class="icon">❓</span> Questões</a>
+      <a href="#"><span class="icon">⚖</span> Lei Seca</a>
+      <a href="#"><span class="icon">📓</span> Cadernos</a>
+      <a href="#"><span class="icon">📋</span> Editais</a>
+      <a href="#"><span class="icon">📅</span> Cronograma</a>
+      <a href="#"><span class="icon">⋯</span> Mais</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <h1>Banco de Questões<span style="color:#2563eb">.</span></h1>
+    <p>Demonstração visual do seletor global de carreira no padrão "navbar expandindo". Clica no card "PF · Agente" no topo direito e veja a barra crescer pra revelar todas as áreas e carreiras.</p>
+
+    <div class="demo-notes">
+      <h2>Como interagir com o mock</h2>
+      <ol>
+        <li>Clique no card <strong>"PF · Agente"</strong> no canto superior direito</li>
+        <li>A navbar branca <strong>expande pra baixo</strong> (animação suave de 350ms) revelando o seletor</li>
+        <li>Note que a navbar dark "Início · Questões..." e o conteúdo da página são <strong>empurrados pra baixo</strong> sem layout shift abrupto</li>
+        <li>Clique entre as <strong>áreas (Advocacia, Policial, Fiscal...)</strong> — pills no topo</li>
+        <li>Os cards de carreira agora têm <strong>full width</strong> — cabem ~9 por linha (vs 5 no dropdown)</li>
+        <li>Clique em qualquer carreira → auto-salva, fecha a expansão, atualiza o card da navbar</li>
+        <li>Clique em <strong>"Limpar carreira"</strong> ou em <strong>"Fechar"</strong> pra simular outros estados</li>
+      </ol>
+      <p style="margin-top: 12px; font-size: 13px; color: #64748b;">
+        Ver versão alternativa: <a href="/mock-cargo-selector-dropdown.html">dropdown ancorado</a>
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const CARREIRAS = {
+      advocacia: [
+        { id: 'oab', label: 'OAB · Exame de Ordem', sigla: 'OAB' },
+      ],
+      policial: [
+        { id: 'pf-agente', label: 'PF · Agente', sigla: 'PF' },
+        { id: 'pf-escrivao', label: 'PF · Escrivão', sigla: 'PF' },
+        { id: 'pf-delegado', label: 'PF · Delegado', sigla: 'PF' },
+        { id: 'prf', label: 'PRF · Policial Rodoviário', sigla: 'PRF' },
+        { id: 'pc-sp', label: 'PC SP · Investigador', sigla: 'PC' },
+        { id: 'pc-rj', label: 'PC RJ · Inspetor', sigla: 'PC' },
+        { id: 'depen', label: 'DEPEN · Agente Federal', sigla: 'DEP' },
+      ],
+      fiscal: [
+        { id: 'rfb', label: 'Receita Federal · Auditor', sigla: 'RFB' },
+        { id: 'sefaz', label: 'SEFAZ · Auditor Estadual', sigla: 'SEF' },
+        { id: 'icms', label: 'Auditor ICMS', sigla: 'ICMS' },
+      ],
+      juridica: [
+        { id: 'mpf', label: 'MPF · Procurador', sigla: 'MPF' },
+        { id: 'agu', label: 'AGU · Advogado da União', sigla: 'AGU' },
+      ],
+      tribunais: [
+        { id: 'tj-sp', label: 'TJ SP · Analista', sigla: 'TJ' },
+        { id: 'trf', label: 'TRF · Analista', sigla: 'TRF' },
+      ],
+      saude: [{ id: 'fiocruz', label: 'FIOCRUZ · Pesquisador', sigla: 'FIO' }],
+      controle: [{ id: 'tcu', label: 'TCU · Auditor', sigla: 'TCU' }],
+      legislativo: [],
+      bancaria: [
+        { id: 'bb', label: 'Banco do Brasil · Escriturário', sigla: 'BB' },
+        { id: 'caixa', label: 'CAIXA · Técnico Bancário', sigla: 'CEF' },
+      ],
+      militar: [],
+    };
+
+    // appliedCargo = o que está REALMENTE ativo no ecossistema (refletido no card da navbar)
+    // draftCargo = o que o usuário marcou pra preview, ainda não aplicado
+    let appliedCargo = { id: 'pf-agente', label: 'PF · Agente', sigla: 'PF' };
+    let draftCargo = { ...appliedCargo };
+    let currentArea = 'policial';
+
+    function isDirty() {
+      return JSON.stringify(appliedCargo) !== JSON.stringify(draftCargo);
+    }
+
+    function refreshApplyState() {
+      const btn = document.getElementById('applyBtn');
+      const indicator = document.getElementById('draftIndicator');
+      btn.disabled = !isDirty();
+      indicator.style.display = isDirty() ? 'inline-flex' : 'none';
+    }
+
+    function renderCarreiras() {
+      const grid = document.getElementById('carreiraGrid');
+      const list = CARREIRAS[currentArea] || [];
+      const todasId = 'todas-' + currentArea;
+      const todasCargo = { id: todasId, label: `Todas · ${currentArea}`, sigla: '★' };
+
+      grid.innerHTML = '';
+
+      // Card "Todas"
+      const todasEl = document.createElement('div');
+      todasEl.className = 'carreira-card todas' + (draftCargo?.id === todasId ? ' active' : '');
+      todasEl.innerHTML = '<span class="todas-icon"></span><span>Todas</span><span class="check">✓</span>';
+      todasEl.addEventListener('click', (ev) => { ev.stopPropagation(); selectDraft(todasCargo); });
+      grid.appendChild(todasEl);
+
+      // Cards das carreiras
+      list.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'carreira-card' + (draftCargo?.id === c.id ? ' active' : '');
+        el.title = c.label;
+        el.innerHTML = `${c.sigla}<span class="check">✓</span>`;
+        el.addEventListener('click', (ev) => { ev.stopPropagation(); selectDraft(c); });
+        grid.appendChild(el);
+      });
+
+      if (list.length === 0) {
+        grid.insertAdjacentHTML('beforeend', `
+          <div style="grid-column: 2 / -1; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; font-style: italic;">
+            Nenhuma carreira nessa área ainda. Em breve!
+          </div>
+        `);
+      }
+    }
+
+    function setActiveTab() {
+      document.querySelectorAll('.area-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.area === currentArea);
+      });
+    }
+
+    function toggleExpansion() {
+      const exp = document.getElementById('expansion');
+      const card = document.getElementById('cargoCard');
+      const isOpening = !exp.classList.contains('open');
+      exp.classList.toggle('open');
+      card.classList.toggle('active');
+      if (isOpening) {
+        // Ao abrir, draft sempre começa igual ao applied
+        draftCargo = appliedCargo ? { ...appliedCargo } : null;
+        renderCarreiras();
+        setActiveTab();
+        refreshApplyState();
+      }
+    }
+
+    function cancelExpansion() {
+      // Fecha sem aplicar — descarta o draft
+      draftCargo = appliedCargo ? { ...appliedCargo } : null;
+      toggleExpansion();
+    }
+
+    function selectDraft(cargo) {
+      draftCargo = cargo;
+      renderCarreiras();
+      refreshApplyState();
+    }
+
+    function clearDraft() {
+      draftCargo = null;
+      renderCarreiras();
+      refreshApplyState();
+    }
+
+    function applyDraft() {
+      // Aplica draft → vira o cargo oficial
+      appliedCargo = draftCargo ? { ...draftCargo } : null;
+
+      // Atualiza o card da navbar com animação
+      const titleEl = document.getElementById('cargoTitle');
+      const newTitle = titleEl.cloneNode(false);
+      newTitle.textContent = appliedCargo ? appliedCargo.label : 'Selecione carreira';
+      titleEl.replaceWith(newTitle);
+
+      const thumbEl = document.getElementById('cargoThumb');
+      thumbEl.innerHTML = `<span class="cargo-thumb-sigla">${appliedCargo ? appliedCargo.sigla : '+'}</span>`;
+
+      const cardEl = document.getElementById('cargoCard');
+      cardEl.classList.toggle('empty', !appliedCargo);
+
+      // Fecha
+      toggleExpansion();
+    }
+
+    document.querySelectorAll('.area-tab').forEach(t => {
+      t.addEventListener('click', () => {
+        currentArea = t.dataset.area;
+        setActiveTab();
+        renderCarreiras();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const exp = document.getElementById('expansion');
+      const card = document.getElementById('cargoCard');
+      if (exp.classList.contains('open') && !exp.contains(e.target) && !card.contains(e.target)) {
+        // Click fora = cancelar (descarta draft)
+        cancelExpansion();
+      }
+    });
+
+    renderCarreiras();
+  </script>
+</body>
+</html>

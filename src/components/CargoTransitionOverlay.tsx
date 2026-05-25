@@ -6,7 +6,9 @@ import type { Carreira } from '@/types/carreira';
 
 interface CargoTransitionOverlayProps {
   cargo: Carreira | null | undefined;
-  /** undefined = não está em transição. null = limpando cargo. Carreira = trocando. */
+  /** Cargo anterior. Renderizado em cross-fade (mais devagar) pra dar
+   *  sensação de "trocou" em vez de "apareceu". */
+  previousCargo?: Carreira | null;
   active: boolean;
   onComplete: () => void;
 }
@@ -15,22 +17,27 @@ const HOLD_MS = 1100;
 const FADE_IN_MS = 450;
 const FADE_OUT_MS = 500;
 
-export function CargoTransitionOverlay({ cargo, active, onComplete }: CargoTransitionOverlayProps) {
-  // Tempo total: fade-in (450ms) + hold (1100ms) + fade-out (500ms) ≈ 2050ms
-  // O AnimatePresence cuida do fade-out via exit; aqui só agenda o "fim do hold"
-  // pra disparar onComplete, que tira o componente do DOM e dispara o navigate.
+export function CargoTransitionOverlay({
+  cargo,
+  previousCargo,
+  active,
+  onComplete,
+}: CargoTransitionOverlayProps) {
   useEffect(() => {
     if (!active) return;
     const t = setTimeout(onComplete, HOLD_MS + FADE_IN_MS);
     return () => clearTimeout(t);
   }, [active, onComplete]);
 
-  const hasCargo = !!cargo;
-  const hasFoto = !!cargo?.foto_url;
+  const hasNew = !!cargo;
+  const hasPrev = !!previousCargo;
+  const newHasFoto = !!cargo?.foto_url;
+  const prevHasFoto = !!previousCargo?.foto_url;
   const titulo = cargo?.nome ?? 'Sem cargo selecionado';
-  const subtitulo = hasCargo
-    ? 'Adaptando seu ecossistema...'
-    : 'Voltando ao modo aberto...';
+  const subtitulo = hasNew ? 'Adaptando seu ecossistema...' : 'Voltando ao modo aberto...';
+
+  // Cross-fade só quando há troca real
+  const shouldCrossfade = hasPrev && (!cargo || previousCargo!.id !== cargo.id);
 
   return (
     <AnimatePresence>
@@ -60,40 +67,82 @@ export function CargoTransitionOverlay({ cargo, active, onComplete }: CargoTrans
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
             className="flex flex-col items-center gap-5 px-6"
           >
-            {/* Card grande do cargo */}
+            {/* Card grande do cargo com cross-fade old → new */}
             <div
-              className="relative w-[140px] h-[140px] rounded-2xl overflow-hidden flex items-end justify-start"
+              className="relative w-[140px] h-[140px] rounded-2xl overflow-hidden"
               style={{
-                background: hasFoto
-                  ? '#1e3a5f'
-                  : 'linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #2a4365 100%)',
                 boxShadow:
                   '0 20px 60px -10px rgba(30,58,138,0.35), 0 6px 20px -6px rgba(30,58,138,0.20), inset 0 1px 0 rgba(255,255,255,0.15)',
               }}
             >
-              {hasFoto && (
-                <img
-                  src={cargo!.foto_url!}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              )}
-              {hasCargo && (
-                <div
-                  aria-hidden
+              {/* Camada do cargo NOVO (fundo) */}
+              <div
+                className="absolute inset-0 flex items-end justify-start"
+                style={{
+                  background: newHasFoto
+                    ? '#1e3a5f'
+                    : 'linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #2a4365 100%)',
+                }}
+              >
+                {newHasFoto && (
+                  <img
+                    src={cargo!.foto_url!}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
+                {hasNew && (
+                  <div
+                    aria-hidden
+                    className="absolute inset-0"
+                    style={{
+                      background: newHasFoto
+                        ? 'linear-gradient(180deg, rgba(15,23,42,0.05) 30%, rgba(15,23,42,0.85) 100%)'
+                        : 'radial-gradient(circle at 30% 25%, rgba(96,165,250,0.22), transparent 55%), radial-gradient(circle at 75% 75%, rgba(167,139,250,0.16), transparent 55%)',
+                    }}
+                  />
+                )}
+                {!hasNew && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-white/50 text-5xl font-serif font-bold">∅</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Camada do cargo ANTERIOR sobreposta — fade out devagar (1s, delay 0.45s) */}
+              {shouldCrossfade && (
+                <motion.div
                   className="absolute inset-0"
-                  style={{
-                    background: hasFoto
-                      ? 'linear-gradient(180deg, rgba(15,23,42,0.05) 30%, rgba(15,23,42,0.85) 100%)'
-                      : 'radial-gradient(circle at 30% 25%, rgba(96,165,250,0.22), transparent 55%), radial-gradient(circle at 75% 75%, rgba(167,139,250,0.16), transparent 55%)',
+                  initial={{ opacity: 1 }}
+                  animate={{
+                    opacity: 0,
+                    transition: { duration: 1.0, delay: 0.45, ease: [0.22, 1, 0.36, 1] },
                   }}
-                />
+                  style={{
+                    background: prevHasFoto
+                      ? '#1e3a5f'
+                      : 'linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #2a4365 100%)',
+                  }}
+                >
+                  {prevHasFoto && (
+                    <img
+                      src={previousCargo!.foto_url!}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  )}
+                  <div
+                    aria-hidden
+                    className="absolute inset-0"
+                    style={{
+                      background: prevHasFoto
+                        ? 'linear-gradient(180deg, rgba(15,23,42,0.05) 30%, rgba(15,23,42,0.85) 100%)'
+                        : 'radial-gradient(circle at 30% 25%, rgba(96,165,250,0.22), transparent 55%)',
+                    }}
+                  />
+                </motion.div>
               )}
-              {!hasCargo && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white/50 text-5xl font-serif font-bold">∅</span>
-                </div>
-              )}
+
               {/* Pulsing ring */}
               <motion.div
                 aria-hidden

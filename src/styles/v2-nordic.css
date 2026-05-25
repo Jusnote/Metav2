@@ -1,0 +1,59 @@
+/* Tokens da identidade nórdica (Lei Seca v2 — Fase A).
+   Gerados pelo Tailwind v4 a partir de @theme:
+   --color-n-* → classes bg-n-*, text-n-*, border-n-*
+   --font-n-*  → classes font-n-*
+   --tracking-n-* → classes tracking-n-* */
+@theme {
+  --color-n-bg: #fbfbfc;
+  --color-n-surface: #ffffff;
+
+  --color-n-ink: #0e1014;
+  --color-n-ink-2: #5e6470;
+  --color-n-ink-3: #9aa0ab;
+
+  --color-n-rule: #eceef2;
+  --color-n-rule-2: #f4f5f8;
+
+  --color-n-accent: #3b5b7a;
+  --color-n-accent-soft: #eaf0f6;
+
+  --color-n-hi: #fff3b8;
+
+  --font-n-sans: var(--font-inter-tight), Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-n-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --tracking-n-tight: -0.025em;
+  --tracking-n-snug: -0.02em;
+  --tracking-n-normal: -0.01em;
+}
+
+/* scrollIntoView do mega-menu não esconde artigo atrás do chrome (56 topbar + 44 subnav) */
+[data-tipo="ARTIGO"] {
+  scroll-margin-top: 100px;
+}
+
+/* Scrollbar discreto para colunas do mega-menu (e qualquer outro container nórdico).
+   IMPORTANTE: Tailwind v4 expõe os tokens como --color-n-* (não --n-*). */
+.nordic-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-n-ink-3) transparent;
+}
+.nordic-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.nordic-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.nordic-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-n-ink-3);
+  border-radius: 4px;
+  min-height: 32px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.nordic-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-n-ink-2);
+  background-clip: padding-box;
+}
+

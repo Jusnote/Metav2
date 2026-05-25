@@ -1,11 +1,10 @@
 // src/components/questoes/objetivo/ObjetivoSection.tsx
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useCarreiras, useAreaCounts } from '@/hooks/useCarreiras';
+import { useEffect } from 'react';
+import { useCarreiras } from '@/hooks/useCarreiras';
 import { useFocoObjetivo } from '@/hooks/useFocoObjetivo';
 import { AREA_LABELS, type Area } from '@/types/carreira';
-import { AreaTabs } from './AreaTabs';
 import { CarreiraCarousel } from './CarreiraCarousel';
 import { useSearchParams } from 'react-router-dom';
 import { useQuestoesFilterDraftOptional } from '@/contexts/QuestoesFilterDraftContext';
@@ -27,13 +26,15 @@ const CARREIRA_FILTROS: Record<string, { orgaos: string[] }> = {
  * Fase 1A: os focos não têm efeito nos pills ou na query de questões —
  * só destacam os cards visualmente.
  */
-export function ObjetivoSection() {
-  const [area, setArea] = useState<Area>('advocacia');
+interface ObjetivoSectionProps {
+  /** Controlled — área selecionada (lifted ao QuestoesPage). */
+  area: Area;
+}
 
+export function ObjetivoSection({ area }: ObjetivoSectionProps) {
   const { focos, toggleFoco, clearFocos } = useFocoObjetivo();
 
   const { data: carreiras = [], isLoading } = useCarreiras(area);
-  const { data: counts = {} } = useAreaCounts();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const draftCtx = useQuestoesFilterDraftOptional();
@@ -71,17 +72,13 @@ export function ObjetivoSection() {
   }, [focos, searchParams, setSearchParams, draftCtx]);
 
   return (
-    <section className="mt-5">
-      <AreaTabs value={area} onChange={setArea} counts={counts} />
-
-      <CarreiraCarousel
-        carreiras={carreiras}
-        focosAtivos={focos}
-        onToggleFoco={toggleFoco}
-        onClearFocos={clearFocos}
-        areaLabel={AREA_LABELS[area]}
-        loading={isLoading}
-      />
-    </section>
+    <CarreiraCarousel
+      carreiras={carreiras}
+      focosAtivos={focos}
+      onToggleFoco={toggleFoco}
+      onClearFocos={clearFocos}
+      areaLabel={AREA_LABELS[area]}
+      loading={isLoading}
+    />
   );
 }

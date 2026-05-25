@@ -1,0 +1,2673 @@
+{
+  "materia": "Direito Administrativo",
+  "banca": "FGV",
+  "orgao": "OAB",
+  "total_exames": 43,
+  "total_questoes": 265,
+  "cobertura_mapping_pct": 94.7,
+  "gerado_em": "2026-05-08T14:49:02.795996",
+  "exames": [
+    {
+      "id": 3817,
+      "ano": 2010,
+      "label": "2010.1",
+      "n_questoes": 100
+    },
+    {
+      "id": 3818,
+      "ano": 2010,
+      "label": "2010.2",
+      "n_questoes": 100
+    },
+    {
+      "id": 3710,
+      "ano": 2011,
+      "label": "2011.1",
+      "n_questoes": 160
+    },
+    {
+      "id": 3734,
+      "ano": 2011,
+      "label": "2011.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 3748,
+      "ano": 2011,
+      "label": "2011.3",
+      "n_questoes": 79
+    },
+    {
+      "id": 3709,
+      "ano": 2012,
+      "label": "2012.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 3711,
+      "ano": 2012,
+      "label": "2012.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 3726,
+      "ano": 2012,
+      "label": "2012.3",
+      "n_questoes": 160
+    },
+    {
+      "id": 3688,
+      "ano": 2013,
+      "label": "2013.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 3689,
+      "ano": 2013,
+      "label": "2013.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 3708,
+      "ano": 2013,
+      "label": "2013.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 3652,
+      "ano": 2014,
+      "label": "2014.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 3687,
+      "ano": 2014,
+      "label": "2014.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 3915,
+      "ano": 2014,
+      "label": "2014.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 4229,
+      "ano": 2015,
+      "label": "2015.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 4476,
+      "ano": 2015,
+      "label": "2015.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 5129,
+      "ano": 2015,
+      "label": "2015.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 5814,
+      "ano": 2016,
+      "label": "2016.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 6759,
+      "ano": 2016,
+      "label": "2016.2",
+      "n_questoes": 160
+    },
+    {
+      "id": 7788,
+      "ano": 2016,
+      "label": "2016.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 8817,
+      "ano": 2017,
+      "label": "2017.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 9784,
+      "ano": 2017,
+      "label": "2017.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 11243,
+      "ano": 2017,
+      "label": "2017.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 12928,
+      "ano": 2018,
+      "label": "2018.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 13984,
+      "ano": 2018,
+      "label": "2018.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 15588,
+      "ano": 2018,
+      "label": "2018.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 18505,
+      "ano": 2019,
+      "label": "2019.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 22228,
+      "ano": 2019,
+      "label": "2019.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 25907,
+      "ano": 2019,
+      "label": "2019.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 27899,
+      "ano": 2020,
+      "label": "2020.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 42675,
+      "ano": 2021,
+      "label": "2021.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 51046,
+      "ano": 2021,
+      "label": "2021.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 53501,
+      "ano": 2022,
+      "label": "2022.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 58222,
+      "ano": 2022,
+      "label": "2022.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 61959,
+      "ano": 2022,
+      "label": "2022.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 66471,
+      "ano": 2023,
+      "label": "2023.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 72327,
+      "ano": 2023,
+      "label": "2023.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 79117,
+      "ano": 2023,
+      "label": "2023.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 84087,
+      "ano": 2024,
+      "label": "2024.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 90207,
+      "ano": 2024,
+      "label": "2024.2",
+      "n_questoes": 80
+    },
+    {
+      "id": 99169,
+      "ano": 2024,
+      "label": "2024.3",
+      "n_questoes": 80
+    },
+    {
+      "id": 103674,
+      "ano": 2025,
+      "label": "2025.1",
+      "n_questoes": 80
+    },
+    {
+      "id": 110577,
+      "ano": 2025,
+      "label": "2025.2",
+      "n_questoes": 80
+    }
+  ],
+  "items": [
+    {
+      "id": "9",
+      "label": "Intervenção estatal na propriedade",
+      "questoes": 30,
+      "exames": 25,
+      "pct_cobertura": 11.3,
+      "pct_incidencia": 58.1,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3687,
+          "n": 1
+        },
+        {
+          "id": 3688,
+          "n": 1
+        },
+        {
+          "id": 3689,
+          "n": 1
+        },
+        {
+          "id": 3708,
+          "n": 1
+        },
+        {
+          "id": 3711,
+          "n": 2
+        },
+        {
+          "id": 3726,
+          "n": 2
+        },
+        {
+          "id": 3817,
+          "n": 1
+        },
+        {
+          "id": 3818,
+          "n": 2
+        },
+        {
+          "id": 4476,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 1
+        },
+        {
+          "id": 8817,
+          "n": 1
+        },
+        {
+          "id": 9784,
+          "n": 1
+        },
+        {
+          "id": 12928,
+          "n": 1
+        },
+        {
+          "id": 18505,
+          "n": 1
+        },
+        {
+          "id": 22228,
+          "n": 2
+        },
+        {
+          "id": 27899,
+          "n": 1
+        },
+        {
+          "id": 42675,
+          "n": 1
+        },
+        {
+          "id": 51046,
+          "n": 1
+        },
+        {
+          "id": 53501,
+          "n": 1
+        },
+        {
+          "id": 61959,
+          "n": 2
+        },
+        {
+          "id": 72327,
+          "n": 1
+        },
+        {
+          "id": 90207,
+          "n": 1
+        },
+        {
+          "id": 99169,
+          "n": 1
+        },
+        {
+          "id": 103674,
+          "n": 1
+        },
+        {
+          "id": 110577,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 3
+        },
+        {
+          "ano": 2012,
+          "n": 4
+        },
+        {
+          "ano": 2013,
+          "n": 3
+        },
+        {
+          "ano": 2014,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 1
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 2
+        },
+        {
+          "ano": 2018,
+          "n": 1
+        },
+        {
+          "ano": 2019,
+          "n": 3
+        },
+        {
+          "ano": 2020,
+          "n": 1
+        },
+        {
+          "ano": 2021,
+          "n": 2
+        },
+        {
+          "ano": 2022,
+          "n": 3
+        },
+        {
+          "ano": 2023,
+          "n": 1
+        },
+        {
+          "ano": 2024,
+          "n": 2
+        },
+        {
+          "ano": 2025,
+          "n": 2
+        }
+      ],
+      "samples": [
+        {
+          "id": 26511,
+          "ano": 2025,
+          "exam_id": 110577,
+          "assunto": "Desapropriação",
+          "enunciado": "Jaílson pretende adquirir uma propriedade rural, considerada média nos termos da lei, que será a única de sua titularidade, para realizar a plantação de alimentos orgânicos para subsistência, mas tem o receio de investir todas as suas economias em imóvel que seja passível de desa..."
+        },
+        {
+          "id": 19297,
+          "ano": 2025,
+          "exam_id": 103674,
+          "assunto": "Tombamento - Conceitos e Decreto-Lei nº 25/1937",
+          "enunciado": "Com o intuito de promover o tombamento de dois imóveis vizinhos de inequívoco valor histórico e cultural, o Instituto do Patrimônio Histórico Nacional (Iphan), autarquia federal, no exercício de suas atribuições, promoveu a notificação dos respectivos proprietários: o Município A..."
+        },
+        {
+          "id": 15937,
+          "ano": 2024,
+          "exam_id": 99169,
+          "assunto": "Limitações Administrativas (Intervenção da Propriedade)",
+          "enunciado": "O Município Alfa editou lei, aplicável após sua entrada em vigor, sem caráter retroativo, devidamente regulamentada por decreto, dispondo sobre o número máximo de pavimentos em edificações situadas em determinadas ruas à beira-mar, em bairros da cidade especificados. Cuida-se, po..."
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "label": "Licitações e contratos (Lei 8.666/93 e Lei 14.133/2021)",
+      "questoes": 30,
+      "exames": 22,
+      "pct_cobertura": 11.3,
+      "pct_incidencia": 51.2,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3687,
+          "n": 1
+        },
+        {
+          "id": 3688,
+          "n": 1
+        },
+        {
+          "id": 3689,
+          "n": 2
+        },
+        {
+          "id": 3708,
+          "n": 1
+        },
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3726,
+          "n": 2
+        },
+        {
+          "id": 3817,
+          "n": 2
+        },
+        {
+          "id": 3915,
+          "n": 2
+        },
+        {
+          "id": 5129,
+          "n": 2
+        },
+        {
+          "id": 8817,
+          "n": 1
+        },
+        {
+          "id": 13984,
+          "n": 1
+        },
+        {
+          "id": 15588,
+          "n": 2
+        },
+        {
+          "id": 18505,
+          "n": 1
+        },
+        {
+          "id": 25907,
+          "n": 2
+        },
+        {
+          "id": 51046,
+          "n": 1
+        },
+        {
+          "id": 58222,
+          "n": 1
+        },
+        {
+          "id": 66471,
+          "n": 1
+        },
+        {
+          "id": 72327,
+          "n": 1
+        },
+        {
+          "id": 79117,
+          "n": 2
+        },
+        {
+          "id": 90207,
+          "n": 1
+        },
+        {
+          "id": 99169,
+          "n": 1
+        },
+        {
+          "id": 110577,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 2
+        },
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2012,
+          "n": 2
+        },
+        {
+          "ano": 2013,
+          "n": 4
+        },
+        {
+          "ano": 2014,
+          "n": 3
+        },
+        {
+          "ano": 2015,
+          "n": 2
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2018,
+          "n": 3
+        },
+        {
+          "ano": 2019,
+          "n": 3
+        },
+        {
+          "ano": 2021,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 4
+        },
+        {
+          "ano": 2024,
+          "n": 2
+        },
+        {
+          "ano": 2025,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 48794,
+          "ano": 2025,
+          "exam_id": 110577,
+          "assunto": "Meios Alternativos de Resolução de Controvérsias (arts. 151 a 154 da Lei nº 14.133/2021)",
+          "enunciado": "A sociedade empresária Chique possui dois contratos administrativos distintos regularmente formalizados com o Município Gama, tendo por objeto a realização de serviços contínuos, com contratação de mão de obra para atividades de limpeza e manutenção predial. Registre-se que em ap..."
+        },
+        {
+          "id": 47295,
+          "ano": 2024,
+          "exam_id": 99169,
+          "assunto": "Execução dos Contratos (arts. 115 a art. 123 da Lei nº 14.133/2021)",
+          "enunciado": "Após o devido procedimento licitatório, foi formalizado com a sociedade empresária Esperta determinado contrato de prestação de serviços contínuos com dedicação exclusiva de mão de obra, sendo certo que, no curso do contrato, a contratada, ou seja, a sociedade Esperta, inadimpliu..."
+        },
+        {
+          "id": 46265,
+          "ano": 2024,
+          "exam_id": 90207,
+          "assunto": "Contratação Direta, Inexigibilidade e Dispensa (arts. 72 a 75 da Lei nº 14.133/2021)",
+          "enunciado": "O Município Delta procurou o Escritório Alfa com a intenção de contratá-lo para prestar serviços especializados de consultoria e auditoria financeira, de natureza predominantemente técnica, diante de sua notória especialização na área. Na reunião realizada entre os representantes..."
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "label": "Agentes públicos",
+      "questoes": 25,
+      "exames": 21,
+      "pct_cobertura": 9.4,
+      "pct_incidencia": 48.8,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3652,
+          "n": 1
+        },
+        {
+          "id": 3688,
+          "n": 1
+        },
+        {
+          "id": 3708,
+          "n": 1
+        },
+        {
+          "id": 3710,
+          "n": 2
+        },
+        {
+          "id": 3726,
+          "n": 1
+        },
+        {
+          "id": 3734,
+          "n": 1
+        },
+        {
+          "id": 3817,
+          "n": 1
+        },
+        {
+          "id": 3818,
+          "n": 1
+        },
+        {
+          "id": 3915,
+          "n": 1
+        },
+        {
+          "id": 4476,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 2
+        },
+        {
+          "id": 7788,
+          "n": 1
+        },
+        {
+          "id": 8817,
+          "n": 2
+        },
+        {
+          "id": 11243,
+          "n": 1
+        },
+        {
+          "id": 12928,
+          "n": 1
+        },
+        {
+          "id": 13984,
+          "n": 1
+        },
+        {
+          "id": 15588,
+          "n": 1
+        },
+        {
+          "id": 18505,
+          "n": 1
+        },
+        {
+          "id": 27899,
+          "n": 1
+        },
+        {
+          "id": 84087,
+          "n": 2
+        },
+        {
+          "id": 90207,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 2
+        },
+        {
+          "ano": 2011,
+          "n": 3
+        },
+        {
+          "ano": 2012,
+          "n": 1
+        },
+        {
+          "ano": 2013,
+          "n": 2
+        },
+        {
+          "ano": 2014,
+          "n": 2
+        },
+        {
+          "ano": 2015,
+          "n": 1
+        },
+        {
+          "ano": 2016,
+          "n": 3
+        },
+        {
+          "ano": 2017,
+          "n": 3
+        },
+        {
+          "ano": 2018,
+          "n": 3
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2020,
+          "n": 1
+        },
+        {
+          "ano": 2024,
+          "n": 3
+        }
+      ],
+      "samples": [
+        {
+          "id": 96471,
+          "ano": 2024,
+          "exam_id": 84087,
+          "assunto": "Estabilidade e Estágio Probatório",
+          "enunciado": "Jamile, após aprovação em concurso público, foi investida em cargo efetivo na Secretaria de Administração do Estado Alfa , no qual alcançou a estabilidade. No entanto, o mencionado ente federativo decidiu reformular o seu quadro de pessoal, de modo que, após o devido processo leg..."
+        },
+        {
+          "id": 96467,
+          "ano": 2024,
+          "exam_id": 84087,
+          "assunto": "Formas de Provimento (arts. 5º a 32 da Lei nº 8.112/1990)",
+          "enunciado": "Marcelo, servidor público federal estável, aposentou-se por invalidez. Meses depois, uma junta médica oficial declarou insubsistentes os motivos de sua aposentadoria. Consoante a Lei nº 8.112/90, que dispõe sobre o regime jurídico dos servidores públicos civis da União, o retorno..."
+        },
+        {
+          "id": 10939,
+          "ano": 2024,
+          "exam_id": 90207,
+          "assunto": "Jurisprudência dos Tribunais Superiores sobre Concurso Público",
+          "enunciado": "Diante do grande déficit de servidores, o Estado Alfa realizou concurso público para o cargo da polícia penal, com previsão de cinquenta vagas. O respectivo edital previu o prazo de um ano para o certame, prorrogável por igual período, bem como a realização de exame psicotécnico,..."
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "label": "Improbidade administrativa (Lei 8.429/92 c/ alts. 14.230/21)",
+      "questoes": 20,
+      "exames": 19,
+      "pct_cobertura": 7.5,
+      "pct_incidencia": 44.2,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3652,
+          "n": 1
+        },
+        {
+          "id": 3687,
+          "n": 1
+        },
+        {
+          "id": 3734,
+          "n": 1
+        },
+        {
+          "id": 5129,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 2
+        },
+        {
+          "id": 9784,
+          "n": 1
+        },
+        {
+          "id": 11243,
+          "n": 1
+        },
+        {
+          "id": 12928,
+          "n": 1
+        },
+        {
+          "id": 13984,
+          "n": 1
+        },
+        {
+          "id": 18505,
+          "n": 1
+        },
+        {
+          "id": 22228,
+          "n": 1
+        },
+        {
+          "id": 42675,
+          "n": 1
+        },
+        {
+          "id": 51046,
+          "n": 1
+        },
+        {
+          "id": 58222,
+          "n": 1
+        },
+        {
+          "id": 61959,
+          "n": 1
+        },
+        {
+          "id": 66471,
+          "n": 1
+        },
+        {
+          "id": 72327,
+          "n": 1
+        },
+        {
+          "id": 103674,
+          "n": 1
+        },
+        {
+          "id": 110577,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2014,
+          "n": 2
+        },
+        {
+          "ano": 2015,
+          "n": 1
+        },
+        {
+          "ano": 2016,
+          "n": 2
+        },
+        {
+          "ano": 2017,
+          "n": 2
+        },
+        {
+          "ano": 2018,
+          "n": 2
+        },
+        {
+          "ano": 2019,
+          "n": 2
+        },
+        {
+          "ano": 2021,
+          "n": 2
+        },
+        {
+          "ano": 2022,
+          "n": 2
+        },
+        {
+          "ano": 2023,
+          "n": 2
+        },
+        {
+          "ano": 2025,
+          "n": 2
+        }
+      ],
+      "samples": [
+        {
+          "id": 74775,
+          "ano": 2025,
+          "exam_id": 110577,
+          "assunto": "Dos Atos de Improbidade (arts. 9º a 11 da Lei nº 8.429/1992)",
+          "enunciado": "Em dezembro de 2024, Lucas, servidor público celetista no âmbito da empresa pública XYZ, permitiu, culposamente, que Matheus da Silva utilizasse veículos automotores da estatal para a execução de serviços particulares, sem qualquer relação com a empresa publica. Nesse contexto, a..."
+        },
+        {
+          "id": 74242,
+          "ano": 2025,
+          "exam_id": 103674,
+          "assunto": "Das Disposições Gerais (arts. 1º a 8º-A da Lei nº 8.429/1992)",
+          "enunciado": "Januário, ex-prefeito do Município Imaginário, teve conhecimento de um inquérito civil que tem por objeto avaliar condutas praticadas no exercício de seu mandato que se enquadram como atos de improbidade e que causaram prejuízo ao erário. Em razão disso, ele procurou você, na qua..."
+        },
+        {
+          "id": 69354,
+          "ano": 2023,
+          "exam_id": 72327,
+          "assunto": "Dos Atos de Improbidade (arts. 9º a 11 da Lei nº 8.429/1992)",
+          "enunciado": "No ano corrente, o Ministério Público ajuizou duas ações por improbidade administrativa distintas, uma em desfavor de Carlos, prefeito do Município Alfa , e, outra, em desfavor de Bruno, servidor do Município Beta. Ambas as ações buscavam a aplicação de penalidade pela prática de..."
+        }
+      ]
+    },
+    {
+      "id": "3.2",
+      "label": "Poder disciplinar e PAD",
+      "questoes": 15,
+      "exames": 15,
+      "pct_cobertura": 5.7,
+      "pct_incidencia": 34.9,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3708,
+          "n": 1
+        },
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3817,
+          "n": 1
+        },
+        {
+          "id": 4229,
+          "n": 1
+        },
+        {
+          "id": 4476,
+          "n": 1
+        },
+        {
+          "id": 5129,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 1
+        },
+        {
+          "id": 9784,
+          "n": 1
+        },
+        {
+          "id": 12928,
+          "n": 1
+        },
+        {
+          "id": 18505,
+          "n": 1
+        },
+        {
+          "id": 42675,
+          "n": 1
+        },
+        {
+          "id": 58222,
+          "n": 1
+        },
+        {
+          "id": 84087,
+          "n": 1
+        },
+        {
+          "id": 99169,
+          "n": 1
+        },
+        {
+          "id": 103674,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2013,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 3
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2018,
+          "n": 1
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2021,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2024,
+          "n": 2
+        },
+        {
+          "ano": 2025,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 98971,
+          "ano": 2025,
+          "exam_id": 103674,
+          "assunto": "Do Processo Administrativo Disciplinar (arts. 143 a 182 da Lei nº 8.112/1990)",
+          "enunciado": "Tertuliano vem acumulando ilicitamente dois cargos públicos em autarquias federais diferentes. Ao detectar tal situação, após os devidos trâmites, a autoridade competente notificou o servidor para que ele optasse pelo cargo em que pretendia permanecer. Em decorrência da omissão d..."
+        },
+        {
+          "id": 98405,
+          "ano": 2024,
+          "exam_id": 99169,
+          "assunto": "Do Processo Administrativo Disciplinar (arts. 143 a 182 da Lei nº 8.112/1990)",
+          "enunciado": "Em decorrência de uma denúncia anônima, as autoridades competentes da União promoveram investigação e verificaram que Wagner, servidor público federal estável, cometeu infração disciplinar que também é capitulada como crime contra a Administração Pública. Em razão disso, de forma..."
+        },
+        {
+          "id": 96468,
+          "ano": 2024,
+          "exam_id": 84087,
+          "assunto": "Do Processo Administrativo Disciplinar (arts. 143 a 182 da Lei nº 8.112/1990)",
+          "enunciado": "Vicente, servidor público federal estável, praticou conduta que corresponde a crime, na forma da legislação penal, e se enquadra como falta funcional grave, passível de demissão. Ao tomar conhecimento de tal situação, a Administração determinou a instauração de processo administr..."
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "label": "Serviços públicos",
+      "questoes": 16,
+      "exames": 14,
+      "pct_cobertura": 6.0,
+      "pct_incidencia": 32.6,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3687,
+          "n": 1
+        },
+        {
+          "id": 3709,
+          "n": 2
+        },
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3726,
+          "n": 1
+        },
+        {
+          "id": 3748,
+          "n": 1
+        },
+        {
+          "id": 3818,
+          "n": 1
+        },
+        {
+          "id": 4229,
+          "n": 2
+        },
+        {
+          "id": 5129,
+          "n": 1
+        },
+        {
+          "id": 12928,
+          "n": 1
+        },
+        {
+          "id": 15588,
+          "n": 1
+        },
+        {
+          "id": 18505,
+          "n": 1
+        },
+        {
+          "id": 27899,
+          "n": 1
+        },
+        {
+          "id": 66471,
+          "n": 1
+        },
+        {
+          "id": 103674,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2011,
+          "n": 2
+        },
+        {
+          "ano": 2012,
+          "n": 3
+        },
+        {
+          "ano": 2014,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 3
+        },
+        {
+          "ano": 2018,
+          "n": 2
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2020,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 1
+        },
+        {
+          "ano": 2025,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 98972,
+          "ano": 2025,
+          "exam_id": 103674,
+          "assunto": "Intervenção (Serviços Públicos - Lei nº 8.987/1995)",
+          "enunciado": "O Estado Beta , após os devidos trâmites, promoveu a concessão de serviços de sua competência para a sociedade empresária Servicaos . Em decorrência do descumprimento de algumas cláusulas contratuais que estão impactando a qualidade da atividade delegada, o poder concedente edito..."
+        },
+        {
+          "id": 92681,
+          "ano": 2023,
+          "exam_id": 66471,
+          "assunto": "Lei nº 13.460/2017 - Direitos Básicos do Usuário do Serviço Público",
+          "enunciado": "Após inúmeras tentativas de obter transparência e sanar constantes problemas na prestação de determinado serviço público federal junto à concessionária, Felipe decidiu apresentar manifestação perante a Ouvidoria da Administração Pública, para informar e buscar solução para recorr..."
+        },
+        {
+          "id": 82142,
+          "ano": 2020,
+          "exam_id": 27899,
+          "assunto": "Intervenção (Serviços Públicos - Lei nº 8.987/1995)",
+          "enunciado": "O Município Beta concedeu a execução do serviço público de veículos leves sobre trilhos e, ao verificar que a concessionária não estava cumprindo adequadamente as obrigações determinadas no respectivo contrato, considerou tomar as providências cabíveis para a regularização das at..."
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "label": "Responsabilidade civil do Estado",
+      "questoes": 15,
+      "exames": 14,
+      "pct_cobertura": 5.7,
+      "pct_incidencia": 32.6,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3709,
+          "n": 1
+        },
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3734,
+          "n": 1
+        },
+        {
+          "id": 3748,
+          "n": 1
+        },
+        {
+          "id": 3817,
+          "n": 1
+        },
+        {
+          "id": 5814,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 2
+        },
+        {
+          "id": 7788,
+          "n": 1
+        },
+        {
+          "id": 13984,
+          "n": 1
+        },
+        {
+          "id": 15588,
+          "n": 1
+        },
+        {
+          "id": 27899,
+          "n": 1
+        },
+        {
+          "id": 53501,
+          "n": 1
+        },
+        {
+          "id": 66471,
+          "n": 1
+        },
+        {
+          "id": 103674,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2011,
+          "n": 3
+        },
+        {
+          "ano": 2012,
+          "n": 1
+        },
+        {
+          "ano": 2016,
+          "n": 4
+        },
+        {
+          "ano": 2018,
+          "n": 2
+        },
+        {
+          "ano": 2020,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 1
+        },
+        {
+          "ano": 2025,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 98973,
+          "ano": 2025,
+          "exam_id": 103674,
+          "assunto": "Responsabilidade dos Agentes Públicos e Direito de Regresso",
+          "enunciado": "Rodrigo agrediu fisicamente seu desafeto Afonso, quando estava no exercício de suas atribuições como servidor público do Estado Alfa, em decorrência de uma desavença entre eles, no momento em que realizava atendimento ao público. Em razão dos danos sofridos, Afonso ajuizou ação d..."
+        },
+        {
+          "id": 3404,
+          "ano": 2023,
+          "exam_id": 66471,
+          "assunto": "Jurisprudência dos Tribunais Superiores sobre Responsabilidade Civil do Estado",
+          "enunciado": "Mateus e Geraldo foram presos em decorrência de sentença penal com trânsito em julgado, pelo crime de latrocínio. Ambos ficaram, inicialmente, na mesma cela prisional, em condições absolutamente precárias e insalubres, sendo certo que Geraldo evadiu-se da cadeia. Seis meses após ..."
+        },
+        {
+          "id": 2196,
+          "ano": 2022,
+          "exam_id": 53501,
+          "assunto": "Jurisprudência dos Tribunais Superiores sobre Responsabilidade Civil do Estado",
+          "enunciado": "Márcio é policial militar do Estado Ômega e, ao longo de suas férias, em movimentada praia no litoral do Estado Alfa, durante festa em que se encontrava à paisana, envolveu-se em uma briga, durante a qual sacou a arma da corporação, que sempre portava, e desferiu tiros contra Ber..."
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "label": "Atividade e estrutura administrativa",
+      "questoes": 13,
+      "exames": 12,
+      "pct_cobertura": 4.9,
+      "pct_incidencia": 27.9,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3688,
+          "n": 1
+        },
+        {
+          "id": 3709,
+          "n": 2
+        },
+        {
+          "id": 3711,
+          "n": 1
+        },
+        {
+          "id": 3734,
+          "n": 1
+        },
+        {
+          "id": 3817,
+          "n": 1
+        },
+        {
+          "id": 3915,
+          "n": 1
+        },
+        {
+          "id": 4476,
+          "n": 1
+        },
+        {
+          "id": 5129,
+          "n": 1
+        },
+        {
+          "id": 7788,
+          "n": 1
+        },
+        {
+          "id": 9784,
+          "n": 1
+        },
+        {
+          "id": 15588,
+          "n": 1
+        },
+        {
+          "id": 53501,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2012,
+          "n": 3
+        },
+        {
+          "ano": 2013,
+          "n": 1
+        },
+        {
+          "ano": 2014,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 2
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2018,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 116869,
+          "ano": 2022,
+          "exam_id": 53501,
+          "assunto": "Administração Indireta",
+          "enunciado": "Com vistas a atender a relevante interesse social e coletivo, o Estado Alfa decidiu criar uma sociedade de economia mista para o desempenho de atividade econômica de sua competência. Após os devidos trâmites para a criação de tal pessoa jurídica, designada de Empreendere , verifi..."
+        },
+        {
+          "id": 134653,
+          "ano": 2018,
+          "exam_id": 15588,
+          "assunto": "Administração Indireta",
+          "enunciado": "No ano corrente, a União decidiu criar uma nova empresa pública, para a realização de atividades de relevante interesse econômico. Para tanto, fez editar a respectiva lei autorizativa e promoveu a inscrição dos respectivos atos constitutivos no registro competente. Após a devida ..."
+        },
+        {
+          "id": 131583,
+          "ano": 2017,
+          "exam_id": 9784,
+          "assunto": "Administração Indireta",
+          "enunciado": "O Estado Alfa, mediante a respectiva autorização legislativa, constituiu uma sociedade de economia mista para o desenvolvimento de certa atividade econômica de relevante interesse coletivo. Acerca do Regime de Pessoal de tal entidade, integrante da Administração Indireta, assinal..."
+        }
+      ]
+    },
+    {
+      "id": "6.4",
+      "label": "Parcerias público-privadas (PPP)",
+      "questoes": 12,
+      "exames": 12,
+      "pct_cobertura": 4.5,
+      "pct_incidencia": 27.9,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3726,
+          "n": 1
+        },
+        {
+          "id": 3748,
+          "n": 1
+        },
+        {
+          "id": 5814,
+          "n": 1
+        },
+        {
+          "id": 7788,
+          "n": 1
+        },
+        {
+          "id": 11243,
+          "n": 1
+        },
+        {
+          "id": 22228,
+          "n": 1
+        },
+        {
+          "id": 42675,
+          "n": 1
+        },
+        {
+          "id": 58222,
+          "n": 1
+        },
+        {
+          "id": 66471,
+          "n": 1
+        },
+        {
+          "id": 79117,
+          "n": 1
+        },
+        {
+          "id": 99169,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2011,
+          "n": 2
+        },
+        {
+          "ano": 2012,
+          "n": 1
+        },
+        {
+          "ano": 2016,
+          "n": 2
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2021,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 2
+        },
+        {
+          "ano": 2024,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 98406,
+          "ano": 2024,
+          "exam_id": 99169,
+          "assunto": "Lei nº 11.079/2004 - Parceria Público-Privada (PPP)",
+          "enunciado": "Diante da divulgação de uma notícia veiculando a intenção do Município Beta em formalizar uma concessão administrativa para a realização de certo serviço indivisível, que envolve a realização de obras de infraestrutura para sua materialização, os representantes da sociedade empre..."
+        },
+        {
+          "id": 95707,
+          "ano": 2023,
+          "exam_id": 79117,
+          "assunto": "Lei nº 11.079/2004 - Parceria Público-Privada (PPP)",
+          "enunciado": "Diante da necessidade de vultosos investimentos em infraestrutura e para atrair a iniciativa privada, a União divulgou, pelos meios de comunicação, que pretende realizar uma parceria público-privada, na modalidade concessão patrocinada, salientando que já ficou caracterizado que ..."
+        },
+        {
+          "id": 92683,
+          "ano": 2023,
+          "exam_id": 66471,
+          "assunto": "Lei nº 11.079/2004 - Parceria Público-Privada (PPP)",
+          "enunciado": "O Estado Delta , com o fim de combater grave crise no sistema carcerário, realizou os estudos pertinentes para contratar uma concessão administrativa, de modo a delegar os serviços de determinado presídio, abarcando as atividades de limpeza e manutenção predial (incluindo reforma..."
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "label": "Controle da Administração Pública",
+      "questoes": 11,
+      "exames": 11,
+      "pct_cobertura": 4.2,
+      "pct_incidencia": 25.6,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3708,
+          "n": 1
+        },
+        {
+          "id": 3709,
+          "n": 1
+        },
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3726,
+          "n": 1
+        },
+        {
+          "id": 3817,
+          "n": 1
+        },
+        {
+          "id": 4229,
+          "n": 1
+        },
+        {
+          "id": 4476,
+          "n": 1
+        },
+        {
+          "id": 5814,
+          "n": 1
+        },
+        {
+          "id": 13984,
+          "n": 1
+        },
+        {
+          "id": 84087,
+          "n": 1
+        },
+        {
+          "id": 90207,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2012,
+          "n": 2
+        },
+        {
+          "ano": 2013,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 2
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        },
+        {
+          "ano": 2018,
+          "n": 1
+        },
+        {
+          "ano": 2024,
+          "n": 2
+        }
+      ],
+      "samples": [
+        {
+          "id": 97443,
+          "ano": 2024,
+          "exam_id": 90207,
+          "assunto": "Parlamentar Indireto (Tribunais de Contas e Controle Técnico-Financeiro)",
+          "enunciado": "Evandro Santos, prefeito do município Gama , tem dúvidas acerca da operacionalização do controle externo do julgamento das contas que deve anualmente prestar ao Legislativo. Em razão disso, questionou sua assessoria jurídica acerca dos trâmites necessários para tanto. Sobre a sit..."
+        },
+        {
+          "id": 96465,
+          "ano": 2024,
+          "exam_id": 84087,
+          "assunto": "Parlamentar Indireto (Tribunais de Contas e Controle Técnico-Financeiro)",
+          "enunciado": "A Escolinha do Gol , entidade privada sem fins lucrativos, que realiza sua função social de fomento ao esporte no Município Alfa , Estado Beta , entre os anos de 2020 a 2022, recebeu diretamente da União a quantia de R$ 100.000,00 (cem mil reais) para financiar seu programa benef..."
+        },
+        {
+          "id": 104190,
+          "ano": 2018,
+          "exam_id": 13984,
+          "assunto": "Controle Jurisdicional",
+          "enunciado": "Maria solicitou ao Município Alfa licença de localização e funcionamento para exercer determinada atividade empresarial, apresentando todos os documentos necessários para tanto. Contudo, transcorrido mais de ano do mencionado pedido, não houve qualquer manifestação por parte da a..."
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "label": "Processo administrativo (Lei 9.784/1999)",
+      "questoes": 10,
+      "exames": 10,
+      "pct_cobertura": 3.8,
+      "pct_incidencia": 23.3,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3688,
+          "n": 1
+        },
+        {
+          "id": 3726,
+          "n": 1
+        },
+        {
+          "id": 9784,
+          "n": 1
+        },
+        {
+          "id": 13984,
+          "n": 1
+        },
+        {
+          "id": 22228,
+          "n": 1
+        },
+        {
+          "id": 61959,
+          "n": 1
+        },
+        {
+          "id": 66471,
+          "n": 1
+        },
+        {
+          "id": 72327,
+          "n": 1
+        },
+        {
+          "id": 79117,
+          "n": 1
+        },
+        {
+          "id": 99169,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2012,
+          "n": 1
+        },
+        {
+          "ano": 2013,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2018,
+          "n": 1
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 3
+        },
+        {
+          "ano": 2024,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 73677,
+          "ano": 2024,
+          "exam_id": 99169,
+          "assunto": "Da Anulação, Revogação e Convalidação (arts. 53 a 55 da Lei nº 9.784/1999)",
+          "enunciado": "João Silva, servidor público federal estável, ao assumir cargo efetivo com atribuições atinentes ao controle interno da Administração, constatou que, nos últimos dez anos, foram proferidos numerosos atos administrativos que ensejaram efeitos favoráveis a destinatários de boa-fé. ..."
+        },
+        {
+          "id": 71136,
+          "ano": 2023,
+          "exam_id": 79117,
+          "assunto": "Do Recurso Administrativo e da Revisão (arts. 56 a 65 da Lei nº 9.784/1999)",
+          "enunciado": "No ano de 2020, o Município Alfa , por meio da Secretaria Municipal de Saúde, realizou concurso público para o cargo de médico. Não obstante a inexistência de previsão legal, no curso do certame, a Secretaria de Saúde incluiu como fase do concurso exame psicotécnico e eliminou di..."
+        },
+        {
+          "id": 69352,
+          "ano": 2023,
+          "exam_id": 72327,
+          "assunto": "Da Competência (arts. 11 a 17 da Lei nº 9.784/1999)",
+          "enunciado": "Josias e Januário são servidores públicos federais de alta hierarquia e estavam conversando sobre os problemas inerentes ao exercício de suas atribuições. Enquanto Josias está extremamente exacerbado de trabalho e precisa delegar algumas de suas atribuições, para não comprometer ..."
+        }
+      ]
+    },
+    {
+      "id": "6.1",
+      "label": "Serviços delegados, convênios e consórcios",
+      "questoes": 9,
+      "exames": 9,
+      "pct_cobertura": 3.4,
+      "pct_incidencia": 20.9,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3652,
+          "n": 1
+        },
+        {
+          "id": 3687,
+          "n": 1
+        },
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3748,
+          "n": 1
+        },
+        {
+          "id": 3915,
+          "n": 1
+        },
+        {
+          "id": 5814,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 1
+        },
+        {
+          "id": 58222,
+          "n": 1
+        },
+        {
+          "id": 84087,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2011,
+          "n": 2
+        },
+        {
+          "ano": 2014,
+          "n": 3
+        },
+        {
+          "ano": 2016,
+          "n": 2
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2024,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 96469,
+          "ano": 2024,
+          "exam_id": 84087,
+          "assunto": "Autorização, Permissão e Concessão (Serviços Públicos - Lei nº 8.987/1995)",
+          "enunciado": "A sociedade empresária Sabiá tomou conhecimento de um edital de licitação elaborado pelo Município Alfa para promover a permissão de determinado serviço público de competência local, razão pela qual procura sua assessoria jurídica, a fim de dirimir algumas dúvidas acerca da menci..."
+        },
+        {
+          "id": 90734,
+          "ano": 2022,
+          "exam_id": 58222,
+          "assunto": "Lei nº 11.107/2005 - Normas Gerais de Contratação de Consórcios Públicos",
+          "enunciado": "Em decorrência das queimadas que têm assolado certo bioma, os municípios vizinhos Alfa, Beta e Gama, nacionalmente conhecidos pelo turismo ambiental promovido na localidade e drasticamente afetados pelo fogo, decidiram formalizar um consórcio público com vistas a promover a prote..."
+        },
+        {
+          "id": 100145,
+          "ano": 2016,
+          "exam_id": 6759,
+          "assunto": "Lei nº 11.107/2005 - Normas Gerais de Contratação de Consórcios Públicos",
+          "enunciado": "O Estado Alfa e os Municípios Beta e Gama, localizados naquele Estado, celebraram protocolo de intenções para a constituição de consórcio público para atuação na área de saneamento, dispondo que o consórcio teria personalidade jurídica de direito público. No protocolo de intençõe..."
+        }
+      ]
+    },
+    {
+      "id": "3.4",
+      "label": "Poder de polícia",
+      "questoes": 8,
+      "exames": 8,
+      "pct_cobertura": 3.0,
+      "pct_incidencia": 18.6,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3652,
+          "n": 1
+        },
+        {
+          "id": 3689,
+          "n": 1
+        },
+        {
+          "id": 3708,
+          "n": 1
+        },
+        {
+          "id": 3711,
+          "n": 1
+        },
+        {
+          "id": 3818,
+          "n": 1
+        },
+        {
+          "id": 4229,
+          "n": 1
+        },
+        {
+          "id": 11243,
+          "n": 1
+        },
+        {
+          "id": 25907,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2012,
+          "n": 1
+        },
+        {
+          "ano": 2013,
+          "n": 2
+        },
+        {
+          "ano": 2014,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 108456,
+          "ano": 2019,
+          "exam_id": 25907,
+          "assunto": "Poder de Polícia",
+          "enunciado": "Após comprar um terreno, Roberto iniciou a construção de sua casa, sem prévia licença, avançando para além dos limites de sua propriedade e ocupando parcialmente a via pública, inclusive com possibilidade de desabamento de parte da obra e risco à integridade dos pedestres. No reg..."
+        },
+        {
+          "id": 132304,
+          "ano": 2017,
+          "exam_id": 11243,
+          "assunto": "Poder de Polícia",
+          "enunciado": "Um fiscal de posturas públicas municipais verifica que um restaurante continua colocando, de forma irregular, mesas para os seus clientes na calçada. Depois de lavrar autos de infração com aplicação de multa por duas vezes, sem que a sociedade empresária tenha interposto recurso ..."
+        },
+        {
+          "id": 124262,
+          "ano": 2015,
+          "exam_id": 4229,
+          "assunto": "Poder de Polícia",
+          "enunciado": "Determinado município resolve aumentar a eficiência na aplicação das multas de trânsito. Após procedimento licitatório, contrata a sociedade empresária Cobra Tudo para instalar câmeras do tipo “radar\" , que fotografam infrações de trânsito, bem como disponibilizar agentes de trân..."
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "label": "Domínio público (Bens públicos)",
+      "questoes": 8,
+      "exames": 8,
+      "pct_cobertura": 3.0,
+      "pct_incidencia": 18.6,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3711,
+          "n": 1
+        },
+        {
+          "id": 3734,
+          "n": 1
+        },
+        {
+          "id": 4229,
+          "n": 1
+        },
+        {
+          "id": 11243,
+          "n": 1
+        },
+        {
+          "id": 42675,
+          "n": 1
+        },
+        {
+          "id": 51046,
+          "n": 1
+        },
+        {
+          "id": 110577,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2011,
+          "n": 2
+        },
+        {
+          "ano": 2012,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2021,
+          "n": 2
+        },
+        {
+          "ano": 2025,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 99762,
+          "ano": 2025,
+          "exam_id": 110577,
+          "assunto": "Características dos Bens Públicos",
+          "enunciado": "Juliana ajuizou duas ações indenizatórias que resultaram na condenação dos réus, obrigando-os a pagar vultosa quantia em dinheiro. A primeira foi ajuizada em face de uma autarquia e, a segunda, em face de uma sociedade de economia mista que realiza atividade econômica em regime c..."
+        },
+        {
+          "id": 87039,
+          "ano": 2021,
+          "exam_id": 51046,
+          "assunto": "Aquisição de Bens pelo Estado",
+          "enunciado": "Há muitos anos, Bruno invadiu sorrateiramente uma terra devoluta indispensável à defesa de fronteira, que já havia sido devidamente discriminada. Como não houve oposição, Bruno construiu uma casa, na qual passou a residir com sua família, além de usar o terreno subjacente para a ..."
+        },
+        {
+          "id": 86067,
+          "ano": 2021,
+          "exam_id": 42675,
+          "assunto": "Afetação e Desafetação (Bens Públicos)",
+          "enunciado": "O Município Delta está passando por graves dificuldades financeiras e recebeu da sociedade empresária Incorporatudo uma proposta para alienar determinada praça pública, situada em bairro valorizado, por montante consideravelmente superior ao praticado no mercado, em decorrência d..."
+        }
+      ]
+    },
+    {
+      "id": "2.1",
+      "label": "Terceiro setor",
+      "questoes": 7,
+      "exames": 7,
+      "pct_cobertura": 2.6,
+      "pct_incidencia": 16.3,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3652,
+          "n": 1
+        },
+        {
+          "id": 3689,
+          "n": 1
+        },
+        {
+          "id": 3748,
+          "n": 1
+        },
+        {
+          "id": 3915,
+          "n": 1
+        },
+        {
+          "id": 8817,
+          "n": 1
+        },
+        {
+          "id": 12928,
+          "n": 1
+        },
+        {
+          "id": 58222,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2013,
+          "n": 1
+        },
+        {
+          "ano": 2014,
+          "n": 2
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        },
+        {
+          "ano": 2018,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 118579,
+          "ano": 2022,
+          "exam_id": 58222,
+          "assunto": "Terceiro Setor (OSs, OSCIPs, Sistema S e Fundações de Apoio)",
+          "enunciado": "A Associação Gama é uma instituição religiosa que se dedica à promoção da assistência social e almeja obter recursos financeiros junto ao governo federal a fim de fomentar suas atividades. Para tanto, seus representantes acreditam que a melhor alternativa é a qualificação como Or..."
+        },
+        {
+          "id": 103570,
+          "ano": 2018,
+          "exam_id": 12928,
+          "assunto": "Lei nº 13.019/2014 - Estatuto das Parcerias",
+          "enunciado": "A organização religiosa Tenhafé , além dos fins exclusivamente religiosos, também se dedica a atividades de interesse público, notadamente à educação e à socialização de crianças em situação de risco. Ela não está qualificada como Organização Social (OS), nem como Organização da ..."
+        },
+        {
+          "id": 130982,
+          "ano": 2017,
+          "exam_id": 8817,
+          "assunto": "Terceiro Setor (OSs, OSCIPs, Sistema S e Fundações de Apoio)",
+          "enunciado": "A Associação Delta se dedica à promoção do voluntariado e foi qualificada como Organização da Sociedade Civil sem fins lucrativos – OSCIP, após o que formalizou termo de parceria com a União, por meio do qual recebeu recursos que aplicou integralmente na realização de suas ativid..."
+        }
+      ]
+    },
+    {
+      "id": "11.2a",
+      "label": "Lei Anticorrupção (12.846/2013)",
+      "questoes": 5,
+      "exames": 5,
+      "pct_cobertura": 1.9,
+      "pct_incidencia": 11.6,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 22228,
+          "n": 1
+        },
+        {
+          "id": 51046,
+          "n": 1
+        },
+        {
+          "id": 61959,
+          "n": 1
+        },
+        {
+          "id": 79117,
+          "n": 1
+        },
+        {
+          "id": 84087,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2021,
+          "n": 1
+        },
+        {
+          "ano": 2022,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 1
+        },
+        {
+          "ano": 2024,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 96466,
+          "ano": 2024,
+          "exam_id": 84087,
+          "assunto": "Da Responsabilização Judicial (arts. 18 a 21 da Lei nº 12.846/2013)",
+          "enunciado": "O Ministério Público Federal ajuizou ação buscando a responsabilização judicial da Sociedade Empresária Delta pela prática de atos lesivos à Administração Pública que atentaram contra o patrimônio público nacional. Na inicial, imputa-se à citada pessoa jurídica a prática de atos ..."
+        },
+        {
+          "id": 95706,
+          "ano": 2023,
+          "exam_id": 79117,
+          "assunto": "Do Acordo de Leniência (arts. 16 e 17 da Lei nº 12.846/2013)",
+          "enunciado": "A sociedade empresária Alfa praticou ato lesivo à administração pública do Estado Beta , pois, em matéria de licitações e contratos, obteve vantagem indevida, de modo fraudulento, em sucessivas prorrogações de contrato administrativo, sem autorização legal, no ato convocatório da..."
+        },
+        {
+          "id": 91740,
+          "ano": 2022,
+          "exam_id": 61959,
+          "assunto": "Da Responsabilização Judicial (arts. 18 a 21 da Lei nº 12.846/2013)",
+          "enunciado": "A sociedade empresária Alfa praticou um ato lesivo à Administração Pública de um país estrangeiro, atentando contra os compromissos internacionais assumidos pelo Brasil no âmbito do combate à corrupção. Em razão disso, as autoridades brasileiras querem tomar as providências cabív..."
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "label": "Atos administrativos",
+      "questoes": 5,
+      "exames": 4,
+      "pct_cobertura": 1.9,
+      "pct_incidencia": 9.3,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3710,
+          "n": 1
+        },
+        {
+          "id": 3726,
+          "n": 2
+        },
+        {
+          "id": 5814,
+          "n": 1
+        },
+        {
+          "id": 25907,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2011,
+          "n": 1
+        },
+        {
+          "ano": 2012,
+          "n": 2
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        },
+        {
+          "ano": 2019,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 108459,
+          "ano": 2019,
+          "exam_id": 25907,
+          "assunto": "Teoria dos Motivos Determinantes",
+          "enunciado": "José, servidor público federal ocupante exclusivamente de cargo em comissão, foi exonerado, tendo a autoridade competente motivado o ato em reiterado descumprimento da carga horária de trabalho pelo servidor. José obteve, junto ao departamento de recursos humanos, documento ofici..."
+        },
+        {
+          "id": 128589,
+          "ano": 2016,
+          "exam_id": 5814,
+          "assunto": "Teoria dos Motivos Determinantes",
+          "enunciado": "A associação de moradores do Município F solicitou ao Poder Público municipal autorização para o fechamento da “ rua de trás ”, por uma noite, para a realização de uma festa junina aberta ao público. O Município, entretanto, negou o pedido, ao fundamento de que aquela rua seria u..."
+        },
+        {
+          "id": 121389,
+          "ano": 2012,
+          "exam_id": 3726,
+          "assunto": "Atos Administrativos: Espécies, Classificação, Fases de Constituição",
+          "enunciado": "Determinada área de proteção ambiental, situada em encosta de morro, vinha sendo ocupada, há muitos anos, sem qualquer ato de autorização pelo Poder Público, por alguns particulares, que lá construíram suas residências. José, que desde jovem sofre de problemas respiratórios, agra..."
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "label": "Princípios, fontes e interpretação",
+      "questoes": 2,
+      "exames": 2,
+      "pct_cobertura": 0.8,
+      "pct_incidencia": 4.7,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3818,
+          "n": 1
+        },
+        {
+          "id": 6759,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 129671,
+          "ano": 2016,
+          "exam_id": 6759,
+          "assunto": "Princípios Implícitos, Reconhecidos e Infraconstitucionais",
+          "enunciado": "Determinada empresa apresenta impugnação ao edital de concessão do serviço público metroviário em determinado Estado, sob a alegação de que a estipulação do retorno ao poder concedente de todos os bens reversíveis já amortizados, quando do advento do termo final do contrato, ense..."
+        },
+        {
+          "id": 121791,
+          "ano": 2010,
+          "exam_id": 3818,
+          "assunto": "Princípios Implícitos, Reconhecidos e Infraconstitucionais",
+          "enunciado": "Em determinado procedimento administrativo disciplinar, a Administração federal impôs, ao servidor, a pena de advertência, tendo em vista a comprovação de ato de improbidade. Inconformado, o servidor recorre, vindo a Administração, após lhe conferir o direito de manifestação, a l..."
+        }
+      ]
+    },
+    {
+      "id": "1.2",
+      "label": "LAI (Lei 12.527/2011) e LGPD (Lei 13.709/2018)",
+      "questoes": 2,
+      "exames": 2,
+      "pct_cobertura": 0.8,
+      "pct_incidencia": 4.7,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 22228,
+          "n": 1
+        },
+        {
+          "id": 72327,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2019,
+          "n": 1
+        },
+        {
+          "ano": 2023,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 4024,
+          "ano": 2023,
+          "exam_id": 72327,
+          "assunto": "Tópicos Mesclados da Lei nº 12.527/2011",
+          "enunciado": "Ariquemes é servidor público federal e vem cumprindo diligentemente com as obrigações estabelecidas em lei para obter sua progressão funcional e assim aumentar sua remuneração. Os critérios para tanto estão estabelecidos em lei, são de caráter objetivo, mediante pontuação a ser a..."
+        },
+        {
+          "id": 28934,
+          "ano": 2019,
+          "exam_id": 22228,
+          "assunto": "Do Acesso a Informações e da sua Divulgação (arts. 6º a 9º da Lei nº 12.527/2011)",
+          "enunciado": "Durval, cidadão brasileiro e engenheiro civil, desempenha trabalho voluntário na ONG Transparência, cujo principal objetivo é apurar a conformidade das contas públicas e expor eventuais irregularidades, apresentando reclamações e denúncias aos órgãos e entidades competentes. Ocor..."
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "label": "Poderes administrativos",
+      "questoes": 3,
+      "exames": 2,
+      "pct_cobertura": 1.1,
+      "pct_incidencia": 4.7,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3818,
+          "n": 2
+        },
+        {
+          "id": 5814,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 2
+        },
+        {
+          "ano": 2016,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 128588,
+          "ano": 2016,
+          "exam_id": 5814,
+          "assunto": "Abuso de Poder: Excesso de Poder e Desvio de Finalidade (Poderes da Administração)",
+          "enunciado": "Fulano, servidor público federal lotado em órgão da administração pública federal no Estado de São Paulo, contesta ordens do seu chefe imediato, alegando que são proibidas pela legislação. A chefia, indignada com o que entende ser um ato de insubordinação, remove Fulano, contra a..."
+        },
+        {
+          "id": 121794,
+          "ano": 2010,
+          "exam_id": 3818,
+          "assunto": "Poder Vinculado e Discricionário",
+          "enunciado": "No âmbito do Poder discricionário da Administração Pública, não se admite que o agente público administrativo exerça o Poder discricionário"
+        },
+        {
+          "id": 121790,
+          "ano": 2010,
+          "exam_id": 3818,
+          "assunto": "Tópicos Mesclados de Poderes da Administração",
+          "enunciado": "A doutrina costuma afirmar que certas prerrogativas postas à Administração encerram verdadeiros poderes, que são irrenunciáveis e devem ser exercidos sempre que o interesse público clamar. Por tal razão são chamados poder-dever. A esse respeito é correto afirmar que:"
+        }
+      ]
+    },
+    {
+      "id": "3.1",
+      "label": "Poder hierárquico",
+      "questoes": 2,
+      "exames": 2,
+      "pct_cobertura": 0.8,
+      "pct_incidencia": 4.7,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3687,
+          "n": 1
+        },
+        {
+          "id": 11243,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2014,
+          "n": 1
+        },
+        {
+          "ano": 2017,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 132305,
+          "ano": 2017,
+          "exam_id": 11243,
+          "assunto": "Poder Hierárquico",
+          "enunciado": "João foi aprovado em concurso público promovido pelo Estado Alfa para o cargo de analista de políticas públicas, tendo tomado posse no cargo, na classe inicial da respectiva carreira. Ocorre que João é uma pessoa proativa e teve, como gestor, excelentes experiências na iniciativa..."
+        },
+        {
+          "id": 121070,
+          "ano": 2014,
+          "exam_id": 3687,
+          "assunto": "Poder Hierárquico",
+          "enunciado": "José da Silva é o chefe do Departamento de Pessoal de uma Secretaria de Estado. Recentemente, José da Silva avocou a análise de determinada matéria, constante de processo administrativo inicialmente distribuído a João de Souza, seu subordinado, ao perceber que a questão era por d..."
+        }
+      ]
+    },
+    {
+      "id": "6.2",
+      "label": "Agências Reguladoras",
+      "questoes": 2,
+      "exames": 2,
+      "pct_cobertura": 0.8,
+      "pct_incidencia": 4.7,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 3818,
+          "n": 1
+        },
+        {
+          "id": 4476,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2010,
+          "n": 1
+        },
+        {
+          "ano": 2015,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 124819,
+          "ano": 2015,
+          "exam_id": 4476,
+          "assunto": "Agências Reguladoras e Executivas",
+          "enunciado": "O Governador do Estado Y criticou, por meio da imprensa, o Diretor-Presidente da Agência Reguladora de Serviços Delegados de Transportes do Estado, autarquia estadual criada pela Lei nº 1.234, alegando que aquela entidade, ao aplicar multas às empresas concessionárias por suposta..."
+        },
+        {
+          "id": 121793,
+          "ano": 2010,
+          "exam_id": 3818,
+          "assunto": "Agências Reguladoras e Executivas",
+          "enunciado": "No Direito Público brasileiro, o grau de autonomia das Agências Reguladoras é definido por uma independência"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "label": "Prescrição no direito administrativo",
+      "questoes": 1,
+      "exames": 1,
+      "pct_cobertura": 0.4,
+      "pct_incidencia": 2.3,
+      "sem_mapping": false,
+      "exames_apareceu": [
+        {
+          "id": 8817,
+          "n": 1
+        }
+      ],
+      "por_ano": [
+        {
+          "ano": 2017,
+          "n": 1
+        }
+      ],
+      "samples": [
+        {
+          "id": 27544,
+          "ano": 2017,
+          "exam_id": 8817,
+          "assunto": "Prescrição e Coisa Julgada Administrativa",
+          "enunciado": "A Agência Nacional do Petróleo – ANP, no exercício do poder de polícia, promoveu diligência, no dia 05/01/2010, junto à sociedade Petrolineous S/A , que culminou na autuação desta por fatos ocorridos naquela mesma data. Encerrado o processo administrativo, foi aplicada multa nos ..."
+        }
+      ]
+    },
+    {
+      "id": "1.1",
+      "label": "Lei nº 13.655/2018 (segurança jurídica)",
+      "questoes": 0,
+      "exames": 0,
+      "pct_cobertura": 0,
+      "pct_incidencia": 0,
+      "sem_mapping": true,
+      "exames_apareceu": [],
+      "por_ano": [],
+      "samples": []
+    },
+    {
+      "id": "3.3",
+      "label": "Poder regulamentar",
+      "questoes": 0,
+      "exames": 0,
+      "pct_cobertura": 0,
+      "pct_incidencia": 0,
+      "sem_mapping": true,
+      "exames_apareceu": [],
+      "por_ano": [],
+      "samples": []
+    },
+    {
+      "id": "7.1",
+      "label": "Teto remuneratório",
+      "questoes": 0,
+      "exames": 0,
+      "pct_cobertura": 0.0,
+      "pct_incidencia": 0.0,
+      "sem_mapping": false,
+      "exames_apareceu": [],
+      "por_ano": [],
+      "samples": []
+    },
+    {
+      "id": "10",
+      "label": "Intervenção estatal no domínio econômico",
+      "questoes": 0,
+      "exames": 0,
+      "pct_cobertura": 0,
+      "pct_incidencia": 0,
+      "sem_mapping": true,
+      "exames_apareceu": [],
+      "por_ano": [],
+      "samples": []
+    },
+    {
+      "id": "13",
+      "label": "Lei de Abuso de Autoridade (13.869/2019)",
+      "questoes": 0,
+      "exames": 0,
+      "pct_cobertura": 0,
+      "pct_incidencia": 0,
+      "sem_mapping": true,
+      "exames_apareceu": [],
+      "por_ano": [],
+      "samples": []
+    }
+  ]
+}

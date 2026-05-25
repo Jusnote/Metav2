@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mock — Cargo Global Selector na Navbar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    color: #0f172a;
+    background: linear-gradient(180deg, rgba(59,130,246,0.10) 0%, rgba(99,165,250,0.04) 18%, #ffffff 50%);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .top-bar {
+    background: #FBFAFD;
+    border-bottom: 1px solid rgba(241, 245, 249, 0.6);
+    padding: 0 32px;
+  }
+  .top-bar-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; gap: 20px;
+    height: 82px;
+  }
+  .logo {
+    display: flex; align-items: center;
+    font-family: 'Source Serif 4', serif; font-weight: 600; font-size: 28px;
+    color: #0f172a; letter-spacing: -0.02em;
+  }
+  .logo .accent { color: #3b82f6; margin-right: 4px; font-size: 32px; }
+  .logo small {
+    display: block; font-size: 9px; color: #64748b; font-weight: 500;
+    letter-spacing: 0.15em; margin-top: 2px; font-family: Inter, sans-serif;
+  }
+  .search {
+    flex: 1; max-width: 420px; position: relative;
+  }
+  .search input {
+    width: 100%; height: 38px; padding: 0 52px 0 36px;
+    border: 1.5px solid #e2e8f0; border-radius: 10px;
+    background: #f8fafc; font-size: 13px; outline: none;
+  }
+  .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; font-size: 14px;
+  }
+  .search-kbd {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    display: flex; gap: 2px;
+  }
+  .search-kbd kbd {
+    background: white; border: 1px solid #e2e8f0; border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 700; color: #94a3b8;
+  }
+
+  .right-actions {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ---------- CARGO CARD (substitui Upgrade) ---------- */
+  .cargo-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px 6px 6px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .cargo-card:hover {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+  }
+  .cargo-card.active {
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30,58,138,0.12);
+  }
+  .cargo-thumb {
+    width: 32px; height: 32px; border-radius: 6px;
+    flex-shrink: 0;
+    background-size: cover; background-position: center;
+    background-image: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700;
+  }
+  .cargo-meta { display: flex; flex-direction: column; min-width: 0; max-width: 130px; }
+  .cargo-eyebrow {
+    font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 600; line-height: 1;
+  }
+  .cargo-title {
+    font-size: 12.5px; color: #0f172a; font-weight: 600; line-height: 1.25;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .cargo-chevron {
+    color: #94a3b8; font-size: 10px;
+    transition: transform .15s;
+  }
+  .cargo-card.active .cargo-chevron { transform: rotate(180deg); color: #1e3a8a; }
+
+  /* Empty state */
+  .cargo-card.empty {
+    background: rgba(59,130,246,0.06);
+    border-color: rgba(59,130,246,0.20);
+    border-style: dashed;
+  }
+  .cargo-card.empty .cargo-thumb {
+    background: #eff6ff; color: #3b82f6; border: 1px dashed #93c5fd;
+  }
+  .cargo-card.empty .cargo-title { color: #2563eb; }
+  .cargo-card.empty .cargo-eyebrow { color: #2563eb; }
+
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #94a3b8; cursor: pointer;
+    border: none; background: transparent;
+    transition: all .15s;
+  }
+  .icon-btn:hover { background: #f1f5f9; color: #475569; }
+
+  .divider { width: 1px; height: 22px; background: #e2e8f0; margin: 0 6px; }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 3px 10px 3px 3px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+    border: 1px solid transparent;
+  }
+  .user-chip:hover { background: #f8fafc; border-color: #f1f5f9; }
+  .user-chip .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 13px;
+    box-shadow: 0 2px 8px rgba(30,64,175,0.18);
+  }
+  .user-chip .name { font-size: 13px; color: #334155; font-weight: 600; line-height: 1; }
+  .user-chip .plan { font-size: 9px; color: #94a3b8; line-height: 1; margin-top: 2px; }
+
+  /* ---------- DARK NAVBAR ---------- */
+  .nav-dark {
+    background: #0f1b3d;
+    padding: 0 32px;
+  }
+  .nav-dark-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    height: 42px; gap: 4px;
+  }
+  .nav-dark a {
+    color: rgba(255,255,255,0.78);
+    font-size: 13px; font-weight: 500;
+    padding: 7px 14px; border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .nav-dark a:hover { background: rgba(255,255,255,0.06); color: white; }
+  .nav-dark a.active { background: rgba(255,255,255,0.12); color: white; font-weight: 600; }
+  .nav-dark .icon { font-size: 12px; opacity: 0.7; }
+
+  /* ---------- DROPDOWN PANEL ---------- */
+  .dropdown-wrap { position: relative; }
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 540px;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(241, 245, 249, 0.8);
+    box-shadow:
+      0 24px 60px -12px rgba(15, 23, 42, 0.20),
+      0 6px 20px -8px rgba(15, 23, 42, 0.08);
+    z-index: 100;
+    overflow: hidden;
+    display: none;
+    animation: drop-in .15s ease-out;
+  }
+  .dropdown.open { display: block; }
+  @keyframes drop-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dropdown-tip {
+    position: absolute;
+    top: -7px;
+    right: 32px;
+    width: 12px; height: 12px;
+    background: white;
+    border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0;
+    transform: rotate(45deg);
+  }
+  .dropdown-header {
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .dropdown-header h3 {
+    font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px;
+  }
+  .dropdown-header p {
+    font-size: 11px; color: #64748b;
+  }
+
+  /* Area tabs */
+  .area-tabs {
+    display: flex; gap: 2px; padding: 8px 14px 0;
+    overflow-x: auto;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .area-tabs::-webkit-scrollbar { display: none; }
+  .area-tab {
+    border: none; background: transparent;
+    padding: 8px 10px; cursor: pointer;
+    font-size: 11px; font-weight: 500; color: #64748b;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: color .15s;
+  }
+  .area-tab .count {
+    font-size: 9px; color: #94a3b8; font-weight: 600;
+  }
+  .area-tab.active {
+    color: #0f172a; font-weight: 700; border-bottom-color: #1e3a8a;
+  }
+  .area-tab.active .count { color: #1e3a8a; }
+  .area-tab:hover { color: #0f172a; }
+
+  /* Carreira grid */
+  .carreira-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 14px 18px 16px;
+  }
+  .carreira-card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .2s ease-out;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #2a4365 100%);
+    display: flex; align-items: flex-end; padding: 6px 8px;
+    color: rgba(255,255,255,0.95);
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    user-select: none;
+    filter: grayscale(0.35) brightness(0.97);
+    opacity: 0.78;
+  }
+  .carreira-card.todas {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px;
+    filter: none; opacity: 0.78;
+  }
+  .carreira-card.todas .icon { font-size: 22px; line-height: 1; color: #64748b; }
+  .carreira-card:hover { transform: translateY(-1px); }
+  .carreira-card.active {
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30,58,138,0.12);
+    filter: none; opacity: 1;
+  }
+  .carreira-card.todas.active {
+    background: #eff6ff; color: #1e3a8a;
+    border-color: #1e3a8a;
+  }
+  .carreira-card.todas.active .icon { color: #1e3a8a; }
+
+  .carreira-card .check {
+    position: absolute; top: 6px; right: 6px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #1e3a8a; color: white;
+    display: none; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 900;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .carreira-card.active .check { display: flex; }
+
+  .dropdown-footer {
+    padding: 10px 16px;
+    border-top: 1px solid #f1f5f9;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fafbfc;
+  }
+  .dropdown-footer .clear-btn {
+    background: none; border: none; cursor: pointer;
+    color: #64748b; font-size: 11px; font-weight: 500;
+    padding: 4px 6px;
+  }
+  .dropdown-footer .clear-btn:hover { color: #0f172a; text-decoration: underline; }
+  .dropdown-footer .info {
+    font-size: 10px; color: #94a3b8;
+  }
+
+  /* ---------- MAIN CONTENT (placeholder) ---------- */
+  .main {
+    max-width: 1200px; margin: 0 auto; padding: 32px;
+  }
+  .main h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px; letter-spacing: -0.02em; font-weight: 600;
+  }
+  .main p {
+    color: #64748b; font-size: 14px; line-height: 1.5; margin-top: 12px;
+    max-width: 720px;
+  }
+  .demo-notes {
+    margin-top: 28px;
+    background: white;
+    border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 30px -10px rgba(30,41,59,0.08);
+  }
+  .demo-notes h2 { font-size: 14px; margin-bottom: 10px; }
+  .demo-notes ol { padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.8; }
+  .demo-notes ol li strong { color: #0f172a; }
+
+  /* TODAS icon SVG-like via emoji */
+  .todas-icon::before { content: '✔'; font-size: 18px; }
+</style>
+</head>
+<body>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">
+        <span class="accent">P</span>
+        <div>
+          PAPIRO
+          <small>ESTUDE · PRATIQUE · EVOLUA</small>
+        </div>
+      </div>
+
+      <div class="search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar disciplinas, concursos e provas..." />
+        <div class="search-kbd"><kbd>Ctrl</kbd><kbd>K</kbd></div>
+      </div>
+
+      <div class="right-actions">
+        <!-- CARGO CARD + DROPDOWN -->
+        <div class="dropdown-wrap">
+          <button class="cargo-card" id="cargoCard" onclick="toggleDropdown()">
+            <div class="cargo-thumb" id="cargoThumb">PF</div>
+            <div class="cargo-meta">
+              <span class="cargo-eyebrow">Estudando para</span>
+              <span class="cargo-title" id="cargoTitle">PF · Agente</span>
+            </div>
+            <span class="cargo-chevron">▾</span>
+          </button>
+
+          <div class="dropdown" id="dropdown">
+            <div class="dropdown-tip"></div>
+            <div class="dropdown-header">
+              <h3>Selecione sua carreira</h3>
+              <p>Tudo no app vai se adaptar — questões, lei seca, cronograma, análises.</p>
+            </div>
+            <nav class="area-tabs" id="areaTabs">
+              <button class="area-tab" data-area="advocacia">Advocacia <span class="count">1</span></button>
+              <button class="area-tab active" data-area="policial">Policial <span class="count">7</span></button>
+              <button class="area-tab" data-area="fiscal">Fiscal <span class="count">3</span></button>
+              <button class="area-tab" data-area="juridica">Jurídica <span class="count">2</span></button>
+              <button class="area-tab" data-area="tribunais">Tribunais <span class="count">2</span></button>
+              <button class="area-tab" data-area="saude">Saúde <span class="count">1</span></button>
+              <button class="area-tab" data-area="controle">Controle <span class="count">1</span></button>
+              <button class="area-tab" data-area="legislativo">Legislativo <span class="count">0</span></button>
+            </nav>
+            <div class="carreira-grid" id="carreiraGrid">
+              <!-- Populated by JS -->
+            </div>
+            <div class="dropdown-footer">
+              <button class="clear-btn" onclick="clearCargo()">Limpar carreira</button>
+              <span class="info">Auto-salva ao clicar</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="icon-btn" title="Configurações">⚙</button>
+        <button class="icon-btn" title="Notificações">🔔</button>
+
+        <div class="divider"></div>
+
+        <div class="user-chip">
+          <div class="avatar">A</div>
+          <div>
+            <div class="name">Aldemir</div>
+            <div class="plan">Pro Plan</div>
+          </div>
+          <span style="color:#94a3b8; font-size: 10px; margin-left: 4px;">▾</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DARK NAVBAR -->
+  <nav class="nav-dark">
+    <div class="nav-dark-inner">
+      <a href="#"><span class="icon">🏠</span> Início</a>
+      <a href="#"><span class="icon">▶</span> Flashcards</a>
+      <a href="#" class="active"><span class="icon">❓</span> Questões</a>
+      <a href="#"><span class="icon">⚖</span> Lei Seca</a>
+      <a href="#"><span class="icon">📓</span> Cadernos</a>
+      <a href="#"><span class="icon">📋</span> Editais</a>
+      <a href="#"><span class="icon">📅</span> Cronograma</a>
+      <a href="#"><span class="icon">⋯</span> Mais</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <h1>Banco de Questões<span style="color:#2563eb">.</span></h1>
+    <p>Demonstração visual do seletor global de carreira. O conteúdo da página continuaria aqui (filtros, cards, lista de questões…), mas o CARGO selecionado no topo passa a ser o filtro mestre que adapta tudo o que aparece.</p>
+
+    <div class="demo-notes">
+      <h2>Como interagir com o mock</h2>
+      <ol>
+        <li>Clique no <strong>card "PF · Agente"</strong> no canto superior direito da navbar branca</li>
+        <li>Vai abrir um dropdown com a tabela de Áreas e os cards de carreira</li>
+        <li>Troque entre as <strong>tabs (Advocacia / Policial / Fiscal…)</strong> pra ver as carreiras de cada área</li>
+        <li>Clique em <strong>qualquer card de carreira</strong> — auto-salva e fecha o dropdown, atualizando o card da navbar</li>
+        <li>Clique em <strong>"Limpar carreira"</strong> pra simular usuário sem cargo (vai aparecer estilo "vazio")</li>
+        <li>Clique <strong>fora do dropdown</strong> pra fechar sem mudar</li>
+      </ol>
+    </div>
+  </main>
+
+  <script>
+    // Mock data — carreiras por área
+    const CARREIRAS = {
+      advocacia: [
+        { id: 'oab', label: 'OAB · Exame de Ordem', sigla: 'OAB' },
+      ],
+      policial: [
+        { id: 'pf-agente', label: 'PF · Agente', sigla: 'PF' },
+        { id: 'pf-escrivao', label: 'PF · Escrivão', sigla: 'PF' },
+        { id: 'pf-delegado', label: 'PF · Delegado', sigla: 'PF' },
+        { id: 'prf', label: 'PRF · Policial Rodoviário', sigla: 'PRF' },
+        { id: 'pc-sp', label: 'PC SP · Investigador', sigla: 'PC' },
+        { id: 'pc-rj', label: 'PC RJ · Inspetor', sigla: 'PC' },
+        { id: 'depen', label: 'DEPEN · Agente Federal', sigla: 'DEP' },
+      ],
+      fiscal: [
+        { id: 'rfb', label: 'Receita Federal · Auditor', sigla: 'RFB' },
+        { id: 'sefaz', label: 'SEFAZ · Auditor Estadual', sigla: 'SEF' },
+        { id: 'icms', label: 'Auditor ICMS', sigla: 'ICMS' },
+      ],
+      juridica: [
+        { id: 'mpf', label: 'MPF · Procurador da República', sigla: 'MPF' },
+        { id: 'agu', label: 'AGU · Advogado da União', sigla: 'AGU' },
+      ],
+      tribunais: [
+        { id: 'tj-sp', label: 'TJ SP · Analista Judiciário', sigla: 'TJ' },
+        { id: 'trf', label: 'TRF · Analista Judiciário', sigla: 'TRF' },
+      ],
+      saude: [{ id: 'fiocruz', label: 'FIOCRUZ · Pesquisador', sigla: 'FIO' }],
+      controle: [{ id: 'tcu', label: 'TCU · Auditor', sigla: 'TCU' }],
+      legislativo: [],
+    };
+
+    let currentCargo = { id: 'pf-agente', label: 'PF · Agente', sigla: 'PF' };
+    let currentArea = 'policial';
+
+    function renderCarreiras() {
+      const grid = document.getElementById('carreiraGrid');
+      const list = CARREIRAS[currentArea] || [];
+      const todas = `<div class="carreira-card todas ${currentCargo?.id === 'todas-' + currentArea ? 'active' : ''}" onclick="selectCargo({id:'todas-${currentArea}', label:'Todas · ${currentArea}', sigla:'★'})">
+        <span class="todas-icon"></span>
+        <span>Todas</span>
+        <span class="check">✓</span>
+      </div>`;
+
+      grid.innerHTML = todas + list.map(c => `
+        <div class="carreira-card ${currentCargo?.id === c.id ? 'active' : ''}" onclick='selectCargo(${JSON.stringify(c)})'>
+          ${c.sigla}
+          <span class="check">✓</span>
+        </div>
+      `).join('');
+    }
+
+    function setActiveTab() {
+      document.querySelectorAll('.area-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.area === currentArea);
+      });
+    }
+
+    function toggleDropdown() {
+      const d = document.getElementById('dropdown');
+      const card = document.getElementById('cargoCard');
+      d.classList.toggle('open');
+      card.classList.toggle('active');
+      if (d.classList.contains('open')) renderCarreiras();
+    }
+
+    function selectCargo(cargo) {
+      currentCargo = cargo;
+      // Atualiza navbar card
+      document.getElementById('cargoTitle').textContent = cargo.label;
+      document.getElementById('cargoThumb').textContent = cargo.sigla;
+      document.getElementById('cargoCard').classList.remove('empty');
+      // Auto-fecha
+      setTimeout(() => toggleDropdown(), 200);
+    }
+
+    function clearCargo() {
+      currentCargo = null;
+      document.getElementById('cargoTitle').textContent = 'Selecione carreira';
+      document.getElementById('cargoThumb').textContent = '+';
+      document.getElementById('cargoCard').classList.add('empty');
+      renderCarreiras();
+    }
+
+    document.querySelectorAll('.area-tab').forEach(t => {
+      t.addEventListener('click', () => {
+        currentArea = t.dataset.area;
+        setActiveTab();
+        renderCarreiras();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const drop = document.getElementById('dropdown');
+      const card = document.getElementById('cargoCard');
+      if (drop.classList.contains('open') && !drop.contains(e.target) && !card.contains(e.target)) {
+        toggleDropdown();
+      }
+    });
+
+    // Init
+    renderCarreiras();
+  </script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 'use client';
 import { useCallback, useState } from 'react';
 import { QuestoesFilterChipStrip, type ChipKey } from './QuestoesFilterChipStrip';
-import { QuestoesFilterDrawer } from './QuestoesFilterDrawer';
 import { QuestoesFilterPicker } from './QuestoesFilterPicker';
 import { QuestoesActiveFiltersPanel } from './QuestoesActiveFiltersPanel';
 import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
@@ -14,6 +13,9 @@ export interface QuestoesFilterCardProps {
   onApplied?: () => void;
 }
 
+const cardGlass =
+  'bg-white border border-slate-200/70 rounded-xl shadow-[0_10px_30px_-10px_rgba(30,41,59,0.10),0_2px_8px_-2px_rgba(30,41,59,0.04)]';
+
 export function QuestoesFilterCard({ onApplied }: QuestoesFilterCardProps = {}) {
   const [activeChip, setActiveChip] = useState<ChipKey>('materia_assuntos');
   const { pendentes, aplicados, isDirty, setPendentes, apply } = useFiltrosPendentes();
@@ -21,29 +23,33 @@ export function QuestoesFilterCard({ onApplied }: QuestoesFilterCardProps = {}) 
   const { count } = useQuestoesCount(pendentes);
 
   const handleApply = useCallback(() => {
-    // Aplica filtros + navega pra aba de resultados em UM setSearchParams.
-    // Separar essas operações causa race condition (segundo setSearchParams
-    // pisa no primeiro com snapshot antigo).
     apply({ view: 'questoes' });
     onApplied?.();
   }, [apply, onApplied]);
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
-      <QuestoesFilterChipStrip activeChip={activeChip} onChange={setActiveChip} />
-      <QuestoesFilterDrawer
-        left={<QuestoesFilterPicker activeChip={activeChip} />}
-        right={
-          <QuestoesActiveFiltersPanel
-            pendentes={pendentes}
-            aplicados={aplicados}
-            isDirty={isDirty}
-            count={count}
-            onApply={handleApply}
-            onChange={(patch) => setPendentes({ ...pendentes, ...patch })}
-            dicionario={dicionario ?? null}
-          />
-        }
+    <div
+      data-testid="filter-grid"
+      className="grid h-[70vh] min-h-[480px] gap-4"
+      style={{ gridTemplateColumns: '13fr 7fr', gridTemplateRows: '1fr' }}
+    >
+      {/* LEFT — chip strip + picker em UM card */}
+      <div className={`${cardGlass} flex flex-col min-h-0 overflow-hidden`}>
+        <QuestoesFilterChipStrip activeChip={activeChip} onChange={setActiveChip} />
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <QuestoesFilterPicker activeChip={activeChip} />
+        </div>
+      </div>
+
+      {/* RIGHT — 3 cards stacked */}
+      <QuestoesActiveFiltersPanel
+        pendentes={pendentes}
+        aplicados={aplicados}
+        isDirty={isDirty}
+        count={count}
+        onApply={handleApply}
+        onChange={(patch) => setPendentes({ ...pendentes, ...patch })}
+        dicionario={dicionario ?? null}
       />
     </div>
   );

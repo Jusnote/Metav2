@@ -3,11 +3,14 @@ import { useSearchParams } from "react-router-dom";
 import { QuestoesFilterDraftProvider } from "@/contexts/QuestoesFilterDraftContext";
 import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterCard } from "@/components/questoes/filtros/QuestoesFilterCard";
-import { ObjetivoSection } from "@/components/questoes/objetivo/ObjetivoSection";
 import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
 import { QuestoesListaView } from "@/components/questoes/lista/QuestoesListaView";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
+
+const headerCardGlass =
+  'bg-white border border-slate-200/70 rounded-xl shadow-[0_10px_30px_-10px_rgba(30,41,59,0.10),0_2px_8px_-2px_rgba(30,41,59,0.04)]';
 
 const FILTER_VIEW_LABELS: Record<FilterView, string> = {
   filtros: 'Filtros',
@@ -79,14 +82,14 @@ export default function QuestoesPage() {
 
   return (
     <QuestoesFilterDraftProvider>
+    <AuroraBackground />
     <div className="flex flex-col h-full w-full">
-      {/* ─── Filters section (light blue background) ─── */}
-      <section className="bg-white mx-4 mt-4 overflow-hidden">
-        <div className={`${filterView === 'questoes' ? 'max-w-5xl' : 'max-w-6xl'} mx-auto w-full px-2`}>
-          {/* Header refinado: título serifa + tabs como segmented control */}
-          <div className="flex items-center justify-between gap-5 pt-[18px] pb-[14px] border-b border-[#f1f5f9]">
+      {/* ─── Header (sem container — flutua sobre aurora) ─── */}
+      <section className="mx-6 mt-4">
+        <div className={`${filterView === 'questoes' ? 'max-w-5xl' : 'max-w-6xl'} mx-auto w-full py-3`}>
+          <div className="flex items-center justify-between gap-4">
             <h1
-              className="m-0 leading-none"
+              className="m-0 leading-none shrink-0"
               style={{
                 fontFamily: "'Source Serif 4', Georgia, serif",
                 fontSize: '26px',
@@ -103,7 +106,7 @@ export default function QuestoesPage() {
               className="inline-flex items-center gap-[8px]"
               aria-label="Modo de filtro"
             >
-              <div className="inline-flex items-center gap-[2px] rounded-full bg-[#f1f5f9] p-[3px]">
+              <div className="inline-flex items-center rounded-full bg-white border border-[#e2e8f0] overflow-hidden">
                 {(['filtros', 'semantico', 'cadernos'] as FilterView[]).map((view) => {
                   const active = filterView === view;
                   return (
@@ -114,7 +117,7 @@ export default function QuestoesPage() {
                       className={[
                         'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
                         active
-                          ? 'bg-white text-[#0f172a] shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)] font-semibold'
+                          ? 'bg-[#f1f5f9] text-[#0f172a] font-semibold'
                           : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
                       ].join(' ')}
                     >
@@ -133,29 +136,26 @@ export default function QuestoesPage() {
                   'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
                   filterView === 'questoes'
                     ? 'bg-[#0f172a] text-white font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.12)]'
-                    : 'bg-[#f1f5f9] text-[#64748b] font-medium hover:text-[#0f172a]',
+                    : 'bg-white border border-[#e2e8f0] text-[#64748b] font-medium hover:text-[#0f172a]',
                 ].join(' ')}
               >
                 {FILTER_VIEW_LABELS.questoes}
               </button>
             </nav>
           </div>
+        </div>
+      </section>
 
-          {/* View content */}
+      {/* ─── View content (cards separados sobre aurora) ─── */}
+      <section className="mx-6 mt-4 mb-6">
+        <div className={`${filterView === 'questoes' ? 'max-w-5xl' : 'max-w-6xl'} mx-auto w-full`}>
           {filterView === 'filtros' && (
-            <>
-              {/* Seção OBJETIVO — só na aba Filtros */}
-              <ObjetivoSection />
-              <div className="pt-2 pb-2">
-                <QuestoesFilterCard onApplied={handleApplied} />
-              </div>
-            </>
+            <QuestoesFilterCard onApplied={handleApplied} />
           )}
 
           {filterView === 'semantico' && (
-            <div className="pt-2 pb-2">
+            <div className={`${headerCardGlass} px-4 py-3`}>
               <QuestoesSearchBar />
-              {/* Fase 1A: visible=false → não renderiza. Fase 2 ativa baseado em foco+query. */}
               <SemanticScopeToggle
                 visible={false}
                 incluirFora={false}
@@ -165,15 +165,13 @@ export default function QuestoesPage() {
           )}
 
           {filterView === 'cadernos' && (
-            <div className="py-8 text-center text-sm text-slate-500">
+            <div className={`${headerCardGlass} py-8 text-center text-sm text-slate-500`}>
               Cadernos em breve.
             </div>
           )}
 
           {filterView === 'questoes' && (
-            <div className="pt-2 pb-2">
-              <QuestoesListaView onEditFilters={editFilters} />
-            </div>
+            <QuestoesListaView onEditFilters={editFilters} />
           )}
         </div>
       </section>

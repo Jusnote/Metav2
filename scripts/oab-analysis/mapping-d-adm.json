@@ -1,0 +1,266 @@
+{
+  "_doc": "Mapeamento edital OAB D. Administrativo (21 itens) → assuntos distintos do TEC. Cada item lista as strings de 'questoes.assunto' que contém. Multi-mapping permitido (um assunto pode ir em mais de um item se relevante). Mantém ortografia exata da DB (ex: minha lista usa caracteres ASCII porque output do script veio com encoding bagunçado, mas no SQL roda com texto correto via banco).",
+
+  "items": [
+    {
+      "id": 1,
+      "label": "Princípios, fontes e interpretação",
+      "assuntos": [
+        "Princípios Implícitos, Reconhecidos e Infraconstitucionais"
+      ]
+    },
+    {
+      "id": "1.1",
+      "label": "Lei nº 13.655/2018 (segurança jurídica)",
+      "assuntos": []
+    },
+    {
+      "id": "1.2",
+      "label": "LAI (Lei 12.527/2011) e LGPD (Lei 13.709/2018)",
+      "assuntos": [
+        "Tópicos Mesclados da Lei nº 12.527/2011",
+        "Do Acesso a Informações e da sua Divulgação (arts. 6º a 9º da Lei nº 12.527/2011)"
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Atividade e estrutura administrativa",
+      "assuntos": [
+        "Administração Indireta",
+        "Administração Direta (Órgãos Públicos)",
+        "Desconcentração e Descentralização"
+      ]
+    },
+    {
+      "id": "2.1",
+      "label": "Terceiro setor",
+      "assuntos": [
+        "Terceiro Setor (OSs, OSCIPs, Sistema S e Fundações de Apoio)",
+        "Lei nº 13.019/2014 - Estatuto das Parcerias"
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Poderes administrativos",
+      "assuntos": [
+        "Poder Vinculado e Discricionário",
+        "Tópicos Mesclados de Poderes da Administração",
+        "Abuso de Poder: Excesso de Poder e Desvio de Finalidade (Poderes da Administração)"
+      ]
+    },
+    {
+      "id": "3.1",
+      "label": "Poder hierárquico",
+      "assuntos": [
+        "Poder Hierárquico"
+      ]
+    },
+    {
+      "id": "3.2",
+      "label": "Poder disciplinar e PAD",
+      "assuntos": [
+        "Do Processo Administrativo Disciplinar (arts. 143 a 182 da Lei nº 8.112/1990)",
+        "Do Regime Disciplinar (arts. 116 a 142 da Lei nº 8.112/1990)"
+      ]
+    },
+    {
+      "id": "3.3",
+      "label": "Poder regulamentar",
+      "assuntos": []
+    },
+    {
+      "id": "3.4",
+      "label": "Poder de polícia",
+      "assuntos": [
+        "Poder de Polícia"
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Atos administrativos",
+      "assuntos": [
+        "Atos Administrativos: Espécies, Classificação, Fases de Constituição",
+        "Atributos ou Características dos Atos Administrativos",
+        "Desfazimento do Ato Administrativo (Anulação, Revogação, Cassação, Caducidade)",
+        "Teoria dos Motivos Determinantes"
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Licitações e contratos (Lei 8.666/93 e Lei 14.133/2021)",
+      "assuntos": [
+        "Modalidades de Licitação (arts. 28 a 32 da Lei nº 14.133/2021)",
+        "Contratação Direta, Inexigibilidade e Dispensa (arts. 72 a 75 da Lei nº 14.133/2021)",
+        "Fases da Licitação - Julgamento, Habilitação e Encerramento (arts. 55 a 71 da Lei nº 14.133/2021)",
+        "Alteração dos Contratos e dos Preços (art. 124 a 136 da Lei nº 14.133/2021)",
+        "Alienações (arts. 76 e 77 da Lei nº 14.133/2021)",
+        "Lei nº 13.303/2016 - Das Licitações (arts. 28 a 90)",
+        "Conceitos e Características dos Contratos Administrativos. Formalização dos Contratos",
+        "Hipóteses de Extinção dos Contratos (arts. 137 a 139 da Lei nº 14.133/2021)",
+        "Infrações e Sanções Administrativas (arts. 155 a 163 da Lei nº 14.133/2021)",
+        "Meios Alternativos de Resolução de Controvérsias (arts. 151 a 154 da Lei nº 14.133/2021)",
+        "Princípios (art. 5º da Lei nº 14.133/2021)",
+        "Duração dos Contratos (arts. 105 a 114 da Lei nº 14.133/2021)",
+        "Execução dos Contratos (arts. 115 a art. 123 da Lei nº 14.133/2021)",
+        "Decreto nº 11.462/2023 - Sistema de Registro de Preços (SRP)"
+      ]
+    },
+    {
+      "id": 6,
+      "label": "Serviços públicos",
+      "assuntos": [
+        "Princípios (Serviços Públicos - Lei nº 8.987/1995)",
+        "Formas de Extinção (Serviços Públicos - Lei nº 8.987/1995)",
+        "Intervenção (Serviços Públicos - Lei nº 8.987/1995)",
+        "Deveres e Direitos (Usuários, Concedente, Concessionária, Licitações - Lei nº 8.987/1995)",
+        "Classificação de Serviços Públicos",
+        "Lei nº 13.460/2017 - Direitos Básicos do Usuário do Serviço Público"
+      ]
+    },
+    {
+      "id": "6.1",
+      "label": "Serviços delegados, convênios e consórcios",
+      "assuntos": [
+        "Autorização, Permissão e Concessão (Serviços Públicos - Lei nº 8.987/1995)",
+        "Lei nº 11.107/2005 - Normas Gerais de Contratação de Consórcios Públicos"
+      ]
+    },
+    {
+      "id": "6.2",
+      "label": "Agências Reguladoras",
+      "assuntos": [
+        "Agências Reguladoras e Executivas"
+      ]
+    },
+    {
+      "id": "6.4",
+      "label": "Parcerias público-privadas (PPP)",
+      "assuntos": [
+        "Lei nº 11.079/2004 - Parceria Público-Privada (PPP)"
+      ]
+    },
+    {
+      "id": 7,
+      "label": "Agentes públicos",
+      "assuntos": [
+        "Classificação dos Agentes Públicos",
+        "Formas de Provimento (arts. 5º a 32 da Lei nº 8.112/1990)",
+        "Concurso Público",
+        "Acumulação de Cargos e Empregos Públicos e Funções",
+        "Vacância (arts. 33 a 35 da Lei nº 8.112/1990)",
+        "Estabilidade e Estágio Probatório",
+        "Criação, Transformação e Extinção de Cargos Públicos",
+        "Das Licenças, Afastamentos e Concessões (arts. 81 a 99 da Lei nº 8.112/1990)",
+        "Associação Sindical e Direito de Greve",
+        "Tópicos Mesclados de Agentes Públicos",
+        "Do Direito de Petição (arts. 104 a 115 da Lei nº 8.112/1990)",
+        "Jurisprudência dos Tribunais Superiores sobre Agente Públicos",
+        "Jurisprudência dos Tribunais Superiores sobre Concurso Público"
+      ]
+    },
+    {
+      "id": "7.1",
+      "label": "Teto remuneratório",
+      "assuntos": [
+        "Remuneração (Componentes, Subsídio, Teto, Equiparação, Vinculação, Irredutibilidade)"
+      ]
+    },
+    {
+      "id": 8,
+      "label": "Domínio público (Bens públicos)",
+      "assuntos": [
+        "Características dos Bens Públicos",
+        "Classificação dos Bens Públicos",
+        "Afetação e Desafetação (Bens Públicos)",
+        "Aquisição de Bens pelo Estado",
+        "Bens Públicos em Espécie (Domínio Terrestre, Hídrico e Aéreo)",
+        "Formas de Utilização de Bens Públicos"
+      ]
+    },
+    {
+      "id": 9,
+      "label": "Intervenção estatal na propriedade",
+      "assuntos": [
+        "Desapropriação",
+        "Requisição da Propriedade Privada",
+        "Servidões Administrativas",
+        "Tombamento - Conceitos e Decreto-Lei nº 25/1937",
+        "Limitações Administrativas (Intervenção da Propriedade)",
+        "Ocupação Provisória",
+        "Tópicos Mesclados sobre Intervenção do Estado na Propriedade Privada"
+      ]
+    },
+    {
+      "id": 10,
+      "label": "Intervenção estatal no domínio econômico",
+      "assuntos": []
+    },
+    {
+      "id": 11,
+      "label": "Controle da Administração Pública",
+      "assuntos": [
+        "Controle Jurisdicional",
+        "Parlamentar Indireto (Tribunais de Contas e Controle Técnico-Financeiro)",
+        "Tópicos Mesclados de Controle da Administração"
+      ]
+    },
+    {
+      "id": "11.2a",
+      "label": "Lei Anticorrupção (12.846/2013)",
+      "assuntos": [
+        "Da Responsabilização Judicial (arts. 18 a 21 da Lei nº 12.846/2013)",
+        "Do Acordo de Leniência (arts. 16 e 17 da Lei nº 12.846/2013)",
+        "Do Processo Administrativo de Responsabilização (arts. 8º a 15 da Lei nº 12.846/2013)"
+      ]
+    },
+    {
+      "id": 12,
+      "label": "Improbidade administrativa (Lei 8.429/92 c/ alts. 14.230/21)",
+      "assuntos": [
+        "Dos Atos de Improbidade (arts. 9º a 11 da Lei nº 8.429/1992)",
+        "Das Disposições Gerais (arts. 1º a 8º-A da Lei nº 8.429/1992)",
+        "Do Procedimento Administrativo e do Processo Judicial (arts. 14 a 18-A da Lei nº 8.429/1992)",
+        "Da Prescrição (arts. 23 a 23-C da Lei nº 8.429/1992)",
+        "Da Declaração de Bens (art. 13 da Lei nº 8.429/1992)",
+        "Das Disposições Penais (arts. 19 a 22 da Lei nº 8.429/1992)",
+        "Das Penas (art. 12 da Lei nº 8.429/1992)",
+        "Do Âmbito de Aplicação, Definições e Agentes Públicos (arts. 1º a 4º, 6º a 10-C da Lei nº 8.429/1992)",
+        "Jurisprudência dos Tribunais Superiores sobre Improbidade Administrativa"
+      ]
+    },
+    {
+      "id": 13,
+      "label": "Lei de Abuso de Autoridade (13.869/2019)",
+      "assuntos": []
+    },
+    {
+      "id": 14,
+      "label": "Responsabilidade civil do Estado",
+      "assuntos": [
+        "Conceitos Iniciais e Teorias da Responsabilidade",
+        "Responsabilidade dos Agentes Públicos e Direito de Regresso",
+        "Excludentes e Atenuantes de Responsabilidade",
+        "Jurisprudência dos Tribunais Superiores sobre Responsabilidade Civil do Estado"
+      ]
+    },
+    {
+      "id": 15,
+      "label": "Prescrição no direito administrativo",
+      "assuntos": [
+        "Prescrição e Coisa Julgada Administrativa"
+      ]
+    },
+    {
+      "id": 18,
+      "label": "Processo administrativo (Lei 9.784/1999)",
+      "assuntos": [
+        "Do Recurso Administrativo e da Revisão (arts. 56 a 65 da Lei nº 9.784/1999)",
+        "Da Competência (arts. 11 a 17 da Lei nº 9.784/1999)",
+        "Trâmite do Processo (arts. 5º a 10 e 29 a 50 da Lei nº 9.784/1999)",
+        "Tópicos Mesclados da Lei nº 9.784/1999",
+        "Disposições Gerais, Direitos e Deveres do Administrado (arts. 1º a 4º da Lei nº 9.784/1999)",
+        "Da Anulação, Revogação e Convalidação (arts. 53 a 55 da Lei nº 9.784/1999)"
+      ]
+    }
+  ]
+}

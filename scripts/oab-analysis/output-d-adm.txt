@@ -1,0 +1,209 @@
+
+======================================================================
+#1 - Lista de todos os exames OAB FGV (concurso_id_externo)
+======================================================================
+  Total: 43 exames distintos
+
+  cid_ext=      3817  ano=2010  q= 100  materias= 19  pub=2015-02-17 20:45:05
+  cid_ext=      3818  ano=2010  q= 100  materias= 17  pub=2015-02-17 20:45:05
+  cid_ext=      3710  ano=2011  q= 160  materias= 17  pub=2015-01-17 22:50:14
+  cid_ext=      3734  ano=2011  q=  80  materias= 17  pub=2015-02-05 00:56:44
+  cid_ext=      3748  ano=2011  q=  79  materias= 17  pub=2015-02-05 00:56:44
+  cid_ext=      3709  ano=2012  q=  80  materias= 17  pub=2015-01-17 22:50:14
+  cid_ext=      3711  ano=2012  q=  80  materias= 18  pub=2015-01-17 22:50:22
+  cid_ext=      3726  ano=2012  q= 160  materias= 18  pub=2015-01-28 23:29:28
+  cid_ext=      3688  ano=2013  q=  80  materias= 19  pub=2015-01-17 22:50:14
+  cid_ext=      3689  ano=2013  q=  80  materias= 19  pub=2015-01-28 23:29:28
+  cid_ext=      3708  ano=2013  q=  80  materias= 19  pub=2015-01-17 22:50:22
+  cid_ext=      3652  ano=2014  q=  80  materias= 20  pub=2015-01-17 22:50:08
+  cid_ext=      3687  ano=2014  q=  80  materias= 19  pub=2015-01-17 22:50:08
+  cid_ext=      3915  ano=2014  q=  80  materias= 19  pub=2015-03-11 18:50:31
+  cid_ext=      4229  ano=2015  q=  80  materias= 20  pub=2015-06-14 20:26:31
+  cid_ext=      4476  ano=2015  q=  80  materias= 18  pub=2015-08-18 23:42:24
+  cid_ext=      5129  ano=2015  q=  80  materias= 19  pub=2016-01-13 23:20:14
+  cid_ext=      5814  ano=2016  q=  80  materias= 20  pub=2016-05-11 15:19:35
+  cid_ext=      6759  ano=2016  q= 160  materias= 20  pub=2016-09-26 18:24:23
+  cid_ext=      7788  ano=2016  q=  80  materias= 19  pub=2017-01-18 18:57:31
+  cid_ext=      8817  ano=2017  q=  80  materias= 19  pub=2017-05-13 12:32:13
+  cid_ext=      9784  ano=2017  q=  80  materias= 17  pub=2017-08-28 18:28:10
+  cid_ext=     11243  ano=2017  q=  80  materias= 19  pub=2017-12-27 05:31:14
+  cid_ext=     12928  ano=2018  q=  80  materias= 20  pub=2018-05-11 23:18:44
+  cid_ext=     13984  ano=2018  q=  80  materias= 20  pub=2018-08-08 15:42:23
+  cid_ext=     15588  ano=2018  q=  80  materias= 20  pub=2018-11-20 11:32:45
+  cid_ext=     18505  ano=2019  q=  80  materias= 18  pub=2019-03-25 09:12:16
+  cid_ext=     22228  ano=2019  q=  80  materias= 18  pub=2019-07-07 15:49:10
+  cid_ext=     25907  ano=2019  q=  80  materias= 21  pub=2019-10-25 15:39:44
+  cid_ext=     27899  ano=2020  q=  80  materias= 19  pub=2020-02-11 11:01:22
+  cid_ext=     42675  ano=2021  q=  80  materias= 19  pub=2021-06-17 17:43:48
+  cid_ext=     51046  ano=2021  q=  80  materias= 19  pub=2021-10-21 12:30:18
+  cid_ext=     53501  ano=2022  q=  80  materias= 21  pub=2022-02-23 15:28:47
+  cid_ext=     58222  ano=2022  q=  80  materias= 21  pub=2022-08-10 14:49:55
+  cid_ext=     61959  ano=2022  q=  80  materias= 20  pub=2022-11-04 07:48:55
+  cid_ext=     66471  ano=2023  q=  80  materias= 21  pub=2023-03-01 16:06:46
+  cid_ext=     72327  ano=2023  q=  80  materias= 22  pub=2023-07-12 16:20:12
+  cid_ext=     79117  ano=2023  q=  80  materias= 20  pub=2024-01-12 19:53:54
+  cid_ext=     84087  ano=2024  q=  80  materias= 22  pub=2024-05-01 10:13:28
+  cid_ext=     90207  ano=2024  q=  80  materias= 22  pub=2024-08-13 17:04:02
+  cid_ext=     99169  ano=2024  q=  80  materias= 21  pub=2025-01-24 14:01:05
+  cid_ext=    103674  ano=2025  q=  80  materias= 22  pub=2025-05-14 22:56:05
+  cid_ext=    110577  ano=2025  q=  80  materias= 23  pub=2025-10-12 17:52:40
+
+======================================================================
+#2 - Direito Administrativo - distribuicao por exame
+======================================================================
+  Direito Adm aparece em 43 dos exames
+  Range: 4 a 12 questoes por exame
+
+  cid_ext=      3817  ano=2010  q_adm=  8
+  cid_ext=      3818  ano=2010  q_adm= 10
+  cid_ext=      3710  ano=2011  q_adm= 12
+  cid_ext=      3734  ano=2011  q_adm=  6
+  cid_ext=      3748  ano=2011  q_adm=  6
+  cid_ext=      3709  ano=2012  q_adm=  6
+  cid_ext=      3711  ano=2012  q_adm=  6
+  cid_ext=      3726  ano=2012  q_adm= 11
+  cid_ext=      3688  ano=2013  q_adm=  6
+  cid_ext=      3689  ano=2013  q_adm=  6
+  cid_ext=      3708  ano=2013  q_adm=  6
+  cid_ext=      3652  ano=2014  q_adm=  5
+  cid_ext=      3687  ano=2014  q_adm=  6
+  cid_ext=      3915  ano=2014  q_adm=  6
+  cid_ext=      4229  ano=2015  q_adm=  6
+  cid_ext=      4476  ano=2015  q_adm=  6
+  cid_ext=      5129  ano=2015  q_adm=  6
+  cid_ext=      5814  ano=2016  q_adm=  6
+  cid_ext=      6759  ano=2016  q_adm= 12
+  cid_ext=      7788  ano=2016  q_adm=  5
+  cid_ext=      8817  ano=2017  q_adm=  6
+  cid_ext=      9784  ano=2017  q_adm=  5
+  cid_ext=     11243  ano=2017  q_adm=  6
+  cid_ext=     12928  ano=2018  q_adm=  6
+  cid_ext=     13984  ano=2018  q_adm=  6
+  cid_ext=     15588  ano=2018  q_adm=  6
+  cid_ext=     18505  ano=2019  q_adm=  6
+  cid_ext=     22228  ano=2019  q_adm=  7
+  cid_ext=     25907  ano=2019  q_adm=  5
+  cid_ext=     27899  ano=2020  q_adm=  4
+  cid_ext=     42675  ano=2021  q_adm=  6
+  cid_ext=     51046  ano=2021  q_adm=  5
+  cid_ext=     53501  ano=2022  q_adm=  5
+  cid_ext=     58222  ano=2022  q_adm=  6
+  cid_ext=     61959  ano=2022  q_adm=  5
+  cid_ext=     66471  ano=2023  q_adm=  6
+  cid_ext=     72327  ano=2023  q_adm=  5
+  cid_ext=     79117  ano=2023  q_adm=  5
+  cid_ext=     84087  ano=2024  q_adm=  6
+  cid_ext=     90207  ano=2024  q_adm=  4
+  cid_ext=     99169  ano=2024  q_adm=  5
+  cid_ext=    103674  ano=2025  q_adm=  5
+  cid_ext=    110577  ano=2025  q_adm=  4
+
+======================================================================
+#3 - TODOS os assuntos em D.Adm OAB FGV (com count)
+======================================================================
+  Total: 96 assuntos distintos em D.Adm
+
+  q= 19  exames=18  Desapropriação
+  q= 12  exames=12  Lei nº 11.079/2004 - Parceria Público-Privada (PPP)
+  q= 11  exames=11  Do Processo Administrativo Disciplinar (arts. 143 a 182 da Lei nº 8.112/1990)
+  q= 11  exames=10  Administração Indireta
+  q=  8  exames= 8  Poder de Polícia
+  q=  8  exames= 8  Dos Atos de Improbidade (arts. 9º a 11 da Lei nº 8.429/1992)
+  q=  7  exames= 6  Contratação Direta, Inexigibilidade e Dispensa (arts. 72 a 75 da Lei nº 14.13...
+  q=  7  exames= 7  Lei nº 11.107/2005 - Normas Gerais de Contratação de Consórcios Públicos
+  q=  6  exames= 6  Controle Jurisdicional
+  q=  6  exames= 6  Terceiro Setor (OSs, OSCIPs, Sistema S e Fundações de Apoio)
+  q=  6  exames= 5  Remuneração (Componentes, Subsídio, Teto, Equiparação, Vinculação, Irredutibi...
+  q=  6  exames= 6  Jurisprudência dos Tribunais Superiores sobre Responsabilidade Civil do Estado
+  q=  6  exames= 6  Formas de Provimento (arts. 5º a 32 da Lei nº 8.112/1990)
+  q=  5  exames= 5  Desfazimento do Ato Administrativo (Anulação, Revogação, Cassação, Caducidade...
+  q=  5  exames= 5  Formas de Extinção (Serviços Públicos - Lei nº 8.987/1995)
+  q=  5  exames= 5  Modalidades de Licitação (arts. 28 a 32 da Lei nº 14.133/2021)
+  q=  4  exames= 4  Responsabilidade dos Agentes Públicos e Direito de Regresso
+  q=  4  exames= 4  Conceitos Iniciais e Teorias da Responsabilidade
+  q=  4  exames= 4  Concurso Público
+  q=  4  exames= 3  Das Disposições Gerais (arts. 1º a 8º-A da Lei nº 8.429/1992)
+  q=  4  exames= 4  Deveres e Direitos (Usuários, Concedente, Concessionária, Licitações - Lei nº...
+  q=  4  exames= 4  Do Regime Disciplinar (arts. 116 a 142 da Lei nº 8.112/1990)
+  q=  4  exames= 4  Fases da Licitação - Julgamento, Habilitação e Encerramento (arts. 55 a 71 da...
+  q=  4  exames= 4  Parlamentar Indireto (Tribunais de Contas e Controle Técnico-Financeiro)
+  q=  4  exames= 4  Tombamento - Conceitos e Decreto-Lei nº 25/1937
+  q=  3  exames= 3  Acumulação de Cargos e Empregos Públicos e Funções
+  q=  3  exames= 3  Características dos Bens Públicos
+  q=  3  exames= 3  Do Recurso Administrativo e da Revisão (arts. 56 a 65 da Lei nº 9.784/1999)
+  q=  3  exames= 3  Alteração dos Contratos e dos Preços (art. 124 a 136 da Lei nº 14.133/2021)
+  q=  3  exames= 3  Intervenção (Serviços Públicos - Lei nº 8.987/1995)
+  q=  3  exames= 3  Da Anulação, Revogação e Convalidação (arts. 53 a 55 da Lei nº 9.784/1999)
+  q=  2  exames= 2  Princípios (Serviços Públicos - Lei nº 8.987/1995)
+  q=  2  exames= 2  Requisição da Propriedade Privada
+  q=  2  exames= 2  Alienações (arts. 76 e 77 da Lei nº 14.133/2021)
+  q=  2  exames= 2  Do Procedimento Administrativo e do Processo Judicial (arts. 14 a 18-A da Lei...
+  q=  2  exames= 2  Teoria dos Motivos Determinantes
+  q=  2  exames= 2  Atos Administrativos: Espécies, Classificação, Fases de Constituição
+  q=  2  exames= 2  Lei nº 13.303/2016 - Das Licitações (arts. 28 a 90)
+  q=  2  exames= 2  Conceitos e Características dos Contratos Administrativos. Formalização dos C...
+  q=  2  exames= 2  Do Acordo de Leniência (arts. 16 e 17 da Lei nº 12.846/2013)
+  q=  2  exames= 2  Classificação dos Agentes Públicos
+  q=  2  exames= 2  Da Responsabilização Judicial (arts. 18 a 21 da Lei nº 12.846/2013)
+  q=  2  exames= 2  Agências Reguladoras e Executivas
+  q=  2  exames= 2  Servidões Administrativas
+  q=  2  exames= 2  Da Prescrição (arts. 23 a 23-C da Lei nº 8.429/1992)
+  q=  2  exames= 2  Poder Hierárquico
+  q=  2  exames= 2  Jurisprudência dos Tribunais Superiores sobre Concurso Público
+  q=  2  exames= 2  Autorização, Permissão e Concessão (Serviços Públicos - Lei nº 8.987/1995)
+  q=  2  exames= 2  Princípios Implícitos, Reconhecidos e Infraconstitucionais
+  q=  1  exames= 1  Hipóteses de Extinção dos Contratos (arts. 137 a 139 da Lei nº 14.133/2021)
+  q=  1  exames= 1  Infrações e Sanções Administrativas (arts. 155 a 163 da Lei nº 14.133/2021)
+  q=  1  exames= 1  Jurisprudência dos Tribunais Superiores sobre Agente Públicos
+  q=  1  exames= 1  Jurisprudência dos Tribunais Superiores sobre Improbidade Administrativa
+  q=  1  exames= 1  Aquisição de Bens pelo Estado
+  q=  1  exames= 1  Lei nº 13.019/2014 - Estatuto das Parcerias
+  q=  1  exames= 1  Da Competência (arts. 11 a 17 da Lei nº 9.784/1999)
+  q=  1  exames= 1  Limitações Administrativas (Intervenção da Propriedade)
+  q=  1  exames= 1  Meios Alternativos de Resolução de Controvérsias (arts. 151 a 154 da Lei nº 1...
+  q=  1  exames= 1  Ocupação Provisória
+  q=  1  exames= 1  Trâmite do Processo (arts. 5º a 10 e 29 a 50 da Lei nº 9.784/1999)
+  q=  1  exames= 1  Afetação e Desafetação (Bens Públicos)
+  q=  1  exames= 1  Poder Vinculado e Discricionário
+  q=  1  exames= 1  Prescrição e Coisa Julgada Administrativa
+  q=  1  exames= 1  Princípios (art. 5º da Lei nº 14.133/2021)
+  q=  1  exames= 1  Administração Direta (Órgãos Públicos)
+  q=  1  exames= 1  Abuso de Poder: Excesso de Poder e Desvio de Finalidade (Poderes da Administr...
+  q=  1  exames= 1  Vacância (arts. 33 a 35 da Lei nº 8.112/1990)
+  q=  1  exames= 1  Classificação dos Bens Públicos
+  q=  1  exames= 1  Tópicos Mesclados da Lei nº 12.527/2011
+  q=  1  exames= 1  Tópicos Mesclados da Lei nº 9.784/1999
+  q=  1  exames= 1  Classificação de Serviços Públicos
+  q=  1  exames= 1  Criação, Transformação e Extinção de Cargos Públicos
+  q=  1  exames= 1  Lei nº 13.460/2017 - Direitos Básicos do Usuário do Serviço Público
+  q=  1  exames= 1  Da Declaração de Bens (art. 13 da Lei nº 8.429/1992)
+  q=  1  exames= 1  Tópicos Mesclados de Agentes Públicos
+  q=  1  exames= 1  Das Disposições Penais (arts. 19 a 22 da Lei nº 8.429/1992)
+  q=  1  exames= 1  Das Licenças, Afastamentos e Concessões (arts. 81 a 99 da Lei nº 8.112/1990)
+  q=  1  exames= 1  Das Penas (art. 12 da Lei nº 8.429/1992)
+  q=  1  exames= 1  Decreto nº 11.462/2023 - Sistema de Registro de Preços (SRP)
+  q=  1  exames= 1  Desconcentração e Descentralização
+  q=  1  exames= 1  Bens Públicos em Espécie (Domínio Terrestre, Hídrico e Aéreo)
+  q=  1  exames= 1  Tópicos Mesclados de Controle da Administração
+  q=  1  exames= 1  Disposições Gerais, Direitos e Deveres do Administrado (arts. 1º a 4º da Lei ...
+  q=  1  exames= 1  Do Acesso a Informações e da sua Divulgação (arts. 6º a 9º da Lei nº 12.527/2...
+  q=  1  exames= 1  Do Âmbito de Aplicação, Definições e Agentes Públicos (arts. 1º a 4º, 6º a 10...
+  q=  1  exames= 1  Do Direito de Petição (arts. 104 a 115 da Lei nº 8.112/1990)
+  q=  1  exames= 1  Do Processo Administrativo de Responsabilização (arts. 8º a 15 da Lei nº 12.8...
+  q=  1  exames= 1  Tópicos Mesclados de Poderes da Administração
+  q=  1  exames= 1  Atributos ou Características dos Atos Administrativos
+  q=  1  exames= 1  Duração dos Contratos (arts. 105 a 114 da Lei nº 14.133/2021)
+  q=  1  exames= 1  Estabilidade e Estágio Probatório
+  q=  1  exames= 1  Excludentes e Atenuantes de Responsabilidade
+  q=  1  exames= 1  Execução dos Contratos (arts. 115 a art. 123 da Lei nº 14.133/2021)
+  q=  1  exames= 1  Tópicos Mesclados sobre Intervenção do Estado na Propriedade Privada
+  q=  1  exames= 1  Associação Sindical e Direito de Greve
+  q=  1  exames= 1  Formas de Utilização de Bens Públicos
+
+======================================================================
+#4 - Stats globais D.Adm OAB FGV
+======================================================================
+  Total questoes:        265
+  Assuntos distintos:    96
+  Exames com D.Adm:      43
+  Questoes sem assunto:  0

@@ -20,6 +20,7 @@ import {
   IconShield,
   IconSearch,
   IconBell,
+  IconCalendarWeek,
   IconChevronDown,
   IconArrowUp,
   IconCheck,
@@ -32,6 +33,14 @@ import { useUserRole } from "@/hooks/moderation/useUserRole";
 import { toast } from "sonner";
 import { StudyConfigDialog } from "./StudyConfigDialog";
 import { useStudyConfig } from "../hooks/useStudyConfig";
+import { CronogramaSheet } from "./CronogramaSheet";
+import {
+  CargoSelectorCard,
+  CargoSelectorExpansion,
+  useCargoSelectorState,
+} from "./CargoSelector";
+import { CargoTransitionOverlay } from "./CargoTransitionOverlay";
+import type { Carreira } from "@/types/carreira";
 
 // -------- Navigation config --------
 
@@ -87,6 +96,7 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
+  const [cronogramaStatus, setCronogramaStatus] = useState<'normal' | 'atencao' | 'urgente'>('urgente');
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuth();
@@ -130,6 +140,29 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
   };
   const configStatus = getConfigStatus();
 
+  const cargoState = useCargoSelectorState();
+  const [transitionCargo, setTransitionCargo] = useState<Carreira | null | undefined>(undefined);
+  const [transitionPrev, setTransitionPrev] = useState<Carreira | null>(null);
+  const [cardPulse, setCardPulse] = useState(false);
+  const transitionActive = transitionCargo !== undefined;
+
+  const handleCargoApplied = (next: Carreira | null, prev: Carreira | null) => {
+    setTransitionPrev(prev);
+    setTransitionCargo(next);
+  };
+
+  const handleTransitionComplete = () => {
+    setTransitionCargo(undefined);
+    if (location.pathname !== "/") {
+      navigate("/");
+    }
+    // Pulse no card depois do overlay sumir totalmente — reforça "ecossistema atualizado"
+    setTimeout(() => {
+      setCardPulse(true);
+      setTimeout(() => setCardPulse(false), 600);
+    }, 350);
+  };
+
   return (
     <>
       {/* ===== DESKTOP ===== */}
@@ -146,19 +179,18 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
             )}
           >
             {/* ---- Top Bar ---- */}
-            <div className="bg-white/92 backdrop-blur-[16px] border-b border-slate-100/60">
+            <div className="bg-[#FBFAFD] border-b border-slate-100/60">
               <div className="max-w-[1200px] mx-auto px-12">
-                <div className="flex items-center h-[60px] gap-5">
+                <div className="flex items-center h-[82px] gap-5">
                   {/* Logo */}
                   <Link
                     to="/"
-                    className="flex items-center shrink-0 mr-1 -ml-10 hover:opacity-90 active:scale-[0.98] transition-all"
+                    className="flex items-center shrink-0 hover:opacity-90 active:scale-[0.98] transition-all"
                   >
                     <img
-                      src="/logo-papiro.png"
+                      src="/LOGO.png"
                       alt="Papiro"
-                      className="h-[200px] w-auto mix-blend-multiply object-contain"
-                      style={{ filter: "contrast(1.05)", margin: "-70px 0" }}
+                      className="h-[60px] w-auto object-contain"
                     />
                   </Link>
 
@@ -189,11 +221,42 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
 
                   {/* Right actions */}
                   <div className="ml-auto flex items-center gap-1.5">
-                    <button className="h-[34px] px-[18px] bg-gradient-to-br from-[#1E40AF] to-[#1D4ED8] text-white text-[12.5px] font-bold rounded-lg border-none cursor-pointer shadow-[0_1px_4px_rgba(30,64,175,0.2)] hover:from-[#1D4ED8] hover:to-[#2563EB] hover:shadow-[0_4px_14px_rgba(30,64,175,0.25)] hover:-translate-y-px active:translate-y-0 transition-all">
-                      Upgrade
-                    </button>
+                    <CargoSelectorCard state={cargoState} pulsing={cardPulse} />
 
                     <div className="w-px h-[22px] bg-slate-200 mx-2" />
+
+                    {/* Cronograma da semana */}
+                    {(() => {
+                      const pending = 25;
+                      const cfg = {
+                        normal: { badgeBg: 'bg-emerald-500', pingBg: 'bg-emerald-400' },
+                        atencao: { badgeBg: 'bg-amber-500', pingBg: 'bg-amber-400' },
+                        urgente: { badgeBg: 'bg-red-600', pingBg: 'bg-red-500' },
+                      }[cronogramaStatus];
+
+                      return (
+                        <CronogramaSheet
+                          devStatus={cronogramaStatus}
+                          devSetStatus={setCronogramaStatus}
+                          enableShortcut
+                        >
+                          <button
+                            type="button"
+                            aria-label="Cronograma da semana"
+                            title="Cronograma da semana · Alt+C"
+                            className="w-[34px] h-[34px] rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700 active:scale-[0.92] transition-all relative"
+                          >
+                            <IconCalendarWeek className="h-[19px] w-[19px]" />
+                            <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center">
+                              <span className={`absolute inline-flex h-full w-full rounded-full ${cfg.pingBg} opacity-50 animate-ping`} />
+                              <span className={`relative inline-flex items-center justify-center min-w-[13px] h-[13px] px-0.5 rounded-full ${cfg.badgeBg} text-white text-[8px] font-bold tabular-nums leading-none ring-[1.5px] ring-white`}>
+                                {pending}
+                              </span>
+                            </span>
+                          </button>
+                        </CronogramaSheet>
+                      );
+                    })()}
 
                     {/* Config */}
                     <button
@@ -213,12 +276,6 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
                       {configStatus.color === "green" && (
                         <IconCheck className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 text-green-500" />
                       )}
-                    </button>
-
-                    {/* Notifications */}
-                    <button className="w-[34px] h-[34px] rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700 active:scale-[0.92] transition-all relative">
-                      <IconBell className="h-[19px] w-[19px]" />
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white animate-[pulse-dot_2s_infinite]" />
                     </button>
 
                     <div className="w-px h-[22px] bg-slate-200 mx-2" />
@@ -245,8 +302,11 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            {/* ---- Nav Bar (Dark) ---- */}
-            <nav className="bg-[#2d2d2d]">
+            {/* ---- Cargo Expansion (slot entre top bar e dark navbar) ---- */}
+            <CargoSelectorExpansion state={cargoState} onAfterApply={handleCargoApplied} />
+
+            {/* ---- Nav Bar (Dark Blue) ---- */}
+            <nav className="bg-[#0f1b3d]">
               <div className="max-w-[1200px] mx-auto px-12">
                 <div className="flex items-center justify-center h-[42px] gap-1 pl-6">
                   {/* Main nav items */}
@@ -287,16 +347,22 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Content area */}
-          <div
-            className="flex-1 overflow-auto bg-[#f8fafc] relative"
-            style={{
-              backgroundImage: "radial-gradient(circle, #e5e5e5 0.5px, transparent 0.5px)",
-              backgroundSize: "32px 32px",
-              backgroundColor: "#F1F1F1",
-            }}
-          >
-            {children}
-          </div>
+          {(() => {
+            const auroraRoutes = ['/', '/questoes'];
+            const isAurora = auroraRoutes.some((r) => r === '/' ? location.pathname === '/' : location.pathname.startsWith(r));
+            return (
+              <div
+                className={`flex-1 overflow-auto relative ${isAurora ? '' : 'bg-[#f8fafc]'}`}
+                style={isAurora ? undefined : {
+                  backgroundImage: "radial-gradient(circle, #e5e5e5 0.5px, transparent 0.5px)",
+                  backgroundSize: "32px 32px",
+                  backgroundColor: "#F1F1F1",
+                }}
+              >
+                {children}
+              </div>
+            );
+          })()}
         </div>
       )}
 
@@ -310,10 +376,10 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
           <div className="flex h-12 px-4 items-center justify-between bg-white border-b border-slate-200 shrink-0">
             <Link to="/" className="flex items-center">
               <img
-                src="/logo-papiro.png"
+                src="/LOGO.png"
                 alt="Papiro"
-                className="h-7 w-auto mix-blend-multiply"
-                style={{ filter: "contrast(1.05)" }}
+                className="h-10 w-auto object-contain"
+                style={{}}
               />
             </Link>
             <button
@@ -325,9 +391,15 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-auto bg-[#f8fafc]">
-            {children}
-          </div>
+          {(() => {
+            const auroraRoutes = ['/', '/questoes'];
+            const isAurora = auroraRoutes.some((r) => r === '/' ? location.pathname === '/' : location.pathname.startsWith(r));
+            return (
+              <div className={`flex-1 overflow-auto ${isAurora ? '' : 'bg-[#f8fafc]'}`}>
+                {children}
+              </div>
+            );
+          })()}
         </div>
       )}
 
@@ -345,10 +417,9 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <Link to="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
                 <img
-                  src="/logo-papiro.png"
+                  src="/LOGO.png"
                   alt="Papiro"
-                  className="h-8 w-auto mix-blend-multiply"
-                  style={{ filter: "contrast(1.05)" }}
+                  className="h-10 w-auto object-contain"
                 />
               </Link>
               <button
@@ -425,6 +496,14 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
         onComplete={() => {
           toast.success("Configuração salva com sucesso!");
         }}
+      />
+
+      {/* Cargo transition overlay — fade fullscreen + navigate('/') quando troca cargo */}
+      <CargoTransitionOverlay
+        cargo={transitionCargo ?? null}
+        previousCargo={transitionPrev}
+        active={transitionActive}
+        onComplete={handleTransitionComplete}
       />
     </>
   );

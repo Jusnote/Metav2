@@ -1,0 +1,47 @@
+
+Total de exames OAB FGV (denominador): 43
+
+Total de questões D. Adm OAB FGV: 265
+
+====================================================================================================
+   ID  Item                                                        q   %cob  exames  incidência
+====================================================================================================
+    1  Princípios, fontes e interpretação                          2   0.8%       2        4.7%
+  1.1  Lei nº 13.655/2018 (segurança jurídica)                     -      -       -  (sem mapping)
+  1.2  LAI (Lei 12.527/2011) e LGPD (Lei 13.709/2018)              2   0.8%       2        4.7%
+    2  Atividade e estrutura administrativa                       13   4.9%      12       27.9%
+  2.1  Terceiro setor                                              7   2.6%       7       16.3%
+    3  Poderes administrativos                                     3   1.1%       2        4.7%
+  3.1  Poder hierárquico                                           2   0.8%       2        4.7%
+  3.2  Poder disciplinar e PAD                                    15   5.7%      15       34.9%
+  3.3  Poder regulamentar                                          -      -       -  (sem mapping)
+  3.4  Poder de polícia                                            8   3.0%       8       18.6%
+    4  Atos administrativos                                        5   1.9%       4        9.3%
+    5  Licitações e contratos (Lei 8.666/93 e Lei 14.133/2021)    30  11.3%      22       51.2%
+    6  Serviços públicos                                          16   6.0%      14       32.6%
+  6.1  Serviços delegados, convênios e consórcios                  9   3.4%       9       20.9%
+  6.2  Agências Reguladoras                                        2   0.8%       2        4.7%
+  6.4  Parcerias público-privadas (PPP)                           12   4.5%      12       27.9%
+    7  Agentes públicos                                           25   9.4%      21       48.8%
+  7.1  Teto remuneratório                                          0   0.0%       0        0.0%
+    8  Domínio público (Bens públicos)                             8   3.0%       8       18.6%
+    9  Intervenção estatal na propriedade                         30  11.3%      25       58.1%
+   10  Intervenção estatal no domínio econômico                    -      -       -  (sem mapping)
+   11  Controle da Administração Pública                          11   4.2%      11       25.6%
+11.2a  Lei Anticorrupção (12.846/2013)                             5   1.9%       5       11.6%
+   12  Improbidade administrativa (Lei 8.429/92 c/ alts. 14.23    20   7.5%      19       44.2%
+   13  Lei de Abuso de Autoridade (13.869/2019)                    -      -       -  (sem mapping)
+   14  Responsabilidade civil do Estado                           15   5.7%      14       32.6%
+   15  Prescrição no direito administrativo                        1   0.4%       1        2.3%
+   18  Processo administrativo (Lei 9.784/1999)                   10   3.8%      10       23.3%
+====================================================================================================
+  Total mapeado: 251 questões (de 265, cobertura 94.7%)
+  Não mapeadas:  14 (precisam revisão)
+
+Assuntos NÃO mapeados (4):
+  q=  6  Remuneração (Componentes, Subsídio, Teto, Equiparação, Vinculação, Irredutibi...
+  q=  5  Desfazimento do Ato Administrativo (Anulação, Revogação, Cassação, Caducidade...
+  q=  2  Conceitos e Características dos Contratos Administrativos. Formalização dos C...
+  q=  1  Do Âmbito de Aplicação, Definições e Agentes Públicos (arts. 1º a 4º, 6º a 10...
+
+JSON gerado: D:\meta novo\Metav2\public\data\oab-analysis.json
