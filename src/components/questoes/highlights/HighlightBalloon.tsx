@@ -84,7 +84,7 @@ export function HighlightBalloon({
           </div>
         </div>
         <span className="sp">
-          <button type="button" className="ic del" aria-label="Remover" onClick={onRemove}><TrashIcon /></button>
+          <button type="button" className="ic del" aria-label="Remover" onMouseDown={(e) => e.preventDefault()} onClick={onRemove}><TrashIcon /></button>
           <button type="button" className="ic" aria-label="Fechar" onClick={commitAndClose}>✕</button>
         </span>
       </div>

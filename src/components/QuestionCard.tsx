@@ -431,12 +431,14 @@ export const QuestionCard = React.memo(function QuestionCard({
       const hl = highlightsRef.current.find(h => h.id === id);
       if (hl) {
         const r = resolveAnchor(block, { quote: hl.quote, prefix: hl.prefix, suffix: hl.suffix });
-        if (r) {
+        if (r && r.getClientRects().length > 0) {
           const rr = r.getBoundingClientRect();
           return atTopLeft ? new DOMRect(rr.left, rr.top, 0, 0) : rr;
         }
       }
-      return new DOMRect(0, 0, 0, 0);
+      // fallback (marca removida ou em região oculta/colapsada): junto ao bloco, não em (0,0)
+      const b = block.getBoundingClientRect();
+      return new DOMRect(b.left, b.top, 0, 0);
     },
     contextElement: block,
   }), []);
@@ -486,11 +488,16 @@ export const QuestionCard = React.memo(function QuestionCard({
     const { target, block } = hlPop;
     setHlPop(null);
     window.getSelection()?.removeAllRanges();
-    const created = await createHl({
-      questionId: questaoId, target, kind, color,
-      type: kind === 'attention' ? 'pegadinha' : null,
-      quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
-    });
+    let created;
+    try {
+      created = await createHl({
+        questionId: questaoId, target, kind, color,
+        type: kind === 'attention' ? 'pegadinha' : null,
+        quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
+      });
+    } catch {
+      return; // falha ao criar (auth/rede): aborta silenciosamente
+    }
     if (kind === 'attention') openEdit(created.id, block);
   }, [hlPop, createHl, questaoId, openEdit]);
 
@@ -526,6 +533,11 @@ export const QuestionCard = React.memo(function QuestionCard({
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
   }, [hlPop, balloon, closeBalloon]);
+
+  // Se a marca do balão sumir (removida, refetch, outra aba), fecha — evita "pinned" travado.
+  useEffect(() => {
+    if (balloon && !highlights.find(h => h.id === balloon.id)) closeBalloon();
+  }, [balloon, highlights, closeBalloon]);
 
   // Bookmark state (localStorage fallback)
   const [bookmarked, setBookmarked] = useState(() => {
@@ -1237,6 +1249,7 @@ export const QuestionCard = React.memo(function QuestionCard({
         return (
           <HighlightPopover anchor={balloonAnchor}>
             <HighlightBalloon
+              key={balloon.id}
               highlight={hl}
               mode={balloon.mode}
               onEdit={() => openEdit(hl.id, balloon.block)}
