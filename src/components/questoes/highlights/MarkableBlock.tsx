@@ -16,7 +16,7 @@ export function MarkableBlock({
   target: string;
   highlights: Highlight[];
   onSelect: (block: HTMLElement, target: string) => void;
-  onClickHighlight: (hl: Highlight, at: { left: number; top: number }) => void;
+  onClickHighlight: (hl: Highlight, at: { left: number; top: number }, block: HTMLElement) => void;
   className?: string;
   style?: React.CSSProperties;
   hostClassName?: string;
@@ -27,12 +27,13 @@ export function MarkableBlock({
   function handleClick(e: React.MouseEvent) {
     const sel = window.getSelection();
     if (sel && !sel.isCollapsed && sel.toString().trim()) return; // é seleção, não clique
-    if (!ref.current) return;
+    const block = ref.current;
+    if (!block) return;
     if ((e.target as HTMLElement).closest('.qh-tri')) return;     // triângulo já trata
-    const idx = hitTest({ x: e.clientX, y: e.clientY }, resolved.current.map(r => r.rects), ref.current);
+    const idx = hitTest({ x: e.clientX, y: e.clientY }, resolved.current.map(r => r.rects), block);
     if (idx >= 0) {
       e.stopPropagation(); // não deixa o clique virar seleção de alternativa
-      onClickHighlight(resolved.current[idx].hl, { left: e.clientX, top: e.clientY });
+      onClickHighlight(resolved.current[idx].hl, { left: e.clientX, top: e.clientY }, block);
     }
   }
 
@@ -47,7 +48,7 @@ export function MarkableBlock({
       <HighlightLayer
         blockRef={ref}
         highlights={highlights}
-        onClickHighlight={onClickHighlight}
+        onClickHighlight={(hl, at) => { if (ref.current) onClickHighlight(hl, at, ref.current); }}
         onResolvedChange={(items) => { resolved.current = items; }}
       />
     </div>

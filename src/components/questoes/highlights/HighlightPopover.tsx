@@ -3,6 +3,10 @@ import { useFloating, FloatingPortal, offset, flip, shift, autoUpdate, type Plac
 
 export interface AnchorRectSource {
   getBoundingClientRect(): DOMRect;
+  getClientRects?: () => DOMRectList;
+  /** Elemento real dentro do container que rola — necessário pro autoUpdate
+   *  achar o scroll container certo e pro cálculo correto com ancestrais transformados. */
+  contextElement?: Element;
 }
 
 /**

@@ -9,7 +9,7 @@ import { HighlightPopover } from './questoes/highlights/HighlightPopover';
 import { SelectionToolbar } from './questoes/highlights/SelectionToolbar';
 import { HighlightNotePopover } from './questoes/highlights/HighlightNotePopover';
 import { PlainHighlightMenu } from './questoes/highlights/PlainHighlightMenu';
-import { createAnchor } from './questoes/highlights/lib/highlight-anchor';
+import { createAnchor, resolveAnchor } from './questoes/highlights/lib/highlight-anchor';
 import { useQuestionHighlights } from '@/hooks/useQuestionHighlights';
 import type { Highlight, MarkKind } from './questoes/highlights/types';
 import {
@@ -407,22 +407,44 @@ export const QuestionCard = React.memo(function QuestionCard({
 
   // ── Marcações na questão (Grifo comum / Atenção) ──
   const { highlights, create: createHl, update: updateHl, remove: removeHl } = useQuestionHighlights(questaoId);
+  const highlightsRef = useRef(highlights);
+  highlightsRef.current = highlights;
   type HlPop =
     | { kind: 'sel'; range: Range; target: string; block: HTMLElement }
-    | { kind: 'note' | 'plain'; id: string; rect: DOMRect }
+    | { kind: 'note' | 'plain'; id: string; rect: DOMRect; block: HTMLElement }
     | null;
   const [hlPop, setHlPop] = useState<HlPop>(null);
   const lastKind = useRef<MarkKind>('attention');
 
-  // Virtual element (Floating UI): ancora o popover na seleção (Range vivo) ou no ponto do clique.
-  const hlAnchor = useMemo<{ getBoundingClientRect(): DOMRect } | null>(() => {
+  // Virtual element (Floating UI): ancora o popover na seleção (Range vivo) ou na marca
+  // (re-resolvida a cada frame → segue o scroll). contextElement = bloco real dentro do
+  // container que rola, pra o autoUpdate encontrar o scroll container interno.
+  const hlAnchor = useMemo<{ getBoundingClientRect(): DOMRect; getClientRects?: () => DOMRectList; contextElement?: Element } | null>(() => {
     if (!hlPop) return null;
     if (hlPop.kind === 'sel') {
       const range = hlPop.range;
-      return { getBoundingClientRect: () => range.getBoundingClientRect() };
+      return {
+        getBoundingClientRect: () => range.getBoundingClientRect(),
+        getClientRects: () => range.getClientRects(),
+        contextElement: hlPop.block,
+      };
     }
-    const rect = hlPop.rect;
-    return { getBoundingClientRect: () => rect };
+    const { id, rect: fallback, block } = hlPop;
+    return {
+      getBoundingClientRect: () => {
+        const hl = highlightsRef.current.find(h => h.id === id);
+        if (hl) {
+          const r = resolveAnchor(block, { quote: hl.quote, prefix: hl.prefix, suffix: hl.suffix });
+          if (r) {
+            const rr = r.getBoundingClientRect();
+            // Atenção ancora no canto sup-esq (onde fica o triângulo); comum no centro do trecho.
+            return hl.kind === 'attention' ? new DOMRect(rr.left, rr.top, 0, 0) : rr;
+          }
+        }
+        return fallback;
+      },
+      contextElement: block,
+    };
   }, [hlPop]);
 
   const handleHlSelect = useCallback((block: HTMLElement, target: string) => {
@@ -438,7 +460,7 @@ export const QuestionCard = React.memo(function QuestionCard({
     lastKind.current = kind;
     const rect = hlPop.range.getBoundingClientRect();
     const anchor = createAnchor(hlPop.block, hlPop.range);
-    const { target } = hlPop;
+    const { target, block } = hlPop;
     setHlPop(null);
     window.getSelection()?.removeAllRanges();
     const created = await createHl({
@@ -446,12 +468,12 @@ export const QuestionCard = React.memo(function QuestionCard({
       type: kind === 'attention' ? 'pegadinha' : null,
       quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
     });
-    if (kind === 'attention') setHlPop({ kind: 'note', id: created.id, rect });
+    if (kind === 'attention') setHlPop({ kind: 'note', id: created.id, rect, block });
   }, [hlPop, createHl, questaoId]);
 
-  const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }) => {
+  const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }, block: HTMLElement) => {
     const rect = new DOMRect(at.left, at.top, 0, 0);
-    setHlPop({ kind: hl.kind === 'attention' ? 'note' : 'plain', id: hl.id, rect });
+    setHlPop({ kind: hl.kind === 'attention' ? 'note' : 'plain', id: hl.id, rect, block });
   }, []);
 
   useEffect(() => {
@@ -1170,12 +1192,13 @@ export const QuestionCard = React.memo(function QuestionCard({
         const hl = highlights.find(h => h.id === hlPop.id);
         if (!hl) return null;
         const rect = hlPop.rect;
+        const block = hlPop.block;
         return (
           <HighlightPopover anchor={hlAnchor}>
             <PlainHighlightMenu
               color={hl.color}
               onColor={(c) => { updateHl({ id: hl.id, color: c }); }}
-              onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop({ kind: 'note', id: hl.id, rect }); }}
+              onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop({ kind: 'note', id: hl.id, rect, block }); }}
               onRemove={() => { removeHl(hl.id); setHlPop(null); }}
             />
           </HighlightPopover>
