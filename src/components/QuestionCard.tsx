@@ -2,10 +2,18 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import DOMPurify from 'dompurify';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { TextHighlighter } from 'lisere';
-import 'lisere/dist/style.css';
+import './question-card-theme.css';
+import './questoes/highlights/highlights.css';
+import { MarkableBlock } from './questoes/highlights/MarkableBlock';
+import { SelectionToolbar } from './questoes/highlights/SelectionToolbar';
+import { HighlightNotePopover } from './questoes/highlights/HighlightNotePopover';
+import { PlainHighlightMenu } from './questoes/highlights/PlainHighlightMenu';
+import { createAnchor } from './questoes/highlights/lib/highlight-anchor';
+import { useQuestionHighlights } from '@/hooks/useQuestionHighlights';
+import type { Highlight, MarkKind } from './questoes/highlights/types';
 import {
   Bookmark,
+  CornerDownLeft,
   GraduationCap,
   Check,
   X,
@@ -15,10 +23,10 @@ import {
   Flag,
   BookOpen,
   Sparkles,
-  Loader2,
   Scissors,
-  Highlighter,
-  Strikethrough,
+  HelpCircle,
+  ChevronDown,
+  Send,
 } from 'lucide-react';
 import { QuestionCommentsSection } from '@/components/questoes/comments/QuestionCommentsSection';
 import { useQuestionNote } from '@/hooks/useQuestionNote';
@@ -147,13 +155,6 @@ function sanitizeHtml(html: string) {
 
 const bookmarkKey = (id: number) => `questao_bookmark_${id}`;
 
-type HighlightMode = 'highlight' | 'strike';
-
-const HIGHLIGHT_STYLES: Record<HighlightMode, { className: string }> = {
-  highlight: { className: 'qc-highlight-mark' },
-  strike:    { className: 'qc-strike-mark' },
-};
-
 type ExpandableTab = 'gabarito' | 'estatisticas' | 'comunidade' | 'nota' | null;
 
 // ============================================================
@@ -182,7 +183,7 @@ function StatsBar({ resposta }: { resposta: RespostaAPI }) {
   const acertos = resposta.stats_globais_atualizadas.total_acertos;
 
   return (
-    <div className="px-5 pb-2.5 qc-stats-enter">
+    <div className="px-6 pb-2.5 qc-stats-enter">
       <div className="flex items-center gap-3 px-3 py-2 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
@@ -217,7 +218,7 @@ function StatsBar({ resposta }: { resposta: RespostaAPI }) {
 function GabaritoComentadoSection({ html }: { html?: string | null }) {
   if (html) {
     return (
-      <div className="px-5 py-3">
+      <div className="px-6 py-3">
         <div
           className="prose prose-sm prose-zinc dark:prose-invert max-w-none text-[13px]"
           dangerouslySetInnerHTML={sanitizeHtml(html)}
@@ -226,7 +227,7 @@ function GabaritoComentadoSection({ html }: { html?: string | null }) {
     );
   }
   return (
-    <div className="px-5 py-4 text-center">
+    <div className="px-6 py-4 text-center">
       <BookOpen className="w-6 h-6 text-zinc-300 dark:text-zinc-600 mb-1 mx-auto" />
       <p className="text-xs text-zinc-400 dark:text-zinc-500">
         Gabarito comentado ainda nao disponivel para esta questao.
@@ -243,7 +244,7 @@ function EstatisticasSection({ resposta, taxaAcertoGlobal }: { resposta: Respost
   const difficulty = getDifficulty(taxa);
 
   return (
-    <div className="px-5 py-3">
+    <div className="px-6 py-3">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="flex flex-col items-center p-2.5 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
           <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Taxa Global</span>
@@ -270,25 +271,102 @@ function EstatisticasSection({ resposta, taxaAcertoGlobal }: { resposta: Respost
   );
 }
 
-/** Inline AI explanation for a single alternative */
-function AIExplanation({ text, isLoading }: { text: string; isLoading: boolean }) {
-  if (!text && isLoading) {
-    return (
-      <div className="mt-1.5 pl-3 border-l-2 border-blue-400/30 dark:border-blue-500/25 flex items-center gap-1.5 qc-ai-enter">
-        <Loader2 className="w-3 h-3 animate-spin text-blue-500/60" />
-        <span className="text-[12px] text-zinc-400 dark:text-zinc-500">Analisando...</span>
-      </div>
-    );
-  }
+/** Debate chat por alternativa — UI completa (fiação da IA = TODO) */
+interface DebateMessage { role: 'user' | 'assistant'; content: string; }
+interface DebateThread { open: boolean; messages: DebateMessage[]; draft: string; loading: boolean; }
 
-  if (!text.trim()) return null;
+const DEBATE_SUGGESTIONS = [
+  'Qual o fundamento legal disso?',
+  'Me da um exemplo pratico',
+  'E se o cenario fosse outro?',
+];
 
+function debateRich(text: string) {
+  const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return { __html: esc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') };
+}
+
+function DebateChat({
+  letter,
+  isCorrect,
+  thread,
+  onClose,
+  onDraft,
+  onSend,
+  onSuggestion,
+}: {
+  letter: string;
+  isCorrect: boolean;
+  thread: DebateThread;
+  onClose: () => void;
+  onDraft: (v: string) => void;
+  onSend: () => void;
+  onSuggestion: (text: string) => void;
+}) {
+  const empty = thread.messages.length === 0;
   return (
-    <div className="mt-1.5 pl-3 border-l-2 border-blue-400/30 dark:border-blue-500/25 qc-ai-enter">
-      <p className="text-[12px] leading-[1.65] text-zinc-600 dark:text-zinc-400 whitespace-pre-line">
-        {text.trim()}
-        {isLoading && <span className="qc-ai-cursor" />}
-      </p>
+    <div className="qc-chat qc-ai-enter">
+      <div className="qc-chat-head">
+        <span className="qc-chat-av"><GraduationCap className="w-3.5 h-3.5" /></span>
+        <span className="qc-chat-title">Tutor de Direito</span>
+        <span className="qc-chat-tag">IA</span>
+        <button type="button" className="qc-chat-x" onClick={onClose} aria-label="Recolher debate">
+          <ChevronDown className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="qc-chat-msgs">
+        {empty && !thread.loading && (
+          <p className="qc-chat-empty">
+            Pergunte ou argumente sobre a alternativa <strong>{letter}</strong>
+            {isCorrect ? ' (a correta)' : ''} — a IA explica e voce debate.
+          </p>
+        )}
+
+        {thread.messages.map((m, i) => (
+          <div key={i} className={`qc-msg ${m.role}`}>
+            {m.role === 'assistant' && (
+              <span className="qc-msg-av"><GraduationCap className="w-3 h-3" /></span>
+            )}
+            <div className="qc-bubble" dangerouslySetInnerHTML={debateRich(m.content)} />
+          </div>
+        ))}
+
+        {thread.loading && (
+          <div className="qc-msg assistant">
+            <span className="qc-msg-av"><GraduationCap className="w-3 h-3" /></span>
+            <div className="qc-bubble qc-typing"><span /><span /><span /></div>
+          </div>
+        )}
+      </div>
+
+      {!thread.loading && (
+        <div className="qc-sugs">
+          {DEBATE_SUGGESTIONS.map((s) => (
+            <button key={s} type="button" onClick={() => onSuggestion(s)}>{s}</button>
+          ))}
+        </div>
+      )}
+
+      <div className="qc-compose">
+        <textarea
+          rows={1}
+          value={thread.draft}
+          placeholder="Nao concordou? Argumente ou pergunte a IA..."
+          onChange={(e) => onDraft(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(); } }}
+        />
+        <button
+          type="button"
+          className="qc-send"
+          disabled={!thread.draft.trim() || thread.loading}
+          onClick={onSend}
+          aria-label="Enviar mensagem"
+        >
+          <Send className="w-[15px] h-[15px]" />
+        </button>
+      </div>
+      <span className="qc-compose-kbd">Enter envia · Shift+Enter quebra linha</span>
     </div>
   );
 }
@@ -323,9 +401,56 @@ export const QuestionCard = React.memo(function QuestionCard({
   const [respondido, setRespondido] = useState(false);
   const [revealAnimating, setRevealAnimating] = useState(false);
   const [eliminatedAlts, setEliminatedAlts] = useState<Set<string>>(new Set());
-  const [highlightMode, setHighlightMode] = useState<HighlightMode>('highlight');
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const { data: hasReported } = useHasReportedQuestion(questaoId);
+
+  // ── Marcações na questão (Grifo comum / Atenção) ──
+  const { highlights, create: createHl, update: updateHl, remove: removeHl } = useQuestionHighlights(questaoId);
+  type HlPop =
+    | { kind: 'sel'; left: number; top: number; range: Range; target: string; block: HTMLElement }
+    | { kind: 'note' | 'plain'; left: number; top: number; id: string }
+    | null;
+  const [hlPop, setHlPop] = useState<HlPop>(null);
+  const lastKind = useRef<MarkKind>('attention');
+
+  const handleHlSelect = useCallback((block: HTMLElement, target: string) => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
+    const range = sel.getRangeAt(0);
+    if (!block.contains(range.commonAncestorContainer)) return;
+    const r = range.getBoundingClientRect();
+    setHlPop({ kind: 'sel', left: r.left + r.width / 2, top: r.bottom + 8, range: range.cloneRange(), target, block });
+  }, []);
+
+  const handleHlPick = useCallback(async (color: string, kind: MarkKind) => {
+    if (!hlPop || hlPop.kind !== 'sel') return;
+    lastKind.current = kind;
+    const anchor = createAnchor(hlPop.block, hlPop.range);
+    const { left, top, target } = hlPop;
+    setHlPop(null);
+    window.getSelection()?.removeAllRanges();
+    const created = await createHl({
+      questionId: questaoId, target, kind, color,
+      type: kind === 'attention' ? 'pegadinha' : null,
+      quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
+    });
+    if (kind === 'attention') setHlPop({ kind: 'note', left, top, id: created.id });
+  }, [hlPop, createHl, questaoId]);
+
+  const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }) => {
+    setHlPop({ kind: hl.kind === 'attention' ? 'note' : 'plain', left: at.left, top: at.top + 14, id: hl.id });
+  }, []);
+
+  useEffect(() => {
+    if (!hlPop) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.closest('.qh-pop') || t.closest('.qh-tri')) return;
+      setHlPop(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [hlPop]);
 
   // Bookmark state (localStorage fallback)
   const [bookmarked, setBookmarked] = useState(() => {
@@ -344,89 +469,73 @@ export const QuestionCard = React.memo(function QuestionCard({
   const { note: privateNote } = useQuestionNote(questaoId);
   const hasNote = !!privateNote;
 
-  // AI explanations per alternative
-  const [explanations, setExplanations] = useState<Map<string, string>>(new Map());
-  const [loadingExplanations, setLoadingExplanations] = useState<Set<string>>(new Set());
-  const activeRequestsRef = useRef<Set<string>>(new Set());
-  const explanationsRef = useRef<Map<string, string>>(new Map());
-
-  // Keep ref in sync with state
-  useEffect(() => { explanationsRef.current = explanations; }, [explanations]);
-
-  const fetchExplanation = useCallback(async (letter: string) => {
-    // Guard via refs to avoid stale closure issues
-    if (activeRequestsRef.current.has(letter) || !resposta) return;
-    if (explanationsRef.current.has(letter)) return;
-
-    activeRequestsRef.current.add(letter);
-
-    const altIndex = letter.charCodeAt(0) - 65;
-    const altText = alternatives[altIndex]?.text || '';
-    const isCorrect = letter === String.fromCharCode(65 + resposta.alternativa_correta);
-
-    setLoadingExplanations(prev => new Set(prev).add(letter));
-
-    try {
-      const res = await fetch('/api/ai/explain-alternative', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questionText: questionText.slice(0, 1000),
-          alternativeText: altText.replace(/<[^>]*>/g, '').slice(0, 500),
-          alternativeLetter: letter,
-          isCorrect,
-          subject,
-          subtopic,
-        }),
-      });
-
-      if (!res.ok) throw new Error('Failed');
-
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error('No reader');
-
-      const decoder = new TextDecoder();
-      let accumulated = '';
-
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          // Flush remaining bytes
-          const remaining = decoder.decode();
-          if (remaining) {
-            accumulated += remaining;
-            setExplanations(prev => new Map(prev).set(letter, accumulated));
-          }
-          break;
-        }
-        accumulated += decoder.decode(value, { stream: true });
-        setExplanations(prev => new Map(prev).set(letter, accumulated));
-      }
-    } catch {
-      setExplanations(prev => {
-        if (prev.has(letter) && prev.get(letter)!.length > 0) return prev;
-        return new Map(prev).set(letter, 'Erro ao gerar explicacao.');
-      });
-    } finally {
-      activeRequestsRef.current.delete(letter);
-      setLoadingExplanations(prev => {
-        const next = new Set(prev);
-        next.delete(letter);
-        return next;
-      });
-    }
-  // Stable deps only — no state in deps to avoid closure recreation mid-stream
-  }, [resposta, alternatives, questionText, subject, subtopic]);
-
-  const fetchAllExplanations = useCallback(() => {
-    if (!resposta) return;
-    alternatives.forEach(alt => {
-      if (!activeRequestsRef.current.has(alt.letter)) {
-        fetchExplanation(alt.letter);
-      }
+  // Em duvida (estado local; pode alimentar confianca/analytics depois)
+  const [duvidaAlts, setDuvidaAlts] = useState<Set<string>>(new Set());
+  const toggleDuvida = useCallback((letter: string) => {
+    if (respondido) return;
+    setDuvidaAlts(prev => {
+      const next = new Set(prev);
+      if (next.has(letter)) next.delete(letter); else next.add(letter);
+      return next;
     });
-  }, [resposta, alternatives, fetchExplanation]);
+  }, [respondido]);
+
+  // Debate com IA por alternativa — UI completa; resposta da IA = TODO
+  const [debates, setDebates] = useState<Record<string, DebateThread>>({});
+
+  const openDebate = useCallback((letter: string) => {
+    setDebates(prev => {
+      const cur = prev[letter];
+      if (cur) return { ...prev, [letter]: { ...cur, open: !cur.open } };
+      return { ...prev, [letter]: { open: true, messages: [], draft: '', loading: false } };
+    });
+  }, []);
+
+  const closeDebate = useCallback((letter: string) => {
+    setDebates(prev => (prev[letter] ? { ...prev, [letter]: { ...prev[letter], open: false } } : prev));
+  }, []);
+
+  const setDebateDraft = useCallback((letter: string, v: string) => {
+    setDebates(prev => ({
+      ...prev,
+      [letter]: { ...(prev[letter] ?? { open: true, messages: [], loading: false, draft: '' }), draft: v },
+    }));
+  }, []);
+
+  // ────────────────────────────────────────────────────────────────────────
+  // TODO: conectar a IA do debate (com historico da conversa).
+  // Sugestao: criar a rota /api/ai/debate-alternative que receba o contexto
+  // (questionText, alternativeText, alternativeLetter, isCorrect, subject,
+  // subtopic) + o array `messages` e devolva a resposta da IA — de preferencia
+  // em streaming, igual ao padrao que ja era usado para a explicacao:
+  //
+  //   const res = await fetch('/api/ai/debate-alternative', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ questionText, alternativeText, alternativeLetter: letter,
+  //                            isCorrect, subject, subtopic, messages: thread }),
+  //   });
+  //   // ...ler o stream (res.body.getReader()) e ir concatenando numa
+  //   //    mensagem { role: 'assistant', content } dentro de debates[letter]...
+  //
+  // Por enquanto (so visual): apenas adicionamos a mensagem do aluno e
+  // desligamos o "loading" depois de um instante, demonstrando o indicador
+  // de digitacao — sem resposta real da IA.
+  // ────────────────────────────────────────────────────────────────────────
+  const sendDebateText = useCallback((letter: string, text: string) => {
+    const content = text.trim();
+    if (!content) return;
+    setDebates(prev => {
+      const cur = prev[letter] ?? { open: true, messages: [], draft: '', loading: false };
+      return {
+        ...prev,
+        [letter]: { ...cur, open: true, draft: '', loading: true, messages: [...cur.messages, { role: 'user', content }] },
+      };
+    });
+    window.setTimeout(() => {
+      setDebates(prev => (prev[letter] ? { ...prev, [letter]: { ...prev[letter], loading: false } } : prev));
+    }, 1200);
+  }, []);
 
   const articleRef = useRef<HTMLElement>(null);
   const questionBodyRef = useRef<HTMLDivElement>(null);
@@ -533,18 +642,38 @@ export const QuestionCard = React.memo(function QuestionCard({
     }
   }, [selectedAlternative, respondido, questaoId]);
 
-  // Global Enter shortcut when card is focused
+  // Atalhos de teclado quando o card tem foco: Enter responde, A-E seleciona
   useEffect(() => {
     const handleGlobalKey = (e: KeyboardEvent) => {
       if (!articleRef.current?.contains(document.activeElement)) return;
+
+      // Não interfere quando o usuário está digitando em algum input/textarea
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return;
+
+      // Enter → responder
       if (e.key === 'Enter' && selectedAlternative && !respondido && !loading) {
         e.preventDefault();
         handleResponder();
+        return;
+      }
+
+      // A-E (ou até onde houver alternativa) → selecionar/desselecionar
+      if (!respondido && e.key.length === 1) {
+        const letter = e.key.toUpperCase();
+        if (letter >= 'A' && letter <= 'Z') {
+          const alt = alternatives.find(a => a.letter === letter);
+          if (alt && !eliminatedAlts.has(letter)) {
+            e.preventDefault();
+            setSelectedAlternative(prev => prev === letter ? null : letter);
+          }
+        }
       }
     };
     window.addEventListener('keydown', handleGlobalKey);
     return () => window.removeEventListener('keydown', handleGlobalKey);
-  }, [selectedAlternative, respondido, loading, handleResponder]);
+  }, [selectedAlternative, respondido, loading, handleResponder, alternatives, eliminatedAlts]);
 
   // Bootstrap collapse toggle (texto associado)
   useEffect(() => {
@@ -567,7 +696,7 @@ export const QuestionCard = React.memo(function QuestionCard({
       if (!target) return;
 
       link.style.cursor = 'pointer';
-      link.style.color = 'rgb(37 99 235)';
+      link.style.color = 'rgb(15 123 95)';
 
       const handler = (e: Event) => {
         e.preventDefault();
@@ -642,10 +771,10 @@ export const QuestionCard = React.memo(function QuestionCard({
   // ============================================================
 
   return (
-    <article ref={articleRef} className="qc-card-enter text-left">
+    <article ref={articleRef} data-question-id={questaoId} className="qc-card-enter text-left">
 
       {/* ── BANNER / HEADER ── */}
-      <header className="qc-banner px-4 pt-3 pb-2">
+      <header className="qc-banner px-5 pt-5 pb-2">
 
         {/* Row 1: Materia, Assunto (inline) */}
         <div className="flex items-center gap-2 mb-1.5 min-w-0">
@@ -663,7 +792,7 @@ export const QuestionCard = React.memo(function QuestionCard({
             </span>
           )}
           {caracteristicas?.desatualizada && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-blue-300/40 text-blue-500/70 shrink-0">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-[0.08em] border border-emerald-300/40 text-emerald-600/70 shrink-0">
               Desatualizada
             </span>
           )}
@@ -673,13 +802,13 @@ export const QuestionCard = React.memo(function QuestionCard({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 min-w-0 text-[11px]">
             <span className="font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">Banca:</span>
-            <span className="font-semibold text-[#1D4ED8] dark:text-blue-400 shrink-0">{institution}</span>
+            <span className="font-semibold text-[#0F7B5F] dark:text-emerald-400 shrink-0">{institution}</span>
             <span className="text-zinc-300 dark:text-zinc-600 shrink-0">·</span>
             <span className="font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">Ano:</span>
-            <span className="font-semibold text-[#1D4ED8] dark:text-blue-400 shrink-0">{year}</span>
+            <span className="font-semibold text-[#0F7B5F] dark:text-emerald-400 shrink-0">{year}</span>
             <span className="text-zinc-300 dark:text-zinc-600 shrink-0">·</span>
             <span className="font-semibold text-zinc-600 dark:text-zinc-300 shrink-0">Prova:</span>
-            <span className="font-semibold text-[#1D4ED8] dark:text-blue-400 truncate" title={exam}>{exam}</span>
+            <span className="font-semibold text-[#0F7B5F] dark:text-emerald-400 truncate" title={exam}>{exam}</span>
           </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -695,173 +824,180 @@ export const QuestionCard = React.memo(function QuestionCard({
             {/* Bookmark */}
             <button
               onClick={toggleBookmark}
-              className="p-0.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              className="p-0.5 rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
               aria-label={bookmarked ? 'Remover marcacao' : 'Salvar questao'}
             >
               <Bookmark
                 className={`w-[18px] h-[18px] transition-colors ${
-                  bookmarked ? 'text-blue-500 dark:text-blue-400 fill-blue-500 dark:fill-blue-400' : 'text-zinc-400 dark:text-zinc-500 hover:text-blue-500'
+                  bookmarked ? 'text-emerald-600 dark:text-emerald-400 fill-emerald-500 dark:fill-emerald-400' : 'text-zinc-400 dark:text-zinc-500 hover:text-emerald-600'
                 }`}
               />
             </button>
 
-            {/* Difficulty */}
+            {/* Difficulty — medidor de 3 barras + % acertam */}
             {difficulty && (
-              <div className="flex items-center gap-1 ml-1" title={`Dificuldade: ${difficulty.label}`}>
-                <span className={`w-2 h-2 rounded-full ${difficulty.dot}`} />
-                <span className={`text-[10px] font-semibold ${difficulty.color}`}>{difficulty.label}</span>
+              <div className={`qc-diff ${difficulty.color}`} title={`Dificuldade: ${difficulty.label}`}>
+                <span className="qc-bars">
+                  <i className="on" />
+                  <i className={difficulty.label === 'Medio' || difficulty.label === 'Dificil' ? 'on' : ''} />
+                  <i className={difficulty.label === 'Dificil' ? 'on' : ''} />
+                </span>
+                <span className="qc-diff-label">{difficulty.label}</span>
+                {effectiveTaxa !== undefined && (
+                  <span className="qc-diff-pct">· {Math.round(effectiveTaxa)}% acertam</span>
+                )}
               </div>
             )}
 
-            {/* Highlight tools */}
-            <button
-              type="button"
-              onClick={() => setHighlightMode('highlight')}
-              className={`p-1 rounded transition-colors ${
-                highlightMode === 'highlight'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                  : 'text-zinc-400 dark:text-zinc-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-              }`}
-              title="Modo destaque"
-            >
-              <Highlighter className="w-3 h-3" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setHighlightMode('strike')}
-              className={`p-1 rounded transition-colors ${
-                highlightMode === 'strike'
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                  : 'text-zinc-400 dark:text-zinc-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
-              }`}
-              title="Modo riscar"
-            >
-              <Strikethrough className="w-3 h-3" />
-            </button>
           </div>
         </div>
       </header>
 
       {/* ── Thin separator between header and body ── */}
-      <div className="mx-4 h-px bg-zinc-100 dark:bg-zinc-800" />
+      <div className="mx-5 h-px bg-zinc-100 dark:bg-zinc-800" />
 
       {/* ── QUESTION BODY ── */}
-      <div className="px-5 pt-3 pb-5" ref={questionBodyRef}>
-        <TextHighlighter
-          highlightStyle={HIGHLIGHT_STYLES[highlightMode]}
-          selectionBoundary="word"
-          allowCrossElementSelection={false}
-          removeHighlightOnClick={true}
-        >
-          <div
-            className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
-            style={{ fontFamily: "'Source Serif 4', Georgia, serif", color: '#1f1e1c' }}
-            dangerouslySetInnerHTML={sanitizedQuestion}
-          />
-        </TextHighlighter>
+      <div className="px-6 pt-3 pb-5" ref={questionBodyRef}>
+        <MarkableBlock
+          html={sanitizedQuestion}
+          target="enunciado"
+          highlights={highlights.filter(h => h.target === 'enunciado')}
+          onSelect={handleHlSelect}
+          onClickHighlight={handleHlClick}
+          className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
+          style={{ fontFamily: "'Fraunces', Georgia, serif", color: 'var(--qc-ink)' }}
+        />
       </div>
 
+      {/* ── ATALHOS DE TECLADO (só antes de responder) ── */}
+      {!respondido && (
+        <div className="px-6 pb-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-zinc-400 dark:text-zinc-500 select-none font-medium">
+          <span className="inline-flex items-center gap-1.5">
+            <CornerDownLeft className="w-3 h-3" />
+            <span>clique para responder</span>
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <kbd className="px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700 text-[9px] font-mono leading-none text-zinc-500 dark:text-zinc-400">A</kbd>
+            <span className="text-zinc-300 dark:text-zinc-600">-</span>
+            <kbd className="px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700 text-[9px] font-mono leading-none text-zinc-500 dark:text-zinc-400">
+              {alternatives[alternatives.length - 1]?.letter ?? 'E'}
+            </kbd>
+            <span>teclado</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Scissors className="w-3 h-3" />
+            <span>descartar</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <HelpCircle className="w-3 h-3" />
+            <span>dúvida</span>
+          </span>
+        </div>
+      )}
+
       {/* ── ALTERNATIVES ── */}
-      <div className="px-5 pb-4 space-y-px" role="radiogroup" aria-label="Alternativas">
+      <div className="px-6 pb-4 space-y-2" role="radiogroup" aria-label="Alternativas">
         {sanitizedAlternatives.map((alt, index) => {
           const classes = getAltClasses(alt.letter, index);
           const pct = altPercentages?.get(alt.letter);
-          const explanation = explanations.get(alt.letter);
-          const isExplaining = loadingExplanations.has(alt.letter);
-          const showExplainBtn = respondido && revealAnimating && !explanation && !isExplaining;
           const isEliminated = eliminatedAlts.has(alt.letter);
+          const isDuvida = duvidaAlts.has(alt.letter);
+          const debate = debates[alt.letter];
+          const debateOpen = !!debate?.open;
 
           return (
             <div key={alt.letter}>
-              <div className="group/alt flex items-center">
-                {/* Eliminate button — always subtly visible, accented on hover */}
-                {!respondido && (
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); toggleEliminate(alt.letter); }}
-                    className={`w-7 h-7 -mr-1 flex items-center justify-center rounded-md flex-shrink-0 transition-all duration-200 ${
-                      isEliminated
-                        ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                        : 'opacity-0 group-hover/alt:opacity-100 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-500 dark:hover:text-zinc-400'
-                    }`}
-                    title={isEliminated ? 'Restaurar alternativa' : 'Eliminar alternativa'}
-                  >
-                    <Scissors className="w-3.5 h-3.5" />
-                  </button>
-                )}
+              <div
+                role="radio"
+                aria-checked={selectedAlternative === alt.letter}
+                tabIndex={isEliminated ? -1 : 0}
+                onClick={() => handleAlternativeClick(alt.letter)}
+                onKeyDown={(e) => handleKeyDown(e, alt.letter)}
+                className={`${classes.row} ${isDuvida && !respondido ? 'qc-alt-duvida' : ''}`}
+                style={classes.stagger ? { animationDelay: classes.stagger } : undefined}
+              >
+                {/* Letter circle */}
+                <span className={`${classes.circle} ${isDuvida && !respondido && !classes.icon ? 'qc-circle-duvida' : ''}`}>
+                  {classes.icon ? (
+                    classes.icon === 'check'
+                      ? <Check className="w-3 h-3 qc-icon-reveal" />
+                      : <X className="w-3 h-3 qc-icon-reveal" />
+                  ) : (
+                    alt.letter
+                  )}
+                </span>
 
-                <button
-                  onClick={() => handleAlternativeClick(alt.letter)}
-                  onKeyDown={(e) => handleKeyDown(e, alt.letter)}
-                  disabled={respondido || isEliminated}
-                  role="radio"
-                  aria-checked={selectedAlternative === alt.letter}
-                  tabIndex={isEliminated ? -1 : 0}
-                  className={`${classes.row} flex-1 transition-opacity duration-200 ${isEliminated && !respondido ? 'opacity-40' : ''}`}
-                  style={classes.stagger ? { animationDelay: classes.stagger } : undefined}
-                >
-                  {/* Letter circle */}
-                  <span className={`${classes.circle} relative`}>
-                    {classes.icon ? (
-                      classes.icon === 'check'
-                        ? <Check className="w-3 h-3 qc-icon-reveal" />
-                        : <X className="w-3 h-3 qc-icon-reveal" />
-                    ) : (
-                      <>
-                        {alt.letter}
-                        {/* Diagonal strike on eliminated circle */}
-                        {isEliminated && !respondido && (
-                          <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <span className="block w-[120%] h-[1.5px] bg-zinc-400 dark:bg-zinc-500 rotate-[-45deg] rounded-full" />
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </span>
+                {/* Alternative text */}
+                <MarkableBlock
+                  html={alt.html}
+                  target={`alt:${alt.letter}`}
+                  highlights={highlights.filter(h => h.target === `alt:${alt.letter}`)}
+                  onSelect={handleHlSelect}
+                  onClickHighlight={handleHlClick}
+                  hostClassName="pt-px flex-1 min-w-0"
+                  className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
+                  style={{ fontFamily: "'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" }}
+                />
 
-                  {/* Alternative text */}
-                  <TextHighlighter
-                    highlightStyle={HIGHLIGHT_STYLES[highlightMode]}
-                    selectionBoundary="word"
-                    allowCrossElementSelection={false}
-                    removeHighlightOnClick={true}
-                    className="pt-px leading-[1.5] flex-1"
-                  >
-                    <div
-                      className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
-                      style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}
-                      dangerouslySetInnerHTML={alt.html}
-                    />
-                  </TextHighlighter>
-                </button>
+                {/* Right-side controls (stopPropagation para nao alternar a selecao) */}
+                <span className="qc-side" onClick={(e) => e.stopPropagation()}>
+                  {!respondido && isDuvida && (
+                    <span className="qc-tagdub"><HelpCircle className="w-3 h-3" /> duvida</span>
+                  )}
 
-                {/* Post-answer: % + explain (outside disabled button, same row) */}
-                {respondido && revealAnimating && (
-                  <span className="flex items-center gap-1 flex-shrink-0 pr-3">
-                    {pct !== undefined && (
-                      <span className={`text-[11px] font-semibold tabular-nums qc-icon-reveal ${
-                        alt.letter === letraCorreta ? 'text-green-600 dark:text-green-400' : 'text-zinc-400 dark:text-zinc-500'
-                      }`}>
-                        {pct}%
-                      </span>
-                    )}
-                    {showExplainBtn && (
+                  {respondido && revealAnimating && pct !== undefined && (
+                    <span className={`qc-pct-num qc-icon-reveal ${alt.letter === letraCorreta ? 'qc-pct-ok' : ''}`}>
+                      {pct}%
+                    </span>
+                  )}
+
+                  {!respondido && (
+                    <span className="qc-acts">
                       <button
-                        onClick={() => fetchExplanation(alt.letter)}
-                        className="p-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer qc-icon-reveal"
-                        title="Explicar com IA"
+                        type="button"
+                        onClick={() => toggleDuvida(alt.letter)}
+                        className={`qc-act ${isDuvida ? 'on-dub' : ''}`}
+                        title={isDuvida ? 'Tirar marca de duvida' : 'Marcar duvida'}
                       >
-                        <Sparkles className="w-3.5 h-3.5 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" />
+                        <HelpCircle className="w-[15px] h-[15px]" />
                       </button>
-                    )}
-                  </span>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => toggleEliminate(alt.letter)}
+                        className={`qc-act ${isEliminated ? 'on' : ''}`}
+                        title={isEliminated ? 'Restaurar alternativa' : 'Eliminar alternativa'}
+                      >
+                        <Scissors className="w-[15px] h-[15px]" />
+                      </button>
+                    </span>
+                  )}
+
+                  {respondido && revealAnimating && (
+                    <button
+                      type="button"
+                      onClick={() => openDebate(alt.letter)}
+                      className={`qc-explain-btn ${debateOpen ? 'active' : ''}`}
+                      title="Explicar e debater com IA"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{debateOpen ? 'Debate' : 'Debater'}</span>
+                    </button>
+                  )}
+                </span>
               </div>
 
-              {/* AI explanation inline */}
-              {(explanation || isExplaining) && (
-                <div className="ml-[2.125rem] mr-3 mb-1">
-                  <AIExplanation text={explanation || ''} isLoading={isExplaining} />
+              {/* Chat de debate com IA (UI completa; resposta da IA = TODO) */}
+              {respondido && debateOpen && debate && (
+                <div className="qc-chat-wrap">
+                  <DebateChat
+                    letter={alt.letter}
+                    isCorrect={alt.letter === letraCorreta}
+                    thread={debate}
+                    onClose={() => closeDebate(alt.letter)}
+                    onDraft={(v) => setDebateDraft(alt.letter, v)}
+                    onSend={() => sendDebateText(alt.letter, debate.draft)}
+                    onSuggestion={(t) => sendDebateText(alt.letter, t)}
+                  />
                 </div>
               )}
             </div>
@@ -876,7 +1012,7 @@ export const QuestionCard = React.memo(function QuestionCard({
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-zinc-100 dark:border-zinc-800/50">
-        <div className="px-4 py-1.5 flex items-center justify-between gap-2">
+        <div className="px-5 py-1.5 flex items-center justify-between gap-2">
 
           {/* Left: tab toggles + actions */}
           <div className="flex items-center gap-0.5">
@@ -906,7 +1042,7 @@ export const QuestionCard = React.memo(function QuestionCard({
               onClick={() => toggleTab('comunidade')}
               className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'comunidade'
-                  ? 'text-[#2563EB] bg-[#EFF6FF] dark:text-blue-400 dark:bg-blue-950/30'
+                  ? 'text-[#0F7B5F] bg-[#E7F4EF] dark:text-emerald-400 dark:bg-emerald-950/30'
                   : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
@@ -918,13 +1054,13 @@ export const QuestionCard = React.memo(function QuestionCard({
               onClick={() => toggleTab('nota')}
               className={`qc-footer-btn relative inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'nota'
-                  ? 'text-[#2563EB] bg-[#EFF6FF] dark:text-blue-400 dark:bg-blue-950/30'
+                  ? 'text-[#0F7B5F] bg-[#E7F4EF] dark:text-emerald-400 dark:bg-emerald-950/30'
                   : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
               <PenLine className="w-[15px] h-[15px]" />
               {hasNote && (
-                <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-blue-500" />
+                <span className="absolute -top-0.5 -right-0.5 h-[6px] w-[6px] rounded-full bg-emerald-500" />
               )}
             </button>
 
@@ -932,37 +1068,25 @@ export const QuestionCard = React.memo(function QuestionCard({
               onClick={() => setReportModalOpen(true)}
               className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 hasReported
-                  ? 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/20'
+                  ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:text-emerald-400 dark:hover:bg-emerald-900/20'
               }`}
               title={hasReported ? 'Ja reportada' : 'Reportar erro'}
             >
               <Flag className="w-[15px] h-[15px]" />
             </button>
-
-            {respondido && revealAnimating && (
-              <>
-                <span className="w-0.5 h-3 bg-zinc-200 dark:bg-zinc-700 mx-1 rounded-full" />
-                <button
-                  onClick={fetchAllExplanations}
-                  disabled={loadingExplanations.size > 0 && explanations.size === alternatives.length}
-                  className="qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-all duration-200"
-                  title="Explicar todas as alternativas com IA"
-                >
-                  <Sparkles className="w-[15px] h-[15px]" />
-                  <span className="hidden sm:inline">Explicar todas</span>
-                </button>
-              </>
-            )}
           </div>
 
           {/* Right: Answer button or result badge */}
-          {respondido && resposta ? (
-            <div className={`px-3 py-1 font-semibold rounded-md flex items-center gap-1.5 text-xs ${
-              resposta.acertou
-                ? 'bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border border-green-200/60 dark:border-green-800/40'
-                : 'bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-700/40'
-            } ${revealAnimating ? 'qc-badge-enter' : 'opacity-0'}`}>
+          {respondido && resposta ? (() => {
+            const naDuvida = resposta.acertou && !!selectedAlternative && duvidaAlts.has(selectedAlternative);
+            const tone = !resposta.acertou
+              ? 'bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-700/40'
+              : naDuvida
+                ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/40'
+                : 'bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border border-green-200/60 dark:border-green-800/40';
+            return (
+            <div className={`px-3 py-1 font-semibold rounded-md flex items-center gap-1.5 text-xs ${tone} ${revealAnimating ? 'qc-badge-enter' : 'opacity-0'}`}>
               {resposta.acertou ? (
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="flex-shrink-0">
                   <path d="M3 8.5L6.5 12L13 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="qc-check-draw" />
@@ -972,13 +1096,14 @@ export const QuestionCard = React.memo(function QuestionCard({
                   <path d="M4 8H10.5M10.5 8L8 5.5M10.5 8L8 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="qc-arrow-draw" />
                 </svg>
               )}
-              {resposta.acertou ? 'Correto' : `Gabarito: ${letraCorreta}`}
+              {!resposta.acertou ? `Gabarito: ${letraCorreta}` : naDuvida ? 'Acertou na duvida' : 'Correto'}
             </div>
-          ) : (
+            );
+          })() : (
             <button
               onClick={handleResponder}
               disabled={!selectedAlternative || loading}
-              className="qc-submit-btn px-5 py-2 text-[13px] font-semibold text-white rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2 shadow-[0_1px_4px_rgba(37,99,235,0.25)] hover:shadow-[0_2px_8px_rgba(37,99,235,0.30)] transition-all duration-200"
+              className="qc-submit-btn px-5 py-2 text-[13px] font-semibold text-white rounded-lg active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/30 focus-visible:ring-offset-2 transition-all duration-200"
             >
               {loading ? (
                 <span className="inline-flex items-center gap-1.5">
@@ -1007,6 +1132,41 @@ export const QuestionCard = React.memo(function QuestionCard({
           </div>
         )}
       </footer>
+
+      {/* ── Popovers de marcação ── */}
+      {hlPop?.kind === 'sel' && (
+        <SelectionToolbar
+          position={{ left: hlPop.left, top: hlPop.top }}
+          defaultKind={lastKind.current}
+          onPick={handleHlPick}
+        />
+      )}
+      {hlPop?.kind === 'note' && (() => {
+        const hl = highlights.find(h => h.id === hlPop.id);
+        if (!hl) return null;
+        return (
+          <HighlightNotePopover
+            highlight={hl}
+            position={{ left: hlPop.left, top: hlPop.top }}
+            onChange={(patch) => { updateHl({ id: hl.id, ...patch }); }}
+            onRemove={() => { removeHl(hl.id); setHlPop(null); }}
+            onClose={() => setHlPop(null)}
+          />
+        );
+      })()}
+      {hlPop?.kind === 'plain' && (() => {
+        const hl = highlights.find(h => h.id === hlPop.id);
+        if (!hl) return null;
+        return (
+          <PlainHighlightMenu
+            color={hl.color}
+            position={{ left: hlPop.left, top: hlPop.top }}
+            onColor={(c) => { updateHl({ id: hl.id, color: c }); }}
+            onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop({ kind: 'note', left: hlPop.left, top: hlPop.top, id: hl.id }); }}
+            onRemove={() => { removeHl(hl.id); setHlPop(null); }}
+          />
+        );
+      })()}
 
       <QuestionReportModal
         open={reportModalOpen}

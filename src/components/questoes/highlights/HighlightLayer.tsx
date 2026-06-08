@@ -8,11 +8,12 @@ import type { Highlight } from './types';
 interface Resolved { hl: Highlight; rects: RelRect[]; tri: { left: number; top: number } | null; }
 
 export function HighlightLayer({
-  blockRef, highlights, onClickHighlight,
+  blockRef, highlights, onClickHighlight, onResolvedChange,
 }: {
   blockRef: React.RefObject<HTMLElement>;
   highlights: Highlight[];
   onClickHighlight: (hl: Highlight, anchorEl: { left: number; top: number }) => void;
+  onResolvedChange?: (items: { hl: Highlight; rects: RelRect[] }[]) => void;
 }) {
   const [resolved, setResolved] = useState<Resolved[]>([]);
   const raf = useRef<number>(0);
@@ -31,6 +32,7 @@ export function HighlightLayer({
           next.push({ hl, rects: rangeRects(range, block), tri: hl.kind === 'attention' ? trianglePos(range, block) : null });
         }
         setResolved(next);
+        onResolvedChange?.(next.map(r => ({ hl: r.hl, rects: r.rects })));
       });
     };
 
@@ -53,7 +55,7 @@ export function HighlightLayer({
           ))}
           {tri && (
             <span className="qh-tri" style={{ left: tri.left, top: tri.top }}
-              onClick={() => onClickHighlight(hl, tri)}>
+              onClick={(e) => onClickHighlight(hl, { left: e.clientX, top: e.clientY })}>
               <TriangleIcon color={hl.color} size={13} />
             </span>
           )}
