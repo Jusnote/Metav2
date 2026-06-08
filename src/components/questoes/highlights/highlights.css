@@ -44,3 +44,52 @@
   padding: 7px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .qh-acts button:hover { background: #F4F2EE; color: #1A1714; }
 .qh-acts .rm:hover { color: #C0392B; background: #FBEFED; }
+
+/* ===== Balão único (ler/editar), refinado ===== */
+.qh-balloon { width: 262px; border: 1px solid rgba(26,23,20,.06);
+  box-shadow: 0 14px 40px -14px rgba(26,23,20,.26), 0 2px 8px -4px rgba(26,23,20,.10); }
+.qh-balloon::before { content: ""; position: absolute; top: -5px; left: 17px; width: 10px; height: 10px;
+  background: #fff; border-left: 1px solid rgba(26,23,20,.06); border-top: 1px solid rgba(26,23,20,.06); transform: rotate(45deg); }
+.qh-tlabel { display: inline-flex; align-items: center; gap: 6px; }
+.qh-tri-sm { width: 13px; height: 13px; display: block; flex: none; }
+.qh-tt { font: 600 12.5px/1 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; color: #46413b; letter-spacing: -.005em; }
+
+/* leitura */
+.qh-balloon .b-read { padding: 13px 15px 14px; }
+.qh-balloon .b-read .rh { display: flex; align-items: center; margin-bottom: 8px; }
+.qh-balloon .b-read .pen { margin-left: auto; cursor: pointer; color: #9C958D; background: transparent; border: none;
+  display: inline-flex; padding: 4px; border-radius: 7px; transition: .13s; }
+.qh-balloon .b-read .pen:hover { color: #0F7B5F; background: rgba(15,123,95,.09); }
+.qh-balloon .b-read .txt { font-size: 13.5px; line-height: 1.6; color: #33302b; }
+.qh-balloon .b-read .empty { font-size: 12.5px; line-height: 1.5; color: #9C958D; }
+
+/* edição */
+.qh-balloon .b-edit { padding: 11px 12px 12px; }
+.qh-balloon .b-edit .eh { display: flex; align-items: center; margin-bottom: 9px; }
+.qh-edd { position: relative; }
+.qh-edd .b { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: none;
+  padding: 3px 6px 3px 4px; border-radius: 8px; cursor: pointer; }
+.qh-edd .b:hover { background: #F4F2EE; }
+.qh-edd .b .car { color: #9C958D; font-size: 9px; margin-top: 1px; }
+.qh-edd .m { position: absolute; top: calc(100% + 5px); left: 0; min-width: 158px; background: #fff;
+  border: 1px solid #E0DDD6; border-radius: 11px; box-shadow: 0 14px 40px -14px rgba(26,23,20,.26); padding: 5px; display: none; z-index: 5; }
+.qh-edd.open .m { display: block; }
+.qh-edd .m button { width: 100%; text-align: left; border: none; background: transparent; font: 500 13px/1 inherit;
+  color: #2c2824; padding: 9px 10px; border-radius: 8px; cursor: pointer; }
+.qh-edd .m button:hover { background: #F4F2EE; }
+.qh-balloon .b-edit .sp { margin-left: auto; display: flex; gap: 1px; }
+.qh-balloon .b-edit .ic { border: none; background: transparent; color: #9C958D; cursor: pointer; padding: 5px;
+  border-radius: 7px; display: inline-flex; transition: .13s; }
+.qh-balloon .b-edit .ic:hover { color: #1A1714; background: #ECEAE5; }
+.qh-balloon .b-edit .ic.del:hover { color: #C0392B; background: #FBEFED; }
+.qh-balloon .b-edit textarea { width: 100%; resize: none; font-family: inherit; font-size: 13.5px; line-height: 1.55;
+  color: #1A1714; background: transparent; border: none; padding: 2px 4px 4px; min-height: 60px; }
+.qh-balloon .b-edit textarea::placeholder { color: #9C958D; }
+.qh-balloon .b-edit textarea:focus { outline: none; }
+.qh-balloon .b-edit .ef { display: flex; align-items: center; gap: 8px; padding-top: 10px; margin-top: 4px; border-top: 1px solid #ECEAE5; }
+.qh-balloon .b-edit .colors { display: flex; gap: 6px; }
+.qh-balloon .b-edit .colors .qh-dot { width: 16px; height: 16px; }
+.qh-balloon .b-edit .colors .qh-dot.on { box-shadow: 0 0 0 2px #fff, 0 0 0 3px #2c2824; }
+.qh-balloon .b-edit .save { margin-left: auto; border: none; background: #1A1714; color: #fff; font: 600 11.5px/1 inherit;
+  padding: 8px 15px; border-radius: 9px; cursor: pointer; transition: .13s; }
+.qh-balloon .b-edit .save:hover { background: #000; }

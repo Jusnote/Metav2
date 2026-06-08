@@ -10,19 +10,21 @@ import type { Highlight } from './types';
  * tratando clique vs seleção e marca comum vs Atenção.
  */
 export function MarkableBlock({
-  html, target, highlights, onSelect, onClickHighlight, className, style, hostClassName,
+  html, target, highlights, onSelect, onClickHighlight, onHover, className, style, hostClassName,
 }: {
   html: { __html: string };
   target: string;
   highlights: Highlight[];
   onSelect: (block: HTMLElement, target: string) => void;
   onClickHighlight: (hl: Highlight, at: { left: number; top: number }, block: HTMLElement) => void;
+  onHover?: (hl: Highlight | null, block: HTMLElement) => void;
   className?: string;
   style?: React.CSSProperties;
   hostClassName?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const resolved = useRef<{ hl: Highlight; rects: RelRect[] }[]>([]);
+  const moveRaf = useRef(0);
 
   function handleClick(e: React.MouseEvent) {
     const sel = window.getSelection();
@@ -37,12 +39,31 @@ export function MarkableBlock({
     }
   }
 
+  function handleMove(e: React.MouseEvent) {
+    if (!onHover) return;
+    const x = e.clientX, y = e.clientY;
+    cancelAnimationFrame(moveRaf.current);
+    moveRaf.current = requestAnimationFrame(() => {
+      const block = ref.current;
+      if (!block) return;
+      const idx = hitTest({ x, y }, resolved.current.map(r => r.rects), block);
+      onHover(idx >= 0 ? resolved.current[idx].hl : null, block);
+    });
+  }
+
+  function handleLeave() {
+    cancelAnimationFrame(moveRaf.current);
+    if (onHover && ref.current) onHover(null, ref.current);
+  }
+
   return (
     <div
       className={`qh-host ${hostClassName ?? ''}`}
       ref={ref}
       onMouseUp={() => ref.current && onSelect(ref.current, target)}
       onClick={handleClick}
+      onMouseMove={onHover ? handleMove : undefined}
+      onMouseLeave={onHover ? handleLeave : undefined}
     >
       <div className={className} style={style} dangerouslySetInnerHTML={html} />
       <HighlightLayer

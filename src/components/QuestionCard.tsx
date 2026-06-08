@@ -7,7 +7,7 @@ import './questoes/highlights/highlights.css';
 import { MarkableBlock } from './questoes/highlights/MarkableBlock';
 import { HighlightPopover } from './questoes/highlights/HighlightPopover';
 import { SelectionToolbar } from './questoes/highlights/SelectionToolbar';
-import { HighlightNotePopover } from './questoes/highlights/HighlightNotePopover';
+import { HighlightBalloon } from './questoes/highlights/HighlightBalloon';
 import { PlainHighlightMenu } from './questoes/highlights/PlainHighlightMenu';
 import { createAnchor, resolveAnchor } from './questoes/highlights/lib/highlight-anchor';
 import { useQuestionHighlights } from '@/hooks/useQuestionHighlights';
@@ -409,16 +409,38 @@ export const QuestionCard = React.memo(function QuestionCard({
   const { highlights, create: createHl, update: updateHl, remove: removeHl } = useQuestionHighlights(questaoId);
   const highlightsRef = useRef(highlights);
   highlightsRef.current = highlights;
+
+  // hlPop: barra de seleção (criar) + mini-menu do grifo comum
   type HlPop =
     | { kind: 'sel'; range: Range; target: string; block: HTMLElement }
-    | { kind: 'note' | 'plain'; id: string; rect: DOMRect; block: HTMLElement }
+    | { kind: 'plain'; id: string; rect: DOMRect; block: HTMLElement }
     | null;
   const [hlPop, setHlPop] = useState<HlPop>(null);
   const lastKind = useRef<MarkKind>('attention');
 
-  // Virtual element (Floating UI): ancora o popover na seleção (Range vivo) ou na marca
-  // (re-resolvida a cada frame → segue o scroll). contextElement = bloco real dentro do
-  // container que rola, pra o autoUpdate encontrar o scroll container interno.
+  // Balão de Atenção: a MESMA peça lê (hover) e edita (clique/lápis), ancorada na marca
+  type Balloon = { id: string; mode: 'read' | 'edit'; block: HTMLElement };
+  const [balloon, setBalloon] = useState<Balloon | null>(null);
+  const pinned = useRef(false);
+  const hideTimer = useRef<number>(0);
+
+  // Âncora Floating UI: re-resolve a marca a cada frame (segue o scroll);
+  // contextElement = bloco real dentro do container que rola.
+  const markRectAnchor = useCallback((block: HTMLElement, id: string, atTopLeft: boolean) => ({
+    getBoundingClientRect: (): DOMRect => {
+      const hl = highlightsRef.current.find(h => h.id === id);
+      if (hl) {
+        const r = resolveAnchor(block, { quote: hl.quote, prefix: hl.prefix, suffix: hl.suffix });
+        if (r) {
+          const rr = r.getBoundingClientRect();
+          return atTopLeft ? new DOMRect(rr.left, rr.top, 0, 0) : rr;
+        }
+      }
+      return new DOMRect(0, 0, 0, 0);
+    },
+    contextElement: block,
+  }), []);
+
   const hlAnchor = useMemo<{ getBoundingClientRect(): DOMRect; getClientRects?: () => DOMRectList; contextElement?: Element } | null>(() => {
     if (!hlPop) return null;
     if (hlPop.kind === 'sel') {
@@ -429,23 +451,25 @@ export const QuestionCard = React.memo(function QuestionCard({
         contextElement: hlPop.block,
       };
     }
-    const { id, rect: fallback, block } = hlPop;
-    return {
-      getBoundingClientRect: () => {
-        const hl = highlightsRef.current.find(h => h.id === id);
-        if (hl) {
-          const r = resolveAnchor(block, { quote: hl.quote, prefix: hl.prefix, suffix: hl.suffix });
-          if (r) {
-            const rr = r.getBoundingClientRect();
-            // Atenção ancora no canto sup-esq (onde fica o triângulo); comum no centro do trecho.
-            return hl.kind === 'attention' ? new DOMRect(rr.left, rr.top, 0, 0) : rr;
-          }
-        }
-        return fallback;
-      },
-      contextElement: block,
-    };
-  }, [hlPop]);
+    return markRectAnchor(hlPop.block, hlPop.id, false); // grifo comum: centro do trecho
+  }, [hlPop, markRectAnchor]);
+
+  const balloonAnchor = useMemo<{ getBoundingClientRect(): DOMRect; contextElement?: Element } | null>(() => {
+    if (!balloon) return null;
+    return markRectAnchor(balloon.block, balloon.id, true); // Atenção: abre abaixo da linha
+  }, [balloon, markRectAnchor]);
+
+  const openEdit = useCallback((id: string, block: HTMLElement) => {
+    pinned.current = true;
+    window.clearTimeout(hideTimer.current);
+    setBalloon({ id, mode: 'edit', block });
+  }, []);
+
+  const closeBalloon = useCallback(() => {
+    pinned.current = false;
+    window.clearTimeout(hideTimer.current);
+    setBalloon(null);
+  }, []);
 
   const handleHlSelect = useCallback((block: HTMLElement, target: string) => {
     const sel = window.getSelection();
@@ -458,7 +482,6 @@ export const QuestionCard = React.memo(function QuestionCard({
   const handleHlPick = useCallback(async (color: string, kind: MarkKind) => {
     if (!hlPop || hlPop.kind !== 'sel') return;
     lastKind.current = kind;
-    const rect = hlPop.range.getBoundingClientRect();
     const anchor = createAnchor(hlPop.block, hlPop.range);
     const { target, block } = hlPop;
     setHlPop(null);
@@ -468,24 +491,41 @@ export const QuestionCard = React.memo(function QuestionCard({
       type: kind === 'attention' ? 'pegadinha' : null,
       quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
     });
-    if (kind === 'attention') setHlPop({ kind: 'note', id: created.id, rect, block });
-  }, [hlPop, createHl, questaoId]);
+    if (kind === 'attention') openEdit(created.id, block);
+  }, [hlPop, createHl, questaoId, openEdit]);
 
   const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }, block: HTMLElement) => {
-    const rect = new DOMRect(at.left, at.top, 0, 0);
-    setHlPop({ kind: hl.kind === 'attention' ? 'note' : 'plain', id: hl.id, rect, block });
+    if (hl.kind === 'attention') { openEdit(hl.id, block); return; }
+    setHlPop({ kind: 'plain', id: hl.id, rect: new DOMRect(at.left, at.top, 0, 0), block });
+  }, [openEdit]);
+
+  const handleHlHover = useCallback((hl: Highlight | null, block: HTMLElement) => {
+    if (pinned.current) return;
+    window.clearTimeout(hideTimer.current);
+    if (hl && hl.kind === 'attention') {
+      setBalloon(prev => (prev && prev.id === hl.id) ? prev : { id: hl.id, mode: 'read', block });
+    } else {
+      hideTimer.current = window.setTimeout(() => { if (!pinned.current) setBalloon(null); }, 200);
+    }
+  }, []);
+
+  const onBalloonEnter = useCallback(() => { window.clearTimeout(hideTimer.current); }, []);
+  const onBalloonLeave = useCallback(() => {
+    if (pinned.current) return;
+    hideTimer.current = window.setTimeout(() => { if (!pinned.current) setBalloon(null); }, 200);
   }, []);
 
   useEffect(() => {
-    if (!hlPop) return;
+    if (!hlPop && !balloon) return;
     const onDown = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
       if (t.closest('.qh-pop') || t.closest('.qh-tri')) return;
       setHlPop(null);
+      closeBalloon();
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [hlPop]);
+  }, [hlPop, balloon, closeBalloon]);
 
   // Bookmark state (localStorage fallback)
   const [bookmarked, setBookmarked] = useState(() => {
@@ -899,6 +939,7 @@ export const QuestionCard = React.memo(function QuestionCard({
           highlights={highlights.filter(h => h.target === 'enunciado')}
           onSelect={handleHlSelect}
           onClickHighlight={handleHlClick}
+          onHover={handleHlHover}
           className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
           style={{ fontFamily: "'Fraunces', Georgia, serif", color: 'var(--qc-ink)' }}
         />
@@ -969,6 +1010,7 @@ export const QuestionCard = React.memo(function QuestionCard({
                   highlights={highlights.filter(h => h.target === `alt:${alt.letter}`)}
                   onSelect={handleHlSelect}
                   onClickHighlight={handleHlClick}
+                  onHover={handleHlHover}
                   hostClassName="pt-px flex-1 min-w-0"
                   className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
                   style={{ fontFamily: "'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" }}
@@ -1168,38 +1210,41 @@ export const QuestionCard = React.memo(function QuestionCard({
         )}
       </footer>
 
-      {/* ── Popovers de marcação (posicionados via Floating UI + portal) ── */}
+      {/* ── Marcação: barra de seleção, mini-menu do comum e balão de Atenção ── */}
       {hlPop?.kind === 'sel' && hlAnchor && (
         <HighlightPopover anchor={hlAnchor}>
           <SelectionToolbar defaultKind={lastKind.current} onPick={handleHlPick} />
         </HighlightPopover>
       )}
-      {hlPop?.kind === 'note' && hlAnchor && (() => {
-        const hl = highlights.find(h => h.id === hlPop.id);
-        if (!hl) return null;
-        return (
-          <HighlightPopover anchor={hlAnchor}>
-            <HighlightNotePopover
-              highlight={hl}
-              onChange={(patch) => { updateHl({ id: hl.id, ...patch }); }}
-              onRemove={() => { removeHl(hl.id); setHlPop(null); }}
-              onClose={() => setHlPop(null)}
-            />
-          </HighlightPopover>
-        );
-      })()}
       {hlPop?.kind === 'plain' && hlAnchor && (() => {
         const hl = highlights.find(h => h.id === hlPop.id);
         if (!hl) return null;
-        const rect = hlPop.rect;
         const block = hlPop.block;
         return (
           <HighlightPopover anchor={hlAnchor}>
             <PlainHighlightMenu
               color={hl.color}
               onColor={(c) => { updateHl({ id: hl.id, color: c }); }}
-              onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop({ kind: 'note', id: hl.id, rect, block }); }}
+              onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop(null); openEdit(hl.id, block); }}
               onRemove={() => { removeHl(hl.id); setHlPop(null); }}
+            />
+          </HighlightPopover>
+        );
+      })()}
+      {balloon && balloonAnchor && (() => {
+        const hl = highlights.find(h => h.id === balloon.id);
+        if (!hl) return null;
+        return (
+          <HighlightPopover anchor={balloonAnchor}>
+            <HighlightBalloon
+              highlight={hl}
+              mode={balloon.mode}
+              onEdit={() => openEdit(hl.id, balloon.block)}
+              onChange={(patch) => { updateHl({ id: hl.id, ...patch }); }}
+              onRemove={() => { removeHl(hl.id); closeBalloon(); }}
+              onClose={closeBalloon}
+              onMouseEnter={onBalloonEnter}
+              onMouseLeave={onBalloonLeave}
             />
           </HighlightPopover>
         );
