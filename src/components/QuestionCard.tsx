@@ -5,6 +5,7 @@ import 'katex/dist/katex.min.css';
 import './question-card-theme.css';
 import './questoes/highlights/highlights.css';
 import { MarkableBlock } from './questoes/highlights/MarkableBlock';
+import { HighlightPopover } from './questoes/highlights/HighlightPopover';
 import { SelectionToolbar } from './questoes/highlights/SelectionToolbar';
 import { HighlightNotePopover } from './questoes/highlights/HighlightNotePopover';
 import { PlainHighlightMenu } from './questoes/highlights/PlainHighlightMenu';
@@ -407,26 +408,37 @@ export const QuestionCard = React.memo(function QuestionCard({
   // ── Marcações na questão (Grifo comum / Atenção) ──
   const { highlights, create: createHl, update: updateHl, remove: removeHl } = useQuestionHighlights(questaoId);
   type HlPop =
-    | { kind: 'sel'; left: number; top: number; range: Range; target: string; block: HTMLElement }
-    | { kind: 'note' | 'plain'; left: number; top: number; id: string }
+    | { kind: 'sel'; range: Range; target: string; block: HTMLElement }
+    | { kind: 'note' | 'plain'; id: string; rect: DOMRect }
     | null;
   const [hlPop, setHlPop] = useState<HlPop>(null);
   const lastKind = useRef<MarkKind>('attention');
+
+  // Virtual element (Floating UI): ancora o popover na seleção (Range vivo) ou no ponto do clique.
+  const hlAnchor = useMemo<{ getBoundingClientRect(): DOMRect } | null>(() => {
+    if (!hlPop) return null;
+    if (hlPop.kind === 'sel') {
+      const range = hlPop.range;
+      return { getBoundingClientRect: () => range.getBoundingClientRect() };
+    }
+    const rect = hlPop.rect;
+    return { getBoundingClientRect: () => rect };
+  }, [hlPop]);
 
   const handleHlSelect = useCallback((block: HTMLElement, target: string) => {
     const sel = window.getSelection();
     if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
     const range = sel.getRangeAt(0);
     if (!block.contains(range.commonAncestorContainer)) return;
-    const r = range.getBoundingClientRect();
-    setHlPop({ kind: 'sel', left: r.left + r.width / 2, top: r.bottom + 8, range: range.cloneRange(), target, block });
+    setHlPop({ kind: 'sel', range: range.cloneRange(), target, block });
   }, []);
 
   const handleHlPick = useCallback(async (color: string, kind: MarkKind) => {
     if (!hlPop || hlPop.kind !== 'sel') return;
     lastKind.current = kind;
+    const rect = hlPop.range.getBoundingClientRect();
     const anchor = createAnchor(hlPop.block, hlPop.range);
-    const { left, top, target } = hlPop;
+    const { target } = hlPop;
     setHlPop(null);
     window.getSelection()?.removeAllRanges();
     const created = await createHl({
@@ -434,11 +446,12 @@ export const QuestionCard = React.memo(function QuestionCard({
       type: kind === 'attention' ? 'pegadinha' : null,
       quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
     });
-    if (kind === 'attention') setHlPop({ kind: 'note', left, top, id: created.id });
+    if (kind === 'attention') setHlPop({ kind: 'note', id: created.id, rect });
   }, [hlPop, createHl, questaoId]);
 
   const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }) => {
-    setHlPop({ kind: hl.kind === 'attention' ? 'note' : 'plain', left: at.left, top: at.top + 14, id: hl.id });
+    const rect = new DOMRect(at.left, at.top, 0, 0);
+    setHlPop({ kind: hl.kind === 'attention' ? 'note' : 'plain', id: hl.id, rect });
   }, []);
 
   useEffect(() => {
@@ -1133,38 +1146,39 @@ export const QuestionCard = React.memo(function QuestionCard({
         )}
       </footer>
 
-      {/* ── Popovers de marcação ── */}
-      {hlPop?.kind === 'sel' && (
-        <SelectionToolbar
-          position={{ left: hlPop.left, top: hlPop.top }}
-          defaultKind={lastKind.current}
-          onPick={handleHlPick}
-        />
+      {/* ── Popovers de marcação (posicionados via Floating UI + portal) ── */}
+      {hlPop?.kind === 'sel' && hlAnchor && (
+        <HighlightPopover anchor={hlAnchor}>
+          <SelectionToolbar defaultKind={lastKind.current} onPick={handleHlPick} />
+        </HighlightPopover>
       )}
-      {hlPop?.kind === 'note' && (() => {
+      {hlPop?.kind === 'note' && hlAnchor && (() => {
         const hl = highlights.find(h => h.id === hlPop.id);
         if (!hl) return null;
         return (
-          <HighlightNotePopover
-            highlight={hl}
-            position={{ left: hlPop.left, top: hlPop.top }}
-            onChange={(patch) => { updateHl({ id: hl.id, ...patch }); }}
-            onRemove={() => { removeHl(hl.id); setHlPop(null); }}
-            onClose={() => setHlPop(null)}
-          />
+          <HighlightPopover anchor={hlAnchor}>
+            <HighlightNotePopover
+              highlight={hl}
+              onChange={(patch) => { updateHl({ id: hl.id, ...patch }); }}
+              onRemove={() => { removeHl(hl.id); setHlPop(null); }}
+              onClose={() => setHlPop(null)}
+            />
+          </HighlightPopover>
         );
       })()}
-      {hlPop?.kind === 'plain' && (() => {
+      {hlPop?.kind === 'plain' && hlAnchor && (() => {
         const hl = highlights.find(h => h.id === hlPop.id);
         if (!hl) return null;
+        const rect = hlPop.rect;
         return (
-          <PlainHighlightMenu
-            color={hl.color}
-            position={{ left: hlPop.left, top: hlPop.top }}
-            onColor={(c) => { updateHl({ id: hl.id, color: c }); }}
-            onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop({ kind: 'note', left: hlPop.left, top: hlPop.top, id: hl.id }); }}
-            onRemove={() => { removeHl(hl.id); setHlPop(null); }}
-          />
+          <HighlightPopover anchor={hlAnchor}>
+            <PlainHighlightMenu
+              color={hl.color}
+              onColor={(c) => { updateHl({ id: hl.id, color: c }); }}
+              onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop({ kind: 'note', id: hl.id, rect }); }}
+              onRemove={() => { removeHl(hl.id); setHlPop(null); }}
+            />
+          </HighlightPopover>
         );
       })()}
 

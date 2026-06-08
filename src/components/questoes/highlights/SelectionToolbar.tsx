@@ -4,17 +4,15 @@ import { TriangleIcon } from './TriangleIcon';
 import type { MarkKind } from './types';
 
 export interface SelectionToolbarProps {
-  position: { left: number; top: number };
   onPick: (color: string, kind: MarkKind) => void;
   defaultKind?: MarkKind;
 }
 
-export function SelectionToolbar({ position, onPick, defaultKind = 'attention' }: SelectionToolbarProps) {
+export function SelectionToolbar({ onPick, defaultKind = 'attention' }: SelectionToolbarProps) {
   const [kind, setKind] = useState<MarkKind>(defaultKind);
   return (
     <div
       className="qh-pop qh-selpop"
-      style={{ left: position.left, top: position.top }}
       onMouseDown={(e) => e.preventDefault()}
     >
       <div className="qh-seg" role="group" aria-label="Tipo de marca">

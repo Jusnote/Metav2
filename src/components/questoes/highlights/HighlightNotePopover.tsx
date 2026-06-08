@@ -5,13 +5,12 @@ import type { Highlight, MarkTypeId } from './types';
 
 export interface HighlightNotePopoverProps {
   highlight: Highlight;
-  position: { left: number; top: number };
   onChange: (patch: Partial<Pick<Highlight, 'type' | 'color' | 'note'>>) => void;
   onRemove: () => void;
   onClose: () => void;
 }
 
-export function HighlightNotePopover({ highlight, position, onChange, onRemove, onClose }: HighlightNotePopoverProps) {
+export function HighlightNotePopover({ highlight, onChange, onRemove, onClose }: HighlightNotePopoverProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(highlight.note ?? '');
 
@@ -20,7 +19,7 @@ export function HighlightNotePopover({ highlight, position, onChange, onRemove, 
   }
 
   return (
-    <div className="qh-pop qh-note" style={{ left: position.left, top: position.top }} onMouseDown={(e) => e.stopPropagation()}>
+    <div className="qh-pop qh-note" onMouseDown={(e) => e.stopPropagation()}>
       <div className="qh-nh">
         <span className="qh-mk"><TriangleIcon color={highlight.color} size={17} /></span>
         <div className={`qh-dd ${open ? 'open' : ''}`}>

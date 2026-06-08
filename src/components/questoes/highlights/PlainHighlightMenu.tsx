@@ -4,15 +4,14 @@ import { TriangleIcon } from './TriangleIcon';
 
 export interface PlainHighlightMenuProps {
   color: string;
-  position: { left: number; top: number };
   onColor: (c: string) => void;
   onPromote: () => void;
   onRemove: () => void;
 }
 
-export function PlainHighlightMenu({ color, position, onColor, onPromote, onRemove }: PlainHighlightMenuProps) {
+export function PlainHighlightMenu({ color, onColor, onPromote, onRemove }: PlainHighlightMenuProps) {
   return (
-    <div className="qh-pop qh-plain" style={{ left: position.left, top: position.top }} onMouseDown={(e) => e.stopPropagation()}>
+    <div className="qh-pop qh-plain" onMouseDown={(e) => e.stopPropagation()}>
       <div className="qh-crow">
         {COLORS.map(c => (
           <button key={c} type="button" data-testid={`plain-swatch-${c}`} aria-label={`Cor ${c}`}

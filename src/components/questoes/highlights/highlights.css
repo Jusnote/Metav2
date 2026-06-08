@@ -6,7 +6,7 @@
 .qh-tri { position: absolute; transform: translate(-45%, -55%); pointer-events: auto; cursor: pointer;
   filter: drop-shadow(0 0 1.4px #fff) drop-shadow(0 1px 1px rgba(0,0,0,.12)); }
 
-.qh-pop { position: fixed; z-index: 55; background: #fff; border: 1px solid rgba(26,23,20,.07);
+.qh-pop { z-index: 55; background: #fff; border: 1px solid rgba(26,23,20,.07);
   border-radius: 14px; box-shadow: 0 10px 38px -12px rgba(26,23,20,.28), 0 2px 8px -4px rgba(26,23,20,.12);
   animation: qh-rise .16s ease both; }
 @keyframes qh-rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
