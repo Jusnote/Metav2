@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
-import { Newsreader, Fraunces } from 'next/font/google';
+import { Spectral, Fraunces } from 'next/font/google';
 
 // Corpo de leitura das questões (PAPIRO). next/font = self-hosted, sem layout shift.
-const newsreader = Newsreader({
+const spectral = Spectral({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
-  variable: '--font-newsreader',
+  variable: '--font-spectral',
 });
 
-// Par de display (pareamento com a Newsreader).
+// Par de display (pareamento com a Spectral).
 const fraunces = Fraunces({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${newsreader.variable} ${fraunces.variable}`}>
+    <html lang="pt-BR" className={`${spectral.variable} ${fraunces.variable}`}>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>

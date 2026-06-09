@@ -954,7 +954,7 @@ export const QuestionCard = React.memo(function QuestionCard({
           onClickHighlight={handleHlClick}
           onHover={handleHlHover}
           className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
-          style={{ fontFamily: 'var(--font-newsreader), Georgia, serif', fontVariantNumeric: 'tabular-nums', color: 'var(--qc-ink)' }}
+          style={{ fontFamily: 'var(--font-spectral), Georgia, serif', fontVariantNumeric: 'tabular-nums', color: 'var(--qc-ink)' }}
         />
       </div>
 

@@ -9,7 +9,7 @@
    "@media (prefers-color-scheme: dark){ .qc-card-enter{ ... } }".
 ============================================================================= */
 
-/* Fraunces e o corpo do enunciado (Newsreader) agora vêm via next/font (src/app/layout.tsx). */
+/* Fraunces e o corpo do enunciado (Spectral) agora vêm via next/font (src/app/layout.tsx). */
 @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap');
 
 /* ---------- tokens (no escopo do card) ---------- */
