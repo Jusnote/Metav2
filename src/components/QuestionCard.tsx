@@ -433,7 +433,10 @@ export const QuestionCard = React.memo(function QuestionCard({
         const r = resolveAnchor(block, { quote: hl.quote, prefix: hl.prefix, suffix: hl.suffix });
         if (r && r.getClientRects().length > 0) {
           const rr = r.getBoundingClientRect();
-          return atTopLeft ? new DOMRect(rr.left, rr.top, 0, 0) : rr;
+          if (atTopLeft) return new DOMRect(rr.left, rr.top, 0, 0);
+          // encolhe ~18% (a meia-entrelinha) pra a âncora colar no glifo, não na caixa-de-linha alta
+          const inset = rr.height * 0.18;
+          return new DOMRect(rr.left, rr.top + inset, rr.width, Math.max(1, rr.height - 2 * inset));
         }
       }
       // fallback (marca removida ou em região oculta/colapsada): junto ao bloco, não em (0,0)
@@ -458,9 +461,25 @@ export const QuestionCard = React.memo(function QuestionCard({
 
   const balloonAnchor = useMemo<{ getBoundingClientRect(): DOMRect; contextElement?: Element } | null>(() => {
     if (!balloon) return null;
-    // trecho inteiro (não o canto): Floating UI centraliza o balão e abre ABAIXO da linha
-    return markRectAnchor(balloon.block, balloon.id, false);
-  }, [balloon, markRectAnchor]);
+    const { block, id } = balloon;
+    return {
+      getBoundingClientRect: (): DOMRect => {
+        const hl = highlightsRef.current.find(h => h.id === id);
+        if (hl) {
+          const r = resolveAnchor(block, { quote: hl.quote, prefix: hl.prefix, suffix: hl.suffix });
+          if (r && r.getClientRects().length > 0) {
+            const rr = r.getBoundingClientRect();
+            // âncora = linha vertical de largura ZERO no INÍCIO do grifo (caixa de linha inteira → balão mais baixo).
+            // Com 'bottom-start' pende da esquerda; o "rabinho" comprido alcança o grifo.
+            return new DOMRect(rr.left, rr.top, 0, rr.height);
+          }
+        }
+        const b = block.getBoundingClientRect();
+        return new DOMRect(b.left, b.top, 0, 0);
+      },
+      contextElement: block,
+    };
+  }, [balloon]);
 
   const openEdit = useCallback((id: string, block: HTMLElement) => {
     pinned.current = true;
@@ -1248,7 +1267,7 @@ export const QuestionCard = React.memo(function QuestionCard({
         const hl = highlights.find(h => h.id === balloon.id);
         if (!hl) return null;
         return (
-          <HighlightPopover anchor={balloonAnchor}>
+          <HighlightPopover anchor={balloonAnchor} placement="bottom-start" showArrow>
             <HighlightBalloon
               key={balloon.id}
               highlight={hl}

@@ -3,7 +3,7 @@
 .qh-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 .qh-host > *:not(.qh-overlay) { position: relative; z-index: 1; }
 .qh-bg { position: absolute; border-radius: 3px; }
-.qh-tri { position: absolute; transform: translate(-45%, -25%); pointer-events: auto; cursor: pointer;
+.qh-tri { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer;
   filter: drop-shadow(0 0 1.4px #fff) drop-shadow(0 1px 1px rgba(0,0,0,.12)); }
 .dark .qh-tri { filter: drop-shadow(0 0 1.4px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
 
@@ -78,8 +78,16 @@
 
 /* ===== Balão único (ler/editar), refinado ===== */
 .qh-balloon { width: 262px; }
-.qh-balloon::before { content: ""; position: absolute; top: -5px; left: 17px; width: 10px; height: 10px;
-  background: var(--qh-arrow-bg); border-left: 1px solid var(--qh-border); border-top: 1px solid var(--qh-border); transform: rotate(45deg); }
+/* "rabinho" do balão — triângulo posicionado pelo middleware `arrow` (aponta pro grifo).
+   Mais comprido que um arrow padrão pra alcançar o grifo mesmo com o balão mais baixo.
+   Cores concretas (a seta é irmã do .qh-pop, não enxerga --qh-* dele). */
+.qh-arrow { position: absolute; width: 0; height: 0; }
+.qh-arrow-bottom { border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-bottom: 10px solid #fff; filter: drop-shadow(0 -1px 0.5px rgba(26,23,20,.10)); }
+.qh-arrow-top { border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-top: 10px solid #fff; filter: drop-shadow(0 1px 0.5px rgba(26,23,20,.10)); }
+.dark .qh-arrow-bottom { border-bottom-color: #1F1C15; filter: drop-shadow(0 -1px 0.5px rgba(255,255,255,.10)); }
+.dark .qh-arrow-top    { border-top-color: #1F1C15; filter: drop-shadow(0 1px 0.5px rgba(255,255,255,.10)); }
 .qh-tlabel { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
 .qh-tri-sm { width: 13px; height: 13px; display: block; flex: none; }
 .qh-tt { font: 600 12.5px/1 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; color: var(--qh-label); letter-spacing: -.005em;
