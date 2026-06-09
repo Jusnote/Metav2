@@ -25,7 +25,12 @@ export function HighlightPopover({
   const { refs, floatingStyles, isPositioned } = useFloating({
     placement,
     strategy: 'fixed',
-    middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
+    // padding.top = ~altura da nav fixa (sticky top-0), pra não flipar por cima dela
+    middleware: [
+      offset(8),
+      flip({ padding: { top: 72, bottom: 8, left: 8, right: 8 } }),
+      shift({ padding: { top: 72, bottom: 8, left: 8, right: 8 } }),
+    ],
     whileElementsMounted: autoUpdate,
   });
 

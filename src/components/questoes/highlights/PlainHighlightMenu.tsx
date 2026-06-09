@@ -1,5 +1,5 @@
 import React from 'react';
-import { COLORS } from './highlights.config';
+import { QUICK_COLORS } from './highlights.config';
 import { TriangleIcon } from './TriangleIcon';
 
 export interface PlainHighlightMenuProps {
@@ -13,7 +13,7 @@ export function PlainHighlightMenu({ color, onColor, onPromote, onRemove }: Plai
   return (
     <div className="qh-pop qh-plain" onMouseDown={(e) => e.stopPropagation()}>
       <div className="qh-crow">
-        {COLORS.map(c => (
+        {QUICK_COLORS.map(c => (
           <button key={c} type="button" data-testid={`plain-swatch-${c}`} aria-label={`Cor ${c}`}
             className={`qh-dot ${c === color ? 'on' : ''}`} style={{ background: c }} onClick={() => onColor(c)} />
         ))}

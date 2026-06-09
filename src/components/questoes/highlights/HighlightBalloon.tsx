@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { COLORS, MARK_TYPES, typeLabel } from './highlights.config';
+import { QUICK_COLORS, MARK_TYPES, typeLabel } from './highlights.config';
 import { TriangleIcon } from './TriangleIcon';
 import type { Highlight, MarkTypeId } from './types';
 
@@ -94,7 +94,7 @@ export function HighlightBalloon({
         autoFocus />
       <div className="ef">
         <span className="colors">
-          {COLORS.map(c => (
+          {QUICK_COLORS.map(c => (
             <button key={c} type="button" data-testid={`bln-swatch-${c}`} aria-label={`Cor ${c}`}
               className={`qh-dot ${c === highlight.color ? 'on' : ''}`} style={{ background: c }}
               onClick={() => onChange({ color: c })} />

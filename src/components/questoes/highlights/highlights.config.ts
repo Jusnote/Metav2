@@ -20,7 +20,12 @@ export function typeLabel(id: MarkTypeId | null): string {
   return MARK_TYPES.find(t => t.id === id)?.label ?? 'Pegadinha';
 }
 
-/** Fundo do destaque: alpha ~17% (atenção) / ~24% (comum). */
+/**
+ * Fundo do destaque. No claro: alpha ~17% (atenção) / ~24% (comum).
+ * No escuro o mesmo alpha some sobre a tinta clara, então sobe (~25% / ~36%).
+ */
 export function bgFor(color: string, kind: MarkKind): string {
+  const dark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  if (dark) return color + (kind === 'plain' ? '5c' : '40');
   return color + (kind === 'plain' ? '3d' : '2b');
 }

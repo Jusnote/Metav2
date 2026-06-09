@@ -8,12 +8,13 @@ import type { Highlight } from './types';
 interface Resolved { hl: Highlight; rects: RelRect[]; tri: { left: number; top: number } | null; }
 
 export function HighlightLayer({
-  blockRef, highlights, onClickHighlight, onResolvedChange,
+  blockRef, highlights, onClickHighlight, onResolvedChange, onHoverHighlight,
 }: {
   blockRef: React.RefObject<HTMLElement>;
   highlights: Highlight[];
   onClickHighlight: (hl: Highlight, anchorEl: { left: number; top: number }) => void;
   onResolvedChange?: (items: { hl: Highlight; rects: RelRect[] }[]) => void;
+  onHoverHighlight?: (hl: Highlight | null) => void;
 }) {
   const [resolved, setResolved] = useState<Resolved[]>([]);
   const raf = useRef<number>(0);
@@ -49,13 +50,15 @@ export function HighlightLayer({
         <React.Fragment key={hl.id}>
           {rects.map((r, i) => (
             <span key={i} className="qh-bg" style={{
-              left: r.left - 2, top: r.top, width: r.width + 4, height: r.height,
+              left: r.left - 1, top: r.top, width: r.width + 2, height: r.height,
               background: bgFor(hl.color, hl.kind),
             }} />
           ))}
           {tri && (
             <span className="qh-tri" style={{ left: tri.left, top: tri.top }}
-              onClick={(e) => onClickHighlight(hl, { left: e.clientX, top: e.clientY })}>
+              onClick={(e) => onClickHighlight(hl, { left: e.clientX, top: e.clientY })}
+              onMouseEnter={() => onHoverHighlight?.(hl)}
+              onMouseLeave={() => onHoverHighlight?.(null)}>
               <TriangleIcon color={hl.color} size={13} />
             </span>
           )}

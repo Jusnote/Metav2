@@ -41,6 +41,7 @@ export function MarkableBlock({
 
   function handleMove(e: React.MouseEvent) {
     if (!onHover) return;
+    if ((e.target as HTMLElement).closest('.qh-tri')) return; // o triângulo trata seu próprio hover
     const x = e.clientX, y = e.clientY;
     cancelAnimationFrame(moveRaf.current);
     moveRaf.current = requestAnimationFrame(() => {
@@ -71,6 +72,7 @@ export function MarkableBlock({
         highlights={highlights}
         onClickHighlight={(hl, at) => { if (ref.current) onClickHighlight(hl, at, ref.current); }}
         onResolvedChange={(items) => { resolved.current = items; }}
+        onHoverHighlight={(hl) => { if (onHover && ref.current) onHover(hl, ref.current); }}
       />
     </div>
   );

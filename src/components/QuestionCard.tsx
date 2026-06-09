@@ -458,7 +458,8 @@ export const QuestionCard = React.memo(function QuestionCard({
 
   const balloonAnchor = useMemo<{ getBoundingClientRect(): DOMRect; contextElement?: Element } | null>(() => {
     if (!balloon) return null;
-    return markRectAnchor(balloon.block, balloon.id, true); // Atenção: abre abaixo da linha
+    // trecho inteiro (não o canto): Floating UI centraliza o balão e abre ABAIXO da linha
+    return markRectAnchor(balloon.block, balloon.id, false);
   }, [balloon, markRectAnchor]);
 
   const openEdit = useCallback((id: string, block: HTMLElement) => {
@@ -1154,7 +1155,7 @@ export const QuestionCard = React.memo(function QuestionCard({
             </button>
 
             <button
-              onClick={() => setReportModalOpen(true)}
+              onClick={() => { setHlPop(null); closeBalloon(); setReportModalOpen(true); }}
               className={`qc-footer-btn inline-flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all duration-200 ${
                 hasReported
                   ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20'
