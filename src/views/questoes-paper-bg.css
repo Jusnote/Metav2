@@ -7,23 +7,24 @@
    base na MESMA regra — o body do app é branco (--background) e nenhum elemento
    aplica .questoes-paper-bg, então a base precisa vir do próprio layer. */
 
+/* Faixa curta e perceptível (como o azul antigo: morre em ~1/4 da tela), não névoa longa. */
 .questoes-aurora {
   background:
     linear-gradient(180deg,
-      rgba(90, 90, 90, 0.12) 0%,
-      rgba(90, 90, 90, 0.065) 14%,
-      rgba(90, 90, 90, 0.02) 28%,
-      rgba(90, 90, 90, 0) 38%),
+      rgba(90, 90, 90, 0.16) 0%,
+      rgba(90, 90, 90, 0.09) 9%,
+      rgba(90, 90, 90, 0.025) 17%,
+      rgba(90, 90, 90, 0) 24%),
     #F0F0F0;
 }
 
 .dark .questoes-aurora {
   background:
     linear-gradient(180deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(255, 255, 255, 0.033) 14%,
-      rgba(255, 255, 255, 0.01) 28%,
-      rgba(255, 255, 255, 0) 38%),
+      rgba(255, 255, 255, 0.075) 0%,
+      rgba(255, 255, 255, 0.042) 9%,
+      rgba(255, 255, 255, 0.012) 17%,
+      rgba(255, 255, 255, 0) 24%),
     #0C0B09;
 }
 

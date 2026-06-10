@@ -5,7 +5,8 @@ import { QuestoesSearchBar } from "@/components/questoes/QuestoesSearchBar";
 import { QuestoesFilterCard } from "@/components/questoes/filtros/QuestoesFilterCard";
 import { SemanticScopeToggle } from "@/components/questoes/objetivo/SemanticScopeToggle";
 import { QuestoesListaView } from "@/components/questoes/lista/QuestoesListaView";
-import { AuroraBackground } from "@/components/ui/aurora-background";
+import { Search } from "lucide-react";
+import "./questoes-paper-bg.css";
 
 type FilterView = 'filtros' | 'semantico' | 'cadernos' | 'questoes';
 
@@ -82,73 +83,78 @@ export default function QuestoesPage() {
 
   return (
     <QuestoesFilterDraftProvider>
-    <AuroraBackground />
+    {/* Fundo Grafite 2B — SÓ desta página (Auth/Home seguem com o AuroraBackground azul) */}
+    <div aria-hidden className="questoes-aurora pointer-events-none fixed inset-0 -z-10 overflow-hidden" />
     <div className="flex flex-col h-full w-full">
       {/* ─── Header (sem container — flutua sobre aurora) ─── */}
       <section className="mx-6 mt-4">
-        <div className={`${filterView === 'questoes' ? 'max-w-5xl' : 'max-w-6xl'} mx-auto w-full py-3`}>
-          <div className="flex items-center justify-between gap-4">
-            <h1
-              className="m-0 leading-none shrink-0"
-              style={{
-                fontFamily: "'Source Serif 4', Georgia, serif",
-                fontSize: '26px',
-                fontWeight: 600,
-                letterSpacing: '-0.02em',
-                color: '#0f172a',
-              }}
-            >
-              Banco de Questões
-              <span style={{ color: '#2563eb' }}>.</span>
-            </h1>
+        <div className={`${filterView === 'questoes' ? 'max-w-[60rem]' : 'max-w-6xl'} mx-auto w-full py-3`}>
+          <div className="flex items-center gap-5">
+            <div className="shrink-0">
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 mb-0.5">
+                Acervo
+              </span>
+              <h1
+                className="m-0 leading-none"
+                style={{
+                  fontFamily: "'Source Serif 4', Georgia, serif",
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  letterSpacing: '-0.02em',
+                  color: '#0f172a',
+                }}
+              >
+                Banco de Questões
+                <span style={{ color: '#2563eb' }}>.</span>
+              </h1>
+            </div>
 
             <nav
-              className="inline-flex items-center gap-[8px]"
+              className="ml-auto inline-flex items-center gap-6"
               aria-label="Modo de filtro"
             >
-              <div className="inline-flex items-center rounded-full bg-white border border-[#e2e8f0] overflow-hidden">
-                {(['filtros', 'semantico', 'cadernos'] as FilterView[]).map((view) => {
-                  const active = filterView === view;
-                  return (
-                    <button
-                      key={view}
-                      type="button"
-                      onClick={() => setFilterView(view)}
-                      className={[
-                        'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
-                        active
-                          ? 'bg-[#f1f5f9] text-[#0f172a] font-semibold'
-                          : 'bg-transparent text-[#64748b] font-medium hover:text-[#0f172a]',
-                      ].join(' ')}
-                    >
-                      {FILTER_VIEW_LABELS[view]}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="h-5 w-px bg-[#e2e8f0]" aria-hidden="true" />
-
-              <button
-                type="button"
-                onClick={() => setFilterView('questoes')}
-                className={[
-                  'rounded-full px-[14px] py-[6px] text-[12px] transition-all',
-                  filterView === 'questoes'
-                    ? 'bg-[#0f172a] text-white font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.12)]'
-                    : 'bg-white border border-[#e2e8f0] text-[#64748b] font-medium hover:text-[#0f172a]',
-                ].join(' ')}
-              >
-                {FILTER_VIEW_LABELS.questoes}
-              </button>
+              {(['filtros', 'semantico', 'cadernos', 'questoes'] as FilterView[]).map((view) => {
+                const active = filterView === view;
+                return (
+                  <button
+                    key={view}
+                    type="button"
+                    onClick={() => setFilterView(view)}
+                    className={[
+                      'relative pb-1.5 text-[13px] transition-colors',
+                      active
+                        ? 'text-[#0f172a] font-semibold'
+                        : 'text-[#64748b] font-medium hover:text-[#0f172a]',
+                    ].join(' ')}
+                  >
+                    {FILTER_VIEW_LABELS[view]}
+                    {active && (
+                      <span className="absolute left-0 right-0 bottom-0 h-[2px] rounded-full bg-[#2563eb]" />
+                    )}
+                  </button>
+                );
+              })}
             </nav>
+
+            <button
+              type="button"
+              onClick={() => setCtrlKOpen(true)}
+              aria-label="Buscar questões"
+              className="shrink-0 inline-flex items-center gap-2 h-[34px] px-3 rounded-[9px] bg-white/60 border border-white/70 backdrop-blur-md text-[12.5px] text-slate-500 hover:bg-white hover:text-slate-700 transition-colors"
+            >
+              <Search className="h-4 w-4" />
+              <span>Buscar</span>
+              <kbd className="text-[10px] font-bold text-slate-400 bg-white border border-slate-200 border-b-2 rounded-[5px] px-1.5 py-px leading-none">
+                Ctrl K
+              </kbd>
+            </button>
           </div>
         </div>
       </section>
 
       {/* ─── View content (cards separados sobre aurora) ─── */}
       <section className="mx-6 mt-4 mb-6">
-        <div className={`${filterView === 'questoes' ? 'max-w-5xl' : 'max-w-6xl'} mx-auto w-full`}>
+        <div className={`${filterView === 'questoes' ? 'max-w-[60rem]' : 'max-w-6xl'} mx-auto w-full`}>
           {filterView === 'filtros' && (
             <QuestoesFilterCard onApplied={handleApplied} />
           )}
