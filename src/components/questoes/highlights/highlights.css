@@ -153,3 +153,84 @@
   padding: 7px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .qh-acts button:hover { background: var(--qh-hover); color: var(--qh-ink); }
 .qh-acts .rm:hover { color: var(--qh-bad); background: var(--qh-bad-soft); }
+
+/* ===== barra lateral (MarkingSidebar) ===== */
+.qh-bar {
+  --qh-bar-surface: rgba(255,255,255,.94);
+  --qh-bar-surface-solid: #fff;
+  --qh-bar-border: rgba(26,23,20,.08);
+  --qh-bar-ink: #1A1714;
+  --qh-bar-faint: #9C958D;
+  --qh-bar-line: #ECEAE5;
+  --qh-bar-hover: #F4F2EE;
+  --qh-bar-bad: #C0392B;
+  --qh-bar-badge-bg: #0F7B5F;
+  --qh-bar-badge-ink: #fff;
+  --qh-bar-shadow: 0 1px 2px rgba(26,23,20,.04), 0 10px 28px -14px rgba(26,23,20,.18);
+  --qh-bar-shadow-hover: 0 1px 3px rgba(26,23,20,.05), 0 14px 34px -14px rgba(26,23,20,.22);
+
+  position: fixed; top: 50%; transform: translateY(-50%);
+  /* coluna de questões = max-w-[60rem] centrada → borda esquerda em calc(50% - 30rem); barra 54px antes (gap do mock) */
+  left: max(10px, calc(50% - 30rem - 54px));
+  background: var(--qh-bar-surface); backdrop-filter: blur(6px);
+  border: 1px solid var(--qh-bar-border); border-radius: 999px; padding: 7px 5px;
+  box-shadow: var(--qh-bar-shadow);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  z-index: 40; /* sob o nav sticky (50) e os popovers .qh-pop (55) */
+  transition: .18s;
+  font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+}
+.qh-bar:hover { background: var(--qh-bar-surface-solid); box-shadow: var(--qh-bar-shadow-hover); }
+.dark .qh-bar {
+  --qh-bar-surface: rgba(31,28,21,.94);
+  --qh-bar-surface-solid: #1F1C15;
+  --qh-bar-border: rgba(255,255,255,.08);
+  --qh-bar-ink: #F4F1EB;
+  --qh-bar-faint: #6E665C;
+  --qh-bar-line: #2B2720;
+  --qh-bar-hover: #2A261E;
+  --qh-bar-bad: #F0776A;
+  --qh-bar-badge-bg: #2FD6A2;
+  --qh-bar-badge-ink: #0B130F;
+  --qh-bar-shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  --qh-bar-shadow-hover: 0 1px 3px rgba(0,0,0,.35), 0 14px 34px -14px rgba(0,0,0,.7);
+}
+
+.qh-bar-tool { position: relative; width: 26px; height: 26px; border: none; background: transparent; border-radius: 50%;
+  padding: 0; display: grid; place-items: center; cursor: pointer; transition: transform .12s, background .12s; }
+.qh-bar-tool:hover { transform: scale(1.18); }
+.qh-bar-tool.on { background: var(--qh-bar-hover); }
+.qh-bar-tool svg { width: 14px; height: 14px; color: var(--qh-bar-faint); transition: .12s; }
+.qh-bar-tool:hover svg { color: var(--qh-bar-ink); }
+.qh-bar-tool.on svg { color: var(--qh-bar-ink); }
+.qh-bar-tool svg.qh-bar-ic15 { width: 15px; height: 15px; }
+.qh-bar-eraser.on svg { color: var(--qh-bar-bad); }
+
+/* tooltip à DIREITA (chip escuro nos dois temas: label + tecla) */
+.qh-bar-tip { position: absolute; left: calc(100% + 11px); top: 50%; transform: translateY(-50%) translateX(-4px);
+  background: #23201c; color: #fff; font: 600 10.5px/1 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+  padding: 5px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: .14s; }
+.qh-bar-tip small { opacity: .6; font-weight: 500; margin-left: 5px; font-size: inherit; }
+.qh-bar-tool:hover .qh-bar-tip { opacity: 1; transform: translateY(-50%) translateX(0); }
+
+.qh-bar-div { width: 12px; height: 1px; background: var(--qh-bar-line); margin: 3px 0; }
+
+/* bancada: encolhida no modo seleção; expande ao desmarcar a setinha */
+.qh-bar-toolset { display: flex; flex-direction: column; align-items: center; gap: 2px; max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height .26s ease, opacity .2s ease; }
+.qh-bar.open .qh-bar-toolset { max-height: 560px; opacity: 1; }
+
+/* tipo ativo: empurrado + bg (mesma língua do mock) */
+.qh-bar-btool.on { background: var(--qh-bar-hover); transform: translateX(4px); }
+.qh-bar-btool.on:hover { transform: translateX(4px) scale(1.12); }
+
+/* accordion vertical de cores sob o tipo clicado */
+.qh-bar-vpick { display: flex; flex-direction: column; align-items: center; gap: 5px; max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height .22s ease, opacity .18s ease, margin .22s ease; margin: 0; }
+.qh-bar-vpick.open { max-height: 170px; opacity: 1; margin: 3px 0 5px; }
+.qh-bar-vpick .d { width: 12px; height: 12px; border-radius: 50%; border: none; padding: 0; cursor: pointer; flex: none; transition: transform .12s; }
+.qh-bar-vpick .d:hover { transform: scale(1.35); }
+
+.qh-bar-badge { position: absolute; top: -2px; right: -3px; min-width: 12px; height: 12px; border-radius: 7px;
+  background: var(--qh-bar-badge-bg); color: var(--qh-bar-badge-ink);
+  font: 700 8px/12px 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; text-align: center; padding: 0 3px; }

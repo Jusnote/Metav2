@@ -14,6 +14,8 @@ import type { StatusTab, SortOption, ViewMode } from '@/contexts/QuestoesContext
 import { QuestoesResultsHeader } from '@/components/questoes/QuestoesResultsHeader';
 import { VirtualizedQuestionList } from '@/components/questoes/VirtualizedQuestionList';
 import { QuestoesActiveFiltersChips } from './QuestoesActiveFiltersChips';
+import { MarkingToolsProvider } from '@/components/questoes/highlights/MarkingToolsContext';
+import { MarkingSidebar } from '@/components/questoes/highlights/MarkingSidebar';
 
 const SORT_LABELS: Record<SortOption, string> = {
   recentes: 'Mais recentes',
@@ -69,12 +71,14 @@ export function QuestoesListaView({ onEditFilters }: QuestoesListaViewProps) {
   }, [viewMode]);
 
   return (
+    // Estado das ferramentas de marcação é DA PÁGINA: barra lateral + cards
+    // da lista consomem o mesmo provider (Task 3 liga os cards).
+    <MarkingToolsProvider>
+    <MarkingSidebar />
     <div className="flex flex-col gap-2">
-      <QuestoesActiveFiltersChips onEditFilters={onEditFilters} />
+      <div className="flex items-center flex-wrap gap-x-3 gap-y-2 pb-3 pt-1">
+        <QuestoesActiveFiltersChips onEditFilters={onEditFilters} />
 
-      <QuestoesResultsHeader />
-
-      <div className="flex items-center justify-between pb-4 pt-2 gap-2">
         <Tabs
           value={statusTab}
           onValueChange={(v) => setStatusTab(v as StatusTab)}
@@ -89,7 +93,8 @@ export function QuestoesListaView({ onEditFilters }: QuestoesListaViewProps) {
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-2">
+          <QuestoesResultsHeader />
           <div className="flex items-center rounded-md border border-border p-0.5 bg-white/60">
             <button
               onClick={() => setViewMode('lista')}
@@ -141,5 +146,6 @@ export function QuestoesListaView({ onEditFilters }: QuestoesListaViewProps) {
 
       <VirtualizedQuestionList />
     </div>
+    </MarkingToolsProvider>
   );
 }
