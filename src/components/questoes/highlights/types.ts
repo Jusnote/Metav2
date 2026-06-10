@@ -1,6 +1,16 @@
-export type MarkKind = 'plain' | 'attention';
+export type MarkKind = 'plain' | 'attention' | 'underline' | 'strike';
 
 export type MarkTypeId = 'pegadinha' | 'chave' | 'cuidado' | 'sacada' | 'revisar';
+
+/** Ferramentas da marcação v2 (barra/popover): pegadinha, grifar, sublinhar, tachar. */
+export type ToolId = 'peg' | 'comum' | 'sub' | 'tax';
+
+export const TOOL_TO_KIND: Record<ToolId, MarkKind> = {
+  peg: 'attention',
+  comum: 'plain',
+  sub: 'underline',
+  tax: 'strike',
+};
 
 /** Âncora persistente (W3C TextQuote Selector). */
 export interface Anchor {

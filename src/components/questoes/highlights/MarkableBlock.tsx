@@ -11,6 +11,7 @@ import type { Highlight } from './types';
  */
 export function MarkableBlock({
   html, target, highlights, onSelect, onClickHighlight, onHover, className, style, hostClassName,
+  hideMarks, eraseMode, hoveredId,
 }: {
   html: { __html: string };
   target: string;
@@ -21,6 +22,9 @@ export function MarkableBlock({
   className?: string;
   style?: React.CSSProperties;
   hostClassName?: string;
+  hideMarks?: boolean;
+  eraseMode?: boolean;
+  hoveredId?: string | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const resolved = useRef<{ hl: Highlight; rects: RelRect[] }[]>([]);
@@ -73,6 +77,9 @@ export function MarkableBlock({
         onClickHighlight={(hl, at) => { if (ref.current) onClickHighlight(hl, at, ref.current); }}
         onResolvedChange={(items) => { resolved.current = items; }}
         onHoverHighlight={(hl) => { if (onHover && ref.current) onHover(hl, ref.current); }}
+        hideMarks={hideMarks}
+        eraseMode={eraseMode}
+        hoveredId={hoveredId}
       />
     </div>
   );

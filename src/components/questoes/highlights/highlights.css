@@ -7,6 +7,17 @@
   filter: drop-shadow(0 0 1.4px #fff) drop-shadow(0 1px 1px rgba(0,0,0,.12)); }
 .dark .qh-tri { filter: drop-shadow(0 0 1.4px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
 
+/* ===== marcação v2: overlay de cima (linhas/wash SOBRE o texto) ===== */
+.qh-overlay-top { z-index: 2; pointer-events: none; }
+.qh-line { position: absolute; }
+/* tachado: wash da cor do papel ofusca as letras (mock: tinta a ~42%) */
+.qh-wash { position: absolute; background: var(--qc-card, #fff); opacity: .55; }
+/* borracha: toda marca com contorno tracejado; a hovered ganha wash vermelho */
+.qh-erase { position: absolute; border-radius: 3px; outline: 1.5px dashed rgba(192,57,43,.55); outline-offset: 1px; }
+.dark .qh-erase { outline-color: rgba(240,119,106,.6); }
+.qh-erase-hover { background: rgba(192,57,43,.14); }
+.dark .qh-erase-hover { background: rgba(240,119,106,.16); }
+
 /* ===== tokens das superfícies (claro por padrão; dark sobrescreve) ===== */
 .qh-pop {
   --qh-surface: #fff;
