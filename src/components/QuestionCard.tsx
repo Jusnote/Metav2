@@ -1087,8 +1087,8 @@ export const QuestionCard = React.memo(function QuestionCard({
           hideMarks={tools.hideMarks}
           eraseMode={tools.erase}
           hoveredId={hoveredId}
-          className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
-          style={{ fontFamily: 'var(--font-spectral), Georgia, serif', fontVariantNumeric: 'tabular-nums', color: 'var(--qc-ink)' }}
+          className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16.5px] leading-[1.9] [&_p]:text-[16.5px] [&_p]:leading-[1.9] [&_p]:my-1 text-left"
+          style={{ fontFamily: 'var(--font-bitter), Georgia, serif', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.006em', color: 'var(--qc-ink)' }}
         />
       </div>
 
