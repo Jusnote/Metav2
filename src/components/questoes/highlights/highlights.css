@@ -30,6 +30,8 @@
   --qh-line2: #E0DDD6;
   --qh-hover: #F4F2EE;
   --qh-hover2: #ECEAE5;
+  --qh-last: #F6F4F0;
+  --qh-sel: #F0EDE8;
   --qh-border: rgba(26,23,20,.07);
   --qh-arrow-bg: #fff;
   --qh-dot-ring: rgba(26,23,20,.10);
@@ -58,6 +60,8 @@
   --qh-line2: #322D24;
   --qh-hover: #2A261E;
   --qh-hover2: #322D24;
+  --qh-last: #262219;
+  --qh-sel: #322D24;
   --qh-border: rgba(255,255,255,.08);
   --qh-arrow-bg: #1F1C15;
   --qh-dot-ring: rgba(255,255,255,.14);
@@ -74,14 +78,36 @@
 .dark .qh-pop { box-shadow: 0 14px 44px -16px rgba(0,0,0,.7), 0 4px 12px -6px rgba(0,0,0,.5); }
 @keyframes qh-rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
-.qh-selpop { padding: 7px; }
-.qh-plain { width: 262px; box-sizing: border-box; padding: 7px; }
+/* ===== popover de seleção (SelectionToolbar): 4 ícones + paletas hover-slide ===== */
+.qh-selpop { display: flex; gap: 2px; align-items: stretch; padding: 4px; border-radius: 11px; }
+.qh-selpop > button { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent;
+  border-radius: 8px; width: 32px; height: 30px; padding: 0; cursor: pointer; color: var(--qh-ink2); flex: none; }
+.qh-selpop > button:hover { background: var(--qh-hover); }
+.qh-selpop > button.last { background: var(--qh-last); }
+.qh-selpop > button.last:hover { background: var(--qh-sel); }
+.qh-selpop > button.sel { background: var(--qh-sel); }
+.qh-selpop .sep { width: 1px; background: var(--qh-line); margin: 5px 1px; }
+/* paleta: desliza no hover do botão; .open força aberta (fluxo numérico do teclado) */
+.qh-cpick { display: flex; gap: 5px; align-items: center; max-width: 0; opacity: 0; overflow: hidden; padding: 0;
+  transition: max-width .2s ease, opacity .15s ease, padding .2s ease; }
+.qh-selpop > button:hover + .qh-cpick, .qh-cpick:hover, .qh-cpick.open { max-width: 188px; opacity: 1; padding: 0 7px 0 3px; }
+.qh-cpick .d { width: 13px; height: 13px; border-radius: 50%; border: none; padding: 0; cursor: pointer; flex: none;
+  transition: transform .12s; position: relative; }
+.qh-cpick .d:hover { transform: scale(1.3); }
+/* aberta via teclado: numerozinhos nas cores (o segundo dígito escolhe) */
+.qh-cpick.nums .d::after { content: attr(data-n); position: absolute; inset: 0; display: grid; place-items: center;
+  font: 700 8px/1 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.3); }
 
-.qh-seg { display: flex; gap: 3px; background: var(--qh-hover); border-radius: 9px; padding: 3px; margin-bottom: 8px; }
-.qh-seg button { flex: 1; border: none; background: transparent; font: 700 11.5px/1 inherit; color: var(--qh-muted);
-  padding: 6px 12px; border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
-.qh-seg button.on { background: var(--qh-surface); color: var(--qh-ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
-.qh-crow { display: flex; flex-wrap: wrap; gap: 7px; padding: 1px 3px 3px; }
+/* ===== mini-menu da marca sem balão (PlainHighlightMenu): 8 cores + lixeira ===== */
+.qh-cmenu { display: flex; gap: 7px; align-items: center; padding: 7px 9px; border-radius: 11px; }
+.qh-cmenu .d { width: 15px; height: 15px; border-radius: 50%; border: none; padding: 0; cursor: pointer; flex: none; transition: transform .12s; }
+.qh-cmenu .d:hover { transform: scale(1.25); }
+.qh-cmenu .d.on { box-shadow: 0 0 0 2px var(--qh-ring-inner), 0 0 0 3px var(--qh-ring-outer); }
+.qh-cmenu .rm { border: none; background: transparent; color: var(--qh-faint); cursor: pointer; padding: 3px; border-radius: 6px;
+  display: inline-flex; margin-left: 2px; }
+.qh-cmenu .rm:hover { color: var(--qh-bad); background: var(--qh-bad-soft); }
+.qh-cmenu .rm svg { width: 13px; height: 13px; }
+
 .qh-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid var(--qh-surface);
   box-shadow: 0 0 0 1px var(--qh-dot-ring); transition: transform .12s; }
 .qh-dot:hover { transform: scale(1.18); }
@@ -146,13 +172,6 @@
 .qh-balloon .b-edit .save { align-self: flex-end; border: none; background: var(--qh-save-bg); color: var(--qh-save-ink);
   font: 600 11.5px/1 inherit; padding: 8px 16px; border-radius: 9px; cursor: pointer; transition: .13s; }
 .qh-balloon .b-edit .save:hover { background: var(--qh-save-bg-hover); }
-
-/* mini-menu do grifo comum (PlainHighlightMenu): cor + "Virar Atenção" / "Remover" */
-.qh-acts { display: flex; gap: 4px; border-top: 1px solid var(--qh-line); padding-top: 7px; margin-top: 2px; }
-.qh-acts button { flex: 1; border: none; background: transparent; font: 600 12px/1 inherit; color: var(--qh-muted);
-  padding: 7px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.qh-acts button:hover { background: var(--qh-hover); color: var(--qh-ink); }
-.qh-acts .rm:hover { color: var(--qh-bad); background: var(--qh-bad-soft); }
 
 /* ===== barra lateral (MarkingSidebar) ===== */
 .qh-bar {

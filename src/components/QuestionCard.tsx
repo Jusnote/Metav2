@@ -10,8 +10,10 @@ import { SelectionToolbar } from './questoes/highlights/SelectionToolbar';
 import { HighlightBalloon } from './questoes/highlights/HighlightBalloon';
 import { PlainHighlightMenu } from './questoes/highlights/PlainHighlightMenu';
 import { createAnchor, resolveAnchor } from './questoes/highlights/lib/highlight-anchor';
+import { useMarkingTools } from './questoes/highlights/MarkingToolsContext';
+import { MARK_COLORS, TOOLS } from './questoes/highlights/highlights.config';
 import { useQuestionHighlights } from '@/hooks/useQuestionHighlights';
-import type { Highlight, MarkKind } from './questoes/highlights/types';
+import { TOOL_TO_KIND, type Highlight, type MarkKind, type ToolId } from './questoes/highlights/types';
 import {
   Bookmark,
   CornerDownLeft,
@@ -155,6 +157,11 @@ function sanitizeHtml(html: string) {
 }
 
 const bookmarkKey = (id: number) => `questao_bookmark_${id}`;
+
+/** Inverso de TOOL_TO_KIND (kind → ferramenta): mini-menu atualiza a memória de cor. */
+const KIND_TO_TOOL = Object.fromEntries(
+  Object.entries(TOOL_TO_KIND).map(([tool, kind]) => [kind, tool])
+) as Record<MarkKind, ToolId>;
 
 type ExpandableTab = 'gabarito' | 'estatisticas' | 'comunidade' | 'nota' | null;
 
@@ -405,18 +412,26 @@ export const QuestionCard = React.memo(function QuestionCard({
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const { data: hasReported } = useHasReportedQuestion(questaoId);
 
-  // ── Marcações na questão (Grifo comum / Atenção) ──
+  // ── Marcações na questão (pegadinha/grifo/sublinhado/tachado) ──
   const { highlights, create: createHl, update: updateHl, remove: removeHl } = useQuestionHighlights(questaoId);
   const highlightsRef = useRef(highlights);
   highlightsRef.current = highlights;
 
-  // hlPop: barra de seleção (criar) + mini-menu do grifo comum
+  // Ferramentas da página (barra lateral); sem provider = default (selTool on, sem caneta)
+  const tools = useMarkingTools();
+
+  // hlPop: popover de seleção (criar) + mini-menu das marcas sem balão
   type HlPop =
     | { kind: 'sel'; range: Range; target: string; block: HTMLElement }
     | { kind: 'plain'; id: string; rect: DOMRect; block: HTMLElement }
     | null;
   const [hlPop, setHlPop] = useState<HlPop>(null);
-  const lastKind = useRef<MarkKind>('attention');
+  const lastKind = useRef<ToolId>('peg');
+
+  // Fluxo numérico do teclado: 1-4 escolhe a ferramenta (paleta numerada) → 1-8 a cor
+  const [pendingTool, setPendingTool] = useState<ToolId | null>(null);
+  // Borracha: marca sob o mouse ganha o wash vermelho
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Balão de Atenção: a MESMA peça lê (hover) e edita (clique/lápis), ancorada na marca
   type Balloon = { id: string; mode: 'read' | 'edit'; block: HTMLElement };
@@ -493,40 +508,105 @@ export const QuestionCard = React.memo(function QuestionCard({
     setBalloon(null);
   }, []);
 
-  const handleHlSelect = useCallback((block: HTMLElement, target: string) => {
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
-    const range = sel.getRangeAt(0);
-    if (!block.contains(range.commonAncestorContainer)) return;
-    setHlPop({ kind: 'sel', range: range.cloneRange(), target, block });
-  }, []);
-
-  const handleHlPick = useCallback(async (color: string, kind: MarkKind) => {
-    if (!hlPop || hlPop.kind !== 'sel') return;
-    lastKind.current = kind;
-    const anchor = createAnchor(hlPop.block, hlPop.range);
-    const { target, block } = hlPop;
-    setHlPop(null);
-    window.getSelection()?.removeAllRanges();
+  // Cria a marca a partir de uma seleção (popover, teclado ou caneta);
+  // pegadinha (attention) abre o balão de edição em seguida.
+  const createMark = useCallback(async (tool: ToolId, color: string, sel: { range: Range; target: string; block: HTMLElement }) => {
+    const kind = TOOL_TO_KIND[tool];
+    const anchor = createAnchor(sel.block, sel.range);
     let created;
     try {
       created = await createHl({
-        questionId: questaoId, target, kind, color,
+        questionId: questaoId, target: sel.target, kind, color,
         type: kind === 'attention' ? 'pegadinha' : null,
         quote: anchor.quote, prefix: anchor.prefix, suffix: anchor.suffix, note: null,
       });
     } catch {
       return; // falha ao criar (auth/rede): aborta silenciosamente
     }
-    if (kind === 'attention') openEdit(created.id, block);
-  }, [hlPop, createHl, questaoId, openEdit]);
+    if (kind === 'attention') openEdit(created.id, sel.block);
+  }, [createHl, questaoId, openEdit]);
+
+  const handleHlSelect = useCallback((block: HTMLElement, target: string) => {
+    if (tools.erase) return; // borracha: seleção não cria nada
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
+    const range = sel.getRangeAt(0);
+    if (!block.contains(range.commonAncestorContainer)) return;
+    if (tools.mode) {
+      // caneta ativa: marca NA HORA, sem popover (feedback = a marca aparecer)
+      const r = range.cloneRange();
+      lastKind.current = tools.mode;
+      window.getSelection()?.removeAllRanges();
+      void createMark(tools.mode, tools.modeColor ?? tools.lastCol[tools.mode], { range: r, target, block });
+      return;
+    }
+    // Guarda a seleção MESMO com selTool desligado (estado "silencioso"): o
+    // popover não renderiza, mas os atalhos A/G/S/T continuam funcionando.
+    setPendingTool(null); // seleção nova: zera paleta numérica pendente
+    setHlPop({ kind: 'sel', range: range.cloneRange(), target, block });
+  }, [tools.erase, tools.mode, tools.modeColor, tools.lastCol, createMark]);
+
+  // Escolheu ferramenta (+cor opcional) com a seleção viva: resolve a cor final
+  // (explícita > última da ferramenta), cria a marca e atualiza as memórias.
+  const handleHlPick = useCallback((tool: ToolId, color?: string) => {
+    if (!hlPop || hlPop.kind !== 'sel') return;
+    const finalColor = color ?? tools.lastCol[tool];
+    const { range, target, block } = hlPop;
+    lastKind.current = tool;
+    tools.setLastCol(tool, finalColor);
+    setPendingTool(null);
+    setHlPop(null);
+    window.getSelection()?.removeAllRanges();
+    void createMark(tool, finalColor, { range, target, block });
+  }, [hlPop, tools, createMark]);
+
+  // Teclado com seleção NESTE card: A/G/S/T marca direto (última cor); numérico
+  // em 2 toques (1-4 ferramenta → 1-8 cor, só com o popover visível); Esc cancela.
+  useEffect(() => {
+    if (hlPop?.kind !== 'sel') return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return; // digitando (balão incluso)
+      if (e.key === 'Escape') {
+        setPendingTool(null);
+        setHlPop(null);
+        window.getSelection()?.removeAllRanges();
+        return;
+      }
+      const instant = TOOLS.find(tl => tl.key === e.key.toUpperCase());
+      if (instant) {
+        e.preventDefault();
+        e.stopPropagation(); // não deixa o 'A' também selecionar a alternativa A
+        handleHlPick(instant.id);
+        return;
+      }
+      if (tools.selTool && /^[1-8]$/.test(e.key)) {
+        const n = Number(e.key);
+        if (pendingTool === null) {
+          if (n <= 4) { e.preventDefault(); e.stopPropagation(); setPendingTool(TOOLS[n - 1].id); }
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        handleHlPick(pendingTool, MARK_COLORS[n - 1]);
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [hlPop, pendingTool, tools.selTool, handleHlPick]);
 
   const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }, block: HTMLElement) => {
+    if (tools.erase) { removeHl(hl.id); setHoveredId(null); closeBalloon(); return; } // borracha: clique apaga
+    if (tools.mode) return; // caneta na mão: clique em marca não abre nada (mock)
     if (hl.kind === 'attention') { openEdit(hl.id, block); return; }
+    // plain/underline/strike → mini-menu de cor
     setHlPop({ kind: 'plain', id: hl.id, rect: new DOMRect(at.left, at.top, 0, 0), block });
-  }, [openEdit]);
+  }, [tools.erase, tools.mode, removeHl, closeBalloon, openEdit]);
 
   const handleHlHover = useCallback((hl: Highlight | null, block: HTMLElement) => {
+    if (tools.erase) { setHoveredId(hl?.id ?? null); return; } // borracha: só o wash vermelho
+    if (tools.mode || tools.hideMarks) return; // caneta/olhinho: sem balão
     if (pinned.current) return;
     window.clearTimeout(hideTimer.current);
     if (hl && hl.kind === 'attention') {
@@ -534,7 +614,7 @@ export const QuestionCard = React.memo(function QuestionCard({
     } else {
       hideTimer.current = window.setTimeout(() => { if (!pinned.current) setBalloon(null); }, 200);
     }
-  }, []);
+  }, [tools.erase, tools.mode, tools.hideMarks]);
 
   const onBalloonEnter = useCallback(() => { window.clearTimeout(hideTimer.current); }, []);
   const onBalloonLeave = useCallback(() => {
@@ -547,12 +627,23 @@ export const QuestionCard = React.memo(function QuestionCard({
     const onDown = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
       if (t.closest('.qh-pop') || t.closest('.qh-tri')) return;
+      setPendingTool(null);
       setHlPop(null);
       closeBalloon();
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
   }, [hlPop, balloon, closeBalloon]);
+
+  // Pegou caneta/borracha na barra: popover e balão fecham (mock: setMode/setErase → hidePop+closeBln)
+  useEffect(() => {
+    if (tools.mode || tools.erase) { setPendingTool(null); setHlPop(null); closeBalloon(); }
+  }, [tools.mode, tools.erase, closeBalloon]);
+
+  // Saiu da borracha: limpa o hover do wash vermelho
+  useEffect(() => {
+    if (!tools.erase) setHoveredId(null);
+  }, [tools.erase]);
 
   // Se a marca do balão sumir (removida, refetch, outra aba), fecha — evita "pinned" travado.
   useEffect(() => {
@@ -972,6 +1063,9 @@ export const QuestionCard = React.memo(function QuestionCard({
           onSelect={handleHlSelect}
           onClickHighlight={handleHlClick}
           onHover={handleHlHover}
+          hideMarks={tools.hideMarks}
+          eraseMode={tools.erase}
+          hoveredId={hoveredId}
           className="prose prose-sm prose-zinc dark:prose-invert max-w-none dark:text-zinc-100 text-[16px] leading-[1.7] [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:my-1 text-left"
           style={{ fontFamily: 'var(--font-spectral), Georgia, serif', fontVariantNumeric: 'tabular-nums', color: 'var(--qc-ink)' }}
         />
@@ -1043,6 +1137,9 @@ export const QuestionCard = React.memo(function QuestionCard({
                   onSelect={handleHlSelect}
                   onClickHighlight={handleHlClick}
                   onHover={handleHlHover}
+                  hideMarks={tools.hideMarks}
+                  eraseMode={tools.erase}
+                  hoveredId={hoveredId}
                   hostClassName="pt-px flex-1 min-w-0"
                   className={`prose prose-sm dark:prose-invert max-w-none text-[15px] [&_p]:text-[15px] [&_p]:my-0.5 leading-[1.55] [&_p]:leading-[1.55] transition-colors duration-200 ${classes.text}`}
                   style={{ fontFamily: "'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" }}
@@ -1242,22 +1339,30 @@ export const QuestionCard = React.memo(function QuestionCard({
         )}
       </footer>
 
-      {/* ── Marcação: barra de seleção, mini-menu do comum e balão de Atenção ── */}
-      {hlPop?.kind === 'sel' && hlAnchor && (
-        <HighlightPopover anchor={hlAnchor}>
-          <SelectionToolbar defaultKind={lastKind.current} onPick={handleHlPick} />
+      {/* ── Marcação: popover de seleção, mini-menu das marcas e balão de Atenção ── */}
+      {/* selTool desligado = seleção "silenciosa": hlPop existe (teclado funciona) mas nada renderiza */}
+      {tools.selTool && hlPop?.kind === 'sel' && hlAnchor && (
+        <HighlightPopover anchor={hlAnchor} placement="top">
+          <SelectionToolbar
+            lastKind={lastKind.current}
+            lastCol={tools.lastCol}
+            pendingTool={pendingTool}
+            onPick={handleHlPick}
+          />
         </HighlightPopover>
       )}
       {hlPop?.kind === 'plain' && hlAnchor && (() => {
         const hl = highlights.find(h => h.id === hlPop.id);
         if (!hl) return null;
-        const block = hlPop.block;
         return (
           <HighlightPopover anchor={hlAnchor}>
             <PlainHighlightMenu
               color={hl.color}
-              onColor={(c) => { updateHl({ id: hl.id, color: c }); }}
-              onPromote={() => { updateHl({ id: hl.id, kind: 'attention', type: 'pegadinha' }); setHlPop(null); openEdit(hl.id, block); }}
+              onColor={(c) => {
+                updateHl({ id: hl.id, color: c });
+                tools.setLastCol(KIND_TO_TOOL[hl.kind], c); // memória da ferramenta correspondente
+                setHlPop(null); // mock: escolher cor fecha o mini-menu
+              }}
               onRemove={() => { removeHl(hl.id); setHlPop(null); }}
             />
           </HighlightPopover>
