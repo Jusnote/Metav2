@@ -28,6 +28,12 @@ export function useQuestionHighlights(questionId: number | null) {
   const qc = useQueryClient();
   const queryKey = ['question-highlights', questionId];
 
+  /** Caderno (badge da barra + lista geral) reflete criações/remoções na hora. */
+  const invalidateCaderno = () => {
+    qc.invalidateQueries({ queryKey: ['highlights-count'] });
+    qc.invalidateQueries({ queryKey: ['highlights-all'] });
+  };
+
   const query = useQuery({
     queryKey,
     enabled: !!questionId,
@@ -57,7 +63,7 @@ export function useQuestionHighlights(questionId: number | null) {
       if (error) throw error;
       return toHighlight(data as Row);
     },
-    onSuccess: (h) => qc.setQueryData<Highlight[]>(queryKey, (prev = []) => [...prev, h]),
+    onSuccess: (h) => { qc.setQueryData<Highlight[]>(queryKey, (prev = []) => [...prev, h]); invalidateCaderno(); },
   });
 
   const update = useMutation({
@@ -73,8 +79,8 @@ export function useQuestionHighlights(questionId: number | null) {
       if (error) throw error;
       return toHighlight(data as Row);
     },
-    onSuccess: (h) => qc.setQueryData<Highlight[]>(queryKey, (prev = []) =>
-      prev.map(x => x.id === h.id ? h : x)),
+    onSuccess: (h) => { qc.setQueryData<Highlight[]>(queryKey, (prev = []) =>
+      prev.map(x => x.id === h.id ? h : x)); invalidateCaderno(); },
   });
 
   const remove = useMutation({
@@ -83,8 +89,8 @@ export function useQuestionHighlights(questionId: number | null) {
       if (error) throw error;
       return id;
     },
-    onSuccess: (id) => qc.setQueryData<Highlight[]>(queryKey, (prev = []) =>
-      prev.filter(x => x.id !== id)),
+    onSuccess: (id) => { qc.setQueryData<Highlight[]>(queryKey, (prev = []) =>
+      prev.filter(x => x.id !== id)); invalidateCaderno(); },
   });
 
   return {

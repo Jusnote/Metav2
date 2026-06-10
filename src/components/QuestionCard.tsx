@@ -567,11 +567,19 @@ export const QuestionCard = React.memo(function QuestionCard({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return; // digitando (balão incluso)
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return; // digitando (balão incluso)
       if (e.key === 'Escape') {
         setPendingTool(null);
         setHlPop(null);
         window.getSelection()?.removeAllRanges();
+        return;
+      }
+      // a seleção viva pode ter colapsado (setas do teclado) sem mousedown: revalida
+      // antes de agir — senão A/G/S/T marcaria um trecho fantasma e engoliria o 'A' das alternativas
+      const live = window.getSelection();
+      if (!live || live.isCollapsed || !live.toString().trim()) {
+        setPendingTool(null);
+        setHlPop(null);
         return;
       }
       const instant = TOOLS.find(tl => tl.key === e.key.toUpperCase());
@@ -597,7 +605,7 @@ export const QuestionCard = React.memo(function QuestionCard({
   }, [hlPop, pendingTool, tools.selTool, handleHlPick]);
 
   const handleHlClick = useCallback((hl: Highlight, at: { left: number; top: number }, block: HTMLElement) => {
-    if (tools.erase) { removeHl(hl.id); setHoveredId(null); closeBalloon(); return; } // borracha: clique apaga
+    if (tools.erase) { void removeHl(hl.id).catch(() => {}); setHoveredId(null); closeBalloon(); return; } // borracha: clique apaga
     if (tools.mode) return; // caneta na mão: clique em marca não abre nada (mock)
     if (hl.kind === 'attention') { openEdit(hl.id, block); return; }
     // plain/underline/strike → mini-menu de cor
@@ -633,6 +641,19 @@ export const QuestionCard = React.memo(function QuestionCard({
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
+  }, [hlPop, balloon, closeBalloon]);
+
+  // Esc fecha o mini-menu e o balão (cancelar — sem salvar rascunho), inclusive digitando no balão
+  useEffect(() => {
+    if (hlPop?.kind !== 'plain' && !balloon) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setPendingTool(null);
+      setHlPop(null);
+      closeBalloon();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [hlPop, balloon, closeBalloon]);
 
   // Pegou caneta/borracha na barra: popover e balão fecham (mock: setMode/setErase → hidePop+closeBln)
@@ -1359,11 +1380,11 @@ export const QuestionCard = React.memo(function QuestionCard({
             <PlainHighlightMenu
               color={hl.color}
               onColor={(c) => {
-                updateHl({ id: hl.id, color: c });
+                void updateHl({ id: hl.id, color: c }).catch(() => {});
                 tools.setLastCol(KIND_TO_TOOL[hl.kind], c); // memória da ferramenta correspondente
                 setHlPop(null); // mock: escolher cor fecha o mini-menu
               }}
-              onRemove={() => { removeHl(hl.id); setHlPop(null); }}
+              onRemove={() => { void removeHl(hl.id).catch(() => {}); setHlPop(null); }}
             />
           </HighlightPopover>
         );
@@ -1378,8 +1399,8 @@ export const QuestionCard = React.memo(function QuestionCard({
               highlight={hl}
               mode={balloon.mode}
               onEdit={() => openEdit(hl.id, balloon.block)}
-              onChange={(patch) => { updateHl({ id: hl.id, ...patch }); }}
-              onRemove={() => { removeHl(hl.id); closeBalloon(); }}
+              onChange={(patch) => { void updateHl({ id: hl.id, ...patch }).catch(() => {}); }}
+              onRemove={() => { void removeHl(hl.id).catch(() => {}); closeBalloon(); }}
               onClose={closeBalloon}
               onMouseEnter={onBalloonEnter}
               onMouseLeave={onBalloonLeave}

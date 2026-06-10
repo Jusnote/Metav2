@@ -98,18 +98,23 @@ export function MarkingSidebar() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (isTypingTarget(e.target)) return;
+      // Esc SEMPRE solta caneta/borracha (mesmo com seleção viva — senão fica preso no modo)
+      if (e.key === 'Escape') {
+        setVpick(null);
+        if (mode || erase) toggleSelTool(); // solta caneta/borracha e religa a seleção
+        return;
+      }
       if (hasTextSelection()) return;
       if (e.key >= '1' && e.key <= '4') {
         setVpick(null);
         pickPen(TOOLS[Number(e.key) - 1].id); // última cor da ferramenta
         return;
       }
-      if (e.key === 'e' || e.key === 'E') { setVpick(null); setErase(!erase); return; }
-      if (e.key === 'h' || e.key === 'H') { toggleHideMarks(); return; }
-      if (e.key === 'Escape') {
-        setVpick(null);
-        if (mode || erase) toggleSelTool(); // solta caneta/borracha e religa a seleção
+      // E colide com a seleção de alternativa por teclado (A-E): só vale com o foco FORA de um card
+      if ((e.key === 'e' || e.key === 'E') && !document.activeElement?.closest('article[data-question-id]')) {
+        setVpick(null); setErase(!erase); return;
       }
+      if (e.key === 'h' || e.key === 'H') { toggleHideMarks(); return; }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);

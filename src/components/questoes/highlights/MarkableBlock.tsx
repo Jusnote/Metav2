@@ -31,6 +31,7 @@ export function MarkableBlock({
   const moveRaf = useRef(0);
 
   function handleClick(e: React.MouseEvent) {
+    if (hideMarks) return; // marcas ocultas = invisíveis também pro clique (não engole o clique da alternativa)
     const sel = window.getSelection();
     if (sel && !sel.isCollapsed && sel.toString().trim()) return; // é seleção, não clique
     const block = ref.current;
@@ -44,7 +45,7 @@ export function MarkableBlock({
   }
 
   function handleMove(e: React.MouseEvent) {
-    if (!onHover) return;
+    if (!onHover || hideMarks) return;
     if ((e.target as HTMLElement).closest('.qh-tri')) return; // o triângulo trata seu próprio hover
     const x = e.clientX, y = e.clientY;
     cancelAnimationFrame(moveRaf.current);

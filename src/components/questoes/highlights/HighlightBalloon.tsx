@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { QUICK_COLORS, MARK_TYPES, typeLabel } from './highlights.config';
+import { QUICK_COLORS, MARK_TYPES, TYPE_COLORS, typeLabel } from './highlights.config';
 import { TriangleIcon } from './TriangleIcon';
 import type { Highlight, MarkTypeId } from './types';
 
@@ -79,7 +79,7 @@ export function HighlightBalloon({
           <div className="m" aria-hidden={!ddOpen}>
             {MARK_TYPES.map(t => (
               <button key={t.id} type="button" tabIndex={ddOpen ? 0 : -1}
-                onClick={() => { onChange({ type: t.id as MarkTypeId }); setDdOpen(false); }}>{t.label}</button>
+                onClick={() => { onChange({ type: t.id as MarkTypeId, color: TYPE_COLORS[t.id] }); setDdOpen(false); }}>{t.label}</button>
             ))}
           </div>
         </div>

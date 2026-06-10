@@ -30,7 +30,8 @@ describe('HighlightBalloon', () => {
     render(<HighlightBalloon highlight={base} mode="edit" onEdit={noop} onChange={onChange} onRemove={noop} onClose={noop} />);
     fireEvent.click(screen.getByRole('button', { name: /Pegadinha/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Cuidado' }));
-    expect(onChange).toHaveBeenCalledWith({ type: 'cuidado' });
+    // mock: trocar o tipo também recolore com a cor semântica do tipo
+    expect(onChange).toHaveBeenCalledWith({ type: 'cuidado', color: '#E8703A' });
   });
 
   it('modo edição: trocar cor chama onChange', () => {

@@ -41,6 +41,15 @@ export function typeLabel(id: MarkTypeId | null): string {
   return MARK_TYPES.find(t => t.id === id)?.label ?? 'Pegadinha';
 }
 
+/** Cor semântica de cada tipo de Atenção (mock: trocar o tipo no balão recolore a marca). */
+export const TYPE_COLORS: Record<MarkTypeId, string> = {
+  pegadinha: '#E0484D',
+  chave: '#F2C231',
+  cuidado: '#E8703A',
+  sacada: '#4CAF6E',
+  revisar: '#4F86E0',
+};
+
 /**
  * Fundo do destaque. No claro: alpha ~17% (atenção) / ~24% (comum).
  * No escuro o mesmo alpha some sobre a tinta clara, então sobe (~25% / ~36%).
