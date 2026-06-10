@@ -1,0 +1,29 @@
+/* questoes-paper-bg.css
+   Fundo da página de questões — receita "Grafite 2B" (equipe de design, 2026-06-10):
+   wash cinza neutro forte no topo (no lugar do antigo azul) que assenta no corpo
+   cinza estilo TEC. Card branco salta (ΔL ~16). */
+
+.questoes-paper-bg {
+  background: #F0F0F0;
+}
+
+.dark .questoes-paper-bg {
+  background: #0C0B09;
+}
+
+/* Layer fixo (AuroraBackground): wash que morre em transparente — o base aparece através. */
+.questoes-aurora {
+  background: linear-gradient(180deg,
+    rgba(90, 90, 90, 0.12) 0%,
+    rgba(90, 90, 90, 0.065) 14%,
+    rgba(90, 90, 90, 0.02) 28%,
+    rgba(90, 90, 90, 0) 38%);
+}
+
+.dark .questoes-aurora {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.033) 14%,
+    rgba(255, 255, 255, 0.01) 28%,
+    rgba(255, 255, 255, 0) 38%);
+}
