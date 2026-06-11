@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home v5 — A Folha (minimal)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#0f172a; --muted:#64748b; --faint:#94a3b8; --line:#EEF1F4; --accent:#0F7B5F; --blue:#2563eb; }
+  *{ box-sizing:border-box; }
+  html,body{ min-height:100%; }
+  body{ margin:0; font-family:'Hanken Grotesk',ui-sans-serif,system-ui,sans-serif; color:var(--ink); padding:0 0 90px;
+    background:
+      radial-gradient(1000px 560px at 50% -160px, rgba(255,255,255,.85) 0%, rgba(255,255,255,.25) 50%, rgba(255,255,255,0) 75%),
+      radial-gradient(700px 480px at 6% -40px, rgba(60,64,70,.11) 0%, rgba(60,64,70,0) 68%),
+      radial-gradient(700px 480px at 94% -40px, rgba(60,64,70,.11) 0%, rgba(60,64,70,0) 68%),
+      #EFF0F1; background-attachment:fixed; }
+
+  .hdr{ position:sticky; top:0; z-index:50; }
+  .top{ background:#FBFAFD; border-bottom:1px solid rgba(148,163,184,.18); }
+  .top .in{ max-width:1200px; margin:0 auto; padding:0 28px; display:flex; align-items:center; height:54px; gap:16px; }
+  .logo{ font-family:'Source Serif 4',Georgia,serif; font-weight:600; font-size:18px; }
+  .logo span{ color:var(--blue); }
+  .nav2{ height:40px; display:flex; align-items:center; justify-content:center; gap:2px; font-size:12.5px; font-weight:600;
+    background:rgba(255,255,255,.9); backdrop-filter:blur(10px); }
+  .nav2 a{ padding:7px 12px; border-radius:8px; text-decoration:none; color:#5b6472; }
+  .nav2 a.on{ color:#0f172a; background:rgba(15,23,42,.07); }
+  .fio{ height:2px; background:linear-gradient(90deg, rgba(147,197,253,0) 0%, #93C5FD 22%, #A5B4FC 50%, #C4B5FD 78%, rgba(196,181,253,0) 100%); }
+
+  /* ===== A FOLHA ===== */
+  .folha{ max-width:760px; margin:34px auto 0; background:#fff; border:1px solid rgba(15,23,42,.07); border-radius:24px;
+    box-shadow:0 1px 2px rgba(15,23,42,.04), 0 24px 60px -24px rgba(15,23,42,.18);
+    padding:38px 44px 30px; }
+  .sec{ padding:22px 0; border-top:1px solid var(--line); }
+  .sec:first-child{ border-top:none; padding-top:0; }
+  .lbl{ font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); }
+
+  /* saudação + identidade numa linha */
+  h1{ font-family:'Source Serif 4',Georgia,serif; font-size:30px; font-weight:600; letter-spacing:-.02em; margin:0; }
+  h1 b{ color:var(--blue); font-weight:600; }
+  .idline{ display:flex; align-items:center; gap:7px; margin-top:10px; font-size:12.5px; color:var(--muted); flex-wrap:wrap; }
+  .idline .sep{ color:#D5DBE2; }
+  .idline svg{ width:13px; height:13px; vertical-align:-2px; }
+  .idline .hot{ color:#E8703A; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+  .idline .lv{ color:var(--blue); font-weight:700; display:inline-flex; align-items:center; gap:5px; }
+  .xpbar{ width:54px; height:4px; border-radius:2px; background:#EEF1F4; overflow:hidden; display:inline-block; vertical-align:1px; }
+  .xpbar i{ display:block; height:100%; width:55%; background:linear-gradient(90deg,#60A5FA,#2563eb); }
+
+  /* continuar — slim */
+  .cont{ display:flex; align-items:center; gap:16px; }
+  .cont .tx .k{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); }
+  .cont .tx .t{ font-size:15px; font-weight:700; margin-top:3px; }
+  .cont .tx .t span{ color:#B6C2D0; }
+  .cont .tx .s{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .cont .btn{ margin-left:auto; background:linear-gradient(135deg,#0F7B5F,#0c6b53); color:#fff; font-weight:700; font-size:13px;
+    border-radius:11px; padding:12px 19px; white-space:nowrap; cursor:pointer; box-shadow:0 8px 20px -10px rgba(15,123,95,.55);
+    transition:.18s; }
+  .cont .btn:hover{ transform:translateY(-1px); box-shadow:0 12px 26px -10px rgba(15,123,95,.6); }
+
+  /* stats inline */
+  .stats{ display:flex; align-items:stretch; }
+  .stats .st{ flex:1; text-align:center; }
+  .stats .st + .st{ border-left:1px solid var(--line); }
+  .stats .v{ font-size:22px; font-weight:700; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .stats .v small{ font-size:12px; color:var(--faint); font-weight:600; }
+  .stats .k{ font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--faint); margin-top:4px; }
+  .stats .d{ font-size:10.5px; font-weight:700; color:var(--accent); margin-top:2px; }
+
+  /* heatmap — protagonista */
+  .heat .hd{ display:flex; align-items:baseline; gap:10px; }
+  .heat .hd .sub{ font-size:11.5px; color:var(--faint); }
+  .hmwrap{ display:flex; gap:10px; margin-top:16px; }
+  .dows{ display:grid; grid-template-rows:repeat(7, 14px); gap:4px; font-size:8.5px; color:#C3CBD4; font-weight:600; }
+  .dows i{ font-style:normal; line-height:14px; }
+  .hm{ display:grid; grid-template-rows:repeat(7, 14px); grid-auto-flow:column; grid-auto-columns:14px; gap:4px; flex:1; }
+  .hm i{ border-radius:3.5px; background:#F0F3F6; transition:transform .12s; }
+  .hm i:hover{ transform:scale(1.25); }
+  .hm .l1{ background:#D3E9DE; } .hm .l2{ background:#9ED6BC; } .hm .l3{ background:#4CAF8C; } .hm .l4{ background:#0F7B5F; }
+  .months{ display:flex; margin-top:7px; margin-left:24px; font-size:9px; color:#C3CBD4; font-weight:600; gap:54px; }
+  .heat .ft{ display:flex; align-items:center; gap:6px; margin-top:13px; font-size:10.5px; color:var(--faint); }
+  .heat .ft i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .heat .ft .n{ margin-left:auto; }
+  .heat .ft .n b{ color:var(--accent); }
+
+  /* medalhas — strip */
+  .medst{ display:flex; align-items:center; gap:14px; }
+  .hexes{ display:flex; gap:9px; }
+  .hx{ width:34px; height:39px; display:block; }
+  .hx.g{ filter:drop-shadow(0 4px 10px rgba(217,142,4,.4)); }
+  .hx.s2{ filter:drop-shadow(0 4px 10px rgba(143,163,181,.35)); }
+  .hx.b{ filter:drop-shadow(0 4px 10px rgba(196,154,82,.35)); }
+  .medst .nx{ font-size:12px; color:var(--muted); }
+  .medst .nx b{ color:var(--ink); }
+  .pbar{ width:120px; height:4px; border-radius:2px; background:#EEF1F4; overflow:hidden; margin-top:6px; }
+  .pbar i{ display:block; height:100%; width:55%; background:linear-gradient(90deg,#93C5FD,#A5B4FC); }
+  .medst .all{ margin-left:auto; font-size:11.5px; font-weight:700; color:var(--blue); cursor:pointer; white-space:nowrap; }
+
+  /* atividade — minimal */
+  .ml{ margin-top:4px; }
+  .mi2{ display:flex; align-items:baseline; gap:12px; padding:7.5px 0; font-size:13px; }
+  .mi2 .tm{ width:46px; flex:none; font-size:10.5px; color:var(--faint); font-variant-numeric:tabular-nums; }
+  .mi2 .dot{ width:6px; height:6px; border-radius:50%; flex:none; align-self:center; }
+  .mi2 .tt{ font-weight:600; }
+  .mi2 .ss{ color:var(--muted); font-size:12px; }
+  .mi2 .ss a{ color:var(--blue); font-weight:700; text-decoration:none; }
+  .vh{ font-size:11.5px; font-weight:700; color:var(--blue); cursor:pointer; }
+
+  /* pontos de atenção mini (dentro de atividade? não — linha própria slim) */
+  .radmini{ display:flex; gap:24px; flex-wrap:wrap; }
+  .rm{ font-size:12.5px; display:flex; align-items:center; gap:8px; }
+  .rm .dot{ width:7px; height:7px; border-radius:50%; }
+  .rm b{ font-variant-numeric:tabular-nums; }
+  .rm a{ color:var(--blue); font-weight:700; font-size:11.5px; text-decoration:none; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E2C58F"/><stop offset="1" stop-color="#C49A52"/></linearGradient>
+  <linearGradient id="gS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C7D2DD"/><stop offset="1" stop-color="#8FA3B5"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2C231"/><stop offset="1" stop-color="#D98E04"/></linearGradient>
+  <linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.35)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></linearGradient>
+</defs></svg>
+
+<header class="hdr">
+  <div class="top"><div class="in"><span class="logo">Papiro<span>.</span></span><span style="margin-left:auto;font-size:12px;color:#94a3b8">⌕ Buscar · AL</span></div></div>
+  <nav class="nav2"><a href="#" class="on">Início</a><a href="#">Estudar</a><a href="#">Flashcards</a><a href="#">Questões</a><a href="#">Lei Seca</a><a href="#">Cadernos</a><a href="#">Editais</a></nav>
+  <div class="fio"></div>
+</header>
+
+<div class="folha">
+
+  <!-- saudação + identidade -->
+  <div class="sec">
+    <h1>Boa noite, <b>Aldemir</b>.</h1>
+    <div class="idline">
+      Quinta, 11 de junho
+      <span class="sep">·</span>
+      <span class="hot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>14 dias</span>
+      <span class="sep">·</span>
+      <span class="lv">Nível 12 <span class="xpbar"><i></i></span></span>
+      <span class="sep">·</span>
+      <span>+40 XP hoje</span>
+    </div>
+  </div>
+
+  <!-- continuar -->
+  <div class="sec cont">
+    <div class="tx">
+      <div class="k">Continuar de onde parou</div>
+      <div class="t">Direito Administrativo <span>›</span> Atos Administrativos</div>
+      <div class="s">questão 18 de 40 · 73% na sessão · ~15 min</div>
+    </div>
+    <span class="btn">Retomar →</span>
+  </div>
+
+  <!-- stats inline -->
+  <div class="sec stats">
+    <div class="st"><div class="v">47<small>/50</small></div><div class="k">hoje</div><div class="d">faltam 3</div></div>
+    <div class="st"><div class="v">73%</div><div class="k">acerto no mês</div><div class="d">↑ 3 pts</div></div>
+    <div class="st"><div class="v">12</div><div class="k">revisões FSRS</div><div class="d" style="color:#94a3b8">~9 min</div></div>
+    <div class="st"><div class="v">18h40</div><div class="k">esta semana</div><div class="d">melhor das últimas 8</div></div>
+  </div>
+
+  <!-- MAPA DE CALOR — protagonista -->
+  <div class="sec heat">
+    <div class="hd">
+      <span class="lbl">Constância</span>
+      <span class="sub">cada quadrado é um dia de estudo</span>
+    </div>
+    <div class="hmwrap">
+      <div class="dows"><i></i><i>seg</i><i></i><i>qua</i><i></i><i>sex</i><i></i></div>
+      <div class="hm">
+        <i class="l1"></i><i class="l2"></i><i></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i>
+        <i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i><i class="l2"></i><i class="l1"></i>
+        <i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i></i><i class="l2"></i>
+        <i class="l2"></i><i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i></i>
+        <i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i>
+        <i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i></i>
+        <i class="l2"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i></i><i></i>
+      </div>
+    </div>
+    <div class="months"><span>abril</span><span>maio</span><span>junho</span></div>
+    <div class="ft">
+      menos <i style="background:#F0F3F6"></i><i style="background:#D3E9DE"></i><i style="background:#9ED6BC"></i><i style="background:#4CAF8C"></i><i style="background:#0F7B5F"></i> mais
+      <span class="n"><b>84 dias ativos</b> no trimestre · melhor sequência: 21</span>
+    </div>
+  </div>
+
+  <!-- pontos de atenção — uma linha -->
+  <div class="sec">
+    <span class="lbl">Pontos de atenção</span>
+    <div class="radmini" style="margin-top:11px">
+      <span class="rm"><span class="dot" style="background:#E8919B"></span>Controle de constitucionalidade <b style="color:#C25E6A">41%</b> <a href="#">treinar →</a></span>
+      <span class="rm"><span class="dot" style="background:#E8C083"></span>Licitações 14.133 <b style="color:#B98A3F">58%</b> <a href="#">treinar →</a></span>
+      <span class="rm"><span class="dot" style="background:#8FD0B4"></span>Atos administrativos <b style="color:#0F7B5F">84%</b></span>
+    </div>
+  </div>
+
+  <!-- medalhas — strip -->
+  <div class="sec medst">
+    <span class="lbl" style="align-self:center">Conquistas</span>
+    <span class="hexes">
+      <svg class="hx g" viewBox="0 0 46 52"><polygon points="23,0 43.7,13 43.7,39 23,52 2.3,39 2.3,13" fill="url(#gG)"/><polygon points="23,2 41.9,14 41.9,38 23,50 4.1,38 4.1,14" fill="none" stroke="rgba(255,255,255,.35)"/><polygon points="23,0 43.7,13 43.7,18 2.3,18 2.3,13" fill="url(#sh)"/><g transform="translate(14,17)"><path d="M15 3.5 7 12.5l-3.5-3.5" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <svg class="hx s2" viewBox="0 0 46 52"><polygon points="23,0 43.7,13 43.7,39 23,52 2.3,39 2.3,13" fill="url(#gS)"/><polygon points="23,2 41.9,14 41.9,38 23,50 4.1,38 4.1,14" fill="none" stroke="rgba(255,255,255,.35)"/><polygon points="23,0 43.7,13 43.7,18 2.3,18 2.3,13" fill="url(#sh)"/><g transform="translate(13,16)"><circle cx="10" cy="10" r="7.5" fill="none" stroke="#fff" stroke-width="1.9"/><circle cx="10" cy="10" r="2.6" fill="#fff"/></g></svg>
+      <svg class="hx b" viewBox="0 0 46 52"><polygon points="23,0 43.7,13 43.7,39 23,52 2.3,39 2.3,13" fill="url(#gB)"/><polygon points="23,2 41.9,14 41.9,38 23,50 4.1,38 4.1,14" fill="none" stroke="rgba(255,255,255,.35)"/><polygon points="23,0 43.7,13 43.7,18 2.3,18 2.3,13" fill="url(#sh)"/><g transform="translate(13,15)"><path d="M10 2.5 12 7.5l5.5.7-4 3.8 1 5.5-4.5-2.6L5.5 17.5l1-5.5-4-3.8 5.5-.7z" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></g></svg>
+    </span>
+    <span class="nx">
+      3 de 14 · próxima: <b>Sequência iniciante</b> — faltam 9 dias
+      <span class="pbar"><i></i></span>
+    </span>
+    <span class="all">Ver todas →</span>
+  </div>
+
+  <!-- atividade recente — minimal -->
+  <div class="sec">
+    <div style="display:flex;align-items:baseline">
+      <span class="lbl">Atividade recente</span>
+      <span style="margin-left:auto" class="vh">Ver histórico →</span>
+    </div>
+    <div class="ml">
+      <div class="mi2"><span class="tm">há 2h</span><span class="dot" style="background:#2563eb"></span><span class="tt">23 questões · Dir. Administrativo</span><span class="ss">— 78% (↑5 vs sua média)</span></div>
+      <div class="mi2"><span class="tm">há 5h</span><span class="dot" style="background:#7C3AED"></span><span class="tt">15 flashcards revisados</span><span class="ss">— 92% lembrados</span></div>
+      <div class="mi2"><span class="tm">ontem</span><span class="dot" style="background:#DC2626"></span><span class="tt">4 pegadinhas marcadas</span><span class="ss">— Controle de const. · <a href="#">rever as 7 →</a></span></div>
+      <div class="mi2"><span class="tm">ontem</span><span class="dot" style="background:#D97706"></span><span class="tt">Medalha "Estudioso"</span><span class="ss">— 25 questões completas</span></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
