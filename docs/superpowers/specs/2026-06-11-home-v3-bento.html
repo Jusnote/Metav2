@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home v3 — Bento do Estudante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#0f172a; --muted:#64748b; --faint:#94a3b8; --line:#E2E8F0; --accent:#0F7B5F; --blue:#2563eb; }
+  *{ box-sizing:border-box; }
+  html,body{ min-height:100%; }
+  body{ margin:0; font-family:'Hanken Grotesk',ui-sans-serif,system-ui,sans-serif; color:var(--ink); padding:0 0 90px;
+    background:
+      radial-gradient(1000px 560px at 50% -160px, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 75%),
+      radial-gradient(700px 480px at 6% -40px, rgba(60,64,70,0.11) 0%, rgba(60,64,70,0) 68%),
+      radial-gradient(700px 480px at 94% -40px, rgba(60,64,70,0.11) 0%, rgba(60,64,70,0) 68%),
+      #EFF0F1; background-attachment:fixed; }
+
+  .hdr{ position:sticky; top:0; z-index:50; }
+  .top{ background:#FBFAFD; border-bottom:1px solid rgba(148,163,184,.18); }
+  .top .in{ max-width:1200px; margin:0 auto; padding:0 28px; display:flex; align-items:center; height:54px; gap:16px; }
+  .logo{ font-family:'Source Serif 4',Georgia,serif; font-weight:600; font-size:18px; }
+  .logo span{ color:var(--blue); }
+  .nav2{ height:40px; display:flex; align-items:center; justify-content:center; gap:2px; font-size:12.5px; font-weight:600;
+    background:rgba(255,255,255,.9); backdrop-filter:blur(10px); border-bottom:1px solid rgba(26,23,20,.06); }
+  .nav2 a{ padding:7px 12px; border-radius:8px; text-decoration:none; color:#5b6472; }
+  .nav2 a.on{ color:#0f172a; background:rgba(15,23,42,.07); }
+  .fio{ height:2px; background:linear-gradient(90deg, rgba(147,197,253,0) 0%, #93C5FD 22%, #A5B4FC 50%, #C4B5FD 78%, rgba(196,181,253,0) 100%); }
+
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 20px; }
+  .greet{ display:flex; align-items:baseline; gap:14px; margin:26px 2px 16px; }
+  .greet h1{ font-family:'Source Serif 4',Georgia,serif; font-size:30px; font-weight:600; letter-spacing:-.02em; margin:0; }
+  .greet h1 b{ color:var(--blue); font-weight:600; }
+  .greet .sub{ font-size:12.5px; color:var(--muted); }
+
+  /* ===== BENTO ===== */
+  .bento{ display:grid; gap:14px;
+    grid-template-columns:repeat(4, 1fr);
+    grid-template-areas:
+      "cta  cta  lvl  stk"
+      "heat heat act  act"
+      "perf meta act  act"
+      "rad  rad  med  med"; }
+  .b{ background:#fff; border:1px solid rgba(15,23,42,.08); border-radius:20px; padding:16px 19px;
+    box-shadow:0 1px 2px rgba(15,23,42,.04), 0 10px 28px -14px rgba(15,23,42,.14);
+    transition:transform .18s ease, box-shadow .18s ease; }
+  .b:hover{ transform:translateY(-2px); box-shadow:0 2px 4px rgba(15,23,42,.05), 0 16px 36px -14px rgba(15,23,42,.2); }
+  .lbl{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); }
+
+  /* cta */
+  .cta{ grid-area:cta; background:linear-gradient(135deg,#0F7B5F 0%,#0c6b53 100%); color:#fff; border:none;
+    display:flex; align-items:center; gap:18px; box-shadow:0 16px 36px -16px rgba(15,123,95,.5); }
+  .cta .k{ font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; opacity:.7; }
+  .cta .t{ font-size:17px; font-weight:700; margin-top:4px; letter-spacing:-.01em; }
+  .cta .s{ font-size:12px; opacity:.85; margin-top:3px; }
+  .cta .bar{ height:5px; border-radius:3px; background:rgba(255,255,255,.22); overflow:hidden; margin-top:11px; }
+  .cta .bar i{ display:block; height:100%; width:45%; background:#fff; border-radius:3px; }
+  .cta .btn{ background:#fff; color:#0F7B5F; font-weight:700; font-size:13px; border-radius:11px; padding:12px 18px; white-space:nowrap; cursor:pointer; }
+
+  /* nível */
+  .lvl{ grid-area:lvl; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .ring{ width:64px; height:64px; border-radius:50%;
+    background:conic-gradient(#2563eb 0 55%, #E8EDF3 55% 100%); display:grid; place-items:center; }
+  .ring i{ width:51px; height:51px; border-radius:50%; background:#fff; display:grid; place-items:center;
+    font-style:normal; font-weight:800; font-size:18px; color:var(--blue); }
+  .lvl .t{ font-size:12.5px; font-weight:700; margin-top:9px; }
+  .lvl .s{ font-size:10.5px; color:var(--faint); margin-top:2px; }
+
+  /* streak */
+  .stk{ grid-area:stk; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .flame{ width:54px; height:54px; border-radius:16px; background:linear-gradient(135deg,#FFF4E8,#FFE3C7);
+    display:grid; place-items:center; color:#E8703A; }
+  .flame svg{ width:27px; height:27px; }
+  .stk .v{ font-size:19px; font-weight:800; margin-top:8px; }
+  .stk .s{ font-size:10.5px; color:var(--faint); margin-top:2px; }
+  .wk{ display:flex; gap:4px; margin-top:9px; }
+  .wk i{ width:9px; height:9px; border-radius:50%; background:#0F7B5F; }
+  .wk i.off{ background:#E8EDF3; }
+
+  /* constância (heatmap) */
+  .heat{ grid-area:heat; }
+  .hm{ display:grid; grid-template-rows:repeat(7, 11px); grid-auto-flow:column; grid-auto-columns:11px; gap:3.5px; margin-top:12px; }
+  .hm i{ border-radius:3px; background:#EDF1F5; }
+  .hm .l1{ background:#D3E9DE; } .hm .l2{ background:#9ED6BC; } .hm .l3{ background:#4CAF8C; } .hm .l4{ background:#0F7B5F; }
+  .heat .legend{ display:flex; align-items:center; gap:5px; font-size:10px; color:var(--faint); margin-top:10px; }
+  .heat .legend i{ width:9px; height:9px; border-radius:2.5px; display:inline-block; }
+
+  /* atividades recentes */
+  .act{ grid-area:act; display:flex; flex-direction:column; }
+  .tl{ margin-top:10px; position:relative; flex:1; }
+  .tl::before{ content:""; position:absolute; left:14px; top:6px; bottom:6px; width:2px; background:#F1F5F9; border-radius:2px; }
+  .ti{ display:flex; gap:13px; padding:8px 0; position:relative; }
+  .tic{ width:30px; height:30px; border-radius:10px; flex:none; display:grid; place-items:center; position:relative; z-index:1; }
+  .tic svg{ width:15px; height:15px; }
+  .ti .tt{ font-size:12.5px; font-weight:600; }
+  .ti .ss{ font-size:11px; color:var(--muted); margin-top:1px; }
+  .ti .tm{ margin-left:auto; font-size:10.5px; color:var(--faint); white-space:nowrap; padding-top:2px; }
+
+  /* desempenho */
+  .perf{ grid-area:perf; }
+  .big{ font-size:26px; font-weight:700; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .ctx{ font-size:11px; color:var(--faint); margin-top:2px; }
+  .spark{ display:flex; align-items:flex-end; gap:2.5px; height:30px; margin-top:10px; }
+  .spark i{ flex:1; background:linear-gradient(180deg,#BFDBFE,#93C5FD); border-radius:2px 2px 0 0; display:block; }
+
+  /* meta donut */
+  .meta{ grid-area:meta; display:flex; align-items:center; gap:14px; }
+  .donut{ width:64px; height:64px; border-radius:50%; flex:none;
+    background:conic-gradient(#0F7B5F 0 94%, #E8EDF3 94% 100%); display:grid; place-items:center; }
+  .donut i{ width:48px; height:48px; border-radius:50%; background:#fff; display:grid; place-items:center;
+    font-style:normal; font-weight:800; font-size:12.5px; color:var(--accent); }
+  .meta .t{ font-size:12.5px; font-weight:700; }
+  .meta .s{ font-size:10.5px; color:var(--faint); margin-top:2px; }
+  .meta .pos{ font-size:10.5px; color:var(--accent); font-weight:700; margin-top:4px; }
+
+  /* radar */
+  .rad{ grid-area:rad; }
+  .rad li{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #F1F5F9; font-size:12.5px; }
+  .rad li:last-child{ border:none; }
+  .rad .dot{ width:7px; height:7px; border-radius:50%; flex:none; }
+  .rad .n{ font-weight:600; }
+  .rad .pct{ margin-left:auto; font-weight:700; font-size:12px; font-variant-numeric:tabular-nums; }
+  .rad .tr{ color:var(--blue); font-weight:700; font-size:11.5px; cursor:pointer; white-space:nowrap; }
+  ul{ list-style:none; margin:0; padding:0; }
+
+  /* medalhas */
+  .med{ grid-area:med; }
+  .mrow{ display:flex; gap:10px; margin-top:11px; align-items:flex-start; }
+  .hex{ width:40px; height:46px; clip-path:polygon(50% 0,95% 25%,95% 75%,50% 100%,5% 75%,5% 25%); display:grid; place-items:center; flex:none; }
+  .hex svg{ width:17px; height:17px; color:#fff; }
+  .hex.lk{ background:linear-gradient(135deg,#EDF1F5,#E2E8F0); }
+  .hex.lk svg{ color:#B6C2D0; }
+  .med .next{ font-size:11px; color:var(--muted); margin-top:11px; }
+  .med .next b{ color:var(--ink); }
+  .pbar{ height:4px; border-radius:2px; background:#F1F5F9; overflow:hidden; margin-top:6px; }
+  .pbar i{ display:block; height:100%; width:55%; background:linear-gradient(90deg,#93C5FD,#A5B4FC); border-radius:2px; }
+  .med .all{ font-size:11px; color:var(--blue); font-weight:700; margin-top:9px; display:inline-block; cursor:pointer; }
+
+  @media (max-width:880px){
+    .bento{ grid-template-columns:1fr 1fr; grid-template-areas:
+      "cta cta" "lvl stk" "heat heat" "act act" "perf meta" "rad rad" "med med"; }
+  }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="top"><div class="in"><span class="logo">Papiro<span>.</span></span><span style="margin-left:auto;font-size:12px;color:#94a3b8">⌕ Buscar · AL</span></div></div>
+  <nav class="nav2"><a href="#" class="on">Início</a><a href="#">Estudar</a><a href="#">Flashcards</a><a href="#">Questões</a><a href="#">Lei Seca</a><a href="#">Cadernos</a><a href="#">Editais</a></nav>
+  <div class="fio"></div>
+</header>
+
+<div class="wrap">
+  <div class="greet">
+    <h1>Olá, <b>Aldemir</b>.</h1>
+    <span class="sub">Quinta-feira, 11 de junho</span>
+  </div>
+
+  <div class="bento">
+    <!-- CONTINUAR -->
+    <div class="b cta">
+      <div style="flex:1">
+        <div class="k">Continuar de onde parou</div>
+        <div class="t">Direito Administrativo › Atos Administrativos</div>
+        <div class="s">questão 18 de 40 · 73% na sessão · ~15 min pra fechar</div>
+        <div class="bar"><i></i></div>
+      </div>
+      <span class="btn">Retomar →</span>
+    </div>
+
+    <!-- NÍVEL -->
+    <div class="b lvl">
+      <span class="ring"><i>12</i></span>
+      <div class="t">Nível 12</div>
+      <div class="s">820 / 1.500 XP</div>
+    </div>
+
+    <!-- STREAK -->
+    <div class="b stk">
+      <span class="flame"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>
+      <div class="v">12 dias</div>
+      <div class="s">recorde: 21</div>
+      <div class="wk"><i></i><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i></div>
+    </div>
+
+    <!-- CONSTÂNCIA -->
+    <div class="b heat">
+      <span class="lbl">Constância · últimas 12 semanas</span>
+      <div class="hm">
+        <i class="l1"></i><i class="l2"></i><i></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i>
+        <i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i><i class="l2"></i><i class="l1"></i>
+        <i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i></i><i class="l2"></i>
+        <i class="l2"></i><i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i></i>
+        <i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i>
+        <i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i></i>
+        <i class="l2"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i>
+        <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i></i><i></i>
+      </div>
+      <div class="legend">menos <i style="background:#EDF1F5"></i><i style="background:#D3E9DE"></i><i style="background:#9ED6BC"></i><i style="background:#4CAF8C"></i><i style="background:#0F7B5F"></i> mais · 84 dias ativos</div>
+    </div>
+
+    <!-- ATIVIDADES RECENTES -->
+    <div class="b act">
+      <span class="lbl">Atividade recente</span>
+      <div class="tl">
+        <div class="ti">
+          <span class="tic" style="background:#EFF6FF;color:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H3M9 6H3M21 16H3M16 6l3 3 4-4"/></svg></span>
+          <div><div class="tt">23 questões · Dir. Administrativo</div><div class="ss">78% de acerto na sessão</div></div>
+          <span class="tm">há 2h</span>
+        </div>
+        <div class="ti">
+          <span class="tic" style="background:#F5F3FF;color:#7C3AED"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 8v10a2 2 0 0 1-2 2H8"/></svg></span>
+          <div><div class="tt">15 flashcards revisados</div><div class="ss">FSRS em dia · 92% lembrados</div></div>
+          <span class="tm">há 5h</span>
+        </div>
+        <div class="ti">
+          <span class="tic" style="background:#FEF2F2;color:#DC2626"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div><div class="tt">4 pegadinhas marcadas</div><div class="ss">Controle de constitucionalidade</div></div>
+          <span class="tm">ontem</span>
+        </div>
+        <div class="ti">
+          <span class="tic" style="background:#FFFBEB;color:#D97706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/></svg></span>
+          <div><div class="tt">Medalha "Centurião" desbloqueada</div><div class="ss">100 questões resolvidas</div></div>
+          <span class="tm">ontem</span>
+        </div>
+        <div class="ti">
+          <span class="tic" style="background:#ECFDF5;color:#0F7B5F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>
+          <div><div class="tt">Lei Seca: art. 37–41 CF lidos</div><div class="ss">12 grifos novos</div></div>
+          <span class="tm">ter</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESEMPENHO -->
+    <div class="b perf">
+      <span class="lbl">Desempenho</span>
+      <div class="big" style="margin-top:7px">73%</div>
+      <div class="ctx">1.248 questões no mês</div>
+      <div class="spark">
+        <i style="height:40%"></i><i style="height:55%"></i><i style="height:38%"></i><i style="height:62%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:66%"></i>
+        <i style="height:76%"></i><i style="height:60%"></i><i style="height:82%"></i><i style="height:70%"></i><i style="height:86%"></i><i style="height:80%"></i><i style="height:92%"></i>
+      </div>
+    </div>
+
+    <!-- META DE HOJE -->
+    <div class="b meta">
+      <span class="donut"><i>94%</i></span>
+      <div>
+        <div class="t">Meta de hoje</div>
+        <div class="s">47 de 50 questões</div>
+        <div class="pos">faltam 3 · quase lá!</div>
+      </div>
+    </div>
+
+    <!-- PONTOS DE ATENÇÃO -->
+    <div class="b rad">
+      <span class="lbl">Pontos de atenção</span>
+      <ul style="margin-top:4px">
+        <li><span class="dot" style="background:#E8919B"></span><span class="n">Controle de constitucionalidade</span><span class="pct" style="color:#C25E6A">41%</span><span class="tr">Treinar →</span></li>
+        <li><span class="dot" style="background:#E8C083"></span><span class="n">Licitações (Lei 14.133)</span><span class="pct" style="color:#B98A3F">58%</span><span class="tr">Treinar →</span></li>
+        <li><span class="dot" style="background:#8FD0B4"></span><span class="n">Atos administrativos</span><span class="pct" style="color:#0F7B5F">84%</span><span style="width:54px"></span></li>
+      </ul>
+    </div>
+
+    <!-- MEDALHAS -->
+    <div class="b med">
+      <span class="lbl">Conquistas · 3 de 12</span>
+      <div class="mrow">
+        <span class="hex" style="background:linear-gradient(135deg,#F2C231,#D98E04)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="hex" style="background:linear-gradient(135deg,#C7D2DD,#8FA3B5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>
+        <span class="hex" style="background:linear-gradient(135deg,#E2C58F,#C49A52)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 15 8l6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg></span>
+        <span class="hex lk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <span class="hex lk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+      </div>
+      <div class="next">Próxima: <b>Sequência iniciante</b> · 55%</div>
+      <div class="pbar"><i></i></div>
+      <span class="all">Ver quadro completo →</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
