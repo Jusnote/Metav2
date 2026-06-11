@@ -110,16 +110,15 @@
   .cta .btn:hover .ar{ transform:translateX(3px); }
   .cta .ar{ display:inline-block; transition:transform .2s; }
 
-  /* ===== strip vence hoje ===== */
-  .strip{ display:flex; align-items:center; gap:12px; padding:13px 20px; }
-  .stile{ width:36px; height:36px; border-radius:10px; background:#EFF6FF; color:var(--blue); display:grid; place-items:center; flex:none; }
-  .stile svg{ width:18px; height:18px; }
-  .strip .t{ font-size:13px; font-weight:600; }
-  .strip .t small{ font-size:12px; font-weight:500; color:var(--muted); }
-  .strip .ctx{ margin-left:auto; font-size:11px; color:var(--faint); }
-  .strip .obtn{ border:1px solid rgba(37,99,235,.3); color:var(--blue); font-size:12.5px; font-weight:700;
-    border-radius:9px; padding:7px 14px; cursor:pointer; background:#fff; transition:.15s; }
-  .strip .obtn:hover{ background:#EFF6FF; }
+  /* ===== fileira constância (1fr) + pontos de atenção (2fr) ===== */
+  .grid12{ display:grid; grid-template-columns:1fr 2fr; gap:14px; }
+  .heatcard{ padding:15px 19px; display:flex; flex-direction:column; }
+  .minihm{ display:grid; grid-template-rows:repeat(7, 9px); grid-auto-flow:column; grid-auto-columns:9px; gap:3px; margin-top:12px; justify-content:start; }
+  .minihm i{ border-radius:2.5px; background:#F0F3F6; transition:transform .12s; }
+  .minihm i:hover{ transform:scale(1.3); }
+  .minihm .l1{ background:#D3E9DE; } .minihm .l2{ background:#9ED6BC; } .minihm .l3{ background:#4CAF8C; } .minihm .l4{ background:#0F7B5F; }
+  .heatcard .ctx{ font-size:11px; color:var(--muted); margin-top:auto; padding-top:11px; }
+  .heatcard .ctx b{ color:var(--accent); }
 
   /* ===== stats ===== */
   .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
@@ -271,12 +270,34 @@
     <span class="btn">Retomar <span class="ar">→</span></span>
   </div>
 
-  <!-- STRIP VENCE HOJE -->
-  <div class="card strip r d3">
-    <span class="stile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="m9 16 2 2 4-4"/></svg></span>
-    <span class="t">Vence hoje · 12 flashcards <small>— Direito Adm 7 · Constitucional 5</small></span>
-    <span class="ctx">~9 min pra zerar a fila</span>
-    <span class="obtn">Revisar →</span>
+  <!-- CONSTÂNCIA (1/3) + PONTOS DE ATENÇÃO (2/3) -->
+  <div class="grid12 r d3">
+  <div class="card heatcard lift">
+    <span class="lbl">Constância · 12 semanas</span>
+    <span class="minihm">
+      <i class="l1"></i><i class="l2"></i><i></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i>
+      <i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i><i class="l2"></i><i class="l1"></i>
+      <i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i></i><i class="l2"></i>
+      <i class="l2"></i><i class="l1"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i></i>
+      <i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i>
+      <i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i>
+      <i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i>
+      <i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i></i>
+      <i class="l2"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i>
+      <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i><i class="l4"></i><i class="l4"></i>
+      <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i>
+      <i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i></i><i></i>
+    </span>
+    <span class="ctx"><b>84 dias ativos</b> no trimestre · melhor: 21</span>
+  </div>
+  <div class="card pad lift">
+    <span class="lbl">Pontos de atenção</span>
+    <ul class="rad" style="margin-top:4px">
+      <li><span class="dot" style="background:#E8919B"></span><div><div class="n">Controle de constitucionalidade</div><div class="dg">41% em 52 questões · caiu 7 pts em 30 dias</div></div><span class="pct" style="color:#C25E6A">41%</span><span class="tr">Treinar →</span></li>
+      <li><span class="dot" style="background:#E8C083"></span><div><div class="n">Licitações (Lei 14.133)</div><div class="dg">58% em 38 questões · estável</div></div><span class="pct" style="color:#B98A3F">58%</span><span class="tr">Treinar →</span></li>
+      <li><span class="dot" style="background:#8FD0B4"></span><div><div class="n">Atos administrativos</div><div class="dg">84% em 214 questões · seu ponto forte</div></div><span class="pct" style="color:#0F7B5F">84%</span><span style="width:58px"></span></li>
+    </ul>
+  </div>
   </div>
 
   <!-- STATS -->
@@ -303,15 +324,16 @@
       <span class="see">ver detalhes →</span>
       <div class="duo">
         <div><div class="num">47<small>/50</small></div><div class="cap">questões</div></div>
-        <div><div class="num">1h24</div><div class="cap">estudadas</div></div>
+        <div><div class="num">12</div><div class="cap">revisões · ~9 min</div></div>
       </div>
       <div class="hair"><i></i></div>
       <div class="cap" style="color:var(--accent);font-weight:700">faltam 3 pra bater a meta</div>
     </div>
   </div>
 
-  <!-- QUADRO DE CONQUISTAS -->
-  <div class="card med r d5">
+  <!-- QUADRO DE CONQUISTAS (2/3) + ATIVIDADE RECENTE (1/3) -->
+  <div class="grid21 r d5">
+  <div class="card med">
     <div class="medhd">
       <span class="lbl">Quadro de conquistas</span>
       <span class="sub">3 de 14 · medalhas que marcam seu progresso</span>
@@ -353,29 +375,6 @@
       <span class="pgdots"><i class="on"></i><i></i><i></i></span>
     </div>
   </div>
-
-  <!-- FILEIRA FINAL -->
-  <div class="grid21 r d6">
-    <div class="colL">
-      <div class="card pad">
-        <span class="lbl">Pontos de atenção</span>
-        <ul class="rad" style="margin-top:4px">
-          <li><span class="dot" style="background:#E8919B"></span><div><div class="n">Controle de constitucionalidade</div><div class="dg">41% em 52 questões · caiu 7 pts em 30 dias</div></div><span class="pct" style="color:#C25E6A">41%</span><span class="tr">Treinar →</span></li>
-          <li><span class="dot" style="background:#E8C083"></span><div><div class="n">Licitações (Lei 14.133)</div><div class="dg">58% em 38 questões · estável</div></div><span class="pct" style="color:#B98A3F">58%</span><span class="tr">Treinar →</span></li>
-          <li><span class="dot" style="background:#8FD0B4"></span><div><div class="n">Atos administrativos</div><div class="dg">84% em 214 questões · seu ponto forte</div></div><span class="pct" style="color:#0F7B5F">84%</span><span style="width:58px"></span></li>
-        </ul>
-      </div>
-      <div class="card pad">
-        <span class="lbl">Últimos 14 dias</span>
-        <div class="spark">
-          <span><i style="height:40%"></i><em>Q</em></span><span><i style="height:55%"></i><em>S</em></span><span><i style="height:35%"></i><em>S</em></span><span><i style="height:60%"></i><em>D</em></span>
-          <span><i style="height:70%"></i><em>S</em></span><span><i style="height:52%"></i><em>T</em></span><span><i style="height:65%"></i><em>Q</em></span><span><i style="height:75%"></i><em>Q</em></span>
-          <span><i style="height:58%"></i><em>S</em></span><span><i style="height:80%"></i><em>S</em></span><span><i style="height:68%"></i><em>D</em></span><span><i style="height:85%"></i><em>S</em></span>
-          <span><i style="height:92%"></i><em>T</em></span><span class="hoje"><i style="height:96%"></i><em>Q</em></span>
-        </div>
-        <div class="sft">18h40 esta semana · <a href="#">estatísticas →</a></div>
-      </div>
-    </div>
     <div class="card act">
       <span class="lbl">Atividade recente</span>
       <div class="tl">
@@ -407,6 +406,18 @@
       </div>
       <div class="actft"><a href="#">Ver histórico →</a></div>
     </div>
+  </div>
+
+  <!-- ÚLTIMOS 14 DIAS — rodapé full-width -->
+  <div class="card pad r d6">
+    <span class="lbl">Últimos 14 dias</span>
+    <div class="spark">
+      <span><i style="height:40%"></i><em>Q</em></span><span><i style="height:55%"></i><em>S</em></span><span><i style="height:35%"></i><em>S</em></span><span><i style="height:60%"></i><em>D</em></span>
+      <span><i style="height:70%"></i><em>S</em></span><span><i style="height:52%"></i><em>T</em></span><span><i style="height:65%"></i><em>Q</em></span><span><i style="height:75%"></i><em>Q</em></span>
+      <span><i style="height:58%"></i><em>S</em></span><span><i style="height:80%"></i><em>S</em></span><span><i style="height:68%"></i><em>D</em></span><span><i style="height:85%"></i><em>S</em></span>
+      <span><i style="height:92%"></i><em>T</em></span><span class="hoje"><i style="height:96%"></i><em>Q</em></span>
+    </div>
+    <div class="sft">18h40 esta semana · <a href="#">estatísticas →</a></div>
   </div>
 </div>
 </body>
