@@ -1,5 +1,25 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
+import { Bitter, Fraunces } from 'next/font/google';
+
+// Corpo de leitura das questões (PAPIRO). next/font = self-hosted, sem layout shift.
+// Receita aprovada (comparador com as marcas, 2026-06-10): Bitter 400 · 16.5px · lh 1.90 · ls 0.006em
+const bitter = Bitter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-bitter',
+});
+
+// Par de display.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-fraunces',
+});
 
 export const metadata: Metadata = {
   title: 'FlashCards - Repetição Espaçada',
@@ -20,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${bitter.variable} ${fraunces.variable}`}>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>

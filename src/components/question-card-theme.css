@@ -1,0 +1,331 @@
+/* =============================================================================
+   question-card-theme.css
+   Tema visual do QuestionCard — design editorial "papel & tinta" com acento
+   esmeralda. Substitui o CSS atual das classes qc-*. Importe-o no topo do
+   componente:  import './question-card-theme.css';
+
+   Dark mode: usa estratégia por classe (.dark). Se o seu Tailwind estiver em
+   darkMode:'media', troque os blocos ".dark .qc-card-enter" por
+   "@media (prefers-color-scheme: dark){ .qc-card-enter{ ... } }".
+============================================================================= */
+
+/* Fraunces e o corpo do enunciado (Bitter) agora vêm via next/font (src/app/layout.tsx). */
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ---------- tokens (no escopo do card) ---------- */
+.qc-card-enter{
+  --qc-card:#FFFFFF;
+  --qc-ink:#1A1714;
+  --qc-muted:#6B6560;
+  --qc-faint:#9C958D;
+  --qc-line:#ECEAE5;
+  --qc-line2:#E0DDD6;
+  --qc-accent:#0F7B5F;
+  --qc-accent2:#16A37A;
+  --qc-accent-ink:#0B5D47;
+  --qc-accent-soft:rgba(15,123,95,.09);
+  --qc-ok:#0F7B5F; --qc-ok-bd:rgba(15,123,95,.45); --qc-ok-soft:rgba(15,123,95,.08);
+  --qc-bad:#C0392B; --qc-bad-bd:rgba(192,57,43,.42); --qc-bad-soft:rgba(192,57,43,.07);
+  --qc-shadow:0 1px 2px rgba(26,23,20,.04), 0 12px 32px -12px rgba(26,23,20,.16);
+  --qc-shadow-sm:0 1px 2px rgba(26,23,20,.06), 0 4px 12px -6px rgba(26,23,20,.12);
+  /* OVERRIDE TRIPLO contra a borda azul (src/index.css tem DUAS rules `*`):
+     - linha 312-318: `* { border-color: var(--color-gray-200, currentcolor) }` (shim v4)
+     - linha 495-498: `* { @apply border-border }` (usa --border)
+     Sobrescrevo as DUAS variáveis no escopo do card. Borders explícitas
+     (selected emerald, wrong red) seguem vencendo via maior especificidade. */
+  --border: 42 14% 86%;
+  --color-gray-200: #E0DDD6;
+}
+.dark .qc-card-enter{
+  --qc-card:#17150F;
+  --qc-ink:#F4F1EB;
+  --qc-muted:#A39C92;
+  --qc-faint:#6E665C;
+  --qc-line:#252119;
+  --qc-line2:#322D24;
+  --qc-accent:#2FD6A2;
+  --qc-accent2:#18B286;
+  --qc-accent-ink:#7CE9C7;
+  --qc-accent-soft:rgba(47,214,162,.12);
+  --qc-ok:#2FD6A2; --qc-ok-bd:rgba(47,214,162,.4); --qc-ok-soft:rgba(47,214,162,.1);
+  --qc-bad:#F0776A; --qc-bad-bd:rgba(240,119,106,.4); --qc-bad-soft:rgba(240,119,106,.1);
+  --qc-shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 44px -16px rgba(0,0,0,.7);
+  --qc-shadow-sm:0 1px 2px rgba(0,0,0,.4), 0 6px 16px -8px rgba(0,0,0,.6);
+  /* OVERRIDE dark — mesma estratégia, tonalidade equivalente ao --qc-line2 noturno */
+  --border: 39 16% 17%;
+  --color-gray-200: #322D24;
+}
+
+/* Belt-and-suspenders: força border-color warm nos elementos onde o azul gritava mais.
+   Especificidade (0,2,0) bate qualquer `*` do shim global. */
+.qc-card-enter .qc-alt-circle,
+.qc-card-enter .qc-alt-row.qc-alt-default,
+.qc-card-enter .qc-act,
+.qc-card-enter .qc-chat,
+.qc-card-enter .qc-tagdub,
+.qc-card-enter .qc-compose textarea,
+.qc-card-enter .qc-sugs button {
+  border-color: var(--qc-line2);
+}
+
+/* Força COLOR warm na LETRA do círculo no estado default.
+   Especificidade (0,3,0) — bate qualquer rule global que esteja injetando azul.
+   Os estados qc-circle-selected/correct/wrong NÃO são tocados (têm cor própria). */
+.qc-card-enter .qc-alt-circle.qc-circle-default {
+  color: var(--qc-muted) !important;
+  border-color: var(--qc-line2) !important;
+}
+
+/* ---------- card chrome ---------- */
+.qc-card-enter{
+  position:relative;
+  background:var(--qc-card);
+  border:1px solid var(--qc-line2);
+  border-radius:22px;
+  box-shadow:var(--qc-shadow);
+  overflow:hidden;
+  /* fonte base de TODA a interface do card (igual ao prototipo);
+     o enunciado usa Fraunces, que sobrescreve via estilo inline */
+  font-family:'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  animation:qc-rise .5s cubic-bezier(.2,.7,.2,1) both;
+}
+/* (removida) barra de acento no topo — Aldemir pediu sem a lista verde */
+/* brilho suave no canto superior */
+.qc-card-enter::after{
+  content:"";
+  position:absolute; top:0; right:0; width:340px; height:240px; pointer-events:none;
+  background:radial-gradient(120% 120% at 100% 0%, var(--qc-accent-soft), transparent 60%);
+  z-index:0;
+}
+.qc-card-enter > *{ position:relative; z-index:1; }
+@keyframes qc-rise{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+
+.qc-banner{ position:relative; }
+
+/* ---------- enunciado / alternativas: tipografia ---------- */
+.qc-card-enter .prose{ letter-spacing:-.005em; }
+
+/* ---------- alternativas ---------- */
+.qc-alt-row{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  width:100%;
+  text-align:left;
+  padding:13px 15px;
+  border:1px solid var(--qc-line2);
+  border-radius:15px;
+  background:var(--qc-card);
+  cursor:pointer;
+  transition:transform .16s cubic-bezier(.2,.7,.2,1), box-shadow .16s, border-color .16s, background .16s, opacity .16s;
+}
+.qc-alt-row.qc-alt-default:hover{
+  transform:translateY(-1px);
+  box-shadow:var(--qc-shadow-sm);
+  border-color:var(--qc-muted);
+}
+/* foco por teclado/click — substitui o ring AZUL padrão do browser por glow esmeralda do tema */
+.qc-alt-row:focus{ outline:none; }
+.qc-alt-row:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2.5px var(--qc-accent-soft);
+}
+.qc-alt-row.qc-alt-selected:focus-visible{
+  /* preserva a glow esmeralda do selecionado, só engrossa o halo */
+  box-shadow:0 0 0 1.5px var(--qc-accent), 0 0 0 4.5px var(--qc-accent-soft), 0 8px 22px -12px var(--qc-accent);
+}
+.qc-alt-selected{
+  border-color:transparent;
+  background:var(--qc-accent-soft);
+  /* ring + glow mais sutis (era 1.5px solid + drop forte) */
+  box-shadow:0 0 0 1px rgba(15,123,95,.32), 0 6px 18px -10px rgba(15,123,95,.22);
+}
+.qc-alt-eliminated{ opacity:.45; }
+.qc-alt-correct{
+  border-color:transparent;
+  background:var(--qc-ok-soft);
+  box-shadow:0 0 0 1.5px var(--qc-ok-bd);
+}
+.qc-alt-wrong{
+  border-color:transparent;
+  background:var(--qc-bad-soft);
+  box-shadow:0 0 0 1.5px var(--qc-bad-bd);
+}
+.qc-alt-dimmed{ opacity:.7; }
+
+/* círculo da letra */
+.qc-alt-circle{
+  flex:none;
+  width:30px; height:30px;
+  border-radius:50%;
+  border:1px solid var(--qc-line2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600;
+  font-family:'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+  color:var(--qc-muted);
+  margin-top:1px;
+  transition:.16s;
+}
+.qc-circle-selected{
+  /* circulo selecionado: gradiente esmeralda dessaturado (era cheio) */
+  background:linear-gradient(140deg,rgba(15,123,95,.78),rgba(22,163,122,.78));
+  border-color:transparent; color:#fff;
+}
+.qc-circle-eliminated{ border-style:dashed; color:var(--qc-faint); }
+.qc-circle-correct{
+  background:linear-gradient(140deg,var(--qc-accent),var(--qc-accent2));
+  border-color:transparent; color:#fff;
+}
+.qc-circle-wrong{ border-color:var(--qc-bad); color:var(--qc-bad); }
+
+/* ---------- grifar / riscar (lisere) ---------- */
+.qc-highlight-mark{
+  background:linear-gradient(transparent 55%, rgba(15,123,95,.22) 0);
+  border-radius:2px;
+}
+.dark .qc-highlight-mark{
+  background:linear-gradient(transparent 55%, rgba(47,214,162,.30) 0);
+}
+.qc-strike-mark{
+  text-decoration:line-through;
+  text-decoration-color:var(--qc-bad);
+  text-decoration-thickness:2px;
+}
+
+/* ---------- barra de estatística ---------- */
+.qc-stat-bar{ width:0; animation:qc-stat-grow .6s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes qc-stat-grow{ to{ width:var(--stat-width); } }
+
+/* ---------- explicação IA ---------- */
+.qc-ai-enter{ animation:qc-fade .3s ease both; }
+.qc-ai-cursor{
+  display:inline-block; width:2px; height:1em;
+  background:var(--qc-accent); margin-left:2px; vertical-align:-2px;
+  animation:qc-blink 1s steps(2) infinite;
+}
+@keyframes qc-blink{ 50%{ opacity:0; } }
+
+/* ---------- botão Responder ---------- */
+.qc-submit-btn{
+  background:linear-gradient(140deg,var(--qc-accent),var(--qc-accent2));
+  box-shadow:0 6px 18px -6px var(--qc-accent);
+}
+.qc-submit-btn:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px -8px var(--qc-accent);
+}
+.qc-submit-btn:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px var(--qc-accent-soft), 0 6px 18px -6px var(--qc-accent);
+}
+
+/* ---------- footer ---------- */
+.qc-footer-btn{ transition:all .2s; border-radius:9px; }
+
+/* ---------- badge de resultado + animações ---------- */
+.qc-badge-enter{ animation:qc-fade .35s ease both; }
+.qc-stats-enter{ animation:qc-fade .4s ease both; }
+.qc-card-enter{ /* entrada já definida acima */ }
+.qc-icon-reveal{ animation:qc-fade .3s ease both; }
+
+.qc-check-draw{ stroke-dasharray:22; stroke-dashoffset:22; animation:qc-draw .5s ease forwards .08s; }
+.qc-arrow-draw{ stroke-dasharray:16; stroke-dashoffset:16; animation:qc-draw .4s ease forwards .08s; }
+@keyframes qc-draw{ to{ stroke-dashoffset:0; } }
+
+.qc-spinner{ border-style:solid; animation:qc-spin .7s linear infinite; }
+@keyframes qc-spin{ to{ transform:rotate(360deg); } }
+
+@keyframes qc-fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce){
+  .qc-card-enter, .qc-alt-row, .qc-stat-bar, .qc-ai-enter, .qc-badge-enter,
+  .qc-stats-enter, .qc-icon-reveal, .qc-check-draw, .qc-arrow-draw{
+    animation:none !important;
+    transition:none !important;
+  }
+  .qc-stat-bar{ width:var(--stat-width); }
+}
+
+/* ============================================================================
+   Adições: dificuldade em barras, controles (dúvida/eliminar) e chat de debate
+   ============================================================================ */
+
+/* dificuldade — medidor de 3 barras */
+.qc-diff{ display:inline-flex; align-items:center; gap:6px; }
+.qc-bars{ display:inline-flex; align-items:flex-end; gap:2px; height:11px; }
+.qc-bars i{ width:3px; border-radius:1px; background:var(--qc-line2); }
+.qc-bars i:nth-child(1){ height:5px; } .qc-bars i:nth-child(2){ height:8px; } .qc-bars i:nth-child(3){ height:11px; }
+.qc-bars i.on{ background:currentColor; }
+.qc-diff-label{ font-size:10px; font-weight:600; }
+.qc-diff-pct{ font-size:10px; font-weight:500; color:var(--qc-faint); }
+
+/* controles à direita da alternativa (aparecem no hover) */
+.qc-side{ flex:none; display:flex; align-items:center; gap:7px; align-self:center; padding-left:4px; }
+.qc-acts{ display:flex; gap:4px; opacity:0; transition:opacity .15s ease; }
+.qc-alt-row:hover .qc-acts, .qc-alt-row:focus-within .qc-acts{ opacity:1; }
+@media (hover:none){ .qc-acts{ opacity:.5; } }
+.qc-act{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; border:1px solid var(--qc-line2); background:var(--qc-card); color:var(--qc-faint); cursor:pointer; transition:.13s; }
+.qc-act:hover{ border-color:var(--qc-muted); color:var(--qc-ink); background:var(--qc-line); }
+.qc-act.on{ border-color:var(--qc-muted); color:var(--qc-ink); background:var(--qc-line); }
+/* dúvida — paleta suavizada (era amber saturado, agora sand morno claro) */
+.qc-act.on-dub{ border-color:#E5CB8C; color:#B89556; background:rgba(201,154,46,.06); }
+.dark .qc-act.on-dub{ border-color:rgba(227,180,90,.45); color:#D6B976; background:rgba(227,180,90,.08); }
+
+/* chip "dúvida" + estado de dúvida na alternativa */
+.qc-tagdub{ display:inline-flex; align-items:center; gap:4px; white-space:nowrap; font-size:11px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid #EDDDB4; color:#B89556; }
+.dark .qc-tagdub{ border-color:rgba(227,180,90,.28); color:#D6B976; }
+.qc-alt-duvida{ background:rgba(201,154,46,.035); }
+.dark .qc-alt-duvida{ background:rgba(227,180,90,.045); }
+.qc-circle-duvida{ border-style:dotted !important; border-color:#DABB75 !important; color:#B89556 !important; }
+.dark .qc-circle-duvida{ border-color:#D6B976 !important; color:#D6B976 !important; }
+
+/* % por alternativa (pós-resposta) */
+.qc-pct-num{ font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; color:var(--qc-faint); }
+.qc-pct-ok{ color:var(--qc-ok); }
+
+/* botão "Debater" */
+.qc-explain-btn{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:var(--qc-accent-ink); background:var(--qc-accent-soft); border:1px solid transparent; border-radius:999px; padding:5px 11px; cursor:pointer; transition:.14s; }
+.qc-explain-btn:hover{ background:linear-gradient(135deg,var(--qc-accent),var(--qc-accent2)); color:#fff; }
+.qc-explain-btn.active{ background:transparent; border-color:var(--qc-line2); color:var(--qc-muted); }
+.qc-explain-btn.active:hover{ background:var(--qc-line); color:var(--qc-ink); }
+
+/* ---------- chat de debate ---------- */
+.qc-chat-wrap{ margin:6px 2px 2px 0; }
+.qc-chat{ border:1px solid var(--qc-line2); border-radius:14px; background:var(--qc-card); overflow:hidden; }
+.qc-chat-head{ display:flex; align-items:center; gap:8px; padding:10px 13px; border-bottom:1px solid var(--qc-line); }
+.qc-chat-av{ flex:none; width:24px; height:24px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; background:linear-gradient(140deg,var(--qc-accent),var(--qc-accent2)); box-shadow:0 2px 8px -2px var(--qc-accent); }
+.qc-chat-title{ font-size:12.5px; font-weight:600; color:var(--qc-ink); }
+.qc-chat-tag{ font-size:9.5px; font-weight:700; letter-spacing:.08em; color:var(--qc-accent-ink); background:var(--qc-accent-soft); padding:2px 6px; border-radius:5px; }
+.qc-chat-x{ margin-left:auto; display:inline-flex; border:none; background:transparent; color:var(--qc-faint); cursor:pointer; padding:2px; border-radius:6px; transition:.13s; }
+.qc-chat-x:hover{ color:var(--qc-ink); background:var(--qc-line); }
+.qc-chat-msgs{ display:flex; flex-direction:column; gap:10px; padding:13px; }
+.qc-chat-empty{ font-size:12.5px; line-height:1.55; color:var(--qc-muted); margin:0; }
+.qc-chat-empty strong{ color:var(--qc-ink); font-weight:600; }
+.qc-msg{ display:flex; gap:8px; max-width:100%; animation:qc-fade .3s ease both; }
+.qc-msg.user{ justify-content:flex-end; }
+.qc-msg-av{ flex:none; width:21px; height:21px; border-radius:7px; display:flex; align-items:center; justify-content:center; color:#fff; background:linear-gradient(140deg,var(--qc-accent),var(--qc-accent2)); margin-top:2px; }
+.qc-bubble{ font-size:13px; line-height:1.6; border-radius:12px; padding:9px 12px; max-width:86%; }
+.qc-msg.assistant .qc-bubble{ background:var(--qc-line); color:var(--qc-ink); border-top-left-radius:4px; }
+.qc-msg.user .qc-bubble{ background:var(--qc-ink); color:var(--qc-card); border-top-right-radius:4px; }
+.qc-bubble strong{ font-weight:600; }
+.qc-msg.assistant .qc-bubble strong{ color:var(--qc-accent-ink); }
+.qc-typing{ display:inline-flex; gap:4px; align-items:center; padding:12px 13px; }
+.qc-typing span{ width:6px; height:6px; border-radius:50%; background:var(--qc-faint); animation:qc-bounce 1.2s infinite ease-in-out; }
+.qc-typing span:nth-child(2){ animation-delay:.18s; } .qc-typing span:nth-child(3){ animation-delay:.36s; }
+@keyframes qc-bounce{ 0%,60%,100%{ transform:translateY(0); opacity:.4; } 30%{ transform:translateY(-4px); opacity:1; } }
+.qc-sugs{ display:flex; flex-wrap:wrap; gap:6px; padding:0 13px 11px; }
+.qc-sugs button{ font-size:11.5px; color:var(--qc-muted); background:var(--qc-card); border:1px solid var(--qc-line2); border-radius:999px; padding:5px 11px; cursor:pointer; transition:.13s; }
+.qc-sugs button:hover{ border-color:var(--qc-accent); color:var(--qc-accent-ink); background:var(--qc-accent-soft); }
+.qc-compose{ display:flex; align-items:flex-end; gap:8px; padding:11px 13px; border-top:1px solid var(--qc-line); }
+.qc-compose textarea{ flex:1; resize:none; font-family:inherit; font-size:13px; line-height:1.5; color:var(--qc-ink); background:var(--qc-card); border:1px solid var(--qc-line2); border-radius:11px; padding:9px 11px; max-height:120px; transition:.13s; }
+.qc-compose textarea::placeholder{ color:var(--qc-faint); }
+.qc-compose textarea:focus{ outline:none; border-color:var(--qc-accent); box-shadow:0 0 0 3px var(--qc-accent-soft); }
+.qc-send{ flex:none; display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:11px; border:none; color:#fff; background:linear-gradient(140deg,var(--qc-accent),var(--qc-accent2)); cursor:pointer; transition:.14s; box-shadow:0 4px 12px -4px var(--qc-accent); }
+.qc-send:hover:not(:disabled){ transform:translateY(-1px); }
+.qc-send:disabled{ opacity:.35; cursor:not-allowed; box-shadow:none; }
+.qc-compose-kbd{ display:block; font-size:10.5px; color:var(--qc-faint); padding:0 13px 11px; margin-top:-4px; }
+
+@media (prefers-reduced-motion: reduce){
+  .qc-msg, .qc-typing span{ animation:none !important; }
+}

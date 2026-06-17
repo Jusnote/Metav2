@@ -4,7 +4,9 @@ import { Folder } from 'lucide-react';
 import { FilterAlphabeticList } from '@/components/questoes/filtros/shared';
 import { FilterCheckboxItemWithCount } from '@/components/questoes/filtros/shared/FilterCheckboxItemWithCount';
 import { TaxonomiaTreePicker } from '@/components/questoes/TaxonomiaTreePicker';
+import { PapiroTreePicker } from '@/components/questoes/PapiroTreePicker';
 import { useMaterias } from '@/hooks/useMaterias';
+import { usePapiroMaterias } from '@/hooks/usePapiroTaxonomia';
 import type { FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { groupMateriasByArea } from '@/lib/questoes/materia-areas';
 import { groupMateriasByOABGrupo, isOABMateria } from '@/lib/questoes/oab-grupos';
@@ -14,6 +16,8 @@ export interface MateriaAssuntosPickerProps {
   materia: string | null;
   selectedAssuntos: string[];
   selectedNodeIds: (number | 'outros')[];
+  /** Nós da taxonomia PAPIRO selecionados (substitui a GRAN para matérias processadas). */
+  selectedPapiroNodeIds: number[];
   /** Lista de matérias atualmente no filtro (qualquer estado: B umbrella ou C específico). */
   selectedMaterias?: string[];
   /** A matéria atualmente em vista está em estado umbrella ("todo o conteúdo")? */
@@ -21,6 +25,7 @@ export interface MateriaAssuntosPickerProps {
   onMateriaChange: (materia: string | null) => void;
   onAssuntosChange: (next: string[]) => void;
   onNodeIdsChange: (next: (number | 'outros')[]) => void;
+  onPapiroNodeIdsChange: (next: number[]) => void;
   /** Toggle umbrella da matéria atualmente em vista. */
   onUmbrellaToggle?: () => void;
   /** Adiciona uma matéria como umbrella diretamente da lista (sem entrar na vista). */
@@ -34,6 +39,12 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
   // Usamos como source de verdade pra detectar taxonomia + counts, mas a LISTA
   // completa de matérias vem do dicionário (todas as ~107 matérias do app).
   const { data: materiasComTaxonomia } = useMaterias();
+  // Matérias com taxonomia PAPIRO (derivada das questões). Substitui a GRAN.
+  const { data: papiroMaterias } = usePapiroMaterias();
+  const papiroSet = useMemo(
+    () => new Set((papiroMaterias ?? []).map((m) => m.materia)),
+    [papiroMaterias],
+  );
   const [q, setQ] = useState('');
   const [hydrated, setHydrated] = useState(false);
   // Refs por nome de área pra navegação via TOC do lado esquerdo (Modo 1).
@@ -59,11 +70,14 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
     );
     const allItems = todasMaterias.map((nome) => {
       const tax = taxonomiaMap.get(nome);
+      const hasPapiro = papiroSet.has(nome);
       return {
         id: nome,
         label: nome,
         count: tax?.total_questoes_classificadas,
-        hasTaxonomia: tax ? tax.total_nodes > 0 : false,
+        // PAPIRO substitui a GRAN: badge "taxonomia" aparece se qualquer uma existir.
+        hasTaxonomia: hasPapiro || (tax ? tax.total_nodes > 0 : false),
+        hasPapiro,
       };
     });
     // Em modo OAB, filtra só matérias cobradas no Exame de Ordem
@@ -113,9 +127,11 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
               const specificAssuntos = props.selectedAssuntos.filter((a) =>
                 assuntosDestaMateria.includes(a),
               ).length;
-              const specificNodes = item.hasTaxonomia
-                ? props.selectedNodeIds.length
-                : 0;
+              const specificNodes = item.hasPapiro
+                ? props.selectedPapiroNodeIds.length
+                : item.hasTaxonomia
+                  ? props.selectedNodeIds.length
+                  : 0;
               const totalSpecific = specificAssuntos + specificNodes;
               return (
                 <div key={item.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded">
@@ -259,6 +275,53 @@ export function MateriaAssuntosPicker(props: MateriaAssuntosPickerProps) {
       Todo conteúdo desta matéria
     </button>
   );
+
+  // Modo 2-PAPIRO: matéria com taxonomia PAPIRO → substitui a GRAN.
+  const papiroInfo = papiroMaterias?.find((m) => m.materia === props.materia);
+  if (papiroInfo) {
+    return (
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <header className="px-4 py-3 border-b border-slate-200 min-h-[72px] flex flex-col justify-center shrink-0">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => props.onMateriaChange(null)}
+              aria-label="Voltar para disciplinas"
+              title="Voltar para disciplinas"
+              className="text-blue-600 hover:text-blue-800 text-lg leading-none shrink-0"
+            >
+              ←
+            </button>
+            <h2 className="text-lg font-semibold text-slate-900">{props.materia}</h2>
+          </div>
+          <p className="text-xs text-slate-500">
+            {papiroInfo.nos} tópicos · taxonomia PAPIRO
+          </p>
+        </header>
+        <div className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0 border-r border-slate-200">
+          {renderUmbrellaToggle()}
+          {props.isUmbrella && (
+            <p className="text-xs text-slate-400 italic">
+              Todos os assuntos selecionados pela opção acima
+            </p>
+          )}
+          <div className={props.isUmbrella ? 'opacity-50 pointer-events-none' : ''}>
+            <PapiroTreePicker
+              materia={props.materia}
+              selectedIds={props.selectedPapiroNodeIds}
+              onToggle={(id) => {
+                const has = props.selectedPapiroNodeIds.includes(id);
+                const next = has
+                  ? props.selectedPapiroNodeIds.filter((x) => x !== id)
+                  : [...props.selectedPapiroNodeIds, id];
+                props.onPapiroNodeIdsChange(next);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Modo 2: matéria com taxonomia → wrapper TreePicker
   if (materiaInfo && materiaInfo.total_nodes > 0) {

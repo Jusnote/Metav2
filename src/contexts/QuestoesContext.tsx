@@ -23,6 +23,8 @@ export interface QuestoesFilters {
   excluirDesatualizadas: boolean;
   excluirResolvidas: boolean;
   nodeIds: (number | 'outros')[];
+  /** Nós da taxonomia PAPIRO (substitui a GRAN para matérias processadas). */
+  papiroNodeIds: number[];
 }
 
 export type ViewMode = 'lista' | 'individual';

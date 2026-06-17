@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barrinha lateral de marcação — protótipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;1,400&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1714; --muted:#6B6560; --faint:#9C958D; --line:#ECEAE5; --line2:#E0DDD6;
+    --accent:#0F7B5F; --card:#fff;
+    --c-peg:#E0484D; --c-chave:#F2C231; --c-cuid:#E8703A; --c-saca:#4CAF6E; --c-rev:#4F86E0; --c-comum:#8A8F98;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#F2F0EB; font-family:'Hanken Grotesk',ui-sans-serif,system-ui,sans-serif; color:var(--ink); padding:34px 16px 120px; }
+  .wrap{ max-width:760px; margin:0 auto; }
+  h1{ font-size:17px; font-weight:700; letter-spacing:-.01em; margin:0 0 3px; }
+  .sub{ font-size:12.5px; color:var(--muted); margin:0 0 22px; line-height:1.5; }
+  kbd{ background:#fff; border:1px solid var(--line2); border-bottom-width:2px; border-radius:5px; padding:1px 5px; font:600 10.5px/1 inherit; color:var(--muted); }
+
+  /* ===== card ===== */
+  .qc{ position:relative; background:var(--card); border:1px solid var(--line2); border-radius:22px;
+    box-shadow:0 1px 2px rgba(26,23,20,.04), 0 12px 32px -12px rgba(26,23,20,.16); overflow:hidden; }
+  .banner{ padding:18px 24px 8px; }
+  .row1{ display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:12.5px; color:#3f3a35; }
+  .row1 b{ font-weight:600; }
+  .row2{ font-size:11px; color:var(--muted); }
+  .row2 .v{ font-weight:600; color:var(--accent); }
+  .sepline{ margin:6px 24px 0; height:1px; background:var(--line); }
+  .enun{ padding:18px 26px 16px; font-family:'Spectral',Georgia,serif; font-size:16.5px; line-height:1.9;
+    font-variant-numeric:tabular-nums; }
+  .alts{ padding:2px 18px 20px; display:flex; flex-direction:column; gap:8px; }
+  .alt{ display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); border-radius:14px; padding:12px 14px; background:#fff; }
+  .alt .lt{ flex:none; width:26px; height:26px; border-radius:50%; border:1.5px solid var(--line2); display:grid; place-items:center;
+    font:600 12px/1 inherit; color:var(--muted); }
+  .alt .tx{ font-size:14.5px; line-height:1.6; padding-top:2px; }
+
+  /* ===== marcas ===== */
+  .hl{ position:relative; border-radius:3px; padding:1px 1px; background:var(--bg); transition:background .15s; }
+  .hl[data-pen="sub"]{ background:transparent; border-radius:0; border-bottom:2px solid var(--c); padding-bottom:0; }
+  /* tachado: linha desenhada por gradiente (dá pra posicionar: 60% = um tico abaixo do meio)
+     + letras ofuscadas, como algo "cortado" de verdade */
+  .hl[data-pen="tax"]{ background:transparent; border-radius:0; color:rgba(26,23,20,.42);
+    background-image:linear-gradient(var(--c), var(--c)); background-size:100% 2px;
+    background-position:0 52%; background-repeat:no-repeat; }
+  body.hide-marks .hl[data-pen="sub"]{ border-bottom-color:transparent !important; }
+  body.hide-marks .hl[data-pen="tax"]{ color:inherit !important; }
+  .hl .cn{ position:absolute; left:0; top:0; transform:translate(-50%,-50%); color:var(--c); line-height:0;
+    filter:drop-shadow(0 0 1.4px #fff) drop-shadow(0 1px 1px rgba(0,0,0,.14)); pointer-events:none; }
+  .hl .cn svg{ width:13px; height:13px; display:block; }
+  body.hide-marks .hl{ background:transparent !important; }
+  body.hide-marks .hl .cn{ display:none; }
+  body.erase-on .hl{ outline:1.5px dashed rgba(192,57,43,.55); outline-offset:1px; cursor:pointer; }
+  body.erase-on .hl:hover{ background:rgba(192,57,43,.14) !important; }
+
+  /* ===== barrinha lateral ===== */
+  .bar{ position:fixed; top:50%; transform:translateY(-50%); left:max(10px, calc(50% - 380px - 54px));
+    background:rgba(255,255,255,.94); backdrop-filter:blur(6px); border:1px solid rgba(26,23,20,.08); border-radius:999px; padding:7px 5px;
+    box-shadow:0 1px 2px rgba(26,23,20,.04), 0 10px 28px -14px rgba(26,23,20,.18);
+    display:flex; flex-direction:column; align-items:center; gap:2px; z-index:50; transition:.18s; }
+  .bar:hover{ background:#fff; box-shadow:0 1px 3px rgba(26,23,20,.05), 0 14px 34px -14px rgba(26,23,20,.22); }
+  .tool{ position:relative; width:26px; height:26px; border:none; background:transparent; border-radius:50%;
+    display:grid; place-items:center; cursor:pointer; transition:transform .12s, background .12s; }
+  .tool:hover{ transform:scale(1.18); }
+  .tool .dot{ width:11px; height:11px; border-radius:50%; background:var(--c); transition:.12s; }
+  .tool.on .dot{ box-shadow:0 0 0 2px #fff, 0 0 0 3.5px var(--c); }
+  #cursorTool.on, #eraser.on, #eye.on{ background:#F4F2EE; }
+  .tool svg{ width:14px; height:14px; color:var(--faint); transition:.12s; }
+  .tool:hover svg{ color:var(--ink); }
+  .tool.on svg{ color:var(--ink); }
+  .tool .tip{ position:absolute; left:calc(100% + 11px); top:50%; transform:translateY(-50%) translateX(-4px);
+    background:#23201c; color:#fff; font:600 10.5px/1 inherit; padding:5px 8px; border-radius:6px; white-space:nowrap;
+    opacity:0; pointer-events:none; transition:.14s; }
+  .tool .tip small{ opacity:.6; font-weight:500; margin-left:5px; }
+  .tool:hover .tip{ opacity:1; transform:translateY(-50%) translateX(0); }
+  .bar .div{ width:12px; height:1px; background:var(--line); margin:3px 0; }
+  /* bancada: encolhida no modo seleção; expande ao desmarcar a setinha */
+  .toolset{ display:flex; flex-direction:column; align-items:center; gap:2px; max-height:0; opacity:0; overflow:hidden;
+    transition:max-height .26s ease, opacity .2s ease; }
+  .bar.open .toolset{ max-height:560px; opacity:1; }
+  .tool .badge{ position:absolute; top:-2px; right:-3px; min-width:12px; height:12px; border-radius:7px; background:var(--accent);
+    color:#fff; font:700 8px/12px inherit; text-align:center; padding:0 3px; }
+
+  /* chip de modo ativo */
+  .modechip{ position:fixed; top:12px; left:50%; transform:translateX(-50%); background:rgba(35,32,28,.92); backdrop-filter:blur(4px); color:#fff;
+    font:600 11px/1 inherit; padding:6px 11px; border-radius:999px; display:none; align-items:center; gap:7px; z-index:60;
+    box-shadow:0 8px 22px -10px rgba(0,0,0,.35); }
+  .modechip .dd{ width:7px; height:7px; border-radius:50%; background:var(--c, #fff); }
+  .modechip kbd{ background:rgba(255,255,255,.14); border-color:transparent; color:#fff; }
+  body[data-mode] .modechip{ display:inline-flex; }
+
+  /* popover de 2 botões: alternância rápida Pegadinha × Comum (sem caneta ativa) */
+  .selpop{ position:absolute; z-index:70; background:#fff; border:1px solid rgba(26,23,20,.08); border-radius:11px;
+    box-shadow:0 10px 38px -12px rgba(26,23,20,.28); padding:4px; display:none; gap:2px; align-items:stretch;
+    animation:rise .14s ease both; }
+  .selpop button{ display:inline-flex; align-items:center; justify-content:center; border:none; background:transparent; border-radius:8px;
+    width:32px; height:30px; cursor:pointer; color:#2c2824; flex:none; }
+  .selpop button:hover{ background:#F4F2EE; }
+  .selpop button.last{ background:#F6F4F0; }
+  .selpop button.last:hover{ background:#F0EDE8; }
+  .ic-tri{ width:14px; height:14px; color:var(--c-peg); flex:none; }
+  .ic-com{ width:15px; height:15px; flex:none; }
+  .ic-sub, .ic-tax{ width:15px; height:15px; }
+  /* bancada: tipo ativo + cores em accordion vertical (mesma língua da expansão da barra) */
+  .btool.on{ background:#F4F2EE; transform:translateX(4px); }
+  .btool.on:hover{ transform:translateX(4px) scale(1.12); }
+  .vpick{ display:flex; flex-direction:column; align-items:center; gap:5px; max-height:0; opacity:0; overflow:hidden;
+    transition:max-height .22s ease, opacity .18s ease, margin .22s ease; margin:0; }
+  .vpick.open{ max-height:170px; opacity:1; margin:3px 0 5px; }
+  .vpick .d{ width:12px; height:12px; border-radius:50%; cursor:pointer; flex:none; transition:transform .12s; }
+  .vpick .d:hover{ transform:scale(1.35); }
+  .selpop .sep{ width:1px; background:var(--line); margin:5px 1px; }
+  /* paleta: desliza no hover do botão (vale pra Pegadinha E Grifo comum) */
+  .selpop .cpick{ display:flex; gap:5px; align-items:center; max-width:0; opacity:0; overflow:hidden; padding:0;
+    transition:max-width .2s ease, opacity .15s ease, padding .2s ease; }
+  .selpop button:hover + .cpick, .selpop .cpick:hover, .selpop .cpick.open{ max-width:188px; opacity:1; padding:0 7px 0 3px; }
+  .selpop .cpick .d{ width:13px; height:13px; border-radius:50%; cursor:pointer; flex:none; transition:transform .12s; position:relative; }
+  .selpop .cpick .d:hover{ transform:scale(1.3); }
+  /* aberta via teclado: numerozinhos nas cores (segundo dígito escolhe) */
+  .selpop .cpick.nums .d::after{ content:attr(data-n); position:absolute; inset:0; display:grid; place-items:center;
+    font:700 8px/1 'Hanken Grotesk',sans-serif; color:#fff; text-shadow:0 1px 1px rgba(0,0,0,.3); }
+  .selpop button.sel{ background:#F0EDE8; }
+
+  /* mini-menu de cor da marca comum (clique na marca) */
+  .cmenu{ position:absolute; z-index:75; background:#fff; border:1px solid rgba(26,23,20,.08); border-radius:11px;
+    box-shadow:0 10px 38px -12px rgba(26,23,20,.28); padding:7px 9px; display:flex; gap:7px; align-items:center;
+    animation:rise .14s ease both; }
+  .cmenu .d{ width:15px; height:15px; border-radius:50%; cursor:pointer; transition:transform .12s; }
+  .cmenu .d:hover{ transform:scale(1.25); }
+  .cmenu .rm{ border:none; background:transparent; color:#9C958D; cursor:pointer; padding:3px; border-radius:6px; display:inline-flex; margin-left:2px; }
+  .cmenu .rm:hover{ color:#C0392B; background:#FBEFED; }
+  .cmenu .rm svg{ width:13px; height:13px; }
+
+  /* fileira de cores no rodapé do balão */
+  .bln .ef{ display:flex; align-items:center; gap:6px; padding:4px 13px 11px; }
+  .bln .ef .d{ width:13px; height:13px; border-radius:50%; cursor:pointer; flex:none; transition:transform .12s; }
+  .bln .ef .d:hover{ transform:scale(1.25); }
+  .bln .ef .save{ margin-left:auto; }
+
+  /* ===== balão da marca (igual ao app: hover lê, lápis edita) ===== */
+  .bln{ position:absolute; z-index:75; width:250px; background:#fff; border:1px solid rgba(26,23,20,.08); border-radius:13px;
+    box-shadow:0 14px 40px -14px rgba(26,23,20,.26), 0 2px 8px -4px rgba(26,23,20,.10); animation:rise .16s ease both; }
+  @keyframes rise{ from{opacity:0; transform:translateY(5px)} to{opacity:1; transform:none} }
+  .bln .hd{ display:flex; align-items:center; gap:6px; padding:11px 13px 0; }
+  .bln .hd .mk{ width:13px; height:13px; flex:none; }
+  .bln .hd select{ border:none; background:transparent; font:600 12.5px/1 inherit; color:#46413b; cursor:pointer; outline:none;
+    appearance:none; padding-right:2px; font-family:inherit; }
+  .bln .hd .lbl{ font:600 12.5px/1 inherit; color:#46413b; }
+  .bln .pencil{ margin-left:auto; border:none; background:transparent; color:#9C958D; cursor:pointer; padding:3px; border-radius:6px; display:inline-flex; }
+  .bln .pencil:hover{ color:#0F7B5F; background:rgba(15,123,95,.09); }
+  .bln .pencil svg{ width:13px; height:13px; }
+  .bln textarea{ width:100%; border:none; resize:none; font:400 13px/1.55 inherit; font-family:inherit; color:#1A1714;
+    padding:8px 13px 4px; min-height:54px; outline:none; background:transparent; }
+  .bln textarea::placeholder{ color:#9C958D; }
+  .bln .ft{ display:flex; justify-content:flex-end; padding:0 11px 11px; }
+  .bln .save{ border:none; background:#1A1714; color:#fff; font:600 11px/1 inherit; padding:7px 14px; border-radius:8px; cursor:pointer; }
+  .bln .save:hover{ background:#000; }
+  .bln .note{ font-size:13px; line-height:1.55; color:#33302b; padding:8px 13px 12px; overflow-wrap:anywhere; }
+  .bln .note.empty{ color:#9C958D; font-size:12.5px; }
+
+  .toast{ position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(8px); background:#23201c; color:#fff;
+    font:600 12.5px/1 inherit; padding:11px 16px; border-radius:11px; opacity:0; transition:.2s; z-index:80; display:flex; gap:10px; align-items:center; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast u{ cursor:pointer; text-decoration:underline; color:#7FE0C0; }
+
+  .hint{ max-width:760px; margin:16px auto 0; font-size:11.5px; color:var(--faint); line-height:1.6; }
+  body[data-mode] .enun, body[data-mode] .alt .tx{ cursor:crosshair; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="tri"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="currentColor"/><path d="M12 9.1v3.9" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="16.7" r="1.05" fill="#fff"/></g>
+</defs></svg>
+
+<div class="modechip" id="modechip"><span class="dd" id="modedot"></span><span id="modetxt">Modo</span><kbd>Esc</kbd> sai</div>
+
+<!-- ===== BARRINHA ===== -->
+<nav class="bar" id="bar">
+  <button class="tool on" id="cursorTool" style="--c:#1A1714">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.5 12.5 21l1.8-7 7-1.8L4 3.5Z"/></svg>
+    <span class="tip">Popover ao selecionar — clique pra ligar/desligar<small>Esc</small></span>
+  </button>
+  <div class="toolset" id="toolset">
+    <span class="div"></span>
+    <button class="tool btool" data-pen="peg" title="Pegadinha"><svg class="ic-tri" viewBox="0 0 24 24"><use href="#tri"/></svg><span class="tip">Pegadinha<small>1</small></span></button>
+    <span class="vpick" data-for="peg"></span>
+    <button class="tool btool" data-pen="comum" title="Grifar"><svg class="ic-com" viewBox="0 0 24 24" fill="none" stroke="#F2C231" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4l8 8Z"/></svg><span class="tip">Grifar<small>2</small></span></button>
+    <span class="vpick" data-for="comum"></span>
+    <button class="tool btool" data-pen="sub" title="Sublinhar"><svg class="ic-sub" viewBox="0 0 24 24" fill="none" stroke="#4F86E0" stroke-width="2.1" stroke-linecap="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg><span class="tip">Sublinhar<small>3</small></span></button>
+    <span class="vpick" data-for="sub"></span>
+    <button class="tool btool" data-pen="tax" title="Tachar"><svg class="ic-tax" viewBox="0 0 24 24" fill="none" stroke="#E0484D" stroke-width="2.1" stroke-linecap="round"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/></svg><span class="tip">Tachar<small>4</small></span></button>
+    <span class="vpick" data-for="tax"></span>
+    <span class="div"></span>
+    <button class="tool" id="eraser" style="--c:#C0392B">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+      <span class="tip">Borracha<small>E</small></span>
+    </button>
+    <button class="tool" id="eye">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="tip">Mostrar/ocultar marcas<small>H</small></span>
+    </button>
+  </div>
+  <span class="div"></span>
+  <button class="tool" id="caderno">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+    <span class="badge" id="count">1</span>
+    <span class="tip">Caderno de marcas</span>
+  </button>
+</nav>
+
+<div class="wrap">
+  <h1>Barrinha lateral de marcação — protótipo funcional</h1>
+  <p class="sub"><b>Fluxo principal:</b> selecione um texto → popover só com ícones: <b>△ pegadinha · — grifar · U̲ sublinhar · S̶ tachar</b>.
+  Clique = marca com a última cor da ferramenta; <b>passe o mouse no ícone</b> = paleta desliza pra escolher a cor. Teclas: <kbd>A</kbd> <kbd>G</kbd> <kbd>S</kbd> <kbd>T</kbd>.
+  <b>Turbo:</b> caneta na barrinha (<kbd>1</kbd>–<kbd>5</kbd>) pra marcar em massa. <kbd>E</kbd> borracha · <kbd>H</kbd> oculta · <kbd>Esc</kbd> solta.</p>
+
+  <article class="qc">
+    <header class="banner">
+      <div class="row1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B6560" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> <span><b>Auditoria Governamental e Controle</b> › Fiscalização e Auditorias (TCU)</span></div>
+      <div class="row2"><b>Banca:</b> <span class="v">FUNDATEC</span> · <b>Ano:</b> <span class="v">2026</span> · <b>Prova:</b> <span class="v">Conselho Regional de Educação Física da 2ª Região</span></div>
+    </header>
+    <div class="sepline"></div>
+    <div class="enun" id="enun">Conforme Da Silva (2002), “O fundamento do controle interno na <span class="hl" data-pen="peg" style="--bg:#E0484D2b;--c:#E0484D"><span class="cn"><svg viewBox="0 0 24 24"><use href="#tri"/></svg></span>Administração Pública</span> Brasileira está no artigo 76 da Lei nº 4.320/1964, o qual estabelece que o Poder Executivo exercerá os três tipos de controle da execução orçamentária: 1) legalidade dos atos que resultem arrecadação da receita ou a realização da despesa, o nascimento ou a extinção de direitos e obrigações; 2) a fidelidade funcional dos agentes da administração responsáveis por bens e valores públicos; e 3) o cumprimento do programa de trabalho expresso em termos monetários e em termos de realização de obras e prestação de serviços”. Sobre o tema dos controles internos na Administração Pública, assinale a alternativa <b>INCORRETA</b>.</div>
+    <div class="alts">
+      <div class="alt"><span class="lt">A</span><span class="tx">A fiscalização contábil diz respeito aos procedimentos necessários para a avaliação e certificação de que a contabilidade do órgão registra adequada e fidedignamente os atos e fatos que envolvem os sistemas orçamentário, financeiro e patrimonial.</span></div>
+      <div class="alt"><span class="lt">B</span><span class="tx">A fiscalização patrimonial diz respeito não só ao controle de bens móveis ou imóveis, mas também de créditos, títulos de renda, participações e almoxarifados, além das dívidas.</span></div>
+      <div class="alt"><span class="lt">C</span><span class="tx">A fiscalização operacional acompanha somente os aspectos financeiros da gestão, sendo vedada a análise de eficiência e eficácia das ações administrativas.</span></div>
+      <div class="alt"><span class="lt">D</span><span class="tx">O controle interno deve apoiar o controle externo no exercício de sua missão institucional, conforme previsão constitucional.</span></div>
+    </div>
+  </article>
+
+  <p class="hint">💡 Repare: com a caneta na mão você marca <b>em sequência</b> (selecionou → marcou, selecionou → marcou) — sem popover no meio. O chip lá em cima lembra que você está em modo marcação. A borracha apaga com 1 clique. O olhinho limpa a página pra reler sem poluição. O livrinho com badge é a porta do futuro <b>Caderno</b>.</p>
+</div>
+
+<div class="selpop" id="selpop">
+  <button data-pen="peg" title="Pegadinha (A)"><svg class="ic-tri" viewBox="0 0 24 24"><use href="#tri"/></svg></button>
+  <span class="cpick" id="cpickPeg"></span>
+  <span class="sep"></span>
+  <button data-pen="comum" title="Grifar (G)"><svg class="ic-com" viewBox="0 0 24 24" fill="none" stroke="#F2C231" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4l8 8Z"/></svg></button>
+  <span class="cpick" id="cpick"></span>
+  <span class="sep"></span>
+  <button data-pen="sub" title="Sublinhar (S)"><svg class="ic-sub" viewBox="0 0 24 24" fill="none" stroke="#4F86E0" stroke-width="2.1" stroke-linecap="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg></button>
+  <span class="cpick" id="cpickSub"></span>
+  <span class="sep"></span>
+  <button data-pen="tax" title="Tachar (T)"><svg class="ic-tax" viewBox="0 0 24 24" fill="none" stroke="#E0484D" stroke-width="2.1" stroke-linecap="round"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/></svg></button>
+  <span class="cpick" id="cpickTax"></span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PENS = {
+  peg:   { name:'Pegadinha',     color:'#E0484D', tri:true },
+  chave: { name:'Palavra-chave', color:'#F2C231', tri:true },
+  cuid:  { name:'Cuidado',       color:'#E8703A', tri:true },
+  saca:  { name:'Sacada',        color:'#4CAF6E', tri:true },
+  rev:   { name:'Revisar depois',color:'#4F86E0', tri:true },
+  comum: { name:'Grifo comum',   color:'#8A8F98', tri:false },
+  sub:   { name:'Sublinhado',    color:'#4F86E0', tri:false },
+  tax:   { name:'Tachado',       color:'#E0484D', tri:false },
+};
+let mode = null, erase = false, lastKind = 'peg'; // memória do último tipo usado no popover
+let selTool = true; // setinha: liga/desliga o popover-ao-selecionar
+const COLORS=['#E0484D','#E8703A','#F2C231','#4CAF6E','#2BB7A3','#4F86E0','#8B5CF6','#8A8F98'];
+/* memória de cor POR ferramenta */
+const lastCol = { comum:'#F2C231', peg:'#E0484D', sub:'#4F86E0', tax:'#E0484D' };
+const $ = (s)=>document.querySelector(s);
+const bar=$('#bar'), chip=$('#modechip'), toast=$('#toast'), selpop=$('#selpop');
+
+function updateIcons(){
+  document.querySelectorAll('.ic-com').forEach(i=>i.style.stroke=lastCol.comum);
+  document.querySelectorAll('.ic-tri').forEach(i=>i.style.color=lastCol.peg);
+  document.querySelectorAll('.ic-sub').forEach(i=>i.style.stroke=lastCol.sub);
+  document.querySelectorAll('.ic-tax').forEach(i=>i.style.stroke=lastCol.tax);
+}
+/* paletas que deslizam no hover dos botões */
+function buildPick(id, pen){
+  const el=$(id);
+  el.innerHTML = COLORS.map((c,i)=>'<span class="d" style="background:'+c+'" data-c="'+c+'" data-n="'+(i+1)+'"></span>').join('');
+  el.querySelectorAll('.d').forEach(d=>d.addEventListener('click',()=>{ wrapSelection(pen, d.dataset.c); hidePop(); }));
+}
+buildPick('#cpickPeg','peg'); buildPick('#cpick','comum'); buildPick('#cpickSub','sub'); buildPick('#cpickTax','tax');
+
+/* fluxo numérico: 1-4 abre a paleta da ferramenta; segundo dígito 1-8 escolhe a cor */
+let pendingTool=null;
+const PICK_IDS={ peg:'#cpickPeg', comum:'#cpick', sub:'#cpickSub', tax:'#cpickTax' };
+function showPalette(tool){
+  pendingTool=tool;
+  selpop.querySelectorAll('.cpick').forEach(c=>c.classList.remove('open','nums'));
+  selpop.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
+  $(PICK_IDS[tool]).classList.add('open','nums');
+  const btn=selpop.querySelector('button[data-pen="'+tool+'"]'); if(btn) btn.classList.add('sel');
+}
+function clearPalette(){
+  pendingTool=null;
+  selpop.querySelectorAll('.cpick').forEach(c=>c.classList.remove('open','nums'));
+  selpop.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
+}
+
+/* mini-menu de cor da marca comum (clique na marca) */
+let cmenu=null;
+function closeCMenu(){ if(cmenu) cmenu.remove(); cmenu=null; }
+function openCMenu(span){
+  closeCMenu(); closeBln();
+  cmenu=document.createElement('div'); cmenu.className='cmenu';
+  cmenu.innerHTML=COLORS.map(c=>'<span class="d" style="background:'+c+'" data-c="'+c+'"></span>').join('')+
+    '<button class="rm" title="Remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>';
+  document.body.appendChild(cmenu);
+  const r=span.getBoundingClientRect();
+  cmenu.style.left=Math.max(8, r.left+r.width/2+scrollX-cmenu.offsetWidth/2)+'px';
+  cmenu.style.top=(r.bottom+scrollY+8)+'px';
+  cmenu.querySelectorAll('.d').forEach(d=>d.addEventListener('click',()=>{
+    const c=d.dataset.c, pen=span.dataset.pen;
+    span.style.setProperty('--bg', c+'3d'); span.style.setProperty('--c', c);
+    if(lastCol[pen]!==undefined){ lastCol[pen]=c; updateIcons(); }
+    closeCMenu();
+  }));
+  cmenu.querySelector('.rm').addEventListener('click',()=>{ unwrap(span); updateCount(); closeCMenu(); showToast('Marca removida'); });
+}
+
+/* ===== balão (hover lê, lápis edita — igual ao app) ===== */
+let bln=null, blnSpan=null, blnPinned=false, blnHideT=0;
+const TRI_TYPES=['peg','chave','cuid','saca','rev'];
+function closeBln(){ if(bln) bln.remove(); bln=null; blnSpan=null; blnPinned=false; }
+function placeBln(span){
+  const r=span.getBoundingClientRect();
+  bln.style.left=Math.max(8, Math.min(r.left+scrollX, innerWidth-262))+'px';
+  bln.style.top=(r.bottom+scrollY+8)+'px';
+}
+function triSvg(color){ return '<svg class="mk" viewBox="0 0 24 24" style="color:'+color+'"><use href="#tri"/></svg>'; }
+function openEdit(span){
+  closeBln(); blnSpan=span; blnPinned=true;
+  const pen=span.dataset.pen, note=span.dataset.note||'';
+  const spanCol=(span.style.getPropertyValue('--c')||'').trim()||PENS[pen].color;
+  bln=document.createElement('div'); bln.className='bln';
+  bln.innerHTML='<div class="hd">'+triSvg(spanCol)+
+    '<select id="btype">'+TRI_TYPES.map(t=>'<option value="'+t+'"'+(t===pen?' selected':'')+'>'+PENS[t].name+'</option>').join('')+'</select><span style="color:#C9C3B8;font-size:9px">▾</span>'+
+    '</div><textarea placeholder="Escreva a pegadinha… por que cai aqui?">'+note.replace(/</g,'&lt;')+'</textarea>'+
+    '<div class="ef">'+COLORS.map(c=>'<span class="d" style="background:'+c+'" data-c="'+c+'"></span>').join('')+
+    '<button class="save">Salvar</button></div>';
+  document.body.appendChild(bln); placeBln(span);
+  const ta=bln.querySelector('textarea'); ta.focus();
+  bln.querySelector('#btype').addEventListener('change',(e)=>{
+    const t=e.target.value; span.dataset.pen=t;
+    span.style.setProperty('--bg', PENS[t].color+'2b'); span.style.setProperty('--c', PENS[t].color);
+    bln.querySelector('.mk').style.color=PENS[t].color;
+  });
+  bln.querySelectorAll('.ef .d').forEach(d=>d.addEventListener('click',()=>{
+    const c=d.dataset.c; // cor custom: troca só a cor, mantém o tipo
+    span.style.setProperty('--bg', c+'2b'); span.style.setProperty('--c', c);
+    bln.querySelector('.mk').style.color=c;
+  }));
+  bln.querySelector('.save').addEventListener('click',()=>{ span.dataset.note=ta.value.trim(); closeBln(); showToast('✓ Salvo'); });
+}
+function openRead(span){
+  closeBln(); blnSpan=span;
+  const pen=span.dataset.pen, note=span.dataset.note||'';
+  const spanCol=(span.style.getPropertyValue('--c')||'').trim()||PENS[pen].color;
+  bln=document.createElement('div'); bln.className='bln';
+  bln.innerHTML='<div class="hd">'+triSvg(spanCol)+'<span class="lbl">'+PENS[pen].name+'</span>'+
+    '<button class="pencil" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button></div>'+
+    '<div class="note'+(note?'':' empty')+'">'+(note?note.replace(/</g,'&lt;'):'Sem anotação ainda — clique no lápis pra escrever.')+'</div>';
+  document.body.appendChild(bln); placeBln(span);
+  bln.addEventListener('mouseenter',()=>clearTimeout(blnHideT));
+  bln.addEventListener('mouseleave',()=>{ if(!blnPinned) blnHideT=setTimeout(closeBln,200); });
+  bln.querySelector('.pencil').addEventListener('click',()=>openEdit(span));
+}
+document.addEventListener('mouseover',(e)=>{
+  if(mode||erase||blnPinned) return;
+  const hl=e.target.closest('.hl');
+  if(hl && PENS[hl.dataset.pen].tri){ clearTimeout(blnHideT); if(blnSpan!==hl) openRead(hl); }
+  else if(bln && !e.target.closest('.bln')){ clearTimeout(blnHideT); blnHideT=setTimeout(()=>{ if(!blnPinned) closeBln(); },200); }
+});
+document.addEventListener('mousedown',(e)=>{
+  if(blnPinned && bln && !e.target.closest('.bln') && !e.target.closest('.hl')) closeBln();
+  if(cmenu && !e.target.closest('.cmenu') && !e.target.closest('.hl')) closeCMenu();
+  if(!e.target.closest('.vpick') && !e.target.closest('.btool')) closeFly();
+});
+
+let modeColor=null;
+function setMode(pen, color){
+  erase=false; document.body.classList.remove('erase-on'); $('#eraser').classList.remove('on');
+  document.querySelectorAll('.btool').forEach(t=>t.classList.toggle('on', t.dataset.pen===pen));
+  mode = pen;
+  modeColor = pen ? (color || lastCol[pen] || PENS[pen].color) : null;
+  if(pen && lastCol[pen]!==undefined){ lastCol[pen]=modeColor; updateIcons(); }
+  if(pen) selTool=false; // pegar caneta = sai do modo seleção (bancada expande)
+  if(pen){ document.body.dataset.mode=pen; $('#modedot').style.background=modeColor; $('#modetxt').textContent='Modo '+PENS[pen].name; }
+  else delete document.body.dataset.mode;
+  hidePop(); closeBln(); closeFly(); refreshCursor();
+  if(window.recordEvent) recordEvent({type:'mode', choice: pen||'off'});
+}
+/* cores da bancada: accordion vertical sob o tipo clicado; recolhe ao escolher */
+document.querySelectorAll('.vpick').forEach(v=>{
+  v.innerHTML=COLORS.map(c=>'<span class="d" style="background:'+c+'" data-c="'+c+'"></span>').join('');
+  v.querySelectorAll('.d').forEach(d=>d.addEventListener('click',()=>{ setMode(v.dataset.for, d.dataset.c); }));
+});
+function closeFly(){ document.querySelectorAll('.vpick').forEach(v=>v.classList.remove('open')); }
+function openVPick(pen){
+  const target=document.querySelector('.vpick[data-for="'+pen+'"]');
+  const wasOpen=target.classList.contains('open');
+  closeFly();
+  if(!wasOpen) target.classList.add('open');
+}
+function setErase(on){
+  setMode(null); erase=on;
+  if(on) selTool=false; // borracha também é ferramenta de bancada
+  document.body.classList.toggle('erase-on', on); $('#eraser').classList.toggle('on', on);
+  if(on){ document.body.dataset.mode='erase'; $('#modedot').style.background='#C0392B'; $('#modetxt').textContent='Borracha'; }
+  else delete document.body.dataset.mode;
+  refreshCursor();
+}
+function refreshCursor(){
+  $('#cursorTool').classList.toggle('on', selTool && !mode && !erase);
+  bar.classList.toggle('open', !selTool); // seleção marcada = barra encolhida; desmarcada = bancada aberta
+}
+document.querySelectorAll('.btool').forEach(t=>t.addEventListener('click',()=>{
+  const pen=t.dataset.pen;
+  if(mode===pen){ setMode(null); return; }   // tipo ativo: clica de novo = solta
+  openVPick(pen);                             // expande as cores embaixo; escolher = ativa a caneta
+}));
+$('#cursorTool').addEventListener('click',()=>{
+  // com caneta/borracha ativa: volta pro modo seleção (ligado); senão: liga/desliga o popover
+  if(mode || erase){ selTool=true; setErase(false); }
+  else { selTool=!selTool; refreshCursor(); if(!selTool) hidePop(); }
+});
+$('#eraser').addEventListener('click',()=> setErase(!erase));
+$('#eye').addEventListener('click',()=>{ document.body.classList.toggle('hide-marks'); $('#eye').classList.toggle('on'); });
+$('#caderno').addEventListener('click',()=> showToast('📓 Caderno: '+document.querySelectorAll('.hl').length+' marcas nesta questão (em breve)'));
+
+function showToast(html){
+  toast.innerHTML = html;
+  toast.classList.add('show');
+  clearTimeout(showToast.t); showToast.t=setTimeout(()=>toast.classList.remove('show'), 2400);
+}
+function updateCount(){ $('#count').textContent = document.querySelectorAll('.hl').length; }
+
+/* a marcação SÓ existe dentro do card: enunciado + alternativas */
+function selInCard(sel){
+  if(!sel || sel.isCollapsed || !sel.toString().trim()) return false;
+  const anc=sel.getRangeAt(0).commonAncestorContainer;
+  const host=(anc.nodeType===1?anc:anc.parentElement);
+  return !!(host && host.closest('.enun, .alt .tx'));
+}
+function wrapSelection(pen, color){
+  const sel=window.getSelection();
+  if(!sel || sel.isCollapsed || !sel.toString().trim()) return false;
+  const range=sel.getRangeAt(0);
+  const anc = range.commonAncestorContainer;
+  const host = (anc.nodeType===1?anc:anc.parentElement);
+  if(!host || !host.closest('.enun, .alt .tx')) return false;
+  const p=PENS[pen];
+  // ferramentas do popover: última cor usada (ou a escolhida na paleta); canetas semânticas: cor do tipo
+  const col = color || lastCol[pen] || p.color;
+  const span=document.createElement('span');
+  span.className='hl'; span.dataset.pen=pen;
+  span.style.setProperty('--bg', col+(pen==='comum'?'3d':'2b')); span.style.setProperty('--c', col);
+  try{ range.surroundContents(span); }
+  catch{ span.appendChild(range.extractContents()); range.insertNode(span); }
+  if(p.tri){
+    const cn=document.createElement('span'); cn.className='cn';
+    cn.innerHTML='<svg viewBox="0 0 24 24"><use href="#tri"/></svg>';
+    span.prepend(cn);
+  }
+  sel.removeAllRanges();
+  updateCount();
+  if(lastCol[pen]!==undefined){ lastKind=pen; lastCol[pen]=col; updateIcons(); }
+  if(p.tri){ openEdit(span); } else { showToast('✓ '+p.name); }
+  if(window.recordEvent) recordEvent({type:'mark', choice:pen});
+  return true;
+}
+function unwrap(hl){
+  const parent=hl.parentNode; hl.querySelector('.cn')?.remove();
+  while(hl.firstChild) parent.insertBefore(hl.firstChild, hl);
+  parent.removeChild(hl); parent.normalize();
+}
+document.addEventListener('click',(e)=>{
+  const hl=e.target.closest('.hl');
+  if(erase){ if(hl){ closeBln(); closeCMenu(); unwrap(hl); updateCount(); showToast('Marca removida'); } return; }
+  if(!mode && hl && !e.target.closest('.bln') && !e.target.closest('.cmenu')){
+    if(PENS[hl.dataset.pen].tri) openEdit(hl); else openCMenu(hl); // Atenção → balão; demais → mini-menu de cor
+  }
+});
+document.addEventListener('mouseup',(e)=>{
+  if(e.target.closest('.bar')||e.target.closest('.selpop')) return;
+  setTimeout(()=>{
+    if(erase) return;
+    if(mode){ wrapSelection(mode, modeColor); return; }
+    if(!selTool){ hidePop(); return; } // setinha desligada: selecionar não mostra nada (leitura/cópia pura)
+    const sel=window.getSelection();
+    if(!selInCard(sel)){ hidePop(); return; } // fora do enunciado/alternativas: nada de popover
+    const r=sel.getRangeAt(0).getBoundingClientRect();
+    clearPalette(); // seleção nova: zera paleta numérica pendente
+    selpop.style.display='flex';
+    selpop.querySelectorAll('button').forEach(b=>b.classList.toggle('last', b.dataset.pen===lastKind));
+    const top = r.top + scrollY - selpop.offsetHeight - 9; // EM CIMA da seleção
+    selpop.style.left=Math.max(8, Math.min(r.left + r.width/2 - selpop.offsetWidth/2 + scrollX, innerWidth - selpop.offsetWidth - 8))+'px';
+    selpop.style.top=(top > scrollY + 6 ? top : r.bottom + 9 + scrollY)+'px';
+  },0);
+});
+selpop.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ wrapSelection(b.dataset.pen); hidePop(); }));
+// CRÍTICO: mousedown no popover NÃO pode colapsar a seleção (senão não há o que grifar no click)
+selpop.addEventListener('mousedown',(e)=>e.preventDefault());
+function hidePop(){ selpop.style.display='none'; clearPalette(); }
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape'){ setMode(null); setErase(false); hidePop(); closeBln(); closeCMenu(); }
+  if(bln && blnPinned) return; // digitando no balão: não rouba as teclas
+  // com texto selecionado: A = pegadinha, G = comum (marca direto, sem popover)
+  const s=window.getSelection();
+  if(selInCard(s) && !mode && !erase){
+    if(e.key==='a'||e.key==='A'){ wrapSelection('peg'); hidePop(); return; }
+    if(e.key==='g'||e.key==='G'){ wrapSelection('comum'); hidePop(); return; }
+    if(e.key==='s'||e.key==='S'){ wrapSelection('sub'); hidePop(); return; }
+    if(e.key==='t'||e.key==='T'){ wrapSelection('tax'); hidePop(); return; }
+    // numérico em 2 toques: 1-4 = ferramenta (abre paleta numerada) → 1-8 = cor
+    if(selTool && /^[1-8]$/.test(e.key)){
+      if(pendingTool===null){
+        const TOOLS=['peg','comum','sub','tax'];
+        const n=+e.key;
+        if(n>=1 && n<=4){ showPalette(TOOLS[n-1]); return; }
+      } else {
+        const idx=+e.key-1;
+        if(idx<COLORS.length){ const t=pendingTool; clearPalette(); wrapSelection(t, COLORS[idx]); hidePop(); return; }
+      }
+    }
+  }
+  // sem seleção: 1-4 ativa a caneta do tipo (com a última cor)
+  const map={'1':'peg','2':'comum','3':'sub','4':'tax'};
+  if(map[e.key]) setMode(map[e.key]);
+  if(e.key==='e'||e.key==='E') setErase(!erase);
+  if(e.key==='h'||e.key==='H') $('#eye').click();
+});
+updateCount();
+updateIcons();
+</script>
+</body>
+</html>

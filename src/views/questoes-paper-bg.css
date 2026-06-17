@@ -1,0 +1,38 @@
+/* questoes-paper-bg.css
+   Fundo da página de questões — receita "Grafite 2B" (equipe de design, 2026-06-10):
+   wash cinza neutro forte no topo (no lugar do antigo azul) que assenta no corpo
+   cinza estilo TEC. Card branco salta (ΔL ~16).
+
+   O layer fixo (.questoes-aurora, no AuroraBackground) carrega o wash E a cor de
+   base na MESMA regra — o body do app é branco (--background) e nenhum elemento
+   aplica .questoes-paper-bg, então a base precisa vir do próprio layer. */
+
+/* Faixa curta e perceptível (como o azul antigo: morre em ~1/4 da tela), não névoa longa. */
+.questoes-aurora {
+  background:
+    linear-gradient(180deg,
+      rgba(90, 90, 90, 0.16) 0%,
+      rgba(90, 90, 90, 0.09) 9%,
+      rgba(90, 90, 90, 0.025) 17%,
+      rgba(90, 90, 90, 0) 24%),
+    #F0F0F0;
+}
+
+.dark .questoes-aurora {
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.075) 0%,
+      rgba(255, 255, 255, 0.042) 9%,
+      rgba(255, 255, 255, 0.012) 17%,
+      rgba(255, 255, 255, 0) 24%),
+    #0C0B09;
+}
+
+/* Legado: classe disponível caso alguma view queira a base sem o layer. */
+.questoes-paper-bg {
+  background: #F0F0F0;
+}
+
+.dark .questoes-paper-bg {
+  background: #0C0B09;
+}

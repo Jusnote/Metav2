@@ -20,6 +20,7 @@ export function appliedToQuestoesFilters(a: AppliedFilters): QuestoesFilters {
     orgaos: a.orgaos,
     cargos: a.cargos,
     nodeIds: a.nodeIds,
+    papiroNodeIds: a.papiroNodeIds ?? [],
     excluirAnuladas: a.visibility_anuladas === 'esconder',
     excluirDesatualizadas: a.visibility_desatualizadas === 'esconder',
     excluirResolvidas: false,
