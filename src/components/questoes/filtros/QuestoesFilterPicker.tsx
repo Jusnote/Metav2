@@ -10,6 +10,7 @@ import { useFiltrosPendentes } from '@/hooks/useFiltrosPendentes';
 import { useFiltrosDicionario, type FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useQuestoesFacets } from '@/hooks/useQuestoesFacets';
 import { useMaterias } from '@/hooks/useMaterias';
+import { usePapiroMaterias } from '@/hooks/usePapiroTaxonomia';
 import { useOrgaoCargoState } from '@/hooks/useOrgaoCargoState';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -37,6 +38,7 @@ function MateriaAssuntosPickerAdapter() {
   const { pendentes, setPendentes } = useFiltrosPendentes();
   const { dicionario } = useFiltrosDicionario();
   const { data: materiasComTaxonomia } = useMaterias();
+  const { data: papiroMaterias } = usePapiroMaterias();
   const [urlSearchParams] = useSearchParams();
   // OAB ativo = URL contém ?orgaos=OAB (carreira "Exame de Ordem" selecionada)
   const oabMode = urlSearchParams.getAll('orgaos').includes('OAB');
@@ -61,9 +63,9 @@ function MateriaAssuntosPickerAdapter() {
       // Sem dicionário ainda, não dá pra mapear assuntos → matéria.
       // Conservador: só marca umbrella se realmente não tem assuntos selecionados.
       if (assuntosDessaMateria.length === 0) {
-        // Para taxonomia: nodeIds vazios → é umbrella
-        // (hoje só Direito Adm tem taxonomia)
-        const nodeIdsCount = pendentes.nodeIds?.length ?? 0;
+        // Para taxonomia (GRAN ou PAPIRO): nós vazios → é umbrella
+        const nodeIdsCount =
+          (pendentes.nodeIds?.length ?? 0) + (pendentes.papiroNodeIds?.length ?? 0);
         if (nodeIdsCount === 0) {
           set.add(m);
         }
@@ -81,6 +83,12 @@ function MateriaAssuntosPickerAdapter() {
     );
     return (nome: string) => set.has(nome);
   }, [materiasComTaxonomia]);
+
+  // Matéria é dona de taxonomia PAPIRO (substitui a GRAN no picker).
+  const isMateriaWithPapiro = useMemo(() => {
+    const set = new Set((papiroMaterias ?? []).map((m) => m.materia));
+    return (nome: string) => set.has(nome);
+  }, [papiroMaterias]);
 
   // Navegação (viewingMateria) é ortogonal ao filtro (pendentes.materias):
   // o usuário pode estar vendo assuntos de uma matéria mesmo sem ela no filtro.
@@ -115,6 +123,7 @@ function MateriaAssuntosPickerAdapter() {
         materia={viewingMateria}
         selectedAssuntos={pendentes.assuntos}
         selectedNodeIds={pendentes.nodeIds ?? []}
+        selectedPapiroNodeIds={pendentes.papiroNodeIds ?? []}
         selectedMaterias={pendentes.materias}
         isUmbrella={isUmbrella}
         oabMode={oabMode}
@@ -145,6 +154,9 @@ function MateriaAssuntosPickerAdapter() {
             const nodeIdsFora = isMateriaWithTaxonomia(viewingMateria)
               ? []
               : (pendentes.nodeIds ?? []);
+            const papiroNodeIdsFora = isMateriaWithPapiro(viewingMateria)
+              ? []
+              : (pendentes.papiroNodeIds ?? []);
             const nextUmbrella = new Set(umbrellaMaterias);
             nextUmbrella.add(viewingMateria);
             setUmbrellaMaterias(nextUmbrella);
@@ -155,6 +167,7 @@ function MateriaAssuntosPickerAdapter() {
                 : [...pendentes.materias, viewingMateria],
               assuntos: assuntosFora,
               nodeIds: nodeIdsFora,
+              papiroNodeIds: papiroNodeIdsFora,
             });
           }
         }}
@@ -189,13 +202,15 @@ function MateriaAssuntosPickerAdapter() {
 
           // Remove matérias que ficaram órfãs (sem assunto, sem nodeId, sem umbrella)
           const nodeIds = pendentes.nodeIds ?? [];
+          const papiroNodeIds = pendentes.papiroNodeIds ?? [];
           for (const m of pendentes.materias) {
             if (newUmbrella.has(m)) continue;
             const temAssunto = next.some(
               (a) => getMateriaForAssunto(a, dicionario) === m,
             );
             const temNodeIds =
-              isMateriaWithTaxonomia(m) && nodeIds.length > 0;
+              (isMateriaWithTaxonomia(m) && nodeIds.length > 0) ||
+              (isMateriaWithPapiro(m) && papiroNodeIds.length > 0);
             if (!temAssunto && !temNodeIds) {
               newMaterias.delete(m);
             }
@@ -235,6 +250,34 @@ function MateriaAssuntosPickerAdapter() {
             ...pendentes,
             materias: Array.from(newMaterias),
             nodeIds: next,
+          });
+        }}
+        onPapiroNodeIdsChange={(next) => {
+          // Análogo a onNodeIdsChange, mas para a taxonomia PAPIRO (viewingMateria é dona).
+          if (!viewingMateria) {
+            setPendentes({ ...pendentes, papiroNodeIds: next });
+            return;
+          }
+          const newMaterias = new Set(pendentes.materias);
+          const newUmbrella = new Set(umbrellaMaterias);
+
+          if (next.length > 0) {
+            newMaterias.add(viewingMateria);
+            newUmbrella.delete(viewingMateria);
+          } else {
+            const temAssunto = pendentes.assuntos.some(
+              (a) => getMateriaForAssunto(a, dicionario) === viewingMateria,
+            );
+            if (!temAssunto && !newUmbrella.has(viewingMateria)) {
+              newMaterias.delete(viewingMateria);
+            }
+          }
+
+          setUmbrellaMaterias(newUmbrella);
+          setPendentes({
+            ...pendentes,
+            materias: Array.from(newMaterias),
+            papiroNodeIds: next,
           });
         }}
       />

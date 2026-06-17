@@ -17,6 +17,7 @@ import StudyPage from "./views/StudyPage";
 import EditResumoPage from "./views/EditResumoPage";
 import ResumosListPage from "./views/ResumosListPage";
 import QuestoesPage from "./views/QuestoesPage";
+import PapiroTaxonomiaPage from "./views/PapiroTaxonomiaPage";
 import CriarQuestaoPage from "./views/CriarQuestaoPage";
 import CronogramaPage from "./views/CronogramaPage";
 import CronogramaSetupPage from "./views/CronogramaSetupPage";
@@ -204,6 +205,7 @@ const App = () => {
                     <Route path="cronograma" element={<PrivateRoute><CronogramaPage /></PrivateRoute>} />
                     <Route path="cronograma/setup" element={<PrivateRoute><CronogramaSetupPage /></PrivateRoute>} />
                     <Route path="questoes" element={<PrivateRoute><QuestoesPage /></PrivateRoute>} />
+                    <Route path="taxonomia-questoes" element={<PrivateRoute><PapiroTaxonomiaPage /></PrivateRoute>} />
                     <Route path="criar-questao" element={<PrivateRoute><CriarQuestaoPage /></PrivateRoute>} />
                     <Route path="playground" element={<PrivateRoute><EditorPage /></PrivateRoute>} />
                     <Route path="plate-editor" element={<PrivateRoute><PlateEditorPage /></PrivateRoute>} />

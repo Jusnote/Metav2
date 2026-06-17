@@ -100,6 +100,11 @@ export function buildSearchURL(params: Pick<FetchParams, 'filters' | 'query' | '
     params.filters.nodeIds.forEach(v => sp.append('node', String(v)));
   }
 
+  // Taxonomia PAPIRO node filter — multiple ?papiro_node= params (substitui GRAN)
+  if (params.filters.papiroNodeIds?.length) {
+    params.filters.papiroNodeIds.forEach(v => sp.append('papiro_node', String(v)));
+  }
+
   // Boolean filters
   if (params.filters.excluirAnuladas) sp.set('excluir_anuladas', '1');
   if (params.filters.excluirDesatualizadas) sp.set('excluir_desatualizadas', '1');

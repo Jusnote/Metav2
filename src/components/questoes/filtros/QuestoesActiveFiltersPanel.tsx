@@ -5,6 +5,7 @@ import { countActiveFilters, hasAnyFilter } from '@/lib/questoes/filter-serializ
 import type { FiltrosDicionario } from '@/hooks/useFiltrosDicionario';
 import { useMaterias, type Materia } from '@/hooks/useMaterias';
 import { useTaxonomia, flattenTree } from '@/hooks/useTaxonomia';
+import { usePapiroMaterias, usePapiroArvore, type PapiroNode } from '@/hooks/usePapiroTaxonomia';
 import { ActiveFiltersGroup } from './ActiveFiltersGroup';
 import { CarregarLink } from './CarregarLink';
 import { QuestoesFilterEmptyState } from './QuestoesFilterEmptyState';
@@ -64,6 +65,57 @@ function MateriaTaxonomiaItems({ slug, nodeIds, onRemove }: MateriaTaxonomiaItem
           <li
             key={String(id)}
             className="group flex items-center justify-between gap-2 pl-3 py-0.5 border-l-2 border-blue-400"
+          >
+            <span className="text-sm text-slate-700 truncate">{label}</span>
+            <button
+              type="button"
+              onClick={() => onRemove(id)}
+              aria-label={`remover ${label}`}
+              className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 px-1 leading-none transition-opacity"
+            >
+              ✕
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+interface MateriaPapiroItemsProps {
+  materia: string;
+  /** Todos os papiroNodeIds selecionados (flat, multi-matéria). Filtramos aos desta matéria. */
+  papiroNodeIds: number[];
+  onRemove: (id: number) => void;
+}
+
+function MateriaPapiroItems({ materia, papiroNodeIds, onRemove }: MateriaPapiroItemsProps) {
+  const { data } = usePapiroArvore(materia);
+  const labelMap = useMemo(() => {
+    const map = new Map<number, string>();
+    if (!data?.tree) return map;
+    const walk = (nodes: PapiroNode[]) => {
+      for (const n of nodes) {
+        map.set(n.id, n.nome);
+        if (n.children?.length) walk(n.children);
+      }
+    };
+    walk(data.tree);
+    return map;
+  }, [data]);
+
+  // Só os ids que pertencem a esta matéria (presentes na árvore dela).
+  const ids = papiroNodeIds.filter((id) => labelMap.has(id));
+  if (ids.length === 0) return null;
+
+  return (
+    <ul className="flex flex-col gap-0.5">
+      {ids.map((id) => {
+        const label = labelMap.get(id) ?? `#${id}`;
+        return (
+          <li
+            key={id}
+            className="group flex items-center justify-between gap-2 pl-3 py-0.5 border-l-2 border-indigo-400"
           >
             <span className="text-sm text-slate-700 truncate">{label}</span>
             <button
@@ -159,6 +211,12 @@ export function QuestoesActiveFiltersPanel({
     return map;
   }, [materiasComTaxonomia]);
 
+  const { data: papiroMaterias } = usePapiroMaterias();
+  const papiroSet = useMemo(
+    () => new Set((papiroMaterias ?? []).map((m) => m.materia)),
+    [papiroMaterias],
+  );
+
   return (
     <div className="flex flex-col gap-3 min-h-0">
 
@@ -184,6 +242,8 @@ export function QuestoesActiveFiltersPanel({
                 const materiaTax = materiasTaxMap.get(materia);
                 const hasTaxonomia = !!materiaTax;
                 const nodeIds = pendentes.nodeIds ?? [];
+                const hasPapiro = papiroSet.has(materia);
+                const papiroNodeIds = pendentes.papiroNodeIds ?? [];
 
                 return (
                   <div key={`materia-${materia}`} className="flex flex-col gap-1 py-2">
@@ -201,12 +261,18 @@ export function QuestoesActiveFiltersPanel({
                           const remainingHasTax = nextMaterias.some((m) =>
                             materiasTaxMap.has(m),
                           );
+                          const remainingHasPapiro = nextMaterias.some((m) =>
+                            papiroSet.has(m),
+                          );
                           const patch: Partial<AppliedFilters> = {
                             materias: nextMaterias,
                             assuntos: nextAssuntos,
                           };
                           if (hasTaxonomia && !remainingHasTax) {
                             patch.nodeIds = [];
+                          }
+                          if (hasPapiro && !remainingHasPapiro) {
+                            patch.papiroNodeIds = [];
                           }
                           onChange(patch);
                         }}
@@ -216,7 +282,9 @@ export function QuestoesActiveFiltersPanel({
                         ✕
                       </button>
                     </div>
-                    {assuntosDaMateria.length === 0 && !(hasTaxonomia && nodeIds.length > 0) ? (
+                    {assuntosDaMateria.length === 0 &&
+                    !(hasTaxonomia && nodeIds.length > 0) &&
+                    !(hasPapiro && papiroNodeIds.length > 0) ? (
                       <span className="text-xs text-slate-400 italic px-3">
                         todos os assuntos
                       </span>
@@ -254,6 +322,17 @@ export function QuestoesActiveFiltersPanel({
                             onRemove={(id) => {
                               onChange({
                                 nodeIds: nodeIds.filter((v) => v !== id),
+                              });
+                            }}
+                          />
+                        )}
+                        {hasPapiro && papiroNodeIds.length > 0 && (
+                          <MateriaPapiroItems
+                            materia={materia}
+                            papiroNodeIds={papiroNodeIds}
+                            onRemove={(id) => {
+                              onChange({
+                                papiroNodeIds: papiroNodeIds.filter((v) => v !== id),
                               });
                             }}
                           />
