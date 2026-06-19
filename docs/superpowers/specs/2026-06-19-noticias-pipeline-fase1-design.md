@@ -31,7 +31,9 @@ Agregar notícia não nos torna o maior portal — legalmente só exibimos títu
 | Storage | Schema `noticias.*` no Postgres de produção (container pgvector pg17 `u40kcogk...`, db `postgres`) | Mesmo banco das questões (3,29M) → o match notícia↔questões (Fase 2) é JOIN local, não chamada cross-service. |
 | Fila/cache | Redis já existente no 95 | Lock de execução agora; fila de enriquecimento na Fase 2. |
 | Dedup | Normalização de URL + constraint `UNIQUE(normalized_url)` + upsert idempotente | Simples e robusto. Dedup por similaridade de título fica para depois (nice-to-have). |
-| Linguagem | Python (httpx + SQLAlchemy/asyncpg), seguindo o stack do verus_api | Reaproveita padrões; Fase 2 usa Anthropic em Python. |
+| Linguagem | Python (httpx + SQLAlchemy/asyncpg) | Stack que o time já domina; Fase 2 usa Anthropic em Python. |
+| Repositório | **Repo novo dedicado** (ex.: `concursos-news`), NÃO dentro do verus_api | O worker compartilha o banco, não o código (escreve no schema `noticias.*` próprio). Bounded context separado: dependências isoladas, imagem menor, raio de explosão menor (não quebra o build da API de produção). O Coolify trata como Application separada de qualquer forma. |
+| Gestão do schema | Alembic próprio, com `version_table_schema='noticias'` | Independente do `alembic_version` do verus_api (schema `public`). |
 | Agendamento | Scheduler in-process (APScheduler) no worker long-running | Container autocontido, sem depender de cron de host/Coolify. |
 | Publicação | Coluna `status` default `pending` já criada | Moderação antes de publicar (decisão do produto). Workflow de aprovação é Fase 3. |
 | Segredos | Chaves das APIs e DSN do banco via variáveis de ambiente | Nunca hardcoded/commitado. |
@@ -147,7 +149,7 @@ CREATE INDEX ix_itens_published_at ON noticias.itens (published_at DESC);
 CREATE INDEX ix_itens_status       ON noticias.itens (status);
 ```
 
-**Gestão do schema:** as migrações de `noticias.*` são independentes do `alembic_version` do verus_api (que vive no schema `public`). Opções a confirmar no plano: alembic próprio com `version_table_schema='noticias'`, ou um `init.sql` versionado. Recomendação: alembic próprio, para consistência com o resto do stack.
+**Gestão do schema:** alembic próprio do repo de notícias, configurado com `version_table_schema='noticias'` — totalmente independente do `alembic_version` do verus_api (que vive no schema `public` do mesmo banco). Assim os dois serviços evoluem o banco sem colidir.
 
 ---
 
