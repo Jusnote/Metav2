@@ -305,8 +305,14 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
             {/* ---- Cargo Expansion (slot entre top bar e dark navbar) ---- */}
             <CargoSelectorExpansion state={cargoState} onAfterApply={handleCargoApplied} />
 
-            {/* ---- Nav Bar (Dark Blue) ---- */}
-            <nav className="bg-[#0f1b3d]">
+            {/* ---- Nav Bar — "Clara": vidro branco, itens escuros, fio aurora embaixo ----
+                 (navy original: className="bg-[#0f172a]" + 'linear-gradient(90deg,#252c52 0%,#1b2240 50%,#141b33 100%)') */}
+            <nav
+              className="backdrop-blur-[10px]"
+              style={{
+                background: 'rgba(255,255,255,0.9)',
+              }}
+            >
               <div className="max-w-[1200px] mx-auto px-12">
                 <div className="flex items-center justify-center h-[42px] gap-1 pl-6">
                   {/* Main nav items */}
@@ -344,6 +350,15 @@ export function AppTopNav({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </nav>
+            {/* Fio aurora "royal pastel, nasce e morre": surge transparente, vive no centro
+                (azul-céu → lavanda → lilás) e some nas pontas — assinatura do header claro */}
+            <div
+              className="h-[2px]"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(147,197,253,0) 0%, #93C5FD 22%, #A5B4FC 50%, #C4B5FD 78%, rgba(196,181,253,0) 100%)',
+              }}
+            />
           </div>
 
           {/* Content area */}
@@ -531,14 +546,15 @@ function NavLink({
         onClick={() => navigate(item.href)}
         className={cn(
           "inline-flex items-center gap-2 px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap cursor-pointer transition-all duration-200 relative",
-          "text-[#a0a0a0] hover:text-white hover:bg-white/[0.07] rounded-md",
-          active && "!text-white"
+          // navbar clara (original navy: text-[#a0a0a0] hover:text-white hover:bg-white/[0.07] / active !text-white)
+          "text-slate-500 hover:text-slate-900 hover:bg-slate-900/[0.05] rounded-md",
+          active && "!text-slate-900"
         )}
       >
         <span className={cn("transition-opacity", active ? "opacity-100" : "opacity-60 group-hover:opacity-90")}>{item.icon}</span>
         {item.label}
         {hasDropdown && (
-          <IconChevronDown className="h-3 w-3 text-[#666] group-hover:text-[#999] group-hover:translate-y-px transition-all" />
+          <IconChevronDown className="h-3 w-3 text-slate-400 group-hover:text-slate-500 group-hover:translate-y-px transition-all" />
         )}
         {/* Active blue underline */}
         {active && (
@@ -591,12 +607,13 @@ function MoreDropdown({
       <button
         className={cn(
           "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md text-[13px] font-medium whitespace-nowrap cursor-pointer transition-all duration-200 relative",
-          "text-[#a0a0a0] hover:text-white hover:bg-white/[0.07]",
-          anyActive && "!text-white"
+          // navbar clara (original navy: text-[#a0a0a0] hover:text-white hover:bg-white/[0.07] / active !text-white)
+          "text-slate-500 hover:text-slate-900 hover:bg-slate-900/[0.05]",
+          anyActive && "!text-slate-900"
         )}
       >
         Mais
-        <IconChevronDown className="h-3 w-3 text-[#666] group-hover:text-[#999] group-hover:translate-y-px transition-all" />
+        <IconChevronDown className="h-3 w-3 text-slate-400 group-hover:text-slate-500 group-hover:translate-y-px transition-all" />
         {anyActive && (
           <span className="absolute bottom-0 left-3 right-3 h-[2.5px] rounded-t-sm bg-[#1E40AF] shadow-[0_0_6px_rgba(30,64,175,0.4)]" />
         )}

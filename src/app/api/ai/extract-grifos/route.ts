@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
   try {
     result = await extractGrifos(question, callOpus);
   } catch (err) {
-    // Não vaza chave/segredo — mensagem curta.
+    // Não vaza chave/segredo — mensagem curta no corpo; detalhe só no log do servidor.
     console.error('[extract-grifos] falha no Opus/parse:', err instanceof Error ? err.message : err);
     return NextResponse.json({ error: 'Falha ao extrair grifos.' }, { status: 502 });
   }

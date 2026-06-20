@@ -37,3 +37,19 @@ next-env.d.ts
 .env.*.local
 .env.production
 .env.development
+.env*.bak
+
+# Secrets / auth tokens (NEVER commit)
+tec_auth.json
+*.auth.json
+
+# Generated / cache
+*.tsbuildinfo
+**/__pycache__/
+/python
+
+# Throwaway data / mockups / scratch
+_tax_clusters_copy.json
+public/mockup-*.html
+.superpowers/
+.claude/scheduled_tasks.lock

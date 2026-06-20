@@ -447,11 +447,22 @@ def main() -> None:
         assuntos: list[str] | None = None
         termo_assunto = ""
         while not assuntos:
-            termo_assunto = ask("\nAssunto (palavras-chave; vazio = sair)")
+            termo_assunto = ask("\nAssunto (palavras-chave; 'all'/'todos' = todos; vazio = sair)")
             if not termo_assunto:
                 print("saindo.")
                 return
-            assuntos = resolver_assunto(cur, termo_assunto, materia)
+            if termo_assunto.strip().lower() in {"all", "todos", "*"}:
+                # Carrega TODOS os assuntos da materia escolhida
+                cur.execute(
+                    "SELECT DISTINCT assunto FROM questoes "
+                    "WHERE assunto IS NOT NULL AND materia = %s "
+                    "ORDER BY assunto",
+                    (materia,),
+                )
+                assuntos = [r["assunto"] for r in cur.fetchall()]
+                print(f"  -> TODOS os {len(assuntos)} assuntos de {materia!r} selecionados")
+            else:
+                assuntos = resolver_assunto(cur, termo_assunto, materia)
         print_universo(cur, materia=materia, assuntos=assuntos)
 
         # 3) Banca(s)

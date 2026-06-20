@@ -33,32 +33,30 @@ export function QuestoesResultsHeader() {
   if (!data) return null;
 
   return (
-    <div className="flex items-center justify-between px-3 py-1.5">
+    <div className="flex items-center gap-2 whitespace-nowrap">
       <p className="text-xs text-muted-foreground">
-        {total.toLocaleString('pt-BR')} questoes encontradas
+        <span className="font-semibold text-foreground tabular-nums">{total.toLocaleString('pt-BR')}</span> questões
         {totalPages > 1 && (
           <span className="ml-1 text-muted-foreground/60">
-            · Pagina {page} de {totalPages.toLocaleString('pt-BR')}
+            · pág {page}/{totalPages.toLocaleString('pt-BR')}
           </span>
         )}
       </p>
-      <div className="flex items-center gap-2">
-        {isSemantic && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-500">
-            <Sparkles className="h-3 w-3" />
-            Busca IA
-          </span>
-        )}
-        {isExactSearch && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600">
-            <Quote className="h-3 w-3" />
-            Busca exata
-          </span>
-        )}
-        {isFetching && isPlaceholderData && (
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-400" />
-        )}
-      </div>
+      {isSemantic && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-500">
+          <Sparkles className="h-3 w-3" />
+          Busca IA
+        </span>
+      )}
+      {isExactSearch && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600">
+          <Quote className="h-3 w-3" />
+          Busca exata
+        </span>
+      )}
+      {isFetching && isPlaceholderData && (
+        <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-400" />
+      )}
     </div>
   );
 }

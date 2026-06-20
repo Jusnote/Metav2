@@ -66,7 +66,7 @@ function PaginationBar({
             onClick={() => onPageChange(item)}
             className={`w-8 h-8 rounded-md text-xs font-medium transition-colors ${
               item === page
-                ? "bg-blue-600 text-white shadow-sm"
+                ? "bg-emerald-600 dark:bg-emerald-500 text-white shadow-sm"
                 : "text-muted-foreground hover:bg-accent"
             }`}
           >
@@ -181,7 +181,7 @@ export function VirtualizedQuestionList() {
     return (
       <div className="flex-1 flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400" />
           <p className="text-sm text-muted-foreground">Carregando questoes...</p>
         </div>
       </div>
@@ -216,27 +216,23 @@ export function VirtualizedQuestionList() {
   }
 
   const renderQuestionCard = (questao: (typeof questoes)[number], index: number) => (
-    <div
+    <QuestionCard
       key={questao.id}
-      className="rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_2px_4px_rgba(15,23,42,0.06),0_8px_24px_rgba(15,23,42,0.06)] transition-shadow duration-200 overflow-hidden"
-    >
-      <QuestionCard
-        id={String(questao.id).padStart(8, '0').toUpperCase()}
-        questaoId={questao.id}
-        year={String(questao.metadata?.ano || '')}
-        institution={questao.metadata?.banca || ''}
-        exam={questao.metadata?.orgao || ''}
-        subject={questao.metadata?.materia || ''}
-        subtopic={questao.metadata?.assunto || ''}
-        questionNumber={(page - 1) * LIMIT + index + 1}
-        totalQuestions={total}
-        questionText={questao.enunciado_html || questao.enunciado}
-        alternatives={alternativesMap.get(questao.id) ?? []}
-        commentsCount={0}
-        caracteristicas={questao.caracteristicas}
-        taxaAcertoGlobal={questao.estatisticas?.taxa_acerto}
-      />
-    </div>
+      id={String(questao.id).padStart(8, '0').toUpperCase()}
+      questaoId={questao.id}
+      year={String(questao.metadata?.ano || '')}
+      institution={questao.metadata?.banca || ''}
+      exam={questao.metadata?.orgao || ''}
+      subject={questao.metadata?.materia || ''}
+      subtopic={questao.metadata?.assunto || ''}
+      questionNumber={(page - 1) * LIMIT + index + 1}
+      totalQuestions={total}
+      questionText={questao.enunciado_html || questao.enunciado}
+      alternatives={alternativesMap.get(questao.id) ?? []}
+      commentsCount={0}
+      caracteristicas={questao.caracteristicas}
+      taxaAcertoGlobal={questao.estatisticas?.taxa_acerto}
+    />
   );
 
   return (
@@ -244,7 +240,7 @@ export function VirtualizedQuestionList() {
       <div className="flex-1 min-h-0 pt-4">
         {viewMode === 'individual' ? (
           /* ── Individual mode: one question at a time ── */
-          <div className={`h-full overflow-y-auto ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
+          <div className={`h-full overflow-y-auto px-3 sm:px-4 pb-6 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
             {questoes[safeIndex] && renderQuestionCard(questoes[safeIndex], safeIndex)}
 
             {/* Navigation */}
@@ -274,7 +270,7 @@ export function VirtualizedQuestionList() {
           </div>
         ) : (
           /* ── List mode (default) ── */
-          <div className={`h-full overflow-y-auto space-y-6 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
+          <div className={`h-full overflow-y-auto space-y-6 px-3 sm:px-4 pb-6 ${isPlaceholderData ? 'opacity-60 pointer-events-none' : ''}`}>
             {questoes.map((questao, index) => renderQuestionCard(questao, index))}
 
             {/* Pagination */}
